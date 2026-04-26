@@ -1,0 +1,1856 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Toward Kontinuität — Méridien Editorial</title>
+<link rel="stylesheet" href="styles.css" />
+<!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
+<script src="https://cdn.jsdelivr.net/npm/d3@7" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3" defer></script>
+</head>
+<body class="dark">
+  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+  <!-- Custom cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+
+  <!-- 4-column grid overlay (toggle: press G) -->
+  <div class="grid-overlay is-on" id="gridOverlay">
+    <div class="col"></div>
+    <div class="col"></div>
+    <div class="col"></div>
+    <div class="col"></div>
+  </div>
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <a href="#top" class="logo"><img src="./assets/logo-short.png" alt="Méridien" class="logo-img"/></a>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu">
+      <svg viewBox="0 0 48 48"><path d="M 0 19.96 L 48 19.96 L 48 27.879 L 0 27.879 L 0 19.96 Z M 20.087 48 L 20.087 0 L 27.993 0 L 27.993 48 L 20.087 48 Z"/></svg>
+    </button>
+  </div>
+
+  <div class="coord">
+    <span>FRANKFURT</span><span class="dot"></span><span>50°07′N 8°41′E</span>
+  </div>
+
+  <!-- Menu overlay -->
+  <div class="menu-overlay" id="menuOverlay">
+    <button class="menu-close" id="menuClose" aria-label="Close">
+      <svg viewBox="0 0 48 48"><path d="M 0 19.96 L 48 19.96 L 48 27.879 L 0 27.879 L 0 19.96 Z M 20.087 48 L 20.087 0 L 27.993 0 L 27.993 48 L 20.087 48 Z"/></svg>
+    </button>
+    <nav class="menu-nav">
+      <a href="#ch1" data-close><span>Introduction to the sculpture</span><span class="num">01</span></a>
+      <a href="#ch2" data-close><span>Max Bill</span><span class="num">02</span></a>
+      <a href="#ch3" data-close><span>Journey from Sardinia to Frankfurt</span><span class="num">03</span></a>
+      <a href="#ch4" data-close><span>The making</span><span class="num">04</span></a>
+      <a href="#ch5" data-close><span>Mathematics of the sculpture</span><span class="num">05</span></a>
+      <a href="#ch6" data-close><span>Walk around</span><span class="num">+</span></a>
+    </nav>
+  </div>
+
+  <!-- Journey lightbox -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="lb-stage" id="lbStage">
+      <img id="lbImg" alt=""/>
+    </div>
+    <button class="lb-prev" id="lbPrev" aria-label="Previous">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 5L8 12L15 19"/></svg>
+    </button>
+    <button class="lb-next" id="lbNext" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5L16 12L9 19"/></svg>
+    </button>
+    <div class="lb-counter" id="lbCounter"></div>
+    <button class="lb-close" id="lbClose" aria-label="Close">
+      <svg viewBox="0 0 48 48"><path d="M 0 19.96 L 48 19.96 L 48 27.879 L 0 27.879 L 0 19.96 Z M 20.087 48 L 20.087 0 L 27.993 0 L 27.993 48 L 20.087 48 Z"/></svg>
+    </button>
+  </div>
+
+  <!-- Sticky sculpture group: hero + intro share a carrier so the sculpture pins across them -->
+  <div class="sticky-group">
+    <img class="hero-sculpture sticky-sculpture" src="./assets/sculpture-3d.png" alt="" aria-hidden="true"/>
+
+    <!-- HERO -->
+    <header class="hero" id="top">
+      <div class="hero-bg" id="heroBg"></div>
+      <h1 class="hero-title">toward kontinuität</h1>
+      <div class="hero-intro-grid">
+        <p class="hero-intro"><strong>Continuity</strong>, a colossal 4.5-meter-high granite sculpture shaped as an infinity loop, located in central Frankfurt, Germany. It was created by the Swiss architect and polymath <strong>Max Bill</strong> (1908—1994), a prominent figure in modernism and concrete art.</p>
+      </div>
+      <div class="hero-footer">
+        <span class="hero-scroll"><span>SCROLL</span><span class="line"></span></span>
+      </div>
+    </header>
+
+    <!-- INTRO spacer (sticky sculpture pins across this) -->
+    <section class="intro dark-section"></section>
+  </div><!-- /.sticky-group -->
+
+  <!-- LEAD paragraph (now empty placeholder block) -->
+  <section class="lead dark-section">
+    <div class="container"></div>
+  </section>
+
+  <!-- Lead body block -->
+  <section class="dark-section" style="padding: 120px 0;">
+    <div class="container">
+      <div class="article-body">
+        <p>Imagine a 200-ton block of granite, extracted from a quarry in Sardinia in the 1980s, carved into a work of art and shipped across the North Atlantic, then transported through Europe via canals and rivers — before finally being installed as a monumental infinity loop in the heart of Frankfurt's financial district. Such an undertaking, combining production and logistics, had not been seen since the transport of colossal sculptures carved from monoliths in ancient Egypt. So what was the idea behind it, and what made it possible forty years ago?</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 1 -->
+  <section class="chapter dark-section" id="ch1">
+    <div class="container">
+      <div class="chapter-head">
+        <div class="chapter-num">1</div>
+        <h2 class="chapter-title">A Sculpture Continuity</h2>
+      </div>
+    </div>
+  </section>
+
+  <section class="article dark-section">
+    <div class="container">
+      <div class="article-grid">
+        <div class="article-body">
+          <p>&ldquo;In Continuity, I attempted to realize an idea that had long been present in my mind: the representation of an infinite space in infinite motion. Subsequently, I engaged with the problems realized in it, which are extraordinarily fascinating. That sculpture consists of a band of uniform width throughout, whose edges are therefore parallel. It thus appears to be a two-sided surface, separated from the surrounding space by parallel lines and forming a new space. The phenomenon of this &ldquo;body,&rdquo; however, is that this new space-forming surface has only a single side, and that the seemingly parallel two lines are in fact only one single line&mdash;that is, a line running parallel to itself.&rdquo;</p>
+          <p>In Continuity, I intended to achieve something similar: a surface, a boundary. Purely theoretically, from a twin band&mdash;one that is twisted one and a half times around itself and fused with another that is twisted only half a turn&mdash;one could obtain a form similar to the &ldquo;endless loop,&rdquo; but with only one surface and one boundary. For reasons unknown to me, this did not come about. Thus Continuity, despite a theoretically different expected result, consists of two parallel, bounded surfaces, composed of infinitely many straight lines.</p>
+          <p>This explanation may seem somewhat dry and primitive, yet it is the only thing I can say about it myself. I can, however, add that for me such a sculpture represents something like a &ldquo;knot in space,&rdquo; a point of concentration of various latent directions, and that through its existence space is ordered, newly formed, and given aim and direction.</p>
+          <p class="quote-text">There is continuity in our purpose. However our purpose is also to see&mdash;and to see clearly. We [designers] are not working for the sake of machines, for some impersonal, superordinate entity such as &lsquo;industry&rsquo; or &lsquo;state&rsquo; or &lsquo;community&rsquo;. We are working for the wellbeing of every person, every individual, as part of a community. &lt;&hellip;&gt; This purpose, this new humanism, is what I&rsquo;d like to see as continuity.</p>
+          <p class="quote-attr">Max Bill, &ldquo;Continuity and change&rdquo;, 1953</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- FACTS -->
+  <section class="facts">
+    <div class="container">
+      <h3 class="facts-title">Facts</h3>
+      <div class="facts-grid">
+        <div class="fact-row"><span class="fact-key">Year</span><span class="fact-val">1986</span><span class="fact-n">01 / 09</span></div>
+        <div class="fact-row" data-no-zoom><span class="fact-key">Place</span><span class="fact-val">Frankfurt am Main, Germany</span><span class="fact-n">02 / 09</span></div>
+        <div class="fact-row"><span class="fact-key">Height</span><span class="fact-val">4.5 m</span><span class="fact-n">03 / 09</span></div>
+        <div class="fact-row"><span class="fact-key">Weight</span><span class="fact-val">80 t</span><span class="fact-n">04 / 09</span></div>
+        <div class="fact-row"><span class="fact-key">Production</span><span class="fact-val">3 years</span><span class="fact-n">05 / 09</span></div>
+        <div class="fact-row"><span class="fact-key">Material</span><span class="fact-val">Granite (Sardinia)</span><span class="fact-n">06 / 09</span></div>
+        <div class="fact-row"><span class="fact-key">Author</span><span class="fact-val">Max Bill</span><span class="fact-n">07 / 09</span></div>
+        <div class="fact-row" data-no-zoom><span class="fact-key">Chief of production</span><span class="fact-val">Dominique Stroobant</span><span class="fact-n">08 / 09</span></div>
+        <div class="fact-row" data-no-zoom><span class="fact-key">Budget</span><span class="fact-val">2.3M EUR <span class="fact-explainer" style="font-weight:500;font-size:.7em;opacity:.6;">(equivalent of 1986 Deutsche Marks in 2026 euros)</span></span><span class="fact-n">09 / 09</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 2 · Max Bill -->
+  <section class="chapter light-section" id="ch2">
+    <div class="container">
+      <div class="chapter-head">
+        <div class="chapter-num">2</div>
+        <h2 class="chapter-title">Max Bill</h2>
+      </div>
+    </div>
+  </section>
+
+  <section class="article light-section" style="padding-top:0;">
+    <div class="container">
+      <div class="article-grid" style="grid-template-columns:1.1fr 1fr; align-items:start;">
+        <div class="article-image" style="background-image:url('./assets/max-bill-portrait.jpg'); aspect-ratio:4/3;">
+          <span class="cap">Fig. 02 · Max Bill, c. 1948</span>
+        </div>
+        <div class="article-body">
+          <p><strong>Max Bill (1908—1994)</strong> was a great Swiss polymath: architect, industrial and graphic designer, sculptor, painter — and also a prolific writer, scholar, and teacher.</p>
+          <p>He attended the Bauhaus where he was taught by Josef Albers, László Moholy-Nagy, Paul Klee, Wassily Kandinsky and Oskar Schlemmer. Bill remained closely associated with the Bauhaus school and was a key figure in developing and propagating its principles — as a guest lecturer at the Kunstgewerbeschule Zürich, and as a co-founder and first rector of the <strong>Ulm School of Design</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bill works · timeline chart -->
+  <section class="bill-works light-section">
+    <div class="container">
+      <h3 class="bill-works-title">Max Bill's works</h3>
+      <div class="bill-works-chart">
+        <svg id="billChart" viewBox="0 0 1260 640"></svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 3 · Journey -->
+  <section class="chapter dark-section" id="ch3">
+    <div class="container">
+      <div class="chapter-head">
+        <div class="chapter-num">3</div>
+        <h2 class="chapter-title">A journey from a Sardinian quarry to Frankfurt's financial district</h2>
+      </div>
+    </div>
+  </section>
+
+  <!-- Journey: facts + 3 sub-chapters -->
+  <section class="journey dark-section" id="journey">
+    <div class="container">
+
+      <!-- Facts strip -->
+      <div class="journey-facts">
+        <div><span class="fact-label">Distance</span><strong class="fact-value">2,800 km</strong></div>
+        <div><span class="fact-label">Time</span><strong class="fact-value">6 months</strong></div>
+        <div><span class="fact-label">Countries</span><strong class="fact-value">5</strong></div>
+      </div>
+
+      <!-- ============== SUB-CHAPTER 1 · GRANITE TRIP ============== -->
+      <div class="journey-sub" id="granite-trip">
+        <header class="sub-head">
+          <div class="sub-num">01</div>
+          <div class="sub-head-text">
+            <h3 class="sub-title">Granite Trip</h3>
+            <p class="sub-route">Quarry Scarraciana → Porto di Santa Teresa Gallura → Porto Marina di Carrara</p>
+          </div>
+        </header>
+
+        <div class="journey-grid">
+          <aside class="journey-map-wrap" id="sardiniaWrap">
+            <svg class="journey-map sardinia" id="sardiniaMap" viewBox="0 0 480 600" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <rect class="map-bg" x="0" y="0" width="480" height="600" fill="rgba(255,255,255,0.025)"/>
+              <g id="sardiniaLand"></g>
+              <g id="sardiniaRoute"></g>
+              <g id="sardiniaStops"></g>
+              <g id="sardiniaLabels"></g>
+            </svg>
+            <div class="journey-meta">
+              <div><span>Stage</span><strong id="sardiniaStage">Quarry</strong></div>
+              <div><span>Distance</span><strong>~360 km</strong></div>
+              <div><span>Mode</span><strong>Road · Sea</strong></div>
+            </div>
+          </aside>
+
+          <div class="journey-stops">
+            <article class="stop" data-sardinia-stop="1">
+              <div class="stop-num">Stop 01 / 03</div>
+              <figure style="background-image:url('./assets/_journey/1%20italy/IMG_8408.jpeg');"></figure>
+              <p class="stop-cap">The granite was found at <strong>Cava Scarraciana</strong>, a quarry in the sun-bleached silence of north-eastern Sardinia. On 20 October 1983, a 500-ton block was blasted from the rock face and reduced on site to 180 tons — a polyhedron ready for transport.</p>
+              <dl class="stop-meta">
+                <div><dt>Place</dt><dd>Cava Scarraciana</dd></div>
+                <div><dt>Date</dt><dd>20 · 10 · 1983</dd></div>
+                <div><dt>Mass</dt><dd>500 → 180 t</dd></div>
+              </dl>
+              <ol class="stop-diary">
+                <li><time>25 · 04 · 1983</time><p>The "Esagono" work collective is formed around Dominique Stroobant in Carrara.</p></li>
+                <li><time>13 · 09 · 1983</time><p>Max Bill and Rodolfo Costantino inspect the Scarraciana quarry.</p></li>
+                <li><time>20 · 10 · 1983</time><p>A granite block is blasted and extracted — 500 tons.</p></li>
+                <li><time>OCT — NOV 1983</time><p>The block is reduced to 300 tons, then to 180 tons, formed into a polyhedron, and loaded onto a Fagioli truck with a 52-metre platform.</p></li>
+              </ol>
+              <div class="stop-strip">
+                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8407.jpeg');"></div>
+                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8409.jpeg');"></div>
+                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8410.jpeg');"></div>
+                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8405.JPG');"></div>
+              </div>
+            </article>
+
+            <article class="stop" data-sardinia-stop="2">
+              <div class="stop-num">Stop 02 / 03</div>
+              <figure style="background-image:url('./assets/_journey/1%20italy/IMG_8411.jpeg');"></figure>
+              <p class="stop-cap">Loaded onto a Fagioli truck with a 52-metre platform, the block crossed Sardinia by night to the port of <strong>Santa Teresa Gallura</strong>. A temporary road was built to reach the highway; the public route was closed for two days, 8–9 February 1984.</p>
+              <dl class="stop-meta">
+                <div><dt>Leg</dt><dd>Sardinian crossing</dd></div>
+                <div><dt>Date</dt><dd>08 — 09 · 02 · 1984</dd></div>
+                <div><dt>Convoy</dt><dd>52 m platform</dd></div>
+              </dl>
+              <ol class="stop-diary">
+                <li><time>· · ·</time><p>A temporary road is built to the main highway.</p></li>
+                <li><time>08 — 09 · 02 · 1984</time><p>The road is blocked for two days while the convoy carries the block across Sardinia to the port of Santa Teresa di Gallura.</p></li>
+              </ol>
+              <div class="stop-strip">
+                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8413.jpeg');"></div>
+                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8415.jpeg');"></div>
+                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8416.jpeg');"></div>
+                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8419.jpeg');"></div>
+              </div>
+            </article>
+
+            <article class="stop" data-sardinia-stop="3">
+              <div class="stop-num">Stop 03 / 03</div>
+              <figure style="background-image:url('./assets/_journey/1%20italy/IMG_8417.jpeg');"></figure>
+              <p class="stop-cap">After a ten-day wait for fair weather, the cargo crossed the Tyrrhenian Sea to <strong>Marina di Carrara</strong>, where the workshop of the Esagono collective was waiting on the Tuscan coast.</p>
+              <dl class="stop-meta">
+                <div><dt>Place</dt><dd>Marina di Carrara</dd></div>
+                <div><dt>Date</dt><dd>20 · 02 · 1984</dd></div>
+                <div><dt>Distance</dt><dd>+360 km · sea</dd></div>
+              </dl>
+              <ol class="stop-diary">
+                <li><time>· · ·</time><p>Ten-day wait due to weather conditions.</p></li>
+                <li><time>20 · 02 · 1984</time><p>The ship arrives at the port of Marina di Carrara.</p></li>
+              </ol>
+              <div class="stop-strip">
+                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8418.jpeg');"></div>
+                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8422.jpeg');"></div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============== SUB-CHAPTER 2 · SCULPTING ============== -->
+      <div class="journey-sub" id="sculpting">
+        <header class="sub-head">
+          <div class="sub-num">02</div>
+          <div class="sub-head-text">
+            <h3 class="sub-title">Sculpting</h3>
+            <p class="sub-route">Workshop · Marina di Carrara · February 1984 — June 1986</p>
+          </div>
+        </header>
+
+        <div class="sculpt-intro">
+          <p>A site near the port was chosen for convenient stone transport and waste handling — roughly 120 tons of granite would have to be removed. A temporary metal building rose around the block, with a separate pavilion housing the four-fold magnified plaster model that served as the master measurement.</p>
+        </div>
+
+        <div class="sculpt-gallery">
+          <figure class="sg-row sg-full">
+            <div class="sg-img" style="background-image:url('./assets/_journey/2%20sculpting/IMG_8423.jpeg');"></div>
+            <figcaption class="sg-cap">
+              <span class="sg-num">I</span>
+              <h5>Workshop built</h5>
+              <p>Work began February 1984. A site near the port was chosen for stone transport and waste handling.</p>
+            </figcaption>
+          </figure>
+
+          <figure class="sg-row sg-2up">
+            <div class="sg-imgs">
+              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8424.jpeg');"></div>
+              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8426.jpeg');"></div>
+            </div>
+            <figcaption class="sg-cap">
+              <span class="sg-num">II</span>
+              <h5>Measurement transfer</h5>
+              <p>A grid of "measuring points" was transferred from a four-fold magnified gypsum model using giant dividers.</p>
+            </figcaption>
+          </figure>
+
+          <figure class="sg-row sg-full">
+            <div class="sg-img" style="background-image:url('./assets/_journey/2%20sculpting/IMG_8432.jpeg');"></div>
+            <figcaption class="sg-cap">
+              <span class="sg-num">III</span>
+              <h5>Diamond chains</h5>
+              <p>The carving used drilling machines and specially made diamond chains — regular chains are made for marble, not granite.</p>
+            </figcaption>
+          </figure>
+
+          <figure class="sg-row sg-2up">
+            <div class="sg-imgs">
+              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8428.jpeg');"></div>
+              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8429.jpeg');"></div>
+            </div>
+            <figcaption class="sg-cap">
+              <span class="sg-num">IV</span>
+              <h5>Carving from the inside</h5>
+              <p>The sculpture was carved from the inside using complex and dangerous methods. Work was done in shifts: only two people could be inside at a time.</p>
+            </figcaption>
+          </figure>
+
+          <figure class="sg-row sg-2up">
+            <div class="sg-imgs">
+              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8433.jpeg');"></div>
+              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8434.jpeg');"></div>
+            </div>
+            <figcaption class="sg-cap">
+              <span class="sg-num">V</span>
+              <h5>Internal channels</h5>
+              <p>Gradually, long internal channels — necessary for the loop's hidden topology — were cut out.</p>
+            </figcaption>
+          </figure>
+
+          <figure class="sg-row sg-full">
+            <div class="sg-img" style="background-image:url('./assets/_journey/2%20sculpting/IMG_8439.jpeg');"></div>
+            <figcaption class="sg-cap">
+              <span class="sg-num">VI</span>
+              <h5>January 1985</h5>
+              <p>Main through-cuts completed. The interior shape begins to emerge.</p>
+            </figcaption>
+          </figure>
+
+          <figure class="sg-row sg-2up">
+            <div class="sg-imgs">
+              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8436.jpeg');"></div>
+              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8437.jpeg');"></div>
+            </div>
+            <figcaption class="sg-cap">
+              <span class="sg-num">VII</span>
+              <h5>22 March 1986</h5>
+              <p>The sculpture is turned over and placed on three support points; carving continues.</p>
+            </figcaption>
+          </figure>
+
+          <figure class="sg-row sg-full">
+            <div class="sg-img" style="background-image:url('./assets/_journey/2%20sculpting/IMG_8440.jpeg');"></div>
+            <figcaption class="sg-cap">
+              <span class="sg-num">VIII</span>
+              <h5>30 June 1986</h5>
+              <p>The sculpture is completed.</p>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <!-- ============== SUB-CHAPTER 3 · SCULPTURE TRIP ============== -->
+      <div class="journey-sub" id="sculpture-trip">
+        <header class="sub-head">
+          <div class="sub-num">03</div>
+          <div class="sub-head-text">
+            <h3 class="sub-title">Sculpture Trip</h3>
+            <p class="sub-route">Port of Carrara → Gibraltar → Portugal → Bay of Biscay → English Channel → Rotterdam → Rhine · Main → Frankfurt am Main</p>
+          </div>
+        </header>
+
+        <div class="journey-grid">
+          <aside class="journey-map-wrap">
+            <svg class="journey-map" id="globeMap" viewBox="0 0 480 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs>
+                <radialGradient id="globeShade" cx="0.35" cy="0.32" r="0.85">
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.08)"/>
+                  <stop offset="60%" stop-color="rgba(255,255,255,0.02)"/>
+                  <stop offset="100%" stop-color="rgba(0,0,0,0.35)"/>
+                </radialGradient>
+              </defs>
+              <rect class="map-bg" x="0" y="0" width="480" height="480" fill="rgba(255,255,255,0.025)"/>
+              <circle class="globe-stroke" cx="240" cy="240" r="240" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+              <g>
+                <g id="globeGraticule"></g>
+                <g id="globeLand"></g>
+                <g id="globeRoute"></g>
+                <g id="globeStops"></g>
+              </g>
+              <circle class="globe-shade" cx="240" cy="240" r="240" fill="url(#globeShade)" pointer-events="none"/>
+            </svg>
+            <div class="journey-meta">
+              <div><span>Vessel</span><strong>MV Kupari</strong></div>
+              <div><span>Period</span><strong>Aug — Sep 1986</strong></div>
+              <div><span>Distance</span><strong>~4,000 km</strong></div>
+            </div>
+          </aside>
+
+          <div class="journey-stops">
+            <article class="stop" data-stop="1">
+              <div class="stop-num">Stop 01 / 04</div>
+              <figure style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8441.jpeg');"></figure>
+              <p class="stop-cap">Between 4 and 8 August 1986, the finished <strong>Continuity</strong> was mounted into a sturdy steel transport frame in Carrara — engineered to guarantee safe sea passage via Gibraltar, Portugal, the Bay of Biscay and the English Channel to Rotterdam. The framed sculpture was then trucked to the port and loaded onto the cargo ship MV Kupari.</p>
+              <dl class="stop-meta">
+                <div><dt>Place</dt><dd>Port of Carrara</dd></div>
+                <div><dt>Date</dt><dd>16 · 08 · 1986</dd></div>
+                <div><dt>Vessel</dt><dd>MV Kupari</dd></div>
+              </dl>
+            </article>
+
+            <article class="stop" data-stop="2">
+              <div class="stop-num">Stop 02 / 04</div>
+              <figure class="has-video">
+                <video src="./assets/_journey/3%20sculpture%20trip/6749362-hd_1920_1080_24fps.mp4" autoplay muted loop playsinline preload="metadata"></video>
+              </figure>
+              <p class="stop-cap">The Kupari sailed via the <strong>Strait of Gibraltar</strong>, west of Portugal, across the <strong>Bay of Biscay</strong> and through the <strong>English Channel</strong> to the North Sea — a 2,800 km open-water passage taking just over two weeks.</p>
+              <dl class="stop-meta">
+                <div><dt>Route</dt><dd>Gibraltar · Biscay · Channel</dd></div>
+                <div><dt>Period</dt><dd>16 · 08 — 02 · 09 · 1986</dd></div>
+                <div><dt>Distance</dt><dd>+2,800 km</dd></div>
+              </dl>
+            </article>
+
+            <article class="stop" data-stop="3">
+              <div class="stop-num">Stop 03 / 04</div>
+              <figure style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8446.jpeg');"></figure>
+              <figure style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8443.jpeg'); margin-top:16px;"></figure>
+              <p class="stop-cap">After unloading in <strong>Rotterdam</strong>, the sculpture was transferred to a river barge and pushed up the <strong>Rhine</strong> and <strong>Main</strong> rivers toward the German interior.</p>
+              <dl class="stop-meta">
+                <div><dt>Leg</dt><dd>Rhine · Main</dd></div>
+                <div><dt>Date</dt><dd>02 — 06 · 09 · 1986</dd></div>
+                <div><dt>Distance</dt><dd>+500 km · river</dd></div>
+              </dl>
+            </article>
+
+            <article class="stop" data-stop="4">
+              <div class="stop-num">Stop 04 / 04</div>
+              <figure style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8447.jpeg');"></figure>
+              <p class="stop-cap">In Frankfurt, a <strong>Colonia crane</strong> moved from the Osthafen to Taunusanlage 12 lifted the 80-tonne sculpture above the trees and into place beside the Deutsche Bank towers the following morning.</p>
+              <dl class="stop-meta">
+                <div><dt>Place</dt><dd>Taunusanlage 12</dd></div>
+                <div><dt>Date</dt><dd>07 · 09 · 1986</dd></div>
+                <div><dt>Total</dt><dd>~4,720 km</dd></div>
+              </dl>
+              <div class="stop-strip">
+                <div style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8449.jpeg');"></div>
+                <div style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8450.jpeg');"></div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="journey-finale" style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8451.jpeg');"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CHAPTER 4 -->
+  <section class="chapter paper-section" id="ch4" style="color:#000;">
+    <div class="container">
+      <div class="chapter-head">
+        <div class="chapter-num">4</div>
+        <h2 class="chapter-title">From granite block to sculpture — a team challenge</h2>
+      </div>
+    </div>
+  </section>
+
+  <section class="paper-section" style="padding:0 0 120px;">
+    <div class="container">
+      <div class="article-grid">
+        <div>
+          <div class="article-image" style="background-image:url('./assets/workshop-1.png'); aspect-ratio:4/3; margin-bottom:48px;">
+            <span class="cap">FIG. 05 · CARRARA WORKSHOP</span>
+          </div>
+          <div class="article-image" style="background-image:url('./assets/workshop-2.png'); aspect-ratio:1/1;">
+            <span class="cap">FIG. 06 · INTERIOR CARVING</span>
+          </div>
+        </div>
+        <div class="article-body">
+          <p>In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity — the development of which took three years.</p>
+          <p>Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
+          <p>Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation — often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
+          <!-- challenges list -->
+          <div style="margin-top:48px; display:grid; gap:0; border-top:1px solid #000;">
+            <div style="padding:18px 0; border-bottom:1px solid rgba(0,0,0,.15); display:grid; grid-template-columns:40px 1fr auto; gap:16px; align-items:baseline;">
+              <span style="font-family:var(--mono); font-size:11px; opacity:.55;">I</span>
+              <span style="font-size:18px; font-weight:600;">Location near the port chosen for stone transport and waste storage (~120 t).</span>
+              <span style="font-family:var(--mono); font-size:10px; opacity:.5;">1984</span>
+            </div>
+            <div style="padding:18px 0; border-bottom:1px solid rgba(0,0,0,.15); display:grid; grid-template-columns:40px 1fr auto; gap:16px; align-items:baseline;">
+              <span style="font-family:var(--mono); font-size:11px; opacity:.55;">II</span>
+              <span style="font-size:18px; font-weight:600;">Measurements transferred from a 4× magnified model using giant dividers.</span>
+              <span style="font-family:var(--mono); font-size:10px; opacity:.5;">ANALOG</span>
+            </div>
+            <div style="padding:18px 0; border-bottom:1px solid rgba(0,0,0,.15); display:grid; grid-template-columns:40px 1fr auto; gap:16px; align-items:baseline;">
+              <span style="font-family:var(--mono); font-size:11px; opacity:.55;">III</span>
+              <span style="font-size:18px; font-weight:600;">Drilling machines and specially-made diamond chains — marble-grade chains won't cut granite.</span>
+              <span style="font-family:var(--mono); font-size:10px; opacity:.5;">CHAINS</span>
+            </div>
+            <div style="padding:18px 0; border-bottom:1px solid rgba(0,0,0,.15); display:grid; grid-template-columns:40px 1fr auto; gap:16px; align-items:baseline;">
+              <span style="font-family:var(--mono); font-size:11px; opacity:.55;">IV</span>
+              <span style="font-size:18px; font-weight:600;">Carved from the inside — complex, dangerous. Only <strong>two workers at a time</strong>.</span>
+              <span style="font-family:var(--mono); font-size:10px; opacity:.5;">SHIFTS</span>
+            </div>
+            <div style="padding:18px 0; display:grid; grid-template-columns:40px 1fr auto; gap:16px; align-items:baseline;">
+              <span style="font-family:var(--mono); font-size:11px; opacity:.55;">V</span>
+              <span style="font-size:18px; font-weight:600;">Long internal channels cut out to form the infinity loop's hidden geometry.</span>
+              <span style="font-family:var(--mono); font-size:10px; opacity:.5;">TOPOLOGY</span>
+            </div>
+          </div>
+          <div style="margin-top:48px; padding:28px; background:#000; color:#fff;">
+            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.15em; opacity:.6;">BEFORE THE DIGITAL ERA</div>
+            <p style="margin-top:10px; font-size:18px; line-height:1.45; color:#fff;">Scaling was done with a 1:20 metal prototype and custom measuring tools invented by Stroobant himself. The work had to be carried out in shifts, with only two people able to work at a time — a choreography of six sculptors around a single stone.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="paper-section" style="padding:0 0 120px;">
+    <div class="container">
+      <div class="hero-image" style="background-image:url('./assets/measuring.png'); aspect-ratio:16/10; background-color:#eee;"></div>
+      <div class="caption" style="color:rgba(0,0,0,.55);">FIG. 07 · MEASUREMENT TRANSFER — grid of reference points translated from the magnified model.</div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 5 -->
+  <section class="chapter math" id="ch5">
+    <div class="container">
+      <div class="chapter-head">
+        <div class="chapter-num">5</div>
+        <h2 class="chapter-title">Mathematics behind the sculpture</h2>
+      </div>
+
+      <div class="scroll-video-sticky">
+        <video id="operaScrollVideo" src="./assets/3D-glassy.mp4" muted loop playsinline preload="auto"></video>
+      </div>
+
+      <div class="math-body">
+        <div>
+          <p>Max Bill was consistently inspired by mathematics and logic in art. His approach, which he called "verifiable logic," guided him from early experimentation toward a precise method of making — and explaining — his work: <strong>"You can always understand my work, even if you don't like it."</strong></p>
+          <p>From the beginning of his career, Bill was fascinated by the Möbius strip. From his first attempts in 1936 to the realization of Continuity in Frankfurt, he produced dozens — if not hundreds — of variations on the infinity loop.</p>
+          <p>But how are we to understand the topology of Continuity? Is it a Möbius strip, a variation on an endless loop, or simply an artistic interpretation of an infinite motif?</p>
+        </div>
+        <div>
+          <blockquote style="font-size:clamp(20px,1.7vw,26px); line-height:1.35;">
+            "Bill's intuition that a single half twist connected to a double half twist should result in a single-sided, single-edge surface is quite correct; depending on the handedness of the twists, the loop you wind up with has either three twists or one. So it's a mystery how he managed to add 1 and 2 and get 4."
+          </blockquote>
+          <div class="caption" style="margin-top:20px; color:rgba(255,255,255,.6);">— Barry Cipra · mathematician, Minnesota</div>
+          <p style="margin-top:28px;">"Not long afterwards, people began to congratulate me on my fresh and original interpretation of the Egyptian symbol for infinity and the Möbius ribbon. I had never heard of either of them."</p>
+          <div class="caption" style="margin-top:8px; color:rgba(255,255,255,.6);">— Max Bill</div>
+        </div>
+      </div>
+
+      <div class="math-diagram">
+        <img src="./assets/math-diagram.png" alt="Fusion physics diagram"/>
+      </div>
+      <div class="math-caption">
+        <strong style="color:#fff;">Fusion physics.</strong> Bring two coils together by first letting them overlap, then fusing the overlap into another over/under-crossing. This is how Bill thought 1+2 should give a single-sided surface — and why it didn't.
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INTERACTIVE TOPOLOGY MODEL -->
+  <section class="topo">
+    <div class="container">
+      <div class="topo-wrap">
+        <div class="topo-svg" id="topoStage">
+          <svg viewBox="-250 -220 500 440" id="topoSvg">
+            <defs>
+              <linearGradient id="bandGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#7892FF"/>
+                <stop offset="50%" stop-color="#FFD500"/>
+                <stop offset="100%" stop-color="#FF0033"/>
+              </linearGradient>
+              <linearGradient id="edgeGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#fff"/>
+                <stop offset="100%" stop-color="#fff"/>
+              </linearGradient>
+            </defs>
+            <g id="topoGroup"></g>
+          </svg>
+          <div style="position:absolute; top:16px; left:16px; font-family:var(--mono); font-size:10px; letter-spacing:.2em; opacity:.6;">FIG. 08 · INTERACTIVE TOPOLOGY</div>
+        </div>
+        <div class="topo-controls">
+          <h3>An interactive model of Continuity's topology.</h3>
+          <p>Twist the parametric band. Each half-turn changes whether the surface has one side or two, and whether the boundary is a single closed curve or two.</p>
+          <div class="topo-slider">
+            <label><span>HALF-TWISTS</span><span id="twistVal">0</span></label>
+            <input type="range" min="0" max="6" step="1" value="0" id="twistSlider"/>
+          </div>
+          <div class="topo-slider">
+            <label><span>WIDTH</span><span id="widthVal">80</span></label>
+            <input type="range" min="20" max="160" step="4" value="80" id="widthSlider"/>
+          </div>
+          <div class="topo-toggle">
+            <button data-preset="0">Ring</button>
+            <button data-preset="1" class="is-active">Möbius</button>
+            <button data-preset="3">Bill's guess</button>
+            <button data-preset="4">Continuity</button>
+          </div>
+          <div class="topo-props">
+            <div class="topo-prop"><div class="k">Sides</div><div class="v" id="propSides">1</div></div>
+            <div class="topo-prop"><div class="k">Boundary curves</div><div class="v" id="propEdges">1</div></div>
+            <div class="topo-prop"><div class="k">Orientable</div><div class="v" id="propOri">No</div></div>
+            <div class="topo-prop"><div class="k">Euler char. χ</div><div class="v" id="propChi">0</div></div>
+          </div>
+          <div class="caption" style="color:rgba(255,255,255,.55); margin-top:8px;">One-sided surfaces appear when the number of half-twists is odd. Bill expected a one-sided result from a fusion of 1 + 2 half-twists; the actual Continuity resolves to 4 half-twists — two-sided, two boundaries.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Paper model -->
+  <section class="math-body-follow" style="background:#3c3c3c;color:#fff; padding:120px 0;">
+    <div class="container" style="display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center;">
+      <div>
+        <div style="font-family:var(--mono); font-size:11px; letter-spacing:.2em; opacity:.6;">FIG. 09 · PAPER EXPERIMENT</div>
+        <h3 style="font-size:clamp(28px,3vw,44px); font-weight:700; letter-spacing:-0.02em; line-height:1.05; margin-top:16px;">A strip of adding-machine tape — three feet long, 2¼ inches wide.</h3>
+        <p style="margin-top:24px; font-size:18px; line-height:1.5; opacity:.82;">Cipra cut off a strip and threaded it forward in roughly the way the 3D model indicated. He stapled the ends. The assembled sculpture relaxed into a shape with no obvious relation to the original, rigid object — but if he had followed the surface correctly, the stapling had locked in the topology.</p>
+        <p style="margin-top:16px; font-size:18px; line-height:1.5; opacity:.82;">He had followed the surface back around to where he started and noticed that he had not seen the entire surface. <strong>Continuity is a two-sided ribbon — not a Möbius strip.</strong></p>
+      </div>
+      <div class="article-image" style="background-image:url('./assets/paper-model.jpg'); aspect-ratio:1/1;"></div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 6 · Walk around -->
+  <section class="chapter walk" id="ch6">
+    <div class="container">
+      <div class="chapter-head">
+        <div class="chapter-num">+</div>
+        <h2 class="chapter-title">Walk around — a Gaussian splatting scene</h2>
+      </div>
+      <div class="walk-stage">
+        <div class="badge-orbit"><span class="d"></span>ORBIT · DRAG TO LOOK</div>
+        <div class="ctrl">
+          <span>◀</span><span>360° interactive · WebGL</span><span>▶</span>
+        </div>
+      </div>
+      <p style="margin-top:28px; max-width:640px; opacity:.7; font-size:16px;">Captured on-site in Frankfurt with 360° video and photogrammetry. The final release will embed a full Gaussian-splatting scene; this is a static placeholder for review.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="big">toward<br/>kontinuität</div>
+      <div class="footer-meta">
+        <div>
+          <h4>EDITORIAL</h4>
+          <p>Méridien · Vol. 01</p>
+          <p>Release Oct 2026</p>
+          <p>Updated 05 · 04 · 2026</p>
+        </div>
+        <div>
+          <h4>SUBJECT</h4>
+          <p>Continuity, 1986</p>
+          <p>Max Bill / Dominique Stroobant</p>
+          <p>Taunusanlage 12, Frankfurt</p>
+        </div>
+        <div>
+          <h4>CREDITS</h4>
+          <p>Text: Méridien editorial team</p>
+          <p>Math consultant: Barry Cipra</p>
+          <p>3D capture: in progress</p>
+        </div>
+        <div>
+          <h4>© 2026 MÉRIDIEN</h4>
+          <p>All rights reserved</p>
+          <p>hello@meridien.press</p>
+          <p style="margin-top:16px; color:var(--signal-orange);">● FRANKFURT 50°07′N 8°41′E</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Tweaks panel -->
+  <div class="tweaks" id="tweaks">
+    <h4>Tweaks <span id="tweakClose" style="cursor:none; font-weight:500; opacity:.5;">—</span></h4>
+    <div class="tweak-row">
+      <label>Accent</label>
+      <select id="tw-accent">
+        <option value="yellow">Signal yellow</option>
+        <option value="blue">Bill blue</option>
+        <option value="red">Signal red</option>
+        <option value="orange">Orange</option>
+      </select>
+    </div>
+    <div class="tweak-row">
+      <label>Display type</label>
+      <select id="tw-serif">
+        <option value="italic">Italic Fraunces accents</option>
+        <option value="sans">All sans</option>
+      </select>
+    </div>
+    <div class="tweak-row">
+      <label>Cursor</label>
+      <select id="tw-cursor">
+        <option value="diamond">Diamond (default)</option>
+        <option value="circle">Circle</option>
+        <option value="off">System</option>
+      </select>
+    </div>
+    <div class="tweak-row">
+      <label>Hero treatment</label>
+      <select id="tw-hero">
+        <option value="image">Photo</option>
+        <option value="minimal">Minimal grey</option>
+        <option value="blueprint">Blueprint grid</option>
+      </select>
+    </div>
+  </div>
+
+<script>
+// ================= TWEAKS (editable defaults) =================
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "yellow",
+  "serif": "sans",
+  "cursor": "off",
+  "hero": "image"
+}/*EDITMODE-END*/;
+
+// ========== Cursor ==========
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursorDot');
+let mx = window.innerWidth/2, my = window.innerHeight/2;
+let cx = mx, cy = my;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+function animateCursor() {
+  cx += (mx - cx) * 0.18;
+  cy += (my - cy) * 0.18;
+  cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%) rotate(45deg)`;
+  if (cursor.classList.contains('is-hover') || cursor.classList.contains('is-text')) {
+    cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+  }
+  cursorDot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+document.querySelectorAll('a, button, .fact-row, .timeline-row, input, select').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('is-hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('is-hover'));
+});
+document.getElementById('menuBtn').addEventListener('mouseenter', () => {
+  cursor.classList.add('hide');
+  cursorDot.classList.add('hide');
+});
+document.getElementById('menuBtn').addEventListener('mouseleave', () => {
+  cursor.classList.remove('hide');
+  cursorDot.classList.remove('hide');
+});
+document.querySelectorAll('p, h1, h2, h3, .article-body, .intro-text').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('is-text'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('is-text'));
+});
+
+// ========== Progress + body theme tracking ==========
+const progressBar = document.getElementById('progressBar');
+const heroBg = document.getElementById('heroBg');
+function onScroll() {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  const s = window.scrollY;
+  progressBar.style.width = (s / h * 100) + '%';
+  // Parallax hero
+  if (heroBg) heroBg.style.transform = `translateY(${s * 0.25}px) scale(${1.02 + s/20000})`;
+
+  // Determine body theme by visible section in viewport center
+  const vpMid = s + window.innerHeight / 2;
+  const sections = document.querySelectorAll('section, header, footer');
+  let cur = null;
+  sections.forEach(sec => {
+    const top = sec.offsetTop;
+    const bot = top + sec.offsetHeight;
+    if (vpMid >= top && vpMid < bot) cur = sec;
+  });
+  if (cur) {
+    const classes = cur.className;
+    const dark = classes.includes('dark-section') || classes.includes('hero') || classes.includes('quote-block') || classes.includes('math') || classes.includes('topo') || classes.includes('walk') || classes.includes('site-footer') || classes.includes('math-body-follow') || classes.includes('intro');
+    document.body.classList.toggle('dark', dark);
+    document.body.classList.toggle('light', !dark);
+  }
+
+  // Active timeline
+  const tl = document.querySelectorAll('#timeline .timeline-row');
+  if (tl.length) {
+    const tlEl = document.getElementById('timeline');
+    const rect = tlEl.getBoundingClientRect();
+    const tlTop = rect.top + window.scrollY;
+    const tlH = rect.height;
+    const ratio = Math.max(0, Math.min(1, (s + window.innerHeight * 0.55 - tlTop) / tlH));
+    const idx = Math.min(tl.length - 1, Math.floor(ratio * tl.length));
+    tl.forEach((row, i) => row.classList.toggle('active', i === idx));
+    // Also update route marker along path
+    const path = document.getElementById('routePath');
+    const marker = document.getElementById('routeMarker');
+    if (path && marker) {
+      const L = path.getTotalLength();
+      const p = path.getPointAtLength(Math.max(0, Math.min(1, ratio)) * L);
+      marker.setAttribute('cx', p.x);
+      marker.setAttribute('cy', p.y);
+    }
+  }
+
+  // Reveal
+  document.querySelectorAll('.reveal').forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.top < window.innerHeight * 0.9) el.classList.add('in');
+  });
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+// ========== Menu ==========
+const menuBtn = document.getElementById('menuBtn');
+const menuOverlay = document.getElementById('menuOverlay');
+const menuClose = document.getElementById('menuClose');
+function closeMenu() { menuOverlay.classList.remove('is-open'); menuBtn.classList.remove('is-open'); }
+menuBtn.addEventListener('click', () => {
+  const open = menuOverlay.classList.toggle('is-open');
+  menuBtn.classList.toggle('is-open', open);
+});
+menuClose.addEventListener('click', closeMenu);
+document.querySelectorAll('[data-close]').forEach(a => a.addEventListener('click', closeMenu));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+// ========== Topology model (parametric band) ==========
+// Draws a projected annular band with n half-twists. Simple but gives right topology readout.
+function buildTopo(nTwists, width) {
+  const group = document.getElementById('topoGroup');
+  group.innerHTML = '';
+  const R = 160; // major radius
+  const segs = 240;
+  // Build top and bottom edge polylines
+  const topPts = [];
+  const botPts = [];
+  for (let i = 0; i <= segs; i++) {
+    const t = i / segs;
+    const theta = t * Math.PI * 2;
+    const twist = t * Math.PI * nTwists; // half-twists -> total twist
+    const cxp = Math.cos(theta) * R;
+    const cyp = Math.sin(theta) * R * 0.45; // flatten vertically for a 3D feel
+    // Local width direction tilts with twist (use sin for "depth" => scale x)
+    const wx = Math.cos(twist) * width / 2;
+    const wy = Math.sin(twist) * width / 2;
+    // project: x gets wx; y gets wy + elevation from twist
+    const tx = cxp + wx;
+    const ty = cyp - wy * 0.6;
+    const bx = cxp - wx;
+    const by = cyp + wy * 0.6;
+    topPts.push([tx, ty]);
+    botPts.push([bx, by]);
+  }
+  // Fill polygon (ribbon)
+  const ribbonPts = topPts.concat(botPts.slice().reverse()).map(p => p.join(',')).join(' ');
+  const ribbon = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+  ribbon.setAttribute('points', ribbonPts);
+  ribbon.setAttribute('fill', 'url(#bandGrad)');
+  ribbon.setAttribute('opacity', '0.32');
+  group.appendChild(ribbon);
+  // Top edge path
+  const pathStr = (pts) => 'M ' + pts.map(p => p.join(' ')).join(' L ');
+  const topPath = document.createElementNS('http://www.w3.org/2000/svg','path');
+  topPath.setAttribute('d', pathStr(topPts));
+  topPath.setAttribute('stroke', '#fff');
+  topPath.setAttribute('stroke-width', '1.5');
+  topPath.setAttribute('fill', 'none');
+  group.appendChild(topPath);
+  const botPath = document.createElementNS('http://www.w3.org/2000/svg','path');
+  botPath.setAttribute('d', pathStr(botPts));
+  botPath.setAttribute('stroke', '#FFD500');
+  botPath.setAttribute('stroke-width', '1.5');
+  botPath.setAttribute('fill', 'none');
+  group.appendChild(botPath);
+
+  // Cross-hatching (tick marks spanning top->bot at intervals)
+  for (let i = 0; i < segs; i += 8) {
+    const a = topPts[i], b = botPts[i];
+    const tick = document.createElementNS('http://www.w3.org/2000/svg','line');
+    tick.setAttribute('x1', a[0]); tick.setAttribute('y1', a[1]);
+    tick.setAttribute('x2', b[0]); tick.setAttribute('y2', b[1]);
+    tick.setAttribute('stroke', '#fff');
+    tick.setAttribute('stroke-width', '0.5');
+    tick.setAttribute('opacity', '0.35');
+    group.appendChild(tick);
+  }
+
+  // Slow rotation
+  group.setAttribute('transform', 'rotate(0)');
+  group.style.transformOrigin = '0 0';
+}
+function updateTopoReadout(n) {
+  const sides = (n % 2 === 0) ? 2 : 1;
+  const edges = (n % 2 === 0) ? 2 : 1;
+  const ori = (n % 2 === 0) ? 'Yes' : 'No';
+  const chi = 0;
+  document.getElementById('propSides').textContent = sides;
+  document.getElementById('propSides').className = 'v ' + (sides === 1 ? 'ok' : '');
+  document.getElementById('propEdges').textContent = edges;
+  document.getElementById('propEdges').className = 'v ' + (edges === 1 ? 'ok' : '');
+  document.getElementById('propOri').textContent = ori;
+  document.getElementById('propOri').className = 'v ' + (ori === 'Yes' ? '' : 'no');
+  document.getElementById('propChi').textContent = chi;
+}
+const twistSlider = document.getElementById('twistSlider');
+const widthSlider = document.getElementById('widthSlider');
+const twistVal = document.getElementById('twistVal');
+const widthVal = document.getElementById('widthVal');
+function syncTopo() {
+  const n = +twistSlider.value;
+  const w = +widthSlider.value;
+  twistVal.textContent = n;
+  widthVal.textContent = w;
+  buildTopo(n, w);
+  updateTopoReadout(n);
+  document.querySelectorAll('.topo-toggle button').forEach(b => {
+    b.classList.toggle('is-active', +b.dataset.preset === n);
+  });
+}
+twistSlider.addEventListener('input', syncTopo);
+widthSlider.addEventListener('input', syncTopo);
+document.querySelectorAll('.topo-toggle button').forEach(b => {
+  b.addEventListener('click', () => {
+    twistSlider.value = b.dataset.preset;
+    syncTopo();
+  });
+});
+// Start on Möbius
+twistSlider.value = 1; syncTopo();
+
+// Gently rotate the topology group around its center
+let rot = 0;
+function rotateTopo() {
+  rot += 0.12;
+  const g = document.getElementById('topoGroup');
+  if (g) g.setAttribute('transform', `rotate(${rot})`);
+  requestAnimationFrame(rotateTopo);
+}
+rotateTopo();
+
+// ========== Reveal ==========
+document.querySelectorAll('.chapter-title, .facts-title, .intro-lead, .big').forEach(el => el.classList.add('reveal'));
+onScroll();
+
+// ========== Persistent scroll position ==========
+try {
+  const key = 'toward-kontinuitat-scroll';
+  const saved = +localStorage.getItem(key);
+  if (saved && !location.hash) window.scrollTo(0, saved);
+  window.addEventListener('scroll', () => localStorage.setItem(key, window.scrollY), { passive: true });
+} catch (e) {}
+
+// ========== TWEAKS integration ==========
+const tweaks = document.getElementById('tweaks');
+const tweakClose = document.getElementById('tweakClose');
+tweakClose.addEventListener('click', () => tweaks.classList.remove('is-open'));
+
+function applyTweaks(cfg) {
+  const root = document.documentElement;
+  const accents = {
+    yellow: { c: '#FFD500', ink: '#000' },
+    blue: { c: '#002BDE', ink: '#fff' },
+    red: { c: '#FF0033', ink: '#fff' },
+    orange: { c: '#F59A05', ink: '#000' }
+  };
+  const a = accents[cfg.accent] || accents.yellow;
+  root.style.setProperty('--signal-yellow', a.c);
+  // Optionally update facts bg
+  document.querySelectorAll('.facts').forEach(f => { f.style.background = a.c; f.style.color = a.ink; });
+  // serif
+  document.body.classList.toggle('no-serif', cfg.serif === 'sans');
+  if (cfg.serif === 'sans') {
+    document.querySelectorAll('em').forEach(el => el.style.fontFamily = 'inherit');
+  } else {
+    document.querySelectorAll('em').forEach(el => el.style.fontFamily = '');
+  }
+  // cursor
+  const c = document.getElementById('cursor');
+  const d = document.getElementById('cursorDot');
+  if (cfg.cursor === 'off') {
+    document.body.style.cursor = 'auto';
+    c.style.display = 'none';
+    d.style.display = 'none';
+  } else {
+    document.body.style.cursor = 'none';
+    c.style.display = '';
+    d.style.display = '';
+    c.style.borderRadius = cfg.cursor === 'circle' ? '50%' : '0';
+  }
+  // hero treatment
+  const hero = document.querySelector('.hero');
+  const heroBg = document.getElementById('heroBg');
+  if (cfg.hero === 'minimal') {
+    heroBg.style.background = '#6e6e6e';
+  } else if (cfg.hero === 'blueprint') {
+    heroBg.style.background = "#002BDE";
+    heroBg.style.backgroundImage = "repeating-linear-gradient(0deg, rgba(255,255,255,.12) 0 1px, transparent 1px 30px), repeating-linear-gradient(90deg, rgba(255,255,255,.12) 0 1px, transparent 1px 30px)";
+  } else {
+    heroBg.style.background = '';
+    heroBg.style.backgroundImage = "url(./assets/hero-pool.png)";
+    heroBg.style.backgroundSize = 'cover';
+    heroBg.style.backgroundPosition = 'center';
+  }
+}
+
+const cfg = { ...TWEAK_DEFAULTS };
+['accent','serif','cursor','hero'].forEach(key => {
+  const el = document.getElementById('tw-' + key);
+  if (!el) return;
+  el.value = cfg[key];
+  el.addEventListener('change', () => {
+    cfg[key] = el.value;
+    applyTweaks(cfg);
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: el.value } }, '*');
+  });
+});
+applyTweaks(cfg);
+
+// Edit-mode host protocol
+window.addEventListener('message', e => {
+  const d = e.data || {};
+  if (d.type === '__activate_edit_mode') tweaks.classList.add('is-open');
+  if (d.type === '__deactivate_edit_mode') tweaks.classList.remove('is-open');
+});
+window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+
+// Hero title: scale font-size so text spans 80vw
+(() => {
+  const t = document.querySelector('.hero-title');
+  if (!t) return;
+  const fit = () => {
+    t.style.fontSize = '100px';
+    const target = window.innerWidth * 0.8;
+    const w = t.scrollWidth;
+    if (!w) return;
+    t.style.fontSize = (100 * target / w) + 'px';
+  };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  else fit();
+  window.addEventListener('resize', fit);
+})();
+
+// Hero sculpture: grow by 15% as it sticks across the sticky-group
+(() => {
+  const group = document.querySelector('.sticky-group');
+  const sculpture = document.querySelector('.sticky-sculpture');
+  if (!group || !sculpture) return;
+  const update = () => {
+    const rect = group.getBoundingClientRect();
+    const total = Math.max(1, group.offsetHeight - window.innerHeight);
+    const scrolled = Math.max(0, -rect.top);
+    const p = Math.min(1, scrolled / total);
+    const scale = 1 + 0.15 * p;
+    sculpture.style.transform = `translate(calc(-50% + 30px), calc(-50% + 30px)) scale(${scale})`;
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+
+// Toggle 4-col grid overlay with G
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'g' || e.key === 'G') {
+    if (e.target.matches && e.target.matches('input, textarea, [contenteditable]')) return;
+    document.getElementById('gridOverlay').classList.toggle('is-on');
+  }
+});
+
+// Facts: scroll-driven sequence — each fact value zooms in big-centered, then docks into its row
+document.querySelectorAll('.facts').forEach((facts) => {
+  const container = facts.querySelector('.container');
+  const rows = [...facts.querySelectorAll('.fact-row')];
+  if (!rows.length) return;
+  const N = rows.length;
+
+  const SCROLL_PER_FACT_VH = 70;
+
+  const setHeight = () => {
+    facts.style.minHeight = (window.innerHeight * (1 + N * SCROLL_PER_FACT_VH / 100)) + 'px';
+  };
+
+  let docked = [];
+  const measure = () => {
+    rows.forEach(r => {
+      const v = r.querySelector('.fact-val');
+      v.style.transform = '';
+      v.style.fontSize = '';
+    });
+    rows.forEach(r => r.classList.remove('is-future', 'is-active', 'is-docked'));
+    const cRect = container.getBoundingClientRect();
+    docked = rows.map(r => {
+      const v = r.querySelector('.fact-val');
+      const rect = v.getBoundingClientRect();
+      const cs = getComputedStyle(v);
+      return {
+        left: rect.left - cRect.left,
+        top: rect.top - cRect.top,
+        width: rect.width,
+        height: rect.height,
+        fontSize: parseFloat(cs.fontSize),
+        noZoom: r.hasAttribute('data-no-zoom')
+      };
+    });
+  };
+
+  const update = () => {
+    const rect = facts.getBoundingClientRect();
+    const segment = window.innerHeight * SCROLL_PER_FACT_VH / 100;
+    const scrolled = Math.max(0, -rect.top);
+    const idxF = scrolled / segment;
+    const idx = Math.floor(idxF);
+    const localP = Math.max(0, Math.min(1, idxF - idx));
+
+    const cRect = container.getBoundingClientRect();
+    const cw = cRect.width;
+    const ch = cRect.height;
+
+    rows.forEach((row, i) => {
+      const val = row.querySelector('.fact-val');
+      if (i > idx) {
+        row.classList.add('is-future');
+        row.classList.remove('is-active', 'is-docked');
+        val.style.transform = '';
+        val.style.fontSize = '';
+        return;
+      }
+      row.classList.remove('is-future');
+      if (i < idx) {
+        row.classList.add('is-docked');
+        row.classList.remove('is-active');
+        val.style.transform = '';
+        val.style.fontSize = '';
+        return;
+      }
+      row.classList.add('is-active');
+      row.classList.remove('is-docked');
+      const dp = docked[i];
+      if (!dp) return;
+      // Rows tagged data-no-anim skip the active animation entirely (snap to docked).
+      if (row.hasAttribute('data-no-anim')) {
+        val.style.transform = '';
+        val.style.fontSize = '';
+        return;
+      }
+      // Animate font-size (so text is rasterized sharply at any size) instead of transform: scale.
+      const dockedFS = dp.fontSize;
+      const targetActiveFS = dp.noZoom ? dockedFS * 1.4 : dockedFS * 5;
+      const fs = dockedFS + (targetActiveFS - dockedFS) * (1 - localP);
+      val.style.fontSize = fs + 'px';
+      // Width scales linearly with font-size for the same text. Compute current width.
+      const ratio = fs / dockedFS;
+      const curW = dp.width * ratio;
+      const curH = dp.height * ratio;
+      // Centers: entry (center-bottom of viewport) at localP=0, docked center at localP=1
+      const ENTRY_X = cw / 2;
+      const ENTRY_Y = ch * 0.85;
+      const cx = ENTRY_X + (dp.left + dp.width / 2 - ENTRY_X) * localP;
+      const cy = ENTRY_Y + (dp.top + dp.height / 2 - ENTRY_Y) * localP;
+      const tx = cx - dp.left - curW / 2;
+      const ty = cy - dp.top - curH / 2;
+      val.style.transform = `translate(${tx}px, ${ty}px)`;
+    });
+  };
+
+  const init = () => {
+    setHeight();
+    measure();
+    update();
+  };
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(init);
+  } else {
+    setTimeout(init, 100);
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  let rT;
+  window.addEventListener('resize', () => {
+    clearTimeout(rT);
+    rT = setTimeout(() => { setHeight(); measure(); update(); }, 120);
+  });
+});
+
+// Play video while in view; shrink + pin when chapter title leaves the top
+(() => {
+  const v = document.getElementById('operaScrollVideo');
+  if (!v) return;
+  const wrap = v.parentElement;
+  const ch5 = document.getElementById('ch5');
+  const head = ch5 && ch5.querySelector('.chapter-head');
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) v.play().catch(() => {});
+      else v.pause();
+    });
+  }, { threshold: 0.01 });
+  io.observe(v);
+
+  if (!head) return;
+  const onScroll = () => {
+    // Trigger when the video's natural-flow top edge would have scrolled past viewport top.
+    // Video sits 20px below chapter-head's bottom in flow.
+    const r = head.getBoundingClientRect();
+    wrap.classList.toggle('is-shrunk', (r.bottom + 20) <= 0);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+// Bill's works · interactive timeline chart
+(() => {
+  const svg = document.getElementById('billChart');
+  if (!svg) return;
+  const BIRTH = 1908;
+  const CATS = [
+    { key: 'P', name: 'Painting',          color: '#FF0033', total: 45 },
+    { key: 'G', name: 'Graphic Design',    color: '#97D776', total: 40 },
+    { key: 'S', name: 'Sculpture',         color: '#FFD500', total: 35 },
+    { key: 'I', name: 'Industrial Design', color: '#FF7A2A', total: 20 },
+    { key: 'A', name: 'Architecture',      color: '#FFBCB4', total: 15 },
+    { key: 'W', name: 'Writing',           color: '#2546CF', total: 15 },
+  ].sort((a, b) => b.total - a.total);
+  const PERIODS = [
+    { y0: 1927, y1: 1929, P: 0, G: 2, S: 1, I: 0, A: 1, W: 0 },
+    { y0: 1930, y1: 1934, P: 3, G: 3, S: 1, I: 0, A: 1, W: 0 },
+    { y0: 1935, y1: 1939, P: 4, G: 4, S: 2, I: 0, A: 1, W: 1 },
+    { y0: 1940, y1: 1944, P: 5, G: 5, S: 2, I: 0, A: 0, W: 1 },
+    { y0: 1945, y1: 1949, P: 6, G: 5, S: 2, I: 0, A: 1, W: 1 },
+    { y0: 1950, y1: 1954, P: 5, G: 5, S: 3, I: 2, A: 2, W: 3 },
+    { y0: 1955, y1: 1959, P: 5, G: 4, S: 4, I: 6, A: 3, W: 3 },
+    { y0: 1960, y1: 1964, P: 5, G: 4, S: 5, I: 5, A: 2, W: 2 },
+    { y0: 1965, y1: 1969, P: 5, G: 3, S: 5, I: 3, A: 1, W: 1 },
+    { y0: 1970, y1: 1974, P: 3, G: 3, S: 4, I: 2, A: 1, W: 1 },
+    { y0: 1975, y1: 1979, P: 2, G: 1, S: 3, I: 1, A: 1, W: 1 },
+    { y0: 1980, y1: 1984, P: 1, G: 1, S: 2, I: 1, A: 1, W: 1 },
+    { y0: 1985, y1: 1989, P: 1, G: 0, S: 1, I: 0, A: 0, W: 0 },
+    { y0: 1990, y1: 1994, P: 0, G: 0, S: 0, I: 0, A: 0, W: 0 },
+  ];
+  const SVG_W = 1260, SVG_H = 640;
+  const M = { top: 16, right: 64, bottom: 160, left: 220 };
+  const PW = SVG_W - M.left - M.right;
+  const PH = SVG_H - M.top - M.bottom;
+  const ROW_H = PH / CATS.length;
+  const X0 = 1927, X1 = 1994;
+  const xS = yr => M.left + (yr - X0) / (X1 - X0) * PW;
+  const R = 4, GAP = 2, PITCH = R * 2 + GAP;
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, a) => { const e = document.createElementNS(NS, tag); Object.entries(a).forEach(([k,v]) => e.setAttribute(k,v)); return e; };
+  const tx = (s, a) => { const e = el('text', { 'font-weight': '600', ...a }); e.textContent = s; return e; };
+
+  CATS.forEach((cat, i) => {
+    const rowCY = M.top + i * ROW_H + ROW_H / 2;
+    svg.appendChild(tx(`${cat.name} (${cat.total})`, {
+      x: 8, y: rowCY + 6, 'text-anchor': 'start',
+      'font-family': "'Helvetica Neue',Helvetica,Arial,sans-serif",
+      'font-size': '16', fill: '#000'
+    }));
+  });
+
+  const knownWorks = {
+    'G_1927': ['Bauhaus Poster, 1929'],
+    'A_1930': ['Villa Hünibach, 1932'],
+    'S_1935': ['Kontinuität, 1935'],
+    'G_1935': ['Allianz Exhibition, 1938'],
+    'P_1940': ['Fünf Gleiche Flächen, 1943'],
+    'G_1940': ['Konkrete Kunst, 1944'],
+    'P_1945': ['Quinze Variations, 1946'],
+    'W_1945': ['Die Gute Form, 1948'],
+    'A_1950': ['HfG Ulm, 1951'],
+    'S_1950': ['Vier Gruppen, 1953'],
+    'I_1950': ['Ulmer Hocker, 1954'],
+    'I_1955': ['Junghans Wall Clock, 1957'],
+    'S_1960': ['Endless Ribbon, 1960'],
+    'I_1960': ['Junghans Wristwatch, 1963'],
+    'P_1965': ['Vier Farben, 1965'],
+    'G_1970': ['Klee Catalogue, 1972'],
+    'P_1975': ['Gelb-Rot Serie, 1975'],
+    'S_1975': ['Pavillon-Skulptur, 1979'],
+    'P_1980': ['Rote Figur, 1983'],
+    'A_1985': ['Bauhaus Archive, 1987'],
+    'S_1990': ['Endlose Treppe, 1991'],
+  };
+
+  PERIODS.forEach(p => {
+    const cx = xS(p.y0);
+    CATS.forEach((cat, ri) => {
+      const n = p[cat.key];
+      if (n === 0) return;
+      const rowCY = M.top + (ri + 0.5) * ROW_H;
+      const stackH = (n - 1) * PITCH + R * 2;
+      const topY = rowCY - stackH / 2;
+      const titles = knownWorks[`${cat.key}_${p.y0}`] || [];
+      const g = el('g', {});
+      for (let j = 0; j < n; j++) {
+        const cy = topY + j * PITCH + R;
+        const circle = el('circle', {
+          cx, cy, r: R, fill: cat.color, 'fill-opacity': '0.9'
+        });
+        if (titles[j]) {
+          const titleEl = document.createElementNS(NS, 'title');
+          titleEl.textContent = `${titles[j]} · ${cat.name}`;
+          circle.appendChild(titleEl);
+        }
+        g.appendChild(circle);
+      }
+      svg.appendChild(g);
+    });
+  });
+
+  const BASE = M.top + PH;
+  [1930, 1940, 1950, 1960, 1970, 1980, 1990].forEach(yr => {
+    const x = xS(yr);
+    svg.appendChild(el('line', { x1: x, y1: BASE, x2: x, y2: BASE + 5, stroke: '#bbb', 'stroke-width': 0.5 }));
+    svg.appendChild(tx(yr, { x, y: BASE + 22, 'text-anchor': 'start', 'font-family': "'Helvetica Neue',Helvetica,Arial,sans-serif", 'font-size': '16', fill: '#000' }));
+    svg.appendChild(tx(`${yr - BIRTH}`, { x, y: BASE + 46, 'text-anchor': 'start', 'font-family': "'Helvetica Neue',Helvetica,Arial,sans-serif", 'font-size': '16', fill: '#000' }));
+  });
+  svg.appendChild(tx('years', { x: 8, y: BASE + 22, 'text-anchor': 'start', 'font-family': "'Helvetica Neue',Helvetica,Arial,sans-serif", 'font-size': '16', fill: '#000' }));
+  svg.appendChild(tx("Bill's age", { x: 8, y: BASE + 46, 'text-anchor': 'start', 'font-family': "'Helvetica Neue',Helvetica,Arial,sans-serif", 'font-size': '16', fill: '#000' }));
+
+  [
+    { y0: 1927, y1: 1929, label: 'Bauhaus', row: 0 },
+    { y0: 1951, y1: 1956, label: 'Ulm School', row: 0 },
+    { y0: 1961, y1: 1967, label: 'National Council', row: 0 },
+    { y0: 1967, y1: 1974, label: 'Hamburg HfbK', row: 1 },
+  ].forEach(p => {
+    const x1 = xS(p.y0), x2 = xS(p.y1);
+    const labelY = BASE + 124 + p.row * 44;
+    svg.appendChild(tx(p.label, { x: x1, y: labelY, 'text-anchor': 'start', 'font-family': "'Helvetica Neue',Helvetica,Arial,sans-serif", 'font-size': '16', fill: '#000', 'fill-opacity': 0.5 }));
+    svg.appendChild(el('line', { x1, y1: labelY - 22, x2, y2: labelY - 22, stroke: '#000', 'stroke-opacity': 0.5, 'stroke-width': 1 }));
+  });
+})();
+
+// Sculpture Trip: orthographic globe centered on Europe, rotates toward active stop on scroll
+(() => {
+  const section = document.getElementById('sculpture-trip');
+  if (!section) return;
+  const svg = document.getElementById('globeMap');
+  if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+
+  // [lon, lat] for each scroll stop (1..4) — European leg only
+  const stopCoords = [
+    [10.04, 44.04],   // 1 Port of Carrara (loading)
+    [-7.20, 45.00],   // 2 Bay of Biscay / mid-passage
+    [ 4.48, 51.92],   // 3 Rotterdam
+    [ 8.68, 50.11],   // 4 Frankfurt
+  ];
+  // Optional per-stop camera override: [lon, lat, scale]
+  const stopView = [
+    null,                // 1 Carrara — default Europe-centered
+    [-2, 44, 520],       // 2 Atlantic voyage — pull back over Bay of Biscay
+    [4.48, 51.92, 1600], // 3 Rotterdam zoom
+    [8.2, 50.4, 2400],   // 4 Frankfurt zoom
+  ];
+
+  // Full sea+river route, split into 3 segments aligned with the 4 stops
+  const segmentCoords = [
+    // 1->2 Carrara → Bay of Biscay (Med + Gibraltar + Iberian Atlantic)
+    [
+      [10.04, 44.04],   // Marina di Carrara
+      [10.00, 43.30],
+      [ 9.50, 42.20],
+      [ 9.20, 41.30],   // Bonifacio Strait
+      [ 8.20, 40.20],
+      [ 5.50, 38.80],
+      [ 0.00, 37.00],
+      [-5.40, 35.97],   // Strait of Gibraltar
+      [-7.20, 36.30],
+      [-9.40, 37.00],
+      [-9.60, 38.80],
+      [-9.50, 41.00],
+      [-9.30, 42.90],   // Cape Finisterre
+      [-7.20, 45.00],   // Bay of Biscay
+    ],
+    // 2->3 Bay of Biscay → Rotterdam (Channel + North Sea)
+    [
+      [-7.20, 45.00],
+      [-5.80, 47.50],   // off Ushant
+      [-3.00, 49.40],   // entering Channel
+      [-1.00, 50.10],
+      [ 1.50, 50.95],   // Strait of Dover
+      [ 3.20, 51.55],
+      [ 4.10, 51.98],   // Hook of Holland
+      [ 4.48, 51.92],   // Rotterdam
+    ],
+    // 3->4 Rhine + Main upriver to Frankfurt
+    [
+      [4.48, 51.92], [5.30, 51.60], [6.10, 51.30], [6.95, 50.95], [7.00, 50.70],
+      [7.60, 50.45], [8.20, 50.10], [8.68, 50.11],
+    ],
+  ];
+  // Map stop index -> how many segments are completed by the time of that stop
+  const stopToSegments = [0, 1, 2, 3];
+
+  const W = 480, H = 480, R = 220, R_ZOOMED = 1100;
+  const initialRotation = [-2, -46, 0]; // Western Europe-centered
+  const NUDGE = 0.85; // how strongly the globe follows the active stop (0 = no follow, 1 = centered)
+
+  let projection, geoPath, world, land;
+  let currentRot = [...initialRotation];
+  let targetRot = [...initialRotation];
+  let currentScale = R;
+  let targetScale = R;
+  let activeStop = 0;
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function lerpAngle(a, b, t) {
+    let d = ((b - a + 540) % 360) - 180;
+    return a + d * t;
+  }
+
+  function visibleAt(coord) {
+    const r = projection.rotate();
+    const lambda = coord[0] * Math.PI / 180;
+    const phi = coord[1] * Math.PI / 180;
+    const cl = -r[0] * Math.PI / 180;
+    const ph = -r[1] * Math.PI / 180;
+    const cosC = Math.sin(ph) * Math.sin(phi) + Math.cos(ph) * Math.cos(phi) * Math.cos(lambda - cl);
+    return cosC > 0;
+  }
+
+  function ensureNode(parent, tag, attrs) {
+    const el = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    parent.appendChild(el);
+    return el;
+  }
+
+  function buildStatic() {
+    // Graticule
+    const gratG = document.getElementById('globeGraticule');
+    gratG.innerHTML = '';
+    const grat = d3.geoGraticule().step([15, 15])();
+    ensureNode(gratG, 'path', {
+      d: geoPath(grat) || '',
+      fill: 'none',
+      stroke: 'rgba(255,255,255,0.07)',
+      'stroke-width': '0.5',
+      class: 'g-graticule'
+    });
+
+    // Land paths (one per country)
+    const landG = document.getElementById('globeLand');
+    landG.innerHTML = '';
+    land.features.forEach(f => {
+      ensureNode(landG, 'path', {
+        d: geoPath(f) || '',
+        fill: 'rgba(255,255,255,0.10)',
+        stroke: 'rgba(255,255,255,0.35)',
+        'stroke-width': '0.6',
+        'stroke-linejoin': 'round',
+        'stroke-linecap': 'round',
+        'shape-rendering': 'geometricPrecision',
+        'vector-effect': 'non-scaling-stroke',
+        class: 'g-country'
+      });
+    });
+
+    // Route segments
+    const routeG = document.getElementById('globeRoute');
+    routeG.innerHTML = '';
+    segmentCoords.forEach((coords, i) => {
+      ensureNode(routeG, 'path', {
+        d: geoPath({ type: 'LineString', coordinates: coords }) || '',
+        fill: 'none',
+        stroke: '#FFD500',
+        'stroke-width': '2',
+        'stroke-linecap': 'round',
+        opacity: '0',
+        'data-seg': i,
+        class: 'g-route'
+      });
+    });
+
+    // Stops
+    const stopsG = document.getElementById('globeStops');
+    stopsG.innerHTML = '';
+    stopCoords.forEach((c, i) => {
+      ensureNode(stopsG, 'circle', { 'data-i': i + 1, r: 3.5, fill: 'rgba(255,255,255,0.4)', class: 'g-stop' });
+    });
+  }
+
+  function update() {
+    // Smooth rotation + scale
+    currentRot[0] = lerpAngle(currentRot[0], targetRot[0], 0.07);
+    currentRot[1] = lerp(currentRot[1], targetRot[1], 0.07);
+    currentScale = lerp(currentScale, targetScale, 0.08);
+    projection.rotate(currentRot).scale(currentScale);
+
+    // Re-render countries + graticule + route
+    document.querySelectorAll('#globeGraticule path').forEach(p => {
+      p.setAttribute('d', geoPath(d3.geoGraticule().step([15, 15])()) || '');
+    });
+    document.querySelectorAll('#globeLand path').forEach((p, i) => {
+      p.setAttribute('d', geoPath(land.features[i]) || '');
+    });
+    document.querySelectorAll('#globeRoute path').forEach((p, i) => {
+      p.setAttribute('d', geoPath({ type: 'LineString', coordinates: segmentCoords[i] }) || '');
+      p.setAttribute('opacity', i < stopToSegments[activeStop - 1] ? '1' : (i === stopToSegments[activeStop - 1] ? '0.55' : '0'));
+    });
+    document.querySelectorAll('#globeStops circle').forEach((c, i) => {
+      const coord = stopCoords[i];
+      const visible = visibleAt(coord);
+      if (!visible) { c.style.display = 'none'; return; }
+      c.style.display = '';
+      const xy = projection(coord);
+      c.setAttribute('cx', xy[0]);
+      c.setAttribute('cy', xy[1]);
+      const idx = i + 1;
+      const isPast = idx < activeStop;
+      const isActive = idx === activeStop;
+      c.setAttribute('fill', isActive ? '#FFD500' : (isPast ? '#FFD500' : 'rgba(255,255,255,0.35)'));
+      c.setAttribute('r', isActive ? 6 : 3.5);
+    });
+  }
+
+  let ticking = false;
+  function tick() {
+    update();
+    const dx = Math.abs(((targetRot[0] - currentRot[0] + 540) % 360) - 180);
+    const dy = Math.abs(targetRot[1] - currentRot[1]);
+    const ds = Math.abs(targetScale - currentScale);
+    if (dx > 0.05 || dy > 0.05 || ds > 0.5) requestAnimationFrame(tick);
+    else ticking = false;
+  }
+  function requestRender() {
+    if (!ticking) { ticking = true; requestAnimationFrame(tick); }
+  }
+
+  const wrap = section.querySelector('.journey-map-wrap');
+  function setActive(i) {
+    if (i === activeStop) return;
+    activeStop = i;
+    if (wrap) wrap.classList.toggle('is-zoomed', i >= 1 && i <= stopCoords.length);
+    if (i >= 1 && i <= stopCoords.length) {
+      const override = stopView[i - 1];
+      if (override) {
+        targetRot = [-override[0], -override[1], 0];
+        targetScale = override[2];
+      } else {
+        const c = stopCoords[i - 1];
+        targetRot = [
+          lerpAngle(initialRotation[0], -c[0], NUDGE),
+          lerp(initialRotation[1], -c[1] - 6, NUDGE),
+          0
+        ];
+        targetScale = R_ZOOMED;
+      }
+    } else {
+      targetRot = [...initialRotation];
+      targetScale = R;
+    }
+    requestRender();
+  }
+
+  // Zoom out when section is out of view, zoom in once user enters it
+  const sectionIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) {
+        targetScale = R;
+        targetRot = [...initialRotation];
+        activeStop = 0;
+        if (wrap) wrap.classList.remove('is-zoomed');
+        requestRender();
+      }
+    });
+  }, { threshold: 0 });
+  sectionIO.observe(section);
+
+  function init() {
+    if (typeof d3 === 'undefined' || typeof topojson === 'undefined') return;
+    projection = d3.geoOrthographic()
+      .scale(R)
+      .translate([W / 2, H / 2])
+      .clipAngle(90)
+      .rotate(initialRotation);
+    geoPath = d3.geoPath(projection);
+
+    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then(w => {
+      world = w;
+      land = topojson.feature(w, w.objects.countries);
+      buildStatic();
+      update();
+
+      const stops = [...section.querySelectorAll('.stop')];
+
+      // Pick the stop whose center is closest to viewport center
+      function pickActive() {
+        const vc = window.innerHeight / 2;
+        let best = 0, bestDist = Infinity;
+        stops.forEach((s, i) => {
+          const r = s.getBoundingClientRect();
+          // Only consider stops at least partially in viewport
+          if (r.bottom < 0 || r.top > window.innerHeight) return;
+          const center = (r.top + r.bottom) / 2;
+          const d = Math.abs(center - vc);
+          if (d < bestDist) { bestDist = d; best = i + 1; }
+        });
+        if (best > 0) setActive(best);
+      }
+
+      let scrollTicking = false;
+      window.addEventListener('scroll', () => {
+        if (scrollTicking) return;
+        scrollTicking = true;
+        requestAnimationFrame(() => {
+          // Only run when section is in view
+          const sr = section.getBoundingClientRect();
+          if (sr.bottom > 0 && sr.top < window.innerHeight) pickActive();
+          scrollTicking = false;
+        });
+      }, { passive: true });
+      pickActive();
+    });
+  }
+
+  // d3 may load after DOMContentLoaded depending on defer ordering — wait one frame
+  if (typeof d3 !== 'undefined' && typeof topojson !== 'undefined') init();
+  else window.addEventListener('load', init);
+})();
+
+// Granite Trip: static Sardinia + Tyrrhenian map. Highlights active stop on scroll.
+(() => {
+  const section = document.getElementById('granite-trip');
+  if (!section) return;
+  const svg = document.getElementById('sardiniaMap');
+  if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = 480, H = 600;
+
+  const stops = [
+    { coord: [9.10, 41.05], label: 'Cava Scarraciana' },
+    { coord: [9.19, 41.24], label: 'Santa Teresa Gallura' },
+    { coord: [10.04, 44.04], label: 'Marina di Carrara' },
+  ];
+
+  // Two segments: overland Sardinia, then Tyrrhenian sea crossing
+  const segments = [
+    [[9.10, 41.05], [9.15, 41.10], [9.18, 41.18], [9.19, 41.24]],
+    [[9.19, 41.24], [9.45, 41.80], [9.65, 42.40], [9.85, 43.10], [10.00, 43.60], [10.04, 44.04]],
+  ];
+
+  let projection, geoPath;
+
+  function ensureNode(parent, tag, attrs = {}) {
+    const el = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    parent.appendChild(el);
+    return el;
+  }
+
+  function init() {
+    if (typeof d3 === 'undefined' || typeof topojson === 'undefined') return;
+
+    // Frame the region: cover Sardinia + Tyrrhenian + Tuscan coast
+    const bbox = {
+      type: 'FeatureCollection',
+      features: [
+        { type: 'Feature', geometry: { type: 'Point', coordinates: [7.5, 39.5] } },
+        { type: 'Feature', geometry: { type: 'Point', coordinates: [11.5, 44.6] } },
+      ],
+    };
+    projection = d3.geoMercator().fitExtent([[24, 24], [W - 24, H - 24]], bbox);
+    geoPath = d3.geoPath(projection);
+
+    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then(w => {
+      const land = topojson.feature(w, w.objects.countries);
+
+      const landG = document.getElementById('sardiniaLand');
+      land.features.forEach(f => {
+        ensureNode(landG, 'path', {
+          d: geoPath(f) || '',
+          fill: 'rgba(255,255,255,0.10)',
+          stroke: 'rgba(255,255,255,0.35)',
+          'stroke-width': '0.6',
+          'stroke-linejoin': 'round',
+        });
+      });
+
+      const routeG = document.getElementById('sardiniaRoute');
+      segments.forEach((coords, i) => {
+        ensureNode(routeG, 'path', {
+          d: geoPath({ type: 'LineString', coordinates: coords }) || '',
+          'stroke-dasharray': i === 1 ? '5 5' : 'none',
+          opacity: '0.25',
+          'data-seg': i,
+        });
+      });
+
+      const stopsG = document.getElementById('sardiniaStops');
+      const labG = document.getElementById('sardiniaLabels');
+      stops.forEach((s, i) => {
+        const xy = projection(s.coord);
+        ensureNode(stopsG, 'circle', {
+          cx: xy[0], cy: xy[1], r: '4',
+          fill: 'rgba(255,255,255,0.5)',
+          'data-i': String(i + 1),
+        });
+        const label = ensureNode(labG, 'text', {
+          x: String(xy[0] + 10),
+          y: String(xy[1] + 4),
+        });
+        label.textContent = s.label;
+      });
+
+      function setActive(idx) {
+        stopsG.querySelectorAll('circle').forEach((c, i) => {
+          const past = (i + 1) < idx;
+          const active = (i + 1) === idx;
+          c.setAttribute('fill', active || past ? '#FFD500' : 'rgba(255,255,255,0.5)');
+          c.setAttribute('r', active ? '7' : '4');
+        });
+        routeG.querySelectorAll('path').forEach((p, i) => {
+          if (i < idx - 1) p.setAttribute('opacity', '1');
+          else if (i === idx - 1) p.setAttribute('opacity', '0.6');
+          else p.setAttribute('opacity', '0.2');
+        });
+        const stage = document.getElementById('sardiniaStage');
+        if (stage) stage.textContent = stops[idx - 1]?.label || '';
+      }
+
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          setActive(parseInt(e.target.dataset.sardiniaStop));
+        });
+      }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+      section.querySelectorAll('[data-sardinia-stop]').forEach(s => io.observe(s));
+
+      setActive(1);
+    });
+  }
+
+  if (typeof d3 !== 'undefined' && typeof topojson !== 'undefined') init();
+  else window.addEventListener('load', init);
+})();
+
+// Journey lightbox: click small images to open enlarged view; arrows navigate all images in #journey
+(() => {
+  const journey = document.getElementById('journey');
+  const lb = document.getElementById('lightbox');
+  if (!journey || !lb) return;
+  const lbImg = document.getElementById('lbImg');
+  const lbCounter = document.getElementById('lbCounter');
+  const lbClose = document.getElementById('lbClose');
+  const lbPrev = document.getElementById('lbPrev');
+  const lbNext = document.getElementById('lbNext');
+  const lbStage = document.getElementById('lbStage');
+
+  // Pull background-image url from inline style
+  function urlFromStyle(el) {
+    const s = el.getAttribute('style') || '';
+    const m = s.match(/url\(['"]?([^'")]+)['"]?\)/);
+    return m ? m[1] : null;
+  }
+
+  // Every visual image in the journey section, in document order
+  function collect() {
+    return [...journey.querySelectorAll('[style*="background-image"]')]
+      .map(el => ({ el, url: urlFromStyle(el) }))
+      .filter(x => x.url);
+  }
+
+  // Full-width images shouldn't open the lightbox on click,
+  // but they do appear in the slide deck so arrows can reach them.
+  function isClickToOpen(el) {
+    if (el.classList.contains('sg-img')) return false;        // sg-full image
+    if (el.classList.contains('journey-finale')) return false; // closing image
+    return true;
+  }
+
+  let images = [];
+  let current = 0;
+
+  function show() {
+    if (!images.length) return;
+    lbImg.src = images[current].url;
+    lbCounter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(images.length).padStart(2, '0')}`;
+  }
+  function open(idx) {
+    images = collect();
+    current = Math.max(0, Math.min(images.length - 1, idx));
+    show();
+    lb.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    lb.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+  function next() { if (!images.length) return; current = (current + 1) % images.length; show(); }
+  function prev() { if (!images.length) return; current = (current - 1 + images.length) % images.length; show(); }
+
+  // Wire click handlers on eligible elements
+  journey.querySelectorAll('[style*="background-image"]').forEach(el => {
+    if (!isClickToOpen(el)) return;
+    if (!urlFromStyle(el)) return;
+    el.classList.add('lb-clickable');
+    el.addEventListener('click', () => {
+      const all = collect();
+      const idx = all.findIndex(it => it.el === el);
+      if (idx >= 0) open(idx);
+    });
+  });
+
+  lbClose.addEventListener('click', close);
+  lbPrev.addEventListener('click', prev);
+  lbNext.addEventListener('click', next);
+  lbStage.addEventListener('click', e => { if (e.target === lbStage) close(); });
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('is-open')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') prev();
+    else if (e.key === 'ArrowRight') next();
+  });
+})();
+</script>
+</body>
+</html>
