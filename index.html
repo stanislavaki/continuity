@@ -1637,16 +1637,19 @@ document.querySelectorAll('.facts').forEach((facts) => {
       }
 
       let scrollTicking = false;
-      window.addEventListener('scroll', () => {
+      function onScroll() {
         if (scrollTicking) return;
         scrollTicking = true;
         requestAnimationFrame(() => {
-          // Only run when section is in view
           const sr = section.getBoundingClientRect();
           if (sr.bottom > 0 && sr.top < window.innerHeight) pickActive();
           scrollTicking = false;
         });
-      }, { passive: true });
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      // Re-pick after late layout shifts (images, fonts)
+      window.addEventListener('load', pickActive);
       pickActive();
     });
   }
