@@ -145,7 +145,7 @@
         <div class="fact-row"><span class="fact-key">Material</span><span class="fact-val">Granite (Sardinia)</span><span class="fact-n">06 / 09</span></div>
         <div class="fact-row"><span class="fact-key">Author</span><span class="fact-val">Max Bill</span><span class="fact-n">07 / 09</span></div>
         <div class="fact-row" data-no-zoom><span class="fact-key">Chief of production</span><span class="fact-val">Dominique Stroobant</span><span class="fact-n">08 / 09</span></div>
-        <div class="fact-row" data-no-zoom><span class="fact-key">Budget</span><span class="fact-val">2.3M EUR <span class="fact-explainer" style="font-weight:500;font-size:.7em;opacity:.6;">(equivalent of 1986 Deutsche Marks in 2026 euros)</span></span><span class="fact-n">09 / 09</span></div>
+        <div class="fact-row" data-no-zoom><span class="fact-key">Budget</span><span class="fact-val">2.3M EUR</span><span class="fact-caption">(equivalent of 1986 Deutsche Marks in 2026 euros)</span><span class="fact-n">09 / 09</span></div>
       </div>
     </div>
   </section>
@@ -176,8 +176,8 @@
   <section class="bill-works light-section">
     <div class="container">
       <h3 class="bill-works-title">Max Bill's works</h3>
-      <div class="bill-works-chart">
-        <svg id="billChart" viewBox="0 0 1260 640"></svg>
+      <div class="bill-works-chart" style="min-height:480px; display:flex; align-items:center; justify-content:center;">
+        <span style="font-family:var(--mono); font-size:18px; letter-spacing:.2em; color:rgba(0,0,0,.4); text-transform:uppercase;">Graph TBD</span>
       </div>
     </div>
   </section>
@@ -226,7 +226,7 @@
 
           <div class="journey-stops">
             <article class="stop" data-sardinia-stop="1">
-              <div class="stop-num">Stop 01 / 03</div>
+              <div class="stop-num">01 / 03</div>
               <figure><img src="./assets/_journey/1%20italy/IMG_8408.jpeg" alt=""></figure>
               <p class="stop-cap">The granite was found at <strong>Cava Scarraciana</strong>, a quarry in the sun-bleached silence of north-eastern Sardinia. On 20 October 1983, a 500-ton block was blasted from the rock face and reduced on site to 180 tons — a polyhedron ready for transport.</p>
               <dl class="stop-meta">
@@ -249,7 +249,7 @@
             </article>
 
             <article class="stop" data-sardinia-stop="2">
-              <div class="stop-num">Stop 02 / 03</div>
+              <div class="stop-num">02 / 03</div>
               <figure><img src="./assets/_journey/1%20italy/IMG_8411.jpeg" alt=""></figure>
               <p class="stop-cap">Loaded onto a Fagioli truck with a 52-metre platform, the block crossed Sardinia by night to the port of <strong>Santa Teresa Gallura</strong>. A temporary road was built to reach the highway; the public route was closed for two days, 8–9 February 1984.</p>
               <dl class="stop-meta">
@@ -270,7 +270,7 @@
             </article>
 
             <article class="stop" data-sardinia-stop="3">
-              <div class="stop-num">Stop 03 / 03</div>
+              <div class="stop-num">03 / 03</div>
               <figure><img src="./assets/_journey/1%20italy/IMG_8417.jpeg" alt=""></figure>
               <p class="stop-cap">After a ten-day wait for fair weather, the cargo crossed the Tyrrhenian Sea to <strong>Marina di Carrara</strong>, where the workshop of the Esagono collective was waiting on the Tuscan coast.</p>
               <dl class="stop-meta">
@@ -473,6 +473,7 @@
 
       <div class="scroll-video-sticky">
         <video id="operaScrollVideo" src="./assets/3D-glassy.mp4" muted loop playsinline preload="auto"></video>
+        <input type="range" id="operaScrubber" class="video-scrubber" min="0" max="1000" value="0" step="1" aria-label="Scrub 3D model">
       </div>
 
       <div class="math-body">
@@ -513,33 +514,7 @@
   <!-- FOOTER -->
   <footer class="site-footer">
     <div class="container">
-      <div class="big">toward<br/>kontinuität</div>
-      <div class="footer-meta">
-        <div>
-          <h4>EDITORIAL</h4>
-          <p>Méridien · Vol. 01</p>
-          <p>Release Oct 2026</p>
-          <p>Updated 05 · 04 · 2026</p>
-        </div>
-        <div>
-          <h4>SUBJECT</h4>
-          <p>Continuity, 1986</p>
-          <p>Max Bill / Dominique Stroobant</p>
-          <p>Taunusanlage 12, Frankfurt</p>
-        </div>
-        <div>
-          <h4>CREDITS</h4>
-          <p>Text: Méridien editorial team</p>
-          <p>Math consultant: Barry Cipra</p>
-          <p>3D capture: in progress</p>
-        </div>
-        <div>
-          <h4>© 2026 MÉRIDIEN</h4>
-          <p>All rights reserved</p>
-          <p>hello@meridien.press</p>
-          <p style="margin-top:16px; color:var(--signal-orange);">● FRANKFURT 50°07′N 8°41′E</p>
-        </div>
-      </div>
+      <div class="big" aria-label="toward kontinuität"><div class="big-track" aria-hidden="true"><span>toward kontinuität&nbsp;</span><span>toward kontinuität&nbsp;</span><span>toward kontinuität&nbsp;</span><span>toward kontinuität&nbsp;</span></div></div>
     </div>
   </footer>
 
@@ -993,6 +968,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
         row.classList.remove('is-active', 'is-docked');
         val.style.transform = '';
         val.style.fontSize = '';
+        val.style.opacity = '';
         return;
       }
       row.classList.remove('is-future');
@@ -1001,6 +977,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
         row.classList.remove('is-active');
         val.style.transform = '';
         val.style.fontSize = '';
+        val.style.opacity = '';
         return;
       }
       row.classList.add('is-active');
@@ -1011,27 +988,28 @@ document.querySelectorAll('.facts').forEach((facts) => {
       if (row.hasAttribute('data-no-anim')) {
         val.style.transform = '';
         val.style.fontSize = '';
+        val.style.opacity = '';
         return;
       }
-      // Animate font-size (so text is rasterized sharply at any size) instead of transform: scale.
+      // Uniform active-state font-size across all rows: the largest size that still fits
+      // the longest value within MAX_WIDTH_FRAC of the container, capped at 5x its own docked size.
+      const MAX_WIDTH_FRAC = 1.0;
       const dockedFS = dp.fontSize;
-      const naiveActiveFS = dp.noZoom ? dockedFS * 1.4 : dockedFS * 5;
-      const maxFS = dockedFS * (cw * 0.5) / dp.width;
-      const targetActiveFS = Math.min(naiveActiveFS, maxFS);
+      const fitFSPerRow = docked.map(d => dockedFS * (cw * MAX_WIDTH_FRAC) / (d.width * (dockedFS / d.fontSize)));
+      const uniformMaxFS = Math.min(...fitFSPerRow);
+      const targetActiveFS = Math.min(dockedFS * 5, uniformMaxFS);
       const fs = dockedFS + (targetActiveFS - dockedFS) * (1 - localP);
       val.style.fontSize = fs + 'px';
-      // Width scales linearly with font-size for the same text. Compute current width.
+      // Width scales linearly with font-size for the same text.
       const ratio = fs / dockedFS;
-      const curW = dp.width * ratio;
       const curH = dp.height * ratio;
-      // Centers: entry (center-bottom of viewport) at localP=0, docked center at localP=1
-      const ENTRY_X = cw / 2;
-      const ENTRY_Y = ch * 0.85;
-      const cx = ENTRY_X + (dp.left + dp.width / 2 - ENTRY_X) * localP;
-      const cy = ENTRY_Y + (dp.top + dp.height / 2 - ENTRY_Y) * localP;
-      const tx = cx - dp.left - curW / 2;
-      const ty = cy - dp.top - curH / 2;
-      val.style.transform = `translate(${tx}px, ${ty}px)`;
+      // Horizontal: anchor left edge to docked left (column 3) — no horizontal motion.
+      // Vertical: slide from ~85% viewport bottom (active) up to docked top.
+      const ENTRY_TOP = ch * 0.85 - curH;
+      const ty = (ENTRY_TOP - dp.top) * (1 - localP);
+      val.style.transform = `translate(0px, ${ty}px)`;
+      // Fade in: opacity 0 at entry (localP=0), 1 at docked (localP=1).
+      val.style.opacity = localP;
     });
   };
 
@@ -1054,17 +1032,18 @@ document.querySelectorAll('.facts').forEach((facts) => {
   });
 });
 
-// Play video while in view
+// Manual scrubber control — video is paused; user drives playback via the slider.
 (() => {
   const v = document.getElementById('operaScrollVideo');
   if (!v) return;
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (e.isIntersecting) v.play().catch(() => {});
-      else v.pause();
-    });
-  }, { threshold: 0.01 });
-  io.observe(v);
+  v.pause();
+  const s = document.getElementById('operaScrubber');
+  if (!s) return;
+  s.addEventListener('input', () => {
+    if (!v.duration || !isFinite(v.duration)) return;
+    v.pause();
+    v.currentTime = (Number(s.value) / 1000) * v.duration;
+  });
 })();
 
 // Bill's works · interactive timeline chart
@@ -1578,7 +1557,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       stops.forEach((s, i) => {
         const xy = projection(s.coord);
         ensureNode(stopsG, 'circle', {
-          cx: xy[0], cy: xy[1], r: '4',
+          cx: xy[0], cy: xy[1], r: '3.5',
           fill: 'rgba(255,255,255,0.5)',
           'data-i': String(i + 1),
         });
@@ -1589,23 +1568,33 @@ document.querySelectorAll('.facts').forEach((facts) => {
         label.textContent = s.label;
       });
 
+      // Region caption for the island itself.
+      const sardiniaXY = projection([9.05, 40.20]);
+      const region = ensureNode(labG, 'text', {
+        x: String(sardiniaXY[0]),
+        y: String(sardiniaXY[1]),
+        class: 'region-label',
+        'text-anchor': 'middle',
+      });
+      region.textContent = 'Sardinia';
+
       function setActive(idx) {
-        const activeIdx = idx - 1;
-        const hasFlowingNext = activeIdx < segments.length;
+        // Stop 1 is the origin — pulsing dot, no outgoing route. Stop 1→2 segment always flowing dotted when shown. Stop 2→3 hidden for now.
+        const isOrigin = idx === 1;
         stopsG.querySelectorAll('circle').forEach((c, i) => {
           const stopNum = i + 1;
           const isPast = stopNum < idx;
           const isActive = stopNum === idx;
-          // Hide active marker only while a flowing segment leads onward; show arrival dot at the final stop.
-          if (isActive && hasFlowingNext) { c.style.display = 'none'; return; }
           c.style.display = '';
           c.setAttribute('fill', isActive ? '#FFD500' : (isPast ? '#FFD500' : 'rgba(255,255,255,0.5)'));
-          c.setAttribute('r', isActive ? '7' : '4');
+          c.setAttribute('r', isActive ? '6' : '3.5');
+          c.classList.toggle('is-glowing', isActive && isOrigin);
         });
         routeG.querySelectorAll('path').forEach((p, i) => {
-          const isActiveSeg = i === activeIdx;
-          p.setAttribute('opacity', i < activeIdx ? '1' : (isActiveSeg ? '1' : '0'));
-          p.classList.toggle('is-flowing', isActiveSeg);
+          // Each segment shows only while its destination stop is active, and always flowing dotted.
+          const visible = idx === i + 2;
+          p.setAttribute('opacity', visible ? '1' : '0');
+          p.classList.toggle('is-flowing', visible);
         });
       }
 
