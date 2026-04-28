@@ -1030,9 +1030,14 @@ section { position: relative; }
   overflow: hidden;
 }
 .site-footer .big-track {
-  display: inline-flex;
+  display: inline-block;
+  white-space: nowrap;
   will-change: transform;
   animation: footer-marquee 28s linear infinite;
+}
+.site-footer .big-track > span {
+  display: inline-block;
+  white-space: nowrap;
 }
 @keyframes footer-marquee {
   from { transform: translateX(0); }
