@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="styles.css?v=2" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <script src="https://cdn.jsdelivr.net/npm/d3@7" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3" defer></script>
@@ -22,15 +22,19 @@
     <div class="col"></div>
     <div class="col"></div>
     <div class="col"></div>
+    <div class="col"></div>
+    <div class="col"></div>
+    <div class="col"></div>
+    <div class="col"></div>
   </div>
 
   <!-- Top bar -->
   <div class="topbar">
     <a href="#top" class="logo"><img src="./assets/logo-short.png" alt="Méridien" class="logo-img"/></a>
-    <button class="menu-btn" id="menuBtn" aria-label="Menu">
-      <svg viewBox="0 0 48 48"><path d="M 0 19.96 L 48 19.96 L 48 27.879 L 0 27.879 L 0 19.96 Z M 20.087 48 L 20.087 0 L 27.993 0 L 27.993 48 L 20.087 48 Z"/></svg>
-    </button>
   </div>
+  <button class="menu-btn" id="menuBtn" aria-label="Menu">
+    <svg viewBox="0 0 48 48"><path d="M 0 19.96 L 48 19.96 L 48 27.879 L 0 27.879 L 0 19.96 Z M 20.087 48 L 20.087 0 L 27.993 0 L 27.993 48 L 20.087 48 Z"/></svg>
+  </button>
 
   <div class="coord">
     <span>FRANKFURT</span><span class="dot"></span><span>50°07′N 8°41′E</span>
@@ -38,6 +42,7 @@
 
   <!-- Menu overlay -->
   <div class="menu-overlay" id="menuOverlay">
+    <span class="menu-label">Contents</span>
     <button class="menu-close" id="menuClose" aria-label="Close">
       <svg viewBox="0 0 48 48"><path d="M 0 19.96 L 48 19.96 L 48 27.879 L 0 27.879 L 0 19.96 Z M 20.087 48 L 20.087 0 L 27.993 0 L 27.993 48 L 20.087 48 Z"/></svg>
     </button>
@@ -119,7 +124,7 @@
           <p>&ldquo;In Continuity, I attempted to realize an idea that had long been present in my mind: the representation of an infinite space in infinite motion. Subsequently, I engaged with the problems realized in it, which are extraordinarily fascinating. That sculpture consists of a band of uniform width throughout, whose edges are therefore parallel. It thus appears to be a two-sided surface, separated from the surrounding space by parallel lines and forming a new space. The phenomenon of this &ldquo;body,&rdquo; however, is that this new space-forming surface has only a single side, and that the seemingly parallel two lines are in fact only one single line&mdash;that is, a line running parallel to itself.&rdquo;</p>
           <p>In Continuity, I intended to achieve something similar: a surface, a boundary. Purely theoretically, from a twin band&mdash;one that is twisted one and a half times around itself and fused with another that is twisted only half a turn&mdash;one could obtain a form similar to the &ldquo;endless loop,&rdquo; but with only one surface and one boundary. For reasons unknown to me, this did not come about. Thus Continuity, despite a theoretically different expected result, consists of two parallel, bounded surfaces, composed of infinitely many straight lines.</p>
           <p>This explanation may seem somewhat dry and primitive, yet it is the only thing I can say about it myself. I can, however, add that for me such a sculpture represents something like a &ldquo;knot in space,&rdquo; a point of concentration of various latent directions, and that through its existence space is ordered, newly formed, and given aim and direction.</p>
-          <p class="quote-text">There is continuity in our purpose. However our purpose is also to see&mdash;and to see clearly. We [designers] are not working for the sake of machines, for some impersonal, superordinate entity such as &lsquo;industry&rsquo; or &lsquo;state&rsquo; or &lsquo;community&rsquo;. We are working for the wellbeing of every person, every individual, as part of a community. &lt;&hellip;&gt; This purpose, this new humanism, is what I&rsquo;d like to see as continuity.</p>
+          <p class="quote-text">there is continuity in our purpose. however our purpose is also to see&mdash;and to see clearly. we [designers] are not working for the sake of machines, for some impersonal, superordinate entity such as &lsquo;industry&rsquo; or &lsquo;state&rsquo; or &lsquo;community&rsquo;. we are working for the wellbeing of every person, every individual, as part of a community. &lt;&hellip;&gt; this purpose, this new humanism, is what i&rsquo;d like to see as continuity.</p>
           <p class="quote-attr">Max Bill, &ldquo;Continuity and change&rdquo;, 1953</p>
         </div>
       </div>
@@ -146,9 +151,9 @@
   </section>
 
   <!-- CHAPTER 2 · Max Bill -->
-  <section class="chapter light-section" id="ch2">
+  <section class="chapter light-section" id="ch2" style="padding-bottom:70px;">
     <div class="container">
-      <div class="chapter-head">
+      <div class="chapter-head" style="margin-bottom:40px;">
         <div class="chapter-num">2</div>
         <h2 class="chapter-title">Max Bill</h2>
       </div>
@@ -158,9 +163,7 @@
   <section class="article light-section" style="padding-top:0;">
     <div class="container">
       <div class="article-grid" style="grid-template-columns:1.1fr 1fr; align-items:start;">
-        <div class="article-image" style="background-image:url('./assets/max-bill-portrait.jpg'); aspect-ratio:4/3;">
-          <span class="cap">Fig. 02 · Max Bill, c. 1948</span>
-        </div>
+        <div class="article-image" style="background-image:url('./assets/max-bill-portrait.jpg'); aspect-ratio:4/3;"></div>
         <div class="article-body">
           <p><strong>Max Bill (1908—1994)</strong> was a great Swiss polymath: architect, industrial and graphic designer, sculptor, painter — and also a prolific writer, scholar, and teacher.</p>
           <p>He attended the Bauhaus where he was taught by Josef Albers, László Moholy-Nagy, Paul Klee, Wassily Kandinsky and Oskar Schlemmer. Bill remained closely associated with the Bauhaus school and was a key figure in developing and propagating its principles — as a guest lecturer at the Kunstgewerbeschule Zürich, and as a co-founder and first rector of the <strong>Ulm School of Design</strong>.</p>
@@ -195,9 +198,9 @@
 
       <!-- Facts strip -->
       <div class="journey-facts">
-        <div><span class="fact-label">Distance</span><strong class="fact-value">2,800 km</strong></div>
-        <div><span class="fact-label">Time</span><strong class="fact-value">6 months</strong></div>
-        <div><span class="fact-label">Countries</span><strong class="fact-value">5</strong></div>
+        <div><span class="fact-label">distance</span><strong class="fact-value">2,800<span class="fact-unit">km</span></strong></div>
+        <div><span class="fact-label">countries</span><strong class="fact-value">5</strong></div>
+        <div><span class="fact-label">time</span><strong class="fact-value">6<span class="fact-unit">months</span></strong></div>
       </div>
 
       <!-- ============== SUB-CHAPTER 1 · GRANITE TRIP ============== -->
@@ -219,17 +222,12 @@
               <g id="sardiniaStops"></g>
               <g id="sardiniaLabels"></g>
             </svg>
-            <div class="journey-meta">
-              <div><span>Stage</span><strong id="sardiniaStage">Quarry</strong></div>
-              <div><span>Distance</span><strong>~360 km</strong></div>
-              <div><span>Mode</span><strong>Road · Sea</strong></div>
-            </div>
           </aside>
 
           <div class="journey-stops">
             <article class="stop" data-sardinia-stop="1">
               <div class="stop-num">Stop 01 / 03</div>
-              <figure style="background-image:url('./assets/_journey/1%20italy/IMG_8408.jpeg');"></figure>
+              <figure><img src="./assets/_journey/1%20italy/IMG_8408.jpeg" alt=""></figure>
               <p class="stop-cap">The granite was found at <strong>Cava Scarraciana</strong>, a quarry in the sun-bleached silence of north-eastern Sardinia. On 20 October 1983, a 500-ton block was blasted from the rock face and reduced on site to 180 tons — a polyhedron ready for transport.</p>
               <dl class="stop-meta">
                 <div><dt>Place</dt><dd>Cava Scarraciana</dd></div>
@@ -252,7 +250,7 @@
 
             <article class="stop" data-sardinia-stop="2">
               <div class="stop-num">Stop 02 / 03</div>
-              <figure style="background-image:url('./assets/_journey/1%20italy/IMG_8411.jpeg');"></figure>
+              <figure><img src="./assets/_journey/1%20italy/IMG_8411.jpeg" alt=""></figure>
               <p class="stop-cap">Loaded onto a Fagioli truck with a 52-metre platform, the block crossed Sardinia by night to the port of <strong>Santa Teresa Gallura</strong>. A temporary road was built to reach the highway; the public route was closed for two days, 8–9 February 1984.</p>
               <dl class="stop-meta">
                 <div><dt>Leg</dt><dd>Sardinian crossing</dd></div>
@@ -273,7 +271,7 @@
 
             <article class="stop" data-sardinia-stop="3">
               <div class="stop-num">Stop 03 / 03</div>
-              <figure style="background-image:url('./assets/_journey/1%20italy/IMG_8417.jpeg');"></figure>
+              <figure><img src="./assets/_journey/1%20italy/IMG_8417.jpeg" alt=""></figure>
               <p class="stop-cap">After a ten-day wait for fair weather, the cargo crossed the Tyrrhenian Sea to <strong>Marina di Carrara</strong>, where the workshop of the Esagono collective was waiting on the Tuscan coast.</p>
               <dl class="stop-meta">
                 <div><dt>Place</dt><dd>Marina di Carrara</dd></div>
@@ -307,89 +305,69 @@
           <p>A site near the port was chosen for convenient stone transport and waste handling — roughly 120 tons of granite would have to be removed. A temporary metal building rose around the block, with a separate pavilion housing the four-fold magnified plaster model that served as the master measurement.</p>
         </div>
 
+        <ol class="sculpt-captions">
+          <li>
+            <span class="sc-num">I</span>
+            <h5>Workshop built</h5>
+            <p>Work began February 1984. A site near the port was chosen for stone transport and waste handling.</p>
+          </li>
+          <li>
+            <span class="sc-num">II</span>
+            <h5>Measurement transfer</h5>
+            <p>A grid of "measuring points" was transferred from a four-fold magnified gypsum model using giant dividers.</p>
+          </li>
+          <li>
+            <span class="sc-num">III</span>
+            <h5>Diamond chains</h5>
+            <p>The carving used drilling machines and specially made diamond chains — regular chains are made for marble, not granite.</p>
+          </li>
+          <li>
+            <span class="sc-num">IV</span>
+            <h5>Carving from the inside</h5>
+            <p>The sculpture was carved from the inside using complex and dangerous methods. Work was done in shifts: only two people could be inside at a time.</p>
+          </li>
+          <li>
+            <span class="sc-num">V</span>
+            <h5>Internal channels</h5>
+            <p>Gradually, long internal channels — necessary for the loop's hidden topology — were cut out.</p>
+          </li>
+          <li>
+            <span class="sc-num">VI</span>
+            <h5>January 1985</h5>
+            <p>Main through-cuts completed. The interior shape begins to emerge.</p>
+          </li>
+          <li>
+            <span class="sc-num">VII</span>
+            <h5>22 March 1986</h5>
+            <p>The sculpture is turned over and placed on three support points; carving continues.</p>
+          </li>
+          <li>
+            <span class="sc-num">VIII</span>
+            <h5>30 June 1986</h5>
+            <p>The sculpture is completed.</p>
+          </li>
+        </ol>
+
         <div class="sculpt-gallery">
-          <figure class="sg-row sg-full">
-            <div class="sg-img" style="background-image:url('./assets/_journey/2%20sculpting/IMG_8423.jpeg');"></div>
-            <figcaption class="sg-cap">
-              <span class="sg-num">I</span>
-              <h5>Workshop built</h5>
-              <p>Work began February 1984. A site near the port was chosen for stone transport and waste handling.</p>
-            </figcaption>
+          <figure class="sg-bookend">
+            <img src="./assets/_journey/2%20sculpting/J-1.jpg" alt="">
           </figure>
 
-          <figure class="sg-row sg-2up">
-            <div class="sg-imgs">
-              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8424.jpeg');"></div>
-              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8426.jpeg');"></div>
+          <div class="sg-stage" id="sculptStage">
+            <div class="sg-pin">
+              <div class="sg-canvas">
+                <img class="sg-tile" data-kf="j2" src="./assets/_journey/2%20sculpting/J-2.jpg" alt="">
+                <img class="sg-tile" data-kf="j3" src="./assets/_journey/2%20sculpting/J-3.jpg" alt="">
+                <img class="sg-tile" data-kf="j4" src="./assets/_journey/2%20sculpting/J-4.jpg" alt="">
+                <img class="sg-tile" data-kf="j5" src="./assets/_journey/2%20sculpting/J-5.jpg" alt="">
+                <img class="sg-tile" data-kf="j6" src="./assets/_journey/2%20sculpting/J-6.jpg" alt="">
+                <img class="sg-tile" data-kf="j7" src="./assets/_journey/2%20sculpting/J-7.jpg" alt="">
+              </div>
             </div>
-            <figcaption class="sg-cap">
-              <span class="sg-num">II</span>
-              <h5>Measurement transfer</h5>
-              <p>A grid of "measuring points" was transferred from a four-fold magnified gypsum model using giant dividers.</p>
-            </figcaption>
-          </figure>
+          </div>
 
-          <figure class="sg-row sg-full">
-            <div class="sg-img" style="background-image:url('./assets/_journey/2%20sculpting/IMG_8432.jpeg');"></div>
-            <figcaption class="sg-cap">
-              <span class="sg-num">III</span>
-              <h5>Diamond chains</h5>
-              <p>The carving used drilling machines and specially made diamond chains — regular chains are made for marble, not granite.</p>
-            </figcaption>
-          </figure>
-
-          <figure class="sg-row sg-2up">
-            <div class="sg-imgs">
-              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8428.jpeg');"></div>
-              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8429.jpeg');"></div>
-            </div>
-            <figcaption class="sg-cap">
-              <span class="sg-num">IV</span>
-              <h5>Carving from the inside</h5>
-              <p>The sculpture was carved from the inside using complex and dangerous methods. Work was done in shifts: only two people could be inside at a time.</p>
-            </figcaption>
-          </figure>
-
-          <figure class="sg-row sg-2up">
-            <div class="sg-imgs">
-              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8433.jpeg');"></div>
-              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8434.jpeg');"></div>
-            </div>
-            <figcaption class="sg-cap">
-              <span class="sg-num">V</span>
-              <h5>Internal channels</h5>
-              <p>Gradually, long internal channels — necessary for the loop's hidden topology — were cut out.</p>
-            </figcaption>
-          </figure>
-
-          <figure class="sg-row sg-full">
-            <div class="sg-img" style="background-image:url('./assets/_journey/2%20sculpting/IMG_8439.jpeg');"></div>
-            <figcaption class="sg-cap">
-              <span class="sg-num">VI</span>
-              <h5>January 1985</h5>
-              <p>Main through-cuts completed. The interior shape begins to emerge.</p>
-            </figcaption>
-          </figure>
-
-          <figure class="sg-row sg-2up">
-            <div class="sg-imgs">
-              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8436.jpeg');"></div>
-              <div style="background-image:url('./assets/_journey/2%20sculpting/IMG_8437.jpeg');"></div>
-            </div>
-            <figcaption class="sg-cap">
-              <span class="sg-num">VII</span>
-              <h5>22 March 1986</h5>
-              <p>The sculpture is turned over and placed on three support points; carving continues.</p>
-            </figcaption>
-          </figure>
-
-          <figure class="sg-row sg-full">
-            <div class="sg-img" style="background-image:url('./assets/_journey/2%20sculpting/IMG_8440.jpeg');"></div>
-            <figcaption class="sg-cap">
-              <span class="sg-num">VIII</span>
-              <h5>30 June 1986</h5>
-              <p>The sculpture is completed.</p>
-            </figcaption>
+          <figure class="sg-bookend sg-bookend--narrow">
+            <img src="./assets/_journey/2%20sculpting/J-8.jpg" alt="">
           </figure>
         </div>
       </div>
@@ -405,94 +383,58 @@
         </header>
 
         <div class="journey-grid">
-          <aside class="journey-map-wrap">
+          <aside class="journey-map-wrap is-zoomed">
             <svg class="journey-map" id="globeMap" viewBox="0 0 480 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-              <defs>
-                <radialGradient id="globeShade" cx="0.35" cy="0.32" r="0.85">
-                  <stop offset="0%" stop-color="rgba(255,255,255,0.08)"/>
-                  <stop offset="60%" stop-color="rgba(255,255,255,0.02)"/>
-                  <stop offset="100%" stop-color="rgba(0,0,0,0.35)"/>
-                </radialGradient>
-              </defs>
               <rect class="map-bg" x="0" y="0" width="480" height="480" fill="rgba(255,255,255,0.025)"/>
-              <circle class="globe-stroke" cx="240" cy="240" r="240" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
               <g>
                 <g id="globeGraticule"></g>
                 <g id="globeLand"></g>
                 <g id="globeRoute"></g>
                 <g id="globeStops"></g>
               </g>
-              <circle class="globe-shade" cx="240" cy="240" r="240" fill="url(#globeShade)" pointer-events="none"/>
             </svg>
-            <div class="journey-meta">
-              <div><span>Vessel</span><strong>MV Kupari</strong></div>
-              <div><span>Period</span><strong>Aug — Sep 1986</strong></div>
-              <div><span>Distance</span><strong>~4,000 km</strong></div>
-            </div>
+            <dl class="map-meta" id="globeMeta" aria-live="polite">
+              <div><dt></dt><dd></dd></div>
+              <div><dt></dt><dd></dd></div>
+              <div><dt></dt><dd></dd></div>
+            </dl>
           </aside>
 
           <div class="journey-stops">
             <article class="stop" data-stop="1">
-              <div class="stop-num">Stop 01 / 04</div>
-              <figure style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8441.jpeg');"></figure>
-              <p class="stop-cap">Between 4 and 8 August 1986, the finished <strong>Continuity</strong> was mounted into a sturdy steel transport frame in Carrara — engineered to guarantee safe sea passage via Gibraltar, Portugal, the Bay of Biscay and the English Channel to Rotterdam. The framed sculpture was then trucked to the port and loaded onto the cargo ship MV Kupari.</p>
-              <dl class="stop-meta">
-                <div><dt>Place</dt><dd>Port of Carrara</dd></div>
-                <div><dt>Date</dt><dd>16 · 08 · 1986</dd></div>
-                <div><dt>Vessel</dt><dd>MV Kupari</dd></div>
-              </dl>
+              <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8441.jpeg" alt=""></figure>
+              <p class="stop-cap">Between 4 and 8 August 1986, the finished <strong>Continuity</strong> was mounted into a sturdy steel transport frame in Carrara and loaded onto the cargo ship <strong>MV Kupari</strong>.</p>
             </article>
 
             <article class="stop" data-stop="2">
-              <div class="stop-num">Stop 02 / 04</div>
               <figure class="has-video">
                 <video src="./assets/_journey/3%20sculpture%20trip/6749362-hd_1920_1080_24fps.mp4" autoplay muted loop playsinline preload="metadata"></video>
               </figure>
               <p class="stop-cap">The Kupari sailed via the <strong>Strait of Gibraltar</strong>, west of Portugal, across the <strong>Bay of Biscay</strong> and through the <strong>English Channel</strong> to the North Sea — a 2,800 km open-water passage taking just over two weeks.</p>
-              <dl class="stop-meta">
-                <div><dt>Route</dt><dd>Gibraltar · Biscay · Channel</dd></div>
-                <div><dt>Period</dt><dd>16 · 08 — 02 · 09 · 1986</dd></div>
-                <div><dt>Distance</dt><dd>+2,800 km</dd></div>
-              </dl>
             </article>
 
             <article class="stop" data-stop="3">
-              <div class="stop-num">Stop 03 / 04</div>
-              <figure style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8446.jpeg');"></figure>
-              <figure style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8443.jpeg'); margin-top:16px;"></figure>
+              <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8446.jpeg" alt=""></figure>
+              <figure style="margin-top:16px;"><img src="./assets/_journey/3%20sculpture%20trip/IMG_8443.jpeg" alt=""></figure>
               <p class="stop-cap">After unloading in <strong>Rotterdam</strong>, the sculpture was transferred to a river barge and pushed up the <strong>Rhine</strong> and <strong>Main</strong> rivers toward the German interior.</p>
-              <dl class="stop-meta">
-                <div><dt>Leg</dt><dd>Rhine · Main</dd></div>
-                <div><dt>Date</dt><dd>02 — 06 · 09 · 1986</dd></div>
-                <div><dt>Distance</dt><dd>+500 km · river</dd></div>
-              </dl>
             </article>
 
             <article class="stop" data-stop="4">
-              <div class="stop-num">Stop 04 / 04</div>
-              <figure style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8447.jpeg');"></figure>
+              <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8447.jpeg" alt=""></figure>
               <p class="stop-cap">In Frankfurt, a <strong>Colonia crane</strong> moved from the Osthafen to Taunusanlage 12 lifted the 80-tonne sculpture above the trees and into place beside the Deutsche Bank towers the following morning.</p>
-              <dl class="stop-meta">
-                <div><dt>Place</dt><dd>Taunusanlage 12</dd></div>
-                <div><dt>Date</dt><dd>07 · 09 · 1986</dd></div>
-                <div><dt>Total</dt><dd>~4,720 km</dd></div>
-              </dl>
-              <div class="stop-strip">
-                <div style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8449.jpeg');"></div>
-                <div style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8450.jpeg');"></div>
-              </div>
+              <figure style="margin-top: 20px;"><img src="./assets/_journey/3%20sculpture%20trip/IMG_8449.jpeg" alt=""></figure>
             </article>
           </div>
         </div>
 
-        <div class="journey-finale" style="background-image:url('./assets/_journey/3%20sculpture%20trip/IMG_8451.jpeg');"></div>
+        <img class="journey-finale" src="./assets/_journey/3%20sculpture%20trip/Bill_2014-1024x768.jpg" alt="">
       </div>
 
     </div>
   </section>
 
   <!-- CHAPTER 4 -->
-  <section class="chapter paper-section" id="ch4" style="color:#000;">
+  <section class="chapter paper-section" id="ch4" style="color:#000;background:#fff;">
     <div class="container">
       <div class="chapter-head">
         <div class="chapter-num">4</div>
@@ -501,62 +443,23 @@
     </div>
   </section>
 
-  <section class="paper-section" style="padding:0 0 120px;">
+  <section class="paper-section" style="padding:0 0 120px;background:#fff;">
     <div class="container">
       <div class="article-grid">
-        <div>
-          <div class="article-image" style="background-image:url('./assets/workshop-1.png'); aspect-ratio:4/3; margin-bottom:48px;">
-            <span class="cap">FIG. 05 · CARRARA WORKSHOP</span>
-          </div>
-          <div class="article-image" style="background-image:url('./assets/workshop-2.png'); aspect-ratio:1/1;">
-            <span class="cap">FIG. 06 · INTERIOR CARVING</span>
+        <div style="grid-column: 1 / span 3;">
+          <div class="article-image" style="aspect-ratio:auto; background:none;">
+            <img src="./assets/H__6322.jpg" alt="" style="display:block; width:100%; height:auto;"/>
           </div>
         </div>
         <div class="article-body">
           <p>In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity — the development of which took three years.</p>
           <p>Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
           <p>Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation — often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
-          <!-- challenges list -->
-          <div style="margin-top:48px; display:grid; gap:0; border-top:1px solid #000;">
-            <div style="padding:18px 0; border-bottom:1px solid rgba(0,0,0,.15); display:grid; grid-template-columns:40px 1fr auto; gap:16px; align-items:baseline;">
-              <span style="font-family:var(--mono); font-size:11px; opacity:.55;">I</span>
-              <span style="font-size:18px; font-weight:600;">Location near the port chosen for stone transport and waste storage (~120 t).</span>
-              <span style="font-family:var(--mono); font-size:10px; opacity:.5;">1984</span>
-            </div>
-            <div style="padding:18px 0; border-bottom:1px solid rgba(0,0,0,.15); display:grid; grid-template-columns:40px 1fr auto; gap:16px; align-items:baseline;">
-              <span style="font-family:var(--mono); font-size:11px; opacity:.55;">II</span>
-              <span style="font-size:18px; font-weight:600;">Measurements transferred from a 4× magnified model using giant dividers.</span>
-              <span style="font-family:var(--mono); font-size:10px; opacity:.5;">ANALOG</span>
-            </div>
-            <div style="padding:18px 0; border-bottom:1px solid rgba(0,0,0,.15); display:grid; grid-template-columns:40px 1fr auto; gap:16px; align-items:baseline;">
-              <span style="font-family:var(--mono); font-size:11px; opacity:.55;">III</span>
-              <span style="font-size:18px; font-weight:600;">Drilling machines and specially-made diamond chains — marble-grade chains won't cut granite.</span>
-              <span style="font-family:var(--mono); font-size:10px; opacity:.5;">CHAINS</span>
-            </div>
-            <div style="padding:18px 0; border-bottom:1px solid rgba(0,0,0,.15); display:grid; grid-template-columns:40px 1fr auto; gap:16px; align-items:baseline;">
-              <span style="font-family:var(--mono); font-size:11px; opacity:.55;">IV</span>
-              <span style="font-size:18px; font-weight:600;">Carved from the inside — complex, dangerous. Only <strong>two workers at a time</strong>.</span>
-              <span style="font-family:var(--mono); font-size:10px; opacity:.5;">SHIFTS</span>
-            </div>
-            <div style="padding:18px 0; display:grid; grid-template-columns:40px 1fr auto; gap:16px; align-items:baseline;">
-              <span style="font-family:var(--mono); font-size:11px; opacity:.55;">V</span>
-              <span style="font-size:18px; font-weight:600;">Long internal channels cut out to form the infinity loop's hidden geometry.</span>
-              <span style="font-family:var(--mono); font-size:10px; opacity:.5;">TOPOLOGY</span>
-            </div>
-          </div>
-          <div style="margin-top:48px; padding:28px; background:#000; color:#fff;">
-            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.15em; opacity:.6;">BEFORE THE DIGITAL ERA</div>
-            <p style="margin-top:10px; font-size:18px; line-height:1.45; color:#fff;">Scaling was done with a 1:20 metal prototype and custom measuring tools invented by Stroobant himself. The work had to be carried out in shifts, with only two people able to work at a time — a choreography of six sculptors around a single stone.</p>
-          </div>
+        </div>
+        <div style="grid-column: 1 / -1; margin-top:48px; min-height:735px; display:flex; align-items:center; justify-content:center;">
+          <span style="font-family:var(--mono); font-size:18px; letter-spacing:.2em; color:rgba(0,0,0,.4); text-transform:uppercase;">Content TBD</span>
         </div>
       </div>
-    </div>
-  </section>
-
-  <section class="paper-section" style="padding:0 0 120px;">
-    <div class="container">
-      <div class="hero-image" style="background-image:url('./assets/measuring.png'); aspect-ratio:16/10; background-color:#eee;"></div>
-      <div class="caption" style="color:rgba(0,0,0,.55);">FIG. 07 · MEASUREMENT TRANSFER — grid of reference points translated from the magnified model.</div>
     </div>
   </section>
 
@@ -574,92 +477,27 @@
 
       <div class="math-body">
         <div>
-          <p>Max Bill was consistently inspired by mathematics and logic in art. His approach, which he called "verifiable logic," guided him from early experimentation toward a precise method of making — and explaining — his work: <strong>"You can always understand my work, even if you don't like it."</strong></p>
-          <p>From the beginning of his career, Bill was fascinated by the Möbius strip. From his first attempts in 1936 to the realization of Continuity in Frankfurt, he produced dozens — if not hundreds — of variations on the infinity loop.</p>
-          <p>But how are we to understand the topology of Continuity? Is it a Möbius strip, a variation on an endless loop, or simply an artistic interpretation of an infinite motif?</p>
+          <p>Max Bill was consistently inspired by mathematics and logic in art. His approach, which he called &ldquo;verifiable logic,&rdquo; guided him from early experimentation toward a precise method of making&mdash;and explaining&mdash;his work: <strong>&ldquo;You can always understand my work, even if you don&rsquo;t like it.&rdquo;</strong> From the beginning of his career, Bill was fascinated by the Möbius strip. From his first attempts in 1936 to the realization of Continuity in Frankfurt, he produced dozens&mdash;if not hundreds&mdash;of variations on the infinity loop, exploring differences in scale, material, and environment.</p>
+          <p>But how are we to understand the topology of Continuity? Is it a Möbius strip, a variation on an endless loop, or simply an artistic, sculptural interpretation of an infinite motif? In short, how did he do it? Even though Bill left some explanations, our own experiments and consultations with mathematicians did not yield an immediate understanding of how the sculpture was conceived and modeled.</p>
         </div>
         <div>
-          <blockquote style="font-size:clamp(20px,1.7vw,26px); line-height:1.35;">
-            "Bill's intuition that a single half twist connected to a double half twist should result in a single-sided, single-edge surface is quite correct; depending on the handedness of the twists, the loop you wind up with has either three twists or one. So it's a mystery how he managed to add 1 and 2 and get 4."
-          </blockquote>
-          <div class="caption" style="margin-top:20px; color:rgba(255,255,255,.6);">— Barry Cipra · mathematician, Minnesota</div>
-          <p style="margin-top:28px;">"Not long afterwards, people began to congratulate me on my fresh and original interpretation of the Egyptian symbol for infinity and the Möbius ribbon. I had never heard of either of them."</p>
-          <div class="caption" style="margin-top:8px; color:rgba(255,255,255,.6);">— Max Bill</div>
+          <p class="quote-text">In Continuity, I intended to achieve something similar: a single surface, a single boundary. Theoretically, a double helix, twisted twice by half a turn and fused with one twisted only half a turn, should have resulted in something akin to an &lsquo;infinite loop,&rsquo; possessing only one surface and one boundary. For reasons unknown to me, this did not happen, so Continuity, despite the theoretically expected outcome, consists of two parallel bounded surfaces composed of infinitely many straight lines. This explanation may sound somewhat dry and simplistic, yet it is the only thing I can say about it myself.</p>
+          <p class="quote-attr">Max Bill</p>
+        </div>
+        <div>
+          <p>The interesting thing to note is that Bill thought he had invented a completely new shape. Even more curious was that he discovered it by twisting a strip of paper, just as Möbius had done many years previously. &ldquo;Not long afterwards, people began to congratulate me on my fresh and original interpretation of the Egyptian symbol for infinity and the Möbius ribbon. I had never heard of either of them. My mathematical knowledge had never gone beyond routine architectural calculations, and I had no great interest in mathematics.&rdquo;</p>
+          <p>Barry Cipra (mathematician, Minnesota, USA): &ldquo;Bill&rsquo;s intuition that a single half twist connected to a double half twist should result in a single-sided, single-edge surface is quite correct; depending on the handedness of the twists, the loop you wind up with has either three twists or one. So it&rsquo;s a mystery how he managed to add 1 and 2 and get 4.&rdquo;</p>
+          <p>By carefully examining the sculpture itself and creating a 3D model using 360° video and photography (fig. 1), and by comparing it with Bill&rsquo;s metal sculpture from 1945&ndash;46&mdash;used by him as a 1:20 prototype (fig. 2)&mdash;we were able to analyze the work and conduct a series of spatial experiments. One of these resulted in an origami model that follows the original topology step by step and, surprisingly, resolves into a clear infinity-loop construction (fig. 3). Building on this, we developed a responsive interactive model that clearly demonstrates the topology of the Continuity. The result is striking: a pure mathematical model transforms into a work of art.</p>
         </div>
       </div>
 
-      <div class="math-diagram">
-        <img src="./assets/math-diagram.png" alt="Fusion physics diagram"/>
-      </div>
-      <div class="math-caption">
-        <strong style="color:#fff;">Fusion physics.</strong> Bring two coils together by first letting them overlap, then fusing the overlap into another over/under-crossing. This is how Bill thought 1+2 should give a single-sided surface — and why it didn't.
+      <div style="margin-top:48px; min-height:922px; display:flex; align-items:center; justify-content:center;">
+        <span style="font-family:var(--mono); font-size:18px; letter-spacing:.2em; color:rgba(255,255,255,.4); text-transform:uppercase;">Content TBD</span>
       </div>
 
     </div>
   </section>
 
-  <!-- INTERACTIVE TOPOLOGY MODEL -->
-  <section class="topo">
-    <div class="container">
-      <div class="topo-wrap">
-        <div class="topo-svg" id="topoStage">
-          <svg viewBox="-250 -220 500 440" id="topoSvg">
-            <defs>
-              <linearGradient id="bandGrad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#7892FF"/>
-                <stop offset="50%" stop-color="#FFD500"/>
-                <stop offset="100%" stop-color="#FF0033"/>
-              </linearGradient>
-              <linearGradient id="edgeGrad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#fff"/>
-                <stop offset="100%" stop-color="#fff"/>
-              </linearGradient>
-            </defs>
-            <g id="topoGroup"></g>
-          </svg>
-          <div style="position:absolute; top:16px; left:16px; font-family:var(--mono); font-size:10px; letter-spacing:.2em; opacity:.6;">FIG. 08 · INTERACTIVE TOPOLOGY</div>
-        </div>
-        <div class="topo-controls">
-          <h3>An interactive model of Continuity's topology.</h3>
-          <p>Twist the parametric band. Each half-turn changes whether the surface has one side or two, and whether the boundary is a single closed curve or two.</p>
-          <div class="topo-slider">
-            <label><span>HALF-TWISTS</span><span id="twistVal">0</span></label>
-            <input type="range" min="0" max="6" step="1" value="0" id="twistSlider"/>
-          </div>
-          <div class="topo-slider">
-            <label><span>WIDTH</span><span id="widthVal">80</span></label>
-            <input type="range" min="20" max="160" step="4" value="80" id="widthSlider"/>
-          </div>
-          <div class="topo-toggle">
-            <button data-preset="0">Ring</button>
-            <button data-preset="1" class="is-active">Möbius</button>
-            <button data-preset="3">Bill's guess</button>
-            <button data-preset="4">Continuity</button>
-          </div>
-          <div class="topo-props">
-            <div class="topo-prop"><div class="k">Sides</div><div class="v" id="propSides">1</div></div>
-            <div class="topo-prop"><div class="k">Boundary curves</div><div class="v" id="propEdges">1</div></div>
-            <div class="topo-prop"><div class="k">Orientable</div><div class="v" id="propOri">No</div></div>
-            <div class="topo-prop"><div class="k">Euler char. χ</div><div class="v" id="propChi">0</div></div>
-          </div>
-          <div class="caption" style="color:rgba(255,255,255,.55); margin-top:8px;">One-sided surfaces appear when the number of half-twists is odd. Bill expected a one-sided result from a fusion of 1 + 2 half-twists; the actual Continuity resolves to 4 half-twists — two-sided, two boundaries.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Paper model -->
-  <section class="math-body-follow" style="background:#3c3c3c;color:#fff; padding:120px 0;">
-    <div class="container" style="display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center;">
-      <div>
-        <div style="font-family:var(--mono); font-size:11px; letter-spacing:.2em; opacity:.6;">FIG. 09 · PAPER EXPERIMENT</div>
-        <h3 style="font-size:clamp(28px,3vw,44px); font-weight:700; letter-spacing:-0.02em; line-height:1.05; margin-top:16px;">A strip of adding-machine tape — three feet long, 2¼ inches wide.</h3>
-        <p style="margin-top:24px; font-size:18px; line-height:1.5; opacity:.82;">Cipra cut off a strip and threaded it forward in roughly the way the 3D model indicated. He stapled the ends. The assembled sculpture relaxed into a shape with no obvious relation to the original, rigid object — but if he had followed the surface correctly, the stapling had locked in the topology.</p>
-        <p style="margin-top:16px; font-size:18px; line-height:1.5; opacity:.82;">He had followed the surface back around to where he started and noticed that he had not seen the entire surface. <strong>Continuity is a two-sided ribbon — not a Möbius strip.</strong></p>
-      </div>
-      <div class="article-image" style="background-image:url('./assets/paper-model.jpg'); aspect-ratio:1/1;"></div>
-    </div>
-  </section>
 
   <!-- CHAPTER 6 · Walk around -->
   <section class="chapter walk" id="ch6">
@@ -668,13 +506,7 @@
         <div class="chapter-num">+</div>
         <h2 class="chapter-title">Walk around — a Gaussian splatting scene</h2>
       </div>
-      <div class="walk-stage">
-        <div class="badge-orbit"><span class="d"></span>ORBIT · DRAG TO LOOK</div>
-        <div class="ctrl">
-          <span>◀</span><span>360° interactive · WebGL</span><span>▶</span>
-        </div>
-      </div>
-      <p style="margin-top:28px; max-width:640px; opacity:.7; font-size:16px;">Captured on-site in Frankfurt with 360° video and photogrammetry. The final release will embed a full Gaussian-splatting scene; this is a static placeholder for review.</p>
+      <div class="walk-stage"></div>
     </div>
   </section>
 
@@ -803,7 +635,7 @@ function onScroll() {
 
   // Determine body theme by visible section in viewport center
   const vpMid = s + window.innerHeight / 2;
-  const sections = document.querySelectorAll('section, header, footer');
+  const sections = document.querySelectorAll('section, header:not(.sub-head), footer');
   let cur = null;
   sections.forEach(sec => {
     const top = sec.offsetTop;
@@ -862,6 +694,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu();
 
 // ========== Topology model (parametric band) ==========
 // Draws a projected annular band with n half-twists. Simple but gives right topology readout.
+(() => {
+  if (!document.getElementById('twistSlider')) return;
 function buildTopo(nTwists, width) {
   const group = document.getElementById('topoGroup');
   group.innerHTML = '';
@@ -973,6 +807,7 @@ function rotateTopo() {
   requestAnimationFrame(rotateTopo);
 }
 rotateTopo();
+})();
 
 // ========== Reveal ==========
 document.querySelectorAll('.chapter-title, .facts-title, .intro-lead, .big').forEach(el => el.classList.add('reveal'));
@@ -1180,7 +1015,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
       }
       // Animate font-size (so text is rasterized sharply at any size) instead of transform: scale.
       const dockedFS = dp.fontSize;
-      const targetActiveFS = dp.noZoom ? dockedFS * 1.4 : dockedFS * 5;
+      const naiveActiveFS = dp.noZoom ? dockedFS * 1.4 : dockedFS * 5;
+      const maxFS = dockedFS * (cw * 0.5) / dp.width;
+      const targetActiveFS = Math.min(naiveActiveFS, maxFS);
       const fs = dockedFS + (targetActiveFS - dockedFS) * (1 - localP);
       val.style.fontSize = fs + 'px';
       // Width scales linearly with font-size for the same text. Compute current width.
@@ -1217,14 +1054,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
   });
 });
 
-// Play video while in view; shrink + pin when chapter title leaves the top
+// Play video while in view
 (() => {
   const v = document.getElementById('operaScrollVideo');
   if (!v) return;
-  const wrap = v.parentElement;
-  const ch5 = document.getElementById('ch5');
-  const head = ch5 && ch5.querySelector('.chapter-head');
-
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
       if (e.isIntersecting) v.play().catch(() => {});
@@ -1232,16 +1065,6 @@ document.querySelectorAll('.facts').forEach((facts) => {
     });
   }, { threshold: 0.01 });
   io.observe(v);
-
-  if (!head) return;
-  const onScroll = () => {
-    // Trigger when the video's natural-flow top edge would have scrolled past viewport top.
-    // Video sits 20px below chapter-head's bottom in flow.
-    const r = head.getBoundingClientRect();
-    wrap.classList.toggle('is-shrunk', (r.bottom + 20) <= 0);
-  };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
 })();
 
 // Bill's works · interactive timeline chart
@@ -1375,24 +1198,39 @@ document.querySelectorAll('.facts').forEach((facts) => {
   if (!svg) return;
   const NS = 'http://www.w3.org/2000/svg';
 
-  // [lon, lat] for each scroll stop (1..4) — European leg only
+  // Physical waypoints rendered as circles on the globe
   const stopCoords = [
-    [10.04, 44.04],   // 1 Port of Carrara (loading)
-    [-7.20, 45.00],   // 2 Bay of Biscay / mid-passage
-    [ 4.48, 51.92],   // 3 Rotterdam
-    [ 8.68, 50.11],   // 4 Frankfurt
+    [10.04, 44.04],   // 0 Port of Carrara
+    [ 4.48, 51.92],   // 1 Rotterdam
+    [ 8.68, 50.11],   // 2 Frankfurt
   ];
-  // Optional per-stop camera override: [lon, lat, scale]
-  const stopView = [
-    null,                // 1 Carrara — default Europe-centered
-    [-2, 44, 520],       // 2 Atlantic voyage — pull back over Bay of Biscay
-    [4.48, 51.92, 1600], // 3 Rotterdam zoom
-    [8.2, 50.4, 2400],   // 4 Frankfurt zoom
+  // Per narrative stop (1..4):
+  //   view  — camera override [lon, lat, scale]
+  //   past  — number of segments shown as completed (solid line)
+  //   flow  — segment index that is currently flowing (-1 if none)
+  //   glow  — globe-stop index that gets the active "glowing" marker (-1 if none)
+  const narrativeStates = [
+    {
+      view: [10, 43.5, 1800], past: 0, flow: -1, glow: 0, // 1 Carrara begin
+      meta: [['Date', '16 · 08 · 1986'], ['Place', 'Port of Carrara'], ['Vessel', 'MV Kupari']],
+    },
+    {
+      view: [-2, 44, 520], past: 0, flow: 0, glow: -1, // 2 Atlantic
+      meta: [['Period', '16 · 08 — 02 · 09 · 1986'], ['Place', 'The Atlantic'], ['Distance', '+2,800 km · sea']],
+    },
+    {
+      view: [6, 50.5, 1500], past: 1, flow: 1, glow: -1, // 3 Rotterdam → Rhine
+      meta: [['Date', '02 — 06 · 09 · 1986'], ['Leg', 'Rhine · Main'], ['Distance', '+500 km · river']],
+    },
+    {
+      view: [8.2, 50.4, 2400], past: 2, flow: -1, glow: 2, // 4 Frankfurt arrival
+      meta: [['Date', '07 · 09 · 1986'], ['Place', 'Taunusanlage 12'], ['Total', '~4,720 km']],
+    },
   ];
 
-  // Full sea+river route, split into 3 segments aligned with the 4 stops
+  // Full sea+river route, split into 2 segments aligned with the 3 stops
   const segmentCoords = [
-    // 1->2 Carrara → Bay of Biscay (Med + Gibraltar + Iberian Atlantic)
+    // 1->2 Carrara → Rotterdam (Med + Gibraltar + Atlantic + Channel + North Sea)
     [
       [10.04, 44.04],   // Marina di Carrara
       [10.00, 43.30],
@@ -1408,10 +1246,6 @@ document.querySelectorAll('.facts').forEach((facts) => {
       [-9.50, 41.00],
       [-9.30, 42.90],   // Cape Finisterre
       [-7.20, 45.00],   // Bay of Biscay
-    ],
-    // 2->3 Bay of Biscay → Rotterdam (Channel + North Sea)
-    [
-      [-7.20, 45.00],
       [-5.80, 47.50],   // off Ushant
       [-3.00, 49.40],   // entering Channel
       [-1.00, 50.10],
@@ -1420,17 +1254,18 @@ document.querySelectorAll('.facts').forEach((facts) => {
       [ 4.10, 51.98],   // Hook of Holland
       [ 4.48, 51.92],   // Rotterdam
     ],
-    // 3->4 Rhine + Main upriver to Frankfurt
+    // 2->3 Rhine + Main upriver to Frankfurt
     [
       [4.48, 51.92], [5.30, 51.60], [6.10, 51.30], [6.95, 50.95], [7.00, 50.70],
       [7.60, 50.45], [8.20, 50.10], [8.68, 50.11],
     ],
   ];
-  // Map stop index -> how many segments are completed by the time of that stop
-  const stopToSegments = [0, 1, 2, 3];
 
-  const W = 480, H = 480, R = 220, R_ZOOMED = 1100;
-  const initialRotation = [-2, -46, 0]; // Western Europe-centered
+  const W = 480, H = 480, R_ZOOMED = 1100;
+  // Default "overview" view shows the full Carrara → Rotterdam → Frankfurt route.
+  const overviewView = [-2, 44, 520];
+  const initialRotation = [-overviewView[0], -overviewView[1], 0];
+  const R = overviewView[2];
   const NUDGE = 0.85; // how strongly the globe follows the active stop (0 = no follow, 1 = centered)
 
   let projection, geoPath, world, land;
@@ -1482,7 +1317,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     land.features.forEach(f => {
       ensureNode(landG, 'path', {
         d: geoPath(f) || '',
-        fill: 'rgba(255,255,255,0.10)',
+        fill: '#202020',
         stroke: 'rgba(255,255,255,0.35)',
         'stroke-width': '0.6',
         'stroke-linejoin': 'round',
@@ -1501,7 +1336,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
         d: geoPath({ type: 'LineString', coordinates: coords }) || '',
         fill: 'none',
         stroke: '#FFD500',
-        'stroke-width': '2',
+        'stroke-width': '1.25',
         'stroke-linecap': 'round',
         opacity: '0',
         'data-seg': i,
@@ -1531,58 +1366,66 @@ document.querySelectorAll('.facts').forEach((facts) => {
     document.querySelectorAll('#globeLand path').forEach((p, i) => {
       p.setAttribute('d', geoPath(land.features[i]) || '');
     });
+    const state = narrativeStates[activeStop - 1] || { past: 0, flow: -1, glow: -1 };
     document.querySelectorAll('#globeRoute path').forEach((p, i) => {
       p.setAttribute('d', geoPath({ type: 'LineString', coordinates: segmentCoords[i] }) || '');
-      p.setAttribute('opacity', i < stopToSegments[activeStop - 1] ? '1' : (i === stopToSegments[activeStop - 1] ? '0.55' : '0'));
+      const isFlowing = i === state.flow;
+      const isPast = i < state.past;
+      p.setAttribute('opacity', isPast || isFlowing ? '1' : '0');
+      p.classList.toggle('is-flowing', isFlowing);
     });
     document.querySelectorAll('#globeStops circle').forEach((c, i) => {
       const coord = stopCoords[i];
+      const isGlowing = i === state.glow;
+      const isPast = i < state.past;
       const visible = visibleAt(coord);
       if (!visible) { c.style.display = 'none'; return; }
       c.style.display = '';
       const xy = projection(coord);
       c.setAttribute('cx', xy[0]);
       c.setAttribute('cy', xy[1]);
-      const idx = i + 1;
-      const isPast = idx < activeStop;
-      const isActive = idx === activeStop;
-      c.setAttribute('fill', isActive ? '#FFD500' : (isPast ? '#FFD500' : 'rgba(255,255,255,0.35)'));
-      c.setAttribute('r', isActive ? 6 : 3.5);
+      c.setAttribute('fill', isGlowing || isPast ? '#FFD500' : 'rgba(255,255,255,0.35)');
+      c.setAttribute('r', isGlowing ? 6 : 3.5);
+      c.classList.toggle('is-glowing', isGlowing);
     });
   }
 
-  let ticking = false;
+  let rafId = 0;
   function tick() {
     update();
     const dx = Math.abs(((targetRot[0] - currentRot[0] + 540) % 360) - 180);
     const dy = Math.abs(targetRot[1] - currentRot[1]);
     const ds = Math.abs(targetScale - currentScale);
-    if (dx > 0.05 || dy > 0.05 || ds > 0.5) requestAnimationFrame(tick);
-    else ticking = false;
+    rafId = (dx > 0.05 || dy > 0.05 || ds > 0.5) ? requestAnimationFrame(tick) : 0;
   }
   function requestRender() {
-    if (!ticking) { ticking = true; requestAnimationFrame(tick); }
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(tick);
   }
 
   const wrap = section.querySelector('.journey-map-wrap');
+  const metaEl = document.getElementById('globeMeta');
+  function renderMeta(i) {
+    if (!metaEl) return;
+    const state = narrativeStates[i - 1];
+    const rows = metaEl.querySelectorAll(':scope > div');
+    rows.forEach((row, idx) => {
+      const pair = state && state.meta && state.meta[idx];
+      const dt = row.querySelector('dt');
+      const dd = row.querySelector('dd');
+      dt.textContent = pair ? pair[0] : '';
+      dd.textContent = pair ? pair[1] : '';
+    });
+  }
   function setActive(i) {
     if (i === activeStop) return;
     activeStop = i;
-    if (wrap) wrap.classList.toggle('is-zoomed', i >= 1 && i <= stopCoords.length);
-    if (i >= 1 && i <= stopCoords.length) {
-      const override = stopView[i - 1];
-      if (override) {
-        targetRot = [-override[0], -override[1], 0];
-        targetScale = override[2];
-      } else {
-        const c = stopCoords[i - 1];
-        targetRot = [
-          lerpAngle(initialRotation[0], -c[0], NUDGE),
-          lerp(initialRotation[1], -c[1] - 6, NUDGE),
-          0
-        ];
-        targetScale = R_ZOOMED;
-      }
+    const inRange = i >= 1 && i <= narrativeStates.length;
+    if (inRange) {
+      const view = narrativeStates[i - 1].view;
+      targetRot = [-view[0], -view[1], 0];
+      targetScale = view[2];
+      renderMeta(i);
     } else {
       targetRot = [...initialRotation];
       targetScale = R;
@@ -1590,14 +1433,13 @@ document.querySelectorAll('.facts').forEach((facts) => {
     requestRender();
   }
 
-  // Zoom out when section is out of view, zoom in once user enters it
+  // Reset to overview view when section leaves the viewport (no globe — already zoomed).
   const sectionIO = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (!e.isIntersecting) {
         targetScale = R;
         targetRot = [...initialRotation];
         activeStop = 0;
-        if (wrap) wrap.classList.remove('is-zoomed');
         requestRender();
       }
     });
@@ -1619,38 +1461,42 @@ document.querySelectorAll('.facts').forEach((facts) => {
       buildStatic();
       update();
 
-      const stops = [...section.querySelectorAll('.stop')];
+      const stops = [...section.querySelectorAll('.stop[data-stop]')];
 
-      // Pick the stop whose center is closest to viewport center
+      // Track which narrative stops currently intersect the viewport center band.
+      // Multiple narrative articles may map to the same globe stop (e.g. a video segment
+      // that shares the active map state with the previous stop), so we track elements
+      // and resolve their data-stop only at pick time.
+      const intersecting = new Set();
+      const stopIO = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) intersecting.add(e.target);
+          else intersecting.delete(e.target);
+        });
+        pickActive();
+      }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+      stops.forEach(s => stopIO.observe(s));
+
       function pickActive() {
+        if (intersecting.size === 0) return;
+        // When multiple stops overlap the band (tall stops), pick the one closest to viewport center.
         const vc = window.innerHeight / 2;
-        let best = 0, bestDist = Infinity;
-        stops.forEach((s, i) => {
-          const r = s.getBoundingClientRect();
-          // Only consider stops at least partially in viewport
-          if (r.bottom < 0 || r.top > window.innerHeight) return;
-          const center = (r.top + r.bottom) / 2;
-          const d = Math.abs(center - vc);
-          if (d < bestDist) { bestDist = d; best = i + 1; }
+        let bestEl = null, bestDist = Infinity;
+        intersecting.forEach(el => {
+          const r = el.getBoundingClientRect();
+          const c = (r.top + r.bottom) / 2;
+          const d = Math.abs(c - vc);
+          if (d < bestDist) { bestDist = d; bestEl = el; }
         });
-        if (best > 0) setActive(best);
+        if (bestEl) {
+          const idx = parseInt(bestEl.dataset.stop, 10);
+          if (idx > 0) setActive(idx);
+        }
       }
 
-      let scrollTicking = false;
-      function onScroll() {
-        if (scrollTicking) return;
-        scrollTicking = true;
-        requestAnimationFrame(() => {
-          const sr = section.getBoundingClientRect();
-          if (sr.bottom > 0 && sr.top < window.innerHeight) pickActive();
-          scrollTicking = false;
-        });
-      }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', onScroll, { passive: true });
-      // Re-pick after late layout shifts (images, fonts)
+      // Re-evaluate after late layout shifts (images, fonts) so intersections are based on final geometry.
       window.addEventListener('load', pickActive);
-      pickActive();
+      window.addEventListener('resize', pickActive, { passive: true });
     });
   }
 
@@ -1710,7 +1556,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       land.features.forEach(f => {
         ensureNode(landG, 'path', {
           d: geoPath(f) || '',
-          fill: 'rgba(255,255,255,0.10)',
+          fill: '#202020',
           stroke: 'rgba(255,255,255,0.35)',
           'stroke-width': '0.6',
           'stroke-linejoin': 'round',
@@ -1721,9 +1567,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
       segments.forEach((coords, i) => {
         ensureNode(routeG, 'path', {
           d: geoPath({ type: 'LineString', coordinates: coords }) || '',
-          'stroke-dasharray': i === 1 ? '5 5' : 'none',
-          opacity: '0.25',
+          opacity: '0',
           'data-seg': i,
+          class: 'g-route',
         });
       });
 
@@ -1744,19 +1590,23 @@ document.querySelectorAll('.facts').forEach((facts) => {
       });
 
       function setActive(idx) {
+        const activeIdx = idx - 1;
+        const hasFlowingNext = activeIdx < segments.length;
         stopsG.querySelectorAll('circle').forEach((c, i) => {
-          const past = (i + 1) < idx;
-          const active = (i + 1) === idx;
-          c.setAttribute('fill', active || past ? '#FFD500' : 'rgba(255,255,255,0.5)');
-          c.setAttribute('r', active ? '7' : '4');
+          const stopNum = i + 1;
+          const isPast = stopNum < idx;
+          const isActive = stopNum === idx;
+          // Hide active marker only while a flowing segment leads onward; show arrival dot at the final stop.
+          if (isActive && hasFlowingNext) { c.style.display = 'none'; return; }
+          c.style.display = '';
+          c.setAttribute('fill', isActive ? '#FFD500' : (isPast ? '#FFD500' : 'rgba(255,255,255,0.5)'));
+          c.setAttribute('r', isActive ? '7' : '4');
         });
         routeG.querySelectorAll('path').forEach((p, i) => {
-          if (i < idx - 1) p.setAttribute('opacity', '1');
-          else if (i === idx - 1) p.setAttribute('opacity', '0.6');
-          else p.setAttribute('opacity', '0.2');
+          const isActiveSeg = i === activeIdx;
+          p.setAttribute('opacity', i < activeIdx ? '1' : (isActiveSeg ? '1' : '0'));
+          p.classList.toggle('is-flowing', isActiveSeg);
         });
-        const stage = document.getElementById('sardiniaStage');
-        if (stage) stage.textContent = stops[idx - 1]?.label || '';
       }
 
       const io = new IntersectionObserver(entries => {
@@ -1787,17 +1637,20 @@ document.querySelectorAll('.facts').forEach((facts) => {
   const lbNext = document.getElementById('lbNext');
   const lbStage = document.getElementById('lbStage');
 
-  // Pull background-image url from inline style
-  function urlFromStyle(el) {
+  // Resolve a usable URL from either a background-image inline style or an <img>
+  function urlFromEl(el) {
+    if (el.tagName === 'IMG') return el.currentSrc || el.src || null;
     const s = el.getAttribute('style') || '';
     const m = s.match(/url\(['"]?([^'")]+)['"]?\)/);
     return m ? m[1] : null;
   }
 
+  const SELECTOR = '[style*="background-image"], .stop figure > img';
+
   // Every visual image in the journey section, in document order
   function collect() {
-    return [...journey.querySelectorAll('[style*="background-image"]')]
-      .map(el => ({ el, url: urlFromStyle(el) }))
+    return [...journey.querySelectorAll(SELECTOR)]
+      .map(el => ({ el, url: urlFromEl(el) }))
       .filter(x => x.url);
   }
 
@@ -1832,11 +1685,12 @@ document.querySelectorAll('.facts').forEach((facts) => {
   function prev() { if (!images.length) return; current = (current - 1 + images.length) % images.length; show(); }
 
   // Wire click handlers on eligible elements
-  journey.querySelectorAll('[style*="background-image"]').forEach(el => {
+  journey.querySelectorAll(SELECTOR).forEach(el => {
     if (!isClickToOpen(el)) return;
-    if (!urlFromStyle(el)) return;
-    el.classList.add('lb-clickable');
-    el.addEventListener('click', () => {
+    if (!urlFromEl(el)) return;
+    const target = el.tagName === 'IMG' ? (el.closest('figure') || el) : el;
+    target.classList.add('lb-clickable');
+    target.addEventListener('click', () => {
       const all = collect();
       const idx = all.findIndex(it => it.el === el);
       if (idx >= 0) open(idx);
@@ -1853,6 +1707,299 @@ document.querySelectorAll('.facts').forEach((facts) => {
     else if (e.key === 'ArrowLeft') prev();
     else if (e.key === 'ArrowRight') next();
   });
+})();
+
+// ========== Sculpting · scroll-driven gallery ==========
+(() => {
+  const stage = document.getElementById('sculptStage');
+  if (!stage) return;
+  const canvas = stage.querySelector('.sg-canvas');
+  const tiles = stage.querySelectorAll('.sg-tile');
+  if (!tiles.length) return;
+
+  // Each keyframe = [colStart, colSpan, top%] on an 8-col grid.
+  // Every tile is visible at all times (no opacity). Tiles are arranged in
+  // three vertical tracks with strict left-to-right column ordering inside
+  // each track, so non-overlap holds at every keyframe and during any linear
+  // lerp between them.
+  //
+  //   Top track  (y=4%):  J-2 ↔ J-3  swap dominance
+  //   Mid track  (y=33%): J-4 ↔ J-5  swap dominance (kept strictly adjacent
+  //                                   so the visual gap is exactly one
+  //                                   column-gap throughout the lerp).
+  //   Bottom     (y=72%): J-6 ↔ J-7  swap dominance (adjacent — same as
+  //                                   the mid pair, gap stays 1 column-gap).
+  const KF = {
+    j2: [
+      [1, 4,  4],
+      [1, 4,  4],
+      [1, 2,  4],
+      [1, 2,  4]
+    ],
+    j3: [
+      [7, 2,  4],
+      [7, 2,  4],
+      [4, 5,  4],
+      [4, 5,  4]
+    ],
+    j4: [
+      [1, 3, 33],
+      [1, 3, 33],
+      [1, 6, 33],
+      [1, 6, 33]
+    ],
+    j5: [
+      [4, 5, 33],
+      [4, 5, 33],
+      [7, 2, 33],
+      [7, 2, 33]
+    ],
+    j6: [
+      [1, 6, 72],
+      [1, 6, 72],
+      [1, 6, 72],
+      [1, 6, 72]
+    ],
+    j7: [
+      [7, 2, 72],
+      [7, 2, 72],
+      [3, 6, 72],
+      [3, 6, 72]
+    ]
+  };
+
+  const N_COLS = 8;
+  const TRACKS  = { j2:'top', j3:'top', j4:'mid', j5:'mid', j6:'bot', j7:'bot' };
+  const ORDER   = ['top', 'mid', 'bot'];
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const ease = t => -(Math.cos(Math.PI * t) - 1) / 2; // easeInOutSine — gentler than quad
+
+  // Read the actual rendered pixel value of --col-gap (CSS clamp result).
+  function readColGap() {
+    const probe = document.createElement('div');
+    probe.style.cssText = 'position:absolute;visibility:hidden;width:var(--col-gap);';
+    stage.appendChild(probe);
+    const px = probe.getBoundingClientRect().width;
+    probe.remove();
+    return px;
+  }
+
+  // Track tops at K0 — used as static trigger anchors so progress doesn't
+  // feed back into vertical position.
+  function staticTrackTops(canvasW, gap) {
+    const cwPx = (canvasW - (N_COLS - 1) * gap) / N_COLS;
+    const tops = {};
+    // Cursor starts at 0: stage's margin-top supplies the gap to J-1.
+    let cursor = 0;
+    for (const trackName of ORDER) {
+      tops[trackName] = cursor;
+      let maxH = 0;
+      for (const tile of tiles) {
+        if (TRACKS[tile.dataset.kf] !== trackName) continue;
+        const cs0 = KF[tile.dataset.kf][0][1];
+        const widthPx = cs0 * cwPx + (cs0 - 1) * gap;
+        const aspect = tile.naturalWidth / tile.naturalHeight;
+        if (!aspect) continue;
+        maxH = Math.max(maxH, widthPx / aspect);
+      }
+      cursor += maxH + gap;
+    }
+    return tops;
+  }
+
+  // Per-tile trigger:
+  //   - Animation starts when the tile's top edge enters the viewport at
+  //     y = TRIGGER_START_VH × viewport-height (measured from the top, so
+  //     0 = viewport top, 1 = viewport bottom). Bigger value = earlier start
+  //     while the tile is still well inside the viewport.
+  //   - Animation completes over TRIGGER_DURATION_VH viewports of additional
+  //     scroll. Together they should be ≤ TRIGGER_START_VH so the swap is
+  //     fully done while the tile is still on-screen.
+  const TRIGGER_START_VH = 1.0;
+  const TRIGGER_DURATION_VH = 1.0;
+
+  let cachedGap = null;
+  let cachedAnchors = null;
+  function invalidate() { cachedGap = null; cachedAnchors = null; }
+
+  // Max image height in a track when its tiles are at their last keyframe
+  // (used to anchor J-7's sticky position to its natural Phase 1 end y).
+  function maxHeightAtKLast(trackName, cwPx, gap) {
+    let maxH = 0;
+    for (const tile of tiles) {
+      if (TRACKS[tile.dataset.kf] !== trackName) continue;
+      const k = KF[tile.dataset.kf];
+      const klast = k[k.length - 1];
+      const widthPx = klast[1] * cwPx + (klast[1] - 1) * gap;
+      const aspect = tile.naturalWidth / tile.naturalHeight;
+      if (!aspect) continue;
+      maxH = Math.max(maxH, widthPx / aspect);
+    }
+    return maxH;
+  }
+
+  let raf = null;
+  function update() {
+    raf = null;
+    const rect = stage.getBoundingClientRect();
+    const cRect = canvas.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const canvasW = cRect.width;
+    if (cachedGap == null) cachedGap = readColGap();
+    const gap = cachedGap;
+    const cwPx = (canvasW - (N_COLS - 1) * gap) / N_COLS;
+    if (cachedAnchors == null) cachedAnchors = staticTrackTops(canvasW, gap);
+
+    const duration = TRIGGER_DURATION_VH * vh;
+    const startShift = TRIGGER_START_VH * vh;
+
+    // Pass 1: per-tile progress + width/height.
+    const data = [];
+    tiles.forEach(tile => {
+      const k = KF[tile.dataset.kf];
+      if (!k) return;
+      const trackName = TRACKS[tile.dataset.kf];
+      const triggerOffset = cachedAnchors[trackName] - startShift;
+      let p = (-rect.top - triggerOffset) / duration;
+      p = Math.max(0, Math.min(1, p));
+      const segs = k.length - 1;
+      const seg = Math.min(Math.floor(p * segs), segs - 1);
+      const t = ease(p * segs - seg);
+      const a = k[seg], b = k[seg + 1];
+      const c   = lerp(a[0], b[0], t);
+      const cs  = lerp(a[1], b[1], t);
+      const widthPx = cs * cwPx + (cs - 1) * gap;
+      const aspect = tile.naturalWidth / tile.naturalHeight || 1;
+      const heightPx = widthPx / aspect;
+      const leftPx = (c - 1) * (cwPx + gap);
+      data.push({ tile, kf: tile.dataset.kf, trackName, leftPx, widthPx, heightPx, aspect });
+    });
+
+    // Pass 2: walk tracks top→bot, stacking with one --col-gap between them.
+    // Cursor starts at 0 — the stage's margin-top is the gap from the J-1
+    // bookend to the first tile.
+    let cursor = 0;
+    let lastBottom = 0;
+    for (const trackName of ORDER) {
+      let maxH = 0;
+      for (const d of data) if (d.trackName === trackName) {
+        d.tile.style.setProperty('--x', d.leftPx + 'px');
+        d.tile.style.setProperty('--y', cursor + 'px');
+        d.tile.style.setProperty('--w', d.widthPx + 'px');
+        if (d.heightPx > maxH) maxH = d.heightPx;
+      }
+      lastBottom = cursor + maxH;
+      cursor = lastBottom + gap;
+    }
+    // ── Special phased behavior for J-7 ─────────────────────────────────
+    // Phase 1 (until 2nd pair finishes): J-7 stays in its standard slot,
+    //         scrolling normally with the canvas (already placed in Pass 2).
+    // Phase 2 (until J-7 reaches J-6's bottom edge): J-7 sticks to a fixed
+    //         viewport-y while the canvas scrolls up beneath it, so it
+    //         appears to slide down through the canvas at scroll speed.
+    // Phase 3: J-7 detaches and runs its own scale + column-move animation,
+    //         landing one --col-gap below J-6.
+    const j7 = data.find(d => d.kf === 'j7');
+    const j6 = data.find(d => d.kf === 'j6');
+    if (j7 && j6) {
+      // 2nd pair finishes when its progress reaches 1 → rect.top reaches this:
+      const phase1EndRectTop = -((cachedAnchors.mid - startShift) + duration);
+      // Compute J-7's *natural* canvas-y at Phase 1 end (top + mid at K-last,
+      // bot at K0). Sticky y is anchored to that exact viewport position so
+      // there's no jump at the Phase 1 → 2 transition.
+      const phase1EndJ7CanvasY =
+        maxHeightAtKLast('top', cwPx, gap) + gap +
+        maxHeightAtKLast('mid', cwPx, gap) + gap;
+      const STICKY_VIEW_Y = phase1EndJ7CanvasY + phase1EndRectTop;
+      const j6Top = parseFloat(j6.tile.style.getPropertyValue('--y')) || 0;
+      const j6Bottom = j6Top + j6.heightPx;
+      // Trigger Phase 3 (scale) the moment J-6's bottom edge passes J-7's
+      // top edge — the columns to J-7's left are cleared at that point so
+      // J-7 can safely expand into them without overlapping J-6.
+      const phase2EndRectTop = STICKY_VIEW_Y - j6Bottom;
+      const PHASE3_DURATION = TRIGGER_DURATION_VH * vh;
+      const phase3EndRectTop = phase2EndRectTop - PHASE3_DURATION;
+
+      const kN = KF.j7[KF.j7.length - 1];
+      let j7Y, j7W, j7L, j7H;
+      if (rect.top > phase1EndRectTop) {
+        // Phase 1: leave standard placement intact.
+        j7Y = parseFloat(j7.tile.style.getPropertyValue('--y'));
+        j7W = j7.widthPx; j7L = j7.leftPx; j7H = j7.heightPx;
+      } else if (rect.top > phase2EndRectTop) {
+        // Phase 2: sticky at K0 size.
+        const k0 = KF.j7[0];
+        j7W = k0[1] * cwPx + (k0[1] - 1) * gap;
+        j7L = (k0[0] - 1) * (cwPx + gap);
+        j7Y = STICKY_VIEW_Y - rect.top;
+        j7H = j7W / j7.aspect;
+        j7.tile.style.setProperty('--x', j7L + 'px');
+        j7.tile.style.setProperty('--y', j7Y + 'px');
+        j7.tile.style.setProperty('--w', j7W + 'px');
+      } else if (rect.top > phase3EndRectTop) {
+        // Phase 3: scale + move while still sticky in the viewport, so the
+        // entire scale animation plays out on screen.
+        const p3 = Math.max(0, Math.min(1, (phase2EndRectTop - rect.top) / PHASE3_DURATION));
+        const t  = ease(p3);
+        const k0 = KF.j7[0];
+        const c  = lerp(k0[0], kN[0], t);
+        const cs = lerp(k0[1], kN[1], t);
+        j7W = cs * cwPx + (cs - 1) * gap;
+        j7L = (c - 1) * (cwPx + gap);
+        j7Y = STICKY_VIEW_Y - rect.top; // stays sticky
+        j7H = j7W / j7.aspect;
+        j7.tile.style.setProperty('--x', j7L + 'px');
+        j7.tile.style.setProperty('--y', j7Y + 'px');
+        j7.tile.style.setProperty('--w', j7W + 'px');
+      } else {
+        // Phase 4: scale done — park J-7 at the canvas-y it occupied at the
+        // moment the sticky scale finished, then let it scroll naturally.
+        j7W = kN[1] * cwPx + (kN[1] - 1) * gap;
+        j7L = (kN[0] - 1) * (cwPx + gap);
+        j7Y = STICKY_VIEW_Y - phase3EndRectTop;
+        j7H = j7W / j7.aspect;
+        j7.tile.style.setProperty('--x', j7L + 'px');
+        j7.tile.style.setProperty('--y', j7Y + 'px');
+        j7.tile.style.setProperty('--w', j7W + 'px');
+      }
+
+      const j7Bottom = j7Y + j7H;
+      if (j7Bottom > lastBottom) lastBottom = j7Bottom;
+    }
+
+    // Shrink the stage to exactly the content height. The stage's
+    // margin-bottom then provides exactly one --col-gap to the J-8 bookend.
+    stage.style.height = lastBottom + 'px';
+  }
+  function onScroll() {
+    if (raf == null) raf = requestAnimationFrame(update);
+  }
+
+  const mq = matchMedia('(max-width: 900px)');
+  function setup() {
+    if (mq.matches) {
+      tiles.forEach(t => {
+        ['--x', '--y', '--w'].forEach(p => t.style.removeProperty(p));
+      });
+      stage.style.removeProperty('height');
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    } else {
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', () => { invalidate(); onScroll(); });
+      // Wait for naturalWidth before first render.
+      let pending = 0;
+      tiles.forEach(t => { if (!t.complete) pending++; });
+      if (pending === 0) update();
+      else tiles.forEach(t => {
+        if (t.complete) return;
+        t.addEventListener('load', () => { if (--pending === 0) update(); }, { once: true });
+      });
+    }
+  }
+  if (mq.addEventListener) mq.addEventListener('change', setup);
+  else mq.addListener(setup);
+  setup();
 })();
 </script>
 </body>
