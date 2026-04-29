@@ -1637,6 +1637,130 @@ section { position: relative; }
   margin-bottom: 0;
 }
 
+/* Sculpture Trip · full-bleed sticky map with photos overlaid on an 8-col grid */
+#sculpture-trip .journey-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  column-gap: 0;
+  position: relative;
+}
+#sculpture-trip .journey-map-wrap {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  position: sticky;
+  top: 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  height: 100vh;
+  display: block;
+  z-index: 0;
+  background: var(--black);
+  overflow: hidden;
+}
+#sculpture-trip .journey-map {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  clip-path: none;
+}
+#sculpture-trip .journey-map .map-bg { display: none; }
+#sculpture-trip .map-meta {
+  position: absolute;
+  left: max(24px, calc(50vw - 50% + 24px));
+  bottom: 24px;
+  margin: 0;
+  padding: 14px 20px;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  pointer-events: none;
+  grid-template-columns: repeat(3, minmax(120px, max-content));
+  column-gap: 32px;
+  row-gap: 0;
+  border-top: none;
+  padding-top: 14px;
+  z-index: 2;
+}
+#sculpture-trip .map-meta dt { opacity: .7; }
+#sculpture-trip .map-meta dd { color: #fff; }
+
+#sculpture-trip .journey-stops {
+  grid-column: 1;
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  column-gap: var(--col-gap);
+  row-gap: 0;
+  z-index: 1;
+  position: relative;
+  padding: 95vh 0 30vh;
+  pointer-events: none;
+}
+#sculpture-trip .stop {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-top: none !important;
+  align-self: start;
+  pointer-events: auto;
+}
+#sculpture-trip .stop[data-stop="1"] { grid-column: 1 / span 5; grid-row: 1; margin-top: 0; }
+#sculpture-trip .stop-cap[data-cap-for="1"] { grid-column: 5 / span 4; grid-row: 2; margin-top: 25vh; }
+#sculpture-trip .stop[data-stop="2"] { grid-column: 6 / span 3; grid-row: 3; margin-top: 35vh; }
+#sculpture-trip .stop-cap[data-cap-for="2"] { grid-column: 1 / span 4; grid-row: 4; margin-top: 30vh; }
+#sculpture-trip .stop-lead[data-lead-for="3"] { grid-column: 1 / span 4; grid-row: 5; margin: 30vh 0 0; pointer-events: auto; box-shadow: 0 24px 60px rgba(0,0,0,.55); }
+#sculpture-trip .stop-lead img { display: block; width: 100%; height: auto; }
+#sculpture-trip .stop-cap[data-cap-for="3"] { grid-column: 5 / span 4; grid-row: 6; margin-top: 25vh; }
+#sculpture-trip .stop[data-stop="3"] { grid-column: 2 / span 3; grid-row: 7; margin-top: 25vh; }
+#sculpture-trip .stop-lead[data-lead-for="4"] { grid-column: 2 / span 6; grid-row: 8; margin: calc(50vh - 180px) 0 0; pointer-events: auto; box-shadow: 0 24px 60px rgba(0,0,0,.55); }
+#sculpture-trip .stop[data-stop="4"] { grid-column: 6 / span 3; grid-row: 9; margin-top: 30px; }
+#sculpture-trip .stop-cap[data-cap-for="4"] { grid-column: 1 / span 4; grid-row: 10; margin-top: 25vh; }
+#sculpture-trip .stop figure {
+  background: rgba(0,0,0,.35);
+  box-shadow: 0 24px 60px rgba(0,0,0,.55);
+}
+#sculpture-trip .stop-cap {
+  pointer-events: auto;
+  margin: 0;
+  padding: 0;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: 0;
+  border-top: none;
+  font-family: var(--sans);
+  font-size: clamp(20px, 1.7vw, 26px);
+  line-height: 1.35;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: #fff;
+}
+#sculpture-trip .stop-cap strong { font-weight: 700; }
+#sculpture-trip .journey-finale { margin-top: 0; }
+@media (max-width: 900px) {
+  #sculpture-trip .journey-stops {
+    grid-template-columns: 1fr;
+    padding-top: 25vh;
+    padding-bottom: 25vh;
+  }
+  #sculpture-trip .stop[data-stop] {
+    grid-column: 1;
+    margin-top: 30vh;
+  }
+  #sculpture-trip .stop[data-stop="1"] { margin-top: 0; }
+  #sculpture-trip .map-meta {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 16px;
+  }
+}
+
 .sculpt-process {
   list-style: none;
   padding: 0;
