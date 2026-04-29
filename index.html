@@ -124,7 +124,7 @@
           <p>&ldquo;In Continuity, I attempted to realize an idea that had long been present in my mind: the representation of an infinite space in infinite motion. Subsequently, I engaged with the problems realized in it, which are extraordinarily fascinating. That sculpture consists of a band of uniform width throughout, whose edges are therefore parallel. It thus appears to be a two-sided surface, separated from the surrounding space by parallel lines and forming a new space. The phenomenon of this &ldquo;body,&rdquo; however, is that this new space-forming surface has only a single side, and that the seemingly parallel two lines are in fact only one single line&mdash;that is, a line running parallel to itself.&rdquo;</p>
           <p>In Continuity, I intended to achieve something similar: a surface, a boundary. Purely theoretically, from a twin band&mdash;one that is twisted one and a half times around itself and fused with another that is twisted only half a turn&mdash;one could obtain a form similar to the &ldquo;endless loop,&rdquo; but with only one surface and one boundary. For reasons unknown to me, this did not come about. Thus Continuity, despite a theoretically different expected result, consists of two parallel, bounded surfaces, composed of infinitely many straight lines.</p>
           <p>This explanation may seem somewhat dry and primitive, yet it is the only thing I can say about it myself. I can, however, add that for me such a sculpture represents something like a &ldquo;knot in space,&rdquo; a point of concentration of various latent directions, and that through its existence space is ordered, newly formed, and given aim and direction.</p>
-          <p class="quote-text">there is continuity in our purpose. however our purpose is also to see&mdash;and to see clearly. we [designers] are not working for the sake of machines, for some impersonal, superordinate entity such as &lsquo;industry&rsquo; or &lsquo;state&rsquo; or &lsquo;community&rsquo;. we are working for the wellbeing of every person, every individual, as part of a community. &lt;&hellip;&gt; this purpose, this new humanism, is what i&rsquo;d like to see as continuity.</p>
+          <p class="quote-text">There is continuity in our purpose. However our purpose is also to see&mdash;and to see clearly. We [designers] are not working for the sake of machines, for some impersonal, superordinate entity such as &lsquo;industry&rsquo; or &lsquo;state&rsquo; or &lsquo;community&rsquo;. We are working for the wellbeing of every person, every individual, as part of a community. &lt;&hellip;&gt; This purpose, this new humanism, is what I&rsquo;d like to see as continuity.</p>
           <p class="quote-attr">Max Bill, &ldquo;Continuity and change&rdquo;, 1953</p>
         </div>
       </div>
@@ -179,6 +179,15 @@
       <div class="bill-works-chart" style="min-height:480px; display:flex; align-items:center; justify-content:center;">
         <span style="font-family:var(--mono); font-size:18px; letter-spacing:.2em; color:rgba(0,0,0,.4); text-transform:uppercase;">Graph TBD</span>
       </div>
+    </div>
+  </section>
+
+  <!-- Bill · cursor-reveal section -->
+  <section class="bill-reveal light-section" id="billReveal">
+    <div class="bill-reveal-stage" id="billRevealStage"></div>
+    <div class="bill-reveal-fact">
+      <span class="fact-label">year</span>
+      <strong class="fact-value" id="billRevealYear">—</strong>
     </div>
   </section>
 
@@ -1989,6 +1998,66 @@ document.querySelectorAll('.facts').forEach((facts) => {
   if (mq.addEventListener) mq.addEventListener('change', setup);
   else mq.addListener(setup);
   setup();
+})();
+
+// Bill cursor-reveal · spawn colored placeholder tiles where the cursor moves
+(function () {
+  const stage = document.getElementById('billRevealStage');
+  if (!stage) return;
+  const COLORS = ['#FF002F','#97D776','#FFBCB4','#12277E','#FFD500','#000000','#FAF4EA'];
+  const MAX = 200;
+  const MIN_STEP = 60;
+  let lastX = -1e6, lastY = -1e6;
+  let lastColor = -1;
+  const shuffleBag = [];
+  function nextColor() {
+    if (shuffleBag.length === 0) {
+      const pool = COLORS.map((_, i) => i);
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      if (pool[0] === lastColor && pool.length > 1) [pool[0], pool[1]] = [pool[1], pool[0]];
+      shuffleBag.push(...pool);
+    }
+    lastColor = shuffleBag.shift();
+    return COLORS[lastColor];
+  }
+  const yearEl = document.getElementById('billRevealYear');
+  function nextYear() { return 1936 + Math.floor(Math.random() * 51); }
+  function spawn(x, y) {
+    const portrait = Math.random() < 0.5;
+    let w, h;
+    if (portrait) {
+      h = MAX;
+      w = Math.round(MAX * (0.5 + Math.random() * 0.4));
+    } else {
+      w = MAX;
+      h = Math.round(MAX * (0.4 + Math.random() * 0.4));
+    }
+    const tile = document.createElement('div');
+    tile.className = 'bill-reveal-tile';
+    tile.style.width = w + 'px';
+    tile.style.height = h + 'px';
+    tile.style.background = nextColor();
+    tile.style.left = (x - w / 2) + 'px';
+    tile.style.top = (y - h / 2) + 'px';
+    const year = nextYear();
+    tile.dataset.year = year;
+    stage.appendChild(tile);
+    while (stage.childElementCount > 8) stage.firstElementChild.remove();
+    if (yearEl) yearEl.textContent = year;
+  }
+  stage.addEventListener('pointermove', (e) => {
+    const r = stage.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    const dx = x - lastX, dy = y - lastY;
+    if (dx * dx + dy * dy < MIN_STEP * MIN_STEP) return;
+    lastX = x; lastY = y;
+    spawn(x, y);
+  });
+  stage.addEventListener('pointerleave', () => { lastX = -1e6; lastY = -1e6; });
 })();
 </script>
 </body>
