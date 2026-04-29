@@ -393,7 +393,7 @@
 
         <div class="journey-grid">
           <aside class="journey-map-wrap is-zoomed">
-            <svg class="journey-map" id="globeMap" viewBox="0 0 480 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <svg class="journey-map" id="globeMap" viewBox="0 0 480 480" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
               <rect class="map-bg" x="0" y="0" width="480" height="480" fill="rgba(255,255,255,0.025)"/>
               <g>
                 <g id="globeGraticule"></g>
@@ -412,27 +412,27 @@
           <div class="journey-stops">
             <article class="stop" data-stop="1">
               <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8441.jpeg" alt=""></figure>
-              <p class="stop-cap">Between 4 and 8 August 1986, the finished <strong>Continuity</strong> was mounted into a sturdy steel transport frame in Carrara and loaded onto the cargo ship <strong>MV Kupari</strong>.</p>
             </article>
+            <p class="stop-cap" data-cap-for="1">Between 4 and 8 August 1986, the finished <strong>Continuity</strong> was mounted into a sturdy steel transport frame in Carrara and loaded onto the cargo ship <strong>MV Kupari</strong>.</p>
 
             <article class="stop" data-stop="2">
               <figure class="has-video">
                 <video src="./assets/_journey/3%20sculpture%20trip/6749362-hd_1920_1080_24fps.mp4" autoplay muted loop playsinline preload="metadata"></video>
               </figure>
-              <p class="stop-cap">The Kupari sailed via the <strong>Strait of Gibraltar</strong>, west of Portugal, across the <strong>Bay of Biscay</strong> and through the <strong>English Channel</strong> to the North Sea — a 2,800 km open-water passage taking just over two weeks.</p>
             </article>
+            <p class="stop-cap" data-cap-for="2">The Kupari sailed via the <strong>Strait of Gibraltar</strong>, west of Portugal, across the <strong>Bay of Biscay</strong> and through the <strong>English Channel</strong> to the North Sea — a 2,800 km open-water passage taking just over two weeks.</p>
 
+            <figure class="stop-lead" data-lead-for="3"><img src="./assets/_journey/3%20sculpture%20trip/IMG_8446.jpeg" alt=""></figure>
+            <p class="stop-cap" data-cap-for="3">After unloading in <strong>Rotterdam</strong>, the sculpture was transferred to a river barge and pushed up the <strong>Rhine</strong> and <strong>Main</strong> rivers toward the German interior.</p>
             <article class="stop" data-stop="3">
-              <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8446.jpeg" alt=""></figure>
-              <figure style="margin-top:16px;"><img src="./assets/_journey/3%20sculpture%20trip/IMG_8443.jpeg" alt=""></figure>
-              <p class="stop-cap">After unloading in <strong>Rotterdam</strong>, the sculpture was transferred to a river barge and pushed up the <strong>Rhine</strong> and <strong>Main</strong> rivers toward the German interior.</p>
+              <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8443.jpeg" alt=""></figure>
             </article>
 
+            <figure class="stop-lead" data-lead-for="4"><img src="./assets/_journey/3%20sculpture%20trip/IMG_8447.jpeg" alt=""></figure>
             <article class="stop" data-stop="4">
-              <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8447.jpeg" alt=""></figure>
-              <p class="stop-cap">In Frankfurt, a <strong>Colonia crane</strong> moved from the Osthafen to Taunusanlage 12 lifted the 80-tonne sculpture above the trees and into place beside the Deutsche Bank towers the following morning.</p>
-              <figure style="margin-top: 20px;"><img src="./assets/_journey/3%20sculpture%20trip/IMG_8449.jpeg" alt=""></figure>
+              <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8449.jpeg" alt=""></figure>
             </article>
+            <p class="stop-cap" data-cap-for="4">In Frankfurt, a <strong>Colonia crane</strong> moved from the Osthafen to Taunusanlage 12 lifted the 80-tonne sculpture above the trees and into place beside the Deutsche Bank towers the following morning.</p>
           </div>
         </div>
 
@@ -1197,21 +1197,24 @@ document.querySelectorAll('.facts').forEach((facts) => {
   //   past  — number of segments shown as completed (solid line)
   //   flow  — segment index that is currently flowing (-1 if none)
   //   glow  — globe-stop index that gets the active "glowing" marker (-1 if none)
+  // Scale stays fixed at 1800 from stop 1 onward — only the rotation (lat/lon)
+  // changes between stops, so the camera pans along the route instead of zooming
+  // out and in. This keeps the projection's reprojection cost stable.
   const narrativeStates = [
     {
       view: [10, 43.5, 1800], past: 0, flow: -1, glow: 0, // 1 Carrara begin
       meta: [['Date', '16 · 08 · 1986'], ['Place', 'Port of Carrara'], ['Vessel', 'MV Kupari']],
     },
     {
-      view: [-2, 44, 520], past: 0, flow: 0, glow: -1, // 2 Atlantic
+      view: [-2, 44, 1800], past: 0, flow: 0, glow: -1, // 2 Atlantic
       meta: [['Period', '16 · 08 — 02 · 09 · 1986'], ['Place', 'The Atlantic'], ['Distance', '+2,800 km · sea']],
     },
     {
-      view: [6, 50.5, 1500], past: 1, flow: 1, glow: -1, // 3 Rotterdam → Rhine
+      view: [6, 50.5, 1800], past: 1, flow: 1, glow: -1, // 3 Rotterdam → Rhine
       meta: [['Date', '02 — 06 · 09 · 1986'], ['Leg', 'Rhine · Main'], ['Distance', '+500 km · river']],
     },
     {
-      view: [8.2, 50.4, 2400], past: 2, flow: -1, glow: 2, // 4 Frankfurt arrival
+      view: [8.2, 50.4, 1800], past: 2, flow: -1, glow: 2, // 4 Frankfurt arrival
       meta: [['Date', '07 · 09 · 1986'], ['Place', 'Taunusanlage 12'], ['Total', '~4,720 km']],
     },
   ];
@@ -1250,8 +1253,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
   ];
 
   const W = 480, H = 480, R_ZOOMED = 1100;
-  // Default "overview" view shows the full Carrara → Rotterdam → Frankfurt route.
-  const overviewView = [-2, 44, 520];
+  // Idle state: zoomed-out globe centered on Italy/Mediterranean. The first
+  // narrative stop zooms the camera in toward Carrara; when the section leaves
+  // the viewport we return to this full-earth view.
+  const overviewView = [10, 40, 230];
   const initialRotation = [-overviewView[0], -overviewView[1], 0];
   const R = overviewView[2];
   const NUDGE = 0.85; // how strongly the globe follows the active stop (0 = no follow, 1 = centered)
@@ -1262,6 +1267,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
   let currentScale = R;
   let targetScale = R;
   let activeStop = 0;
+  // Tracks whether the camera has zoomed in to the journey at least once during
+  // this section visit. After the first zoom-in we never zoom back out — between
+  // stops we hold the last active view, only the section-exit IO resets to idle.
+  let hasZoomedIn = false;
 
   function lerp(a, b, t) { return a + (b - a) * t; }
   function lerpAngle(a, b, t) {
@@ -1417,17 +1426,22 @@ document.querySelectorAll('.facts').forEach((facts) => {
     } else {
       targetRot = [...initialRotation];
       targetScale = R;
+      renderMeta(0);
     }
     requestRender();
   }
 
-  // Reset to overview view when section leaves the viewport (no globe — already zoomed).
+  // Reset to overview view when section leaves the viewport. This is the only
+  // place we zoom back out — re-entering the section will then trigger one fresh
+  // zoom-in when the first stop reaches the viewport center band.
   const sectionIO = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (!e.isIntersecting) {
         targetScale = R;
         targetRot = [...initialRotation];
         activeStop = 0;
+        hasZoomedIn = false;
+        renderMeta(0);
         requestRender();
       }
     });
@@ -1449,7 +1463,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       buildStatic();
       update();
 
-      const stops = [...section.querySelectorAll('.stop[data-stop]')];
+      const stops = [...section.querySelectorAll('.stop[data-stop], .stop-lead[data-lead-for]')];
 
       // Track which narrative stops currently intersect the viewport center band.
       // Multiple narrative articles may map to the same globe stop (e.g. a video segment
@@ -1466,7 +1480,12 @@ document.querySelectorAll('.facts').forEach((facts) => {
       stops.forEach(s => stopIO.observe(s));
 
       function pickActive() {
-        if (intersecting.size === 0) return;
+        if (intersecting.size === 0) {
+          // Only reset to idle BEFORE the first zoom-in; after that, hold the
+          // last active view between stops so the camera never zooms back out.
+          if (!hasZoomedIn) setActive(0);
+          return;
+        }
         // When multiple stops overlap the band (tall stops), pick the one closest to viewport center.
         const vc = window.innerHeight / 2;
         let bestEl = null, bestDist = Infinity;
@@ -1477,8 +1496,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
           if (d < bestDist) { bestDist = d; bestEl = el; }
         });
         if (bestEl) {
-          const idx = parseInt(bestEl.dataset.stop, 10);
-          if (idx > 0) setActive(idx);
+          const idx = parseInt(bestEl.dataset.stop || bestEl.dataset.leadFor, 10);
+          if (idx > 0) { hasZoomedIn = true; setActive(idx); }
         }
       }
 
