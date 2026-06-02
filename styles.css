@@ -177,25 +177,6 @@ body .menu-btn.is-open { z-index: 600; mix-blend-mode: normal; color: #fff; }
 .menu-btn.is-open svg { transform: rotate(135deg); }
 .menu-btn.is-open:hover svg { transform: rotate(155deg); }
 
-/* 4-column grid overlay — toggle by pressing G */
-.grid-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  display: none;
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 0 var(--gutter);
-  box-sizing: border-box;
-}
-.grid-overlay.is-on { display: grid; grid-template-columns: repeat(8, 1fr); gap: var(--col-gap); }
-.grid-overlay .col {
-  background: rgba(255, 0, 80, 0.08);
-  outline: 1px dashed rgba(255, 0, 80, 0.5);
-  height: 100%;
-}
-
 #ch5 { overflow: visible; }
 #ch5 .chapter-head { margin-bottom: 0; }
 #ch5 .math-body { margin-top: 200px; }
@@ -513,7 +494,7 @@ section { position: relative; }
 .chapter-num {
   font-family: var(--sans);
   font-weight: 500;
-  font-size: clamp(192px, 26.4vw, 360px);
+  font-size: 465px;
   line-height: 0.85;
   letter-spacing: -0.04em;
   grid-column: 2 / 3;
@@ -581,7 +562,7 @@ section { position: relative; }
 
 /* Facts */
 .facts {
-  background: var(--signal-yellow);
+  background: #FF8B01;
   color: #000;
   padding: 0;
   position: relative;
@@ -620,18 +601,28 @@ section { position: relative; }
 }
 .fact-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: var(--col-gap);
   padding: 12px 0;
-  border-top: 1px solid rgba(0,0,0,0.15);
+  position: relative;
   font-family: var(--sans);
   align-items: baseline;
 }
+/* Divider spans only columns 1–4 (right edge of col 4 = 50% − ½ gap on the 8-col grid). */
+.fact-row::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(50% - var(--col-gap) / 2);
+  height: 1px;
+  background: rgba(0,0,0,0.15);
+}
 .fact-key { grid-column: 1 / 2; }
-.fact-val { grid-column: 3 / 5; }
+.fact-val { grid-column: 2 / 9; } /* left edge on the 8-col grid's 2nd column */
 .fact-n { display: none; }
 .fact-caption {
-  grid-column: 3 / 5;
+  grid-column: 2 / 9;
   font-size: clamp(13px, 1vw, 15px);
   font-weight: 500;
   opacity: 0;
@@ -650,15 +641,50 @@ section { position: relative; }
   opacity: .7;
 }
 .fact-val {
-  font-size: clamp(22px, 2.2vw, 34px);
+  /* Docked/settled size + opacity match .fact-key. The big active zoom keeps
+     its size and fade because the scroll JS sets those inline and clears them
+     on dock, so these base values only take effect once the value settles. */
+  font-size: clamp(18px, 1.5vw, 22px);
   font-weight: 700;
   letter-spacing: -0.015em;
+  opacity: .7;
+}
+/* When the value settles into its row, drop weight + tracking to match .fact-key
+   exactly (the active zoom stays bold/tight via the base rule above). */
+.fact-row.is-docked .fact-val {
+  font-weight: 500;
+  letter-spacing: inherit; /* match .fact-key: inherit the body's -0.005em */
 }
 .fact-n {
   font-family: var(--mono);
   font-size: 12px;
   opacity: .55;
   letter-spacing: .1em;
+}
+
+/* Facts narrative continuation — overlaid inside the sticky container, slid up
+   from below by the scroll JS (see index.html). top + transform are set inline. */
+.facts-note {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  top: 0;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  column-gap: var(--col-gap);
+  pointer-events: none; /* let clicks fall through the empty cols; text re-enables */
+  will-change: transform;
+  transform: translateY(100vh); /* initial: below the fold until the scroll JS takes over */
+}
+.facts-note-body {
+  grid-column: 5 / 9; /* overlay columns 5–8 */
+  margin: 0;
+  pointer-events: auto;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(20px, 1.6vw, 26px);
+  line-height: 1.45;
+  letter-spacing: -0.005em;
 }
 
 /* Quote block */
@@ -694,6 +720,7 @@ section { position: relative; }
   padding-top: 40px;
   margin-left: calc(-100% - 24px);
   width: calc(200% + 24px);
+  color: #00934C;
 }
 .quote-attr {
   margin-top: 48px;
@@ -1087,6 +1114,194 @@ section { position: relative; }
 }
 .tweak-row input[type=color] { width: 32px; height: 24px; padding: 0; border-radius: 0; }
 
+/* Read-aloud controls (fixed, bottom-left). The whole cluster inverts against
+   the page background via difference blend (same approach as the + menu button). */
+.tts-controls {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 950;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  mix-blend-mode: difference;
+  isolation: isolate;
+}
+.tts-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  background: transparent;
+  color: #fff;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.tts-toggle:hover .tts-icon { transform: scale(1.12); }
+.tts-toggle .tts-icon {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 24px;
+  transition: transform .2s ease;
+}
+/* prev / next paragraph — revealed only during audio playback */
+.tts-prev,
+.tts-next {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0;
+  height: 64px;
+  padding: 0;
+  overflow: hidden;
+  flex: 0 0 auto;
+  opacity: 0;
+  transform: scale(.6);
+  background: transparent;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: width .24s cubic-bezier(.22, 1, .36, 1),
+              transform .24s cubic-bezier(.22, 1, .36, 1),
+              opacity .18s ease-out;
+}
+.tts-next { transition-delay: .04s; } /* subtle stagger after prev */
+.tts-prev .tts-icon,
+.tts-next .tts-icon {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 24px;
+  transition: transform .2s ease;
+}
+/* Built from the play triangle, doubled — next = ▶▶, prev = ◀◀ (flipped) */
+.tts-next .tts-icon::before,
+.tts-next .tts-icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0; height: 0;
+  border-left: 11px solid currentColor;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+.tts-next .tts-icon::before { left: 1px; }
+.tts-next .tts-icon::after  { left: 12px; }
+.tts-prev .tts-icon::before,
+.tts-prev .tts-icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0; height: 0;
+  border-right: 11px solid currentColor;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+.tts-prev .tts-icon::before { right: 1px; }
+.tts-prev .tts-icon::after  { right: 12px; }
+.tts-prev:hover .tts-icon { transform: translateX(-2px); }
+.tts-next:hover .tts-icon { transform: translateX(2px); }
+.tts-controls.is-audio:not(:has(.tts-toggle[data-state="idle"])) .tts-prev,
+.tts-controls.is-audio:not(:has(.tts-toggle[data-state="idle"])) .tts-next {
+  width: 34px;
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tts-prev, .tts-next { transition: none; transform: none; }
+}
+/* play triangle (idle / paused) */
+.tts-toggle[data-state="idle"] .tts-icon::before,
+.tts-toggle[data-state="paused"] .tts-icon::before {
+  content: "";
+  position: absolute;
+  top: 50%; left: 4px;
+  transform: translateY(-50%);
+  width: 0; height: 0;
+  border-left: 19px solid currentColor;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+}
+/* pause bars (playing) */
+.tts-toggle[data-state="playing"] .tts-icon::before,
+.tts-toggle[data-state="playing"] .tts-icon::after {
+  content: "";
+  position: absolute;
+  top: 1px; bottom: 1px;
+  width: 6px;
+  background: currentColor;
+  animation: tts-pulse 1.4s ease-in-out infinite;
+}
+.tts-toggle[data-state="playing"] .tts-icon::before { left: 4px; }
+.tts-toggle[data-state="playing"] .tts-icon::after  { right: 4px; animation-delay: .35s; }
+@keyframes tts-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: .4; }
+}
+@media (max-width: 600px) {
+  .tts-controls { left: 16px; bottom: 16px; gap: 0; }
+  .tts-toggle { width: 56px; height: 56px; }
+  .tts-prev, .tts-next { height: 56px; }
+}
+
+/* Read-aloud passage highlight — synced with the narration audio.
+   The other passages dim; the passage being read gets an animated "skeleton"
+   shimmer that sweeps a brighter band across its words (clipped to the text). */
+[data-narr] { transition: opacity .45s ease; }
+body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
+
+.tts-reading,
+.tts-reading * {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.tts-reading {
+  /* light sections (dark text on light bg): text stays FULLY solid at all times;
+     a thin lighter band sweeps across as the shimmer. */
+  background-image: linear-gradient(
+    100deg,
+    rgba(5, 5, 5, 1) 0%, rgba(5, 5, 5, 1) 40%,
+    rgba(5, 5, 5, .55) 50%,
+    rgba(5, 5, 5, 1) 60%, rgba(5, 5, 5, 1) 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: repeat;   /* always covers the text — never leaves a region transparent */
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: tts-shimmer 2.4s linear infinite;
+}
+.hero .tts-reading,
+.dark-section .tts-reading,
+.math .tts-reading {
+  /* dark sections (light text on dark bg): text stays FULLY solid at all times;
+     a thin softer band sweeps across as the shimmer. */
+  background-image: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 40%,
+    rgba(255, 255, 255, .55) 50%,
+    rgba(255, 255, 255, 1) 60%, rgba(255, 255, 255, 1) 100%
+  );
+}
+@keyframes tts-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: 0% 0; }   /* one tile = seamless loop, full coverage throughout */
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-narr] { transition: none; }
+  .tts-reading { animation: none; background-image: none; }
+  .tts-reading, .tts-reading * { color: inherit; -webkit-text-fill-color: currentColor; }
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .intro-grid, .article-grid, .math-head, .math-body, .topo-wrap {
@@ -1099,7 +1314,11 @@ section { position: relative; }
   }
   .img-strip { grid-template-columns: repeat(2, 1fr); }
   .fact-row { grid-template-columns: 1fr 1fr; }
+  .fact-row::before { width: 100%; } /* full-width divider on the stacked mobile layout */
   .fact-n { display: none; }
+  /* Note isn't slid on mobile — flows full-width below the table (JS sets noteTravel=0). */
+  .facts-note { position: static; transform: none; margin-top: 40px; }
+  .facts-note-body { grid-column: 1 / -1; }
   .timeline-row { grid-template-columns: 1fr; gap: 8px; }
   .footer-meta { grid-template-columns: repeat(2, 1fr); }
   .quote-text, .quote-attr { margin-left: 0; }
@@ -1545,7 +1764,7 @@ section { position: relative; }
 .sculpt-captions p {
   grid-column: 2 / span 2;
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 17px;
   margin: 0;
   opacity: .75;
 }

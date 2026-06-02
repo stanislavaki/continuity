@@ -1,0 +1,49 @@
+{
+  "voiceId": "n8kTUi6dVrplENT9Un56",
+  "modelId": "eleven_multilingual_v2",
+  "outputFormat": "mp3_44100_128",
+  "sections": [
+    {
+      "id": "intro-1",
+      "anchor": "[data-narr=\"intro-1\"]",
+      "title": "",
+      "file": "intro-1.mp3",
+      "bytes": 295123
+    },
+    {
+      "id": "intro-2",
+      "anchor": "[data-narr=\"intro-2\"]",
+      "title": "",
+      "file": "intro-2.mp3",
+      "bytes": 511626
+    },
+    {
+      "id": "ch1-1",
+      "anchor": "[data-narr=\"ch1-1\"]",
+      "title": "",
+      "file": "ch1-1.mp3",
+      "bytes": 716426
+    },
+    {
+      "id": "ch1-2",
+      "anchor": "[data-narr=\"ch1-2\"]",
+      "title": "",
+      "file": "ch1-2.mp3",
+      "bytes": 552586
+    },
+    {
+      "id": "ch1-3",
+      "anchor": "[data-narr=\"ch1-3\"]",
+      "title": "",
+      "file": "ch1-3.mp3",
+      "bytes": 338591
+    },
+    {
+      "id": "ch1-4",
+      "anchor": "[data-narr=\"ch1-4\"]",
+      "title": "",
+      "file": "ch1-4.mp3",
+      "bytes": 481951
+    }
+  ]
+}

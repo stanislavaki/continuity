@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=3" />
+<link rel="stylesheet" href="styles.css?v=13" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <script src="https://cdn.jsdelivr.net/npm/d3@7" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3" defer></script>
@@ -15,18 +15,6 @@
   <!-- Custom cursor -->
   <div class="cursor" id="cursor"></div>
   <div class="cursor-dot" id="cursorDot"></div>
-
-  <!-- 4-column grid overlay (toggle: press G) -->
-  <div class="grid-overlay" id="gridOverlay">
-    <div class="col"></div>
-    <div class="col"></div>
-    <div class="col"></div>
-    <div class="col"></div>
-    <div class="col"></div>
-    <div class="col"></div>
-    <div class="col"></div>
-    <div class="col"></div>
-  </div>
 
   <!-- Top bar -->
   <div class="topbar">
@@ -82,10 +70,7 @@
       <div class="hero-bg" id="heroBg"></div>
       <h1 class="hero-title">toward kontinuität</h1>
       <div class="hero-intro-grid">
-        <p class="hero-intro"><strong>Continuity</strong>, a colossal 4.5-meter-high granite sculpture shaped as an infinity loop, located in central Frankfurt, Germany. It was created by the Swiss architect and polymath <strong>Max Bill</strong> (1908—1994), a prominent figure in modernism and concrete art.</p>
-      </div>
-      <div class="hero-footer">
-        <span class="hero-scroll"><span>SCROLL</span><span class="line"></span></span>
+        <p class="hero-intro" data-narr="intro-1"><strong>Continuity</strong>, a colossal 4.5-meter-high granite sculpture shaped as an infinity loop, located in central Frankfurt, Germany. It was created by the Swiss architect and polymath <strong>Max Bill</strong> (1908—1994), a prominent figure in modernism and concrete art.</p>
       </div>
     </header>
 
@@ -102,7 +87,7 @@
   <section class="dark-section" style="padding: 120px 0;">
     <div class="container">
       <div class="article-body">
-        <p>Imagine a 200-ton block of granite, extracted from a quarry in Sardinia in the 1980s, carved into a work of art and shipped across the North Atlantic, then transported through Europe via canals and rivers — before finally being installed as a monumental infinity loop in the heart of Frankfurt's financial district. Such an undertaking, combining production and logistics, had not been seen since the transport of colossal sculptures carved from monoliths in ancient Egypt. So what was the idea behind it, and what made it possible forty years ago?</p>
+        <p data-narr="intro-2">Imagine a 200-ton block of granite, extracted from a quarry in Sardinia in the 1980s, carved into a work of art and shipped across the North Atlantic, then transported through Europe via canals and rivers — before finally being installed as a monumental infinity loop in the heart of Frankfurt's financial district. Such an undertaking, combining production and logistics, had not been seen since the transport of colossal sculptures carved from monoliths in ancient Egypt. So what was the idea behind it, and what made it possible forty years ago?</p>
       </div>
     </div>
   </section>
@@ -121,10 +106,10 @@
     <div class="container">
       <div class="article-grid">
         <div class="article-body">
-          <p>&ldquo;In Continuity, I attempted to realize an idea that had long been present in my mind: the representation of an infinite space in infinite motion. Subsequently, I engaged with the problems realized in it, which are extraordinarily fascinating. That sculpture consists of a band of uniform width throughout, whose edges are therefore parallel. It thus appears to be a two-sided surface, separated from the surrounding space by parallel lines and forming a new space. The phenomenon of this &ldquo;body,&rdquo; however, is that this new space-forming surface has only a single side, and that the seemingly parallel two lines are in fact only one single line&mdash;that is, a line running parallel to itself.&rdquo;</p>
-          <p>In Continuity, I intended to achieve something similar: a surface, a boundary. Purely theoretically, from a twin band&mdash;one that is twisted one and a half times around itself and fused with another that is twisted only half a turn&mdash;one could obtain a form similar to the &ldquo;endless loop,&rdquo; but with only one surface and one boundary. For reasons unknown to me, this did not come about. Thus Continuity, despite a theoretically different expected result, consists of two parallel, bounded surfaces, composed of infinitely many straight lines.</p>
-          <p>This explanation may seem somewhat dry and primitive, yet it is the only thing I can say about it myself. I can, however, add that for me such a sculpture represents something like a &ldquo;knot in space,&rdquo; a point of concentration of various latent directions, and that through its existence space is ordered, newly formed, and given aim and direction.</p>
-          <p class="quote-text">There is continuity in our purpose. However our purpose is also to see&mdash;and to see clearly. We [designers] are not working for the sake of machines, for some impersonal, superordinate entity such as &lsquo;industry&rsquo; or &lsquo;state&rsquo; or &lsquo;community&rsquo;. We are working for the wellbeing of every person, every individual, as part of a community. &lt;&hellip;&gt; This purpose, this new humanism, is what I&rsquo;d like to see as continuity.</p>
+          <p data-narr="ch1-1">&ldquo;In Continuity, I attempted to realize an idea that had long been present in my mind: the representation of an infinite space in infinite motion. Subsequently, I engaged with the problems realized in it, which are extraordinarily fascinating. That sculpture consists of a band of uniform width throughout, whose edges are therefore parallel. It thus appears to be a two-sided surface, separated from the surrounding space by parallel lines and forming a new space. The phenomenon of this &ldquo;body,&rdquo; however, is that this new space-forming surface has only a single side, and that the seemingly parallel two lines are in fact only one single line&mdash;that is, a line running parallel to itself.&rdquo;</p>
+          <p data-narr="ch1-2">In Continuity, I intended to achieve something similar: a surface, a boundary. Purely theoretically, from a twin band&mdash;one that is twisted one and a half times around itself and fused with another that is twisted only half a turn&mdash;one could obtain a form similar to the &ldquo;endless loop,&rdquo; but with only one surface and one boundary. For reasons unknown to me, this did not come about. Thus Continuity, despite a theoretically different expected result, consists of two parallel, bounded surfaces, composed of infinitely many straight lines.</p>
+          <p data-narr="ch1-3">This explanation may seem somewhat dry and primitive, yet it is the only thing I can say about it myself. I can, however, add that for me such a sculpture represents something like a &ldquo;knot in space,&rdquo; a point of concentration of various latent directions, and that through its existence space is ordered, newly formed, and given aim and direction.</p>
+          <p class="quote-text" data-narr="ch1-4">There is continuity in our purpose. However our purpose is also to see&mdash;and to see clearly. We [designers] are not working for the sake of machines, for some impersonal, superordinate entity such as &lsquo;industry&rsquo; or &lsquo;state&rsquo; or &lsquo;community&rsquo;. We are working for the wellbeing of every person, every individual, as part of a community. &lt;&hellip;&gt; This purpose, this new humanism, is what I&rsquo;d like to see as continuity.</p>
           <p class="quote-attr">Max Bill, &ldquo;Continuity and change&rdquo;, 1953</p>
         </div>
       </div>
@@ -137,15 +122,17 @@
     <div class="container">
       <h3 class="facts-title">Facts</h3>
       <div class="facts-grid">
-        <div class="fact-row"><span class="fact-key">Year</span><span class="fact-val">1986</span><span class="fact-n">01 / 09</span></div>
-        <div class="fact-row" data-no-zoom><span class="fact-key">Place</span><span class="fact-val">Frankfurt am Main, Germany</span><span class="fact-n">02 / 09</span></div>
-        <div class="fact-row"><span class="fact-key">Height</span><span class="fact-val">4.5 m</span><span class="fact-n">03 / 09</span></div>
-        <div class="fact-row"><span class="fact-key">Weight</span><span class="fact-val">80 t</span><span class="fact-n">04 / 09</span></div>
-        <div class="fact-row"><span class="fact-key">Production</span><span class="fact-val">3 years</span><span class="fact-n">05 / 09</span></div>
-        <div class="fact-row"><span class="fact-key">Material</span><span class="fact-val">Granite (Sardinia)</span><span class="fact-n">06 / 09</span></div>
-        <div class="fact-row"><span class="fact-key">Author</span><span class="fact-val">Max Bill</span><span class="fact-n">07 / 09</span></div>
-        <div class="fact-row" data-no-zoom><span class="fact-key">Chief of production</span><span class="fact-val">Dominique Stroobant</span><span class="fact-n">08 / 09</span></div>
-        <div class="fact-row" data-no-zoom><span class="fact-key">Budget</span><span class="fact-val">2.3M EUR</span><span class="fact-caption">(equivalent of 1986 Deutsche Marks in 2026 euros)</span><span class="fact-n">09 / 09</span></div>
+        <div class="fact-row"><span class="fact-key">Year</span><span class="fact-val">1986</span><span class="fact-n">01 / 05</span></div>
+        <div class="fact-row" data-no-zoom><span class="fact-key">Place</span><span class="fact-val">Frankfurt am Main, Germany</span><span class="fact-n">02 / 05</span></div>
+        <div class="fact-row"><span class="fact-key">Height</span><span class="fact-val">4.5 m</span><span class="fact-n">03 / 05</span></div>
+        <div class="fact-row"><span class="fact-key">Weight</span><span class="fact-val">80 t</span><span class="fact-n">04 / 05</span></div>
+        <div class="fact-row"><span class="fact-key">Material</span><span class="fact-val">Granite (Sardinia)</span><span class="fact-n">05 / 05</span></div>
+      </div>
+      <!-- Narrative continuation. Lives inside the sticky container so the table
+           stays pinned; the scroll JS slides this up from below (cols 5–8) until
+           it aligns with the table, then the pin releases and both exit together. -->
+      <div class="facts-note" id="factsNote">
+        <p class="facts-note-body">Realised over three years of continuous work, the sculpture was conceived by the Swiss artist, architect and Bauhaus-trained polymath Max Bill. Its production was led on site by Dominique Stroobant, chief of production, who directed the cutting, shaping and assembly of the granite and coordinated the considerable logistics the piece demanded. The commission was completed on a budget of roughly 2.3 million euros in today&rsquo;s terms &mdash; the equivalent of its 1986 cost in Deutsche Marks &mdash; a figure that reflects both the scale of the material and the precision the work required.</p>
       </div>
     </div>
   </section>
@@ -165,8 +152,8 @@
       <div class="article-grid" style="grid-template-columns:1.1fr 1fr; align-items:start;">
         <div class="article-image" style="background-image:url('./assets/max-bill-portrait.jpg'); aspect-ratio:4/3;"></div>
         <div class="article-body">
-          <p><strong>Max Bill (1908—1994)</strong> was a great Swiss polymath: architect, industrial and graphic designer, sculptor, painter — and also a prolific writer, scholar, and teacher.</p>
-          <p>He attended the Bauhaus where he was taught by Josef Albers, László Moholy-Nagy, Paul Klee, Wassily Kandinsky and Oskar Schlemmer. Bill remained closely associated with the Bauhaus school and was a key figure in developing and propagating its principles — as a guest lecturer at the Kunstgewerbeschule Zürich, and as a co-founder and first rector of the <strong>Ulm School of Design</strong>.</p>
+          <p data-narr="ch2-1"><strong>Max Bill (1908—1994)</strong> was a great Swiss polymath: architect, industrial and graphic designer, sculptor, painter — and also a prolific writer, scholar, and teacher.</p>
+          <p data-narr="ch2-2">He attended the Bauhaus where he was taught by Josef Albers, László Moholy-Nagy, Paul Klee, Wassily Kandinsky and Oskar Schlemmer. Bill remained closely associated with the Bauhaus school and was a key figure in developing and propagating its principles — as a guest lecturer at the Kunstgewerbeschule Zürich, and as a co-founder and first rector of the <strong>Ulm School of Design</strong>.</p>
         </div>
       </div>
     </div>
@@ -461,9 +448,9 @@
           </div>
         </div>
         <div class="article-body">
-          <p>In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity — the development of which took three years.</p>
-          <p>Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
-          <p>Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation — often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
+          <p data-narr="ch4-1">In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity — the development of which took three years.</p>
+          <p data-narr="ch4-2">Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
+          <p data-narr="ch4-3">Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation — often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
         </div>
         <div style="grid-column: 1 / -1; margin-top:48px; min-height:735px; display:flex; align-items:center; justify-content:center;">
           <span style="font-family:var(--mono); font-size:18px; letter-spacing:.2em; color:rgba(0,0,0,.4); text-transform:uppercase;">Content TBD</span>
@@ -487,17 +474,17 @@
 
       <div class="math-body">
         <div>
-          <p>Max Bill was consistently inspired by mathematics and logic in art. His approach, which he called &ldquo;verifiable logic,&rdquo; guided him from early experimentation toward a precise method of making&mdash;and explaining&mdash;his work: <strong>&ldquo;You can always understand my work, even if you don&rsquo;t like it.&rdquo;</strong> From the beginning of his career, Bill was fascinated by the Möbius strip. From his first attempts in 1936 to the realization of Continuity in Frankfurt, he produced dozens&mdash;if not hundreds&mdash;of variations on the infinity loop, exploring differences in scale, material, and environment.</p>
-          <p>But how are we to understand the topology of Continuity? Is it a Möbius strip, a variation on an endless loop, or simply an artistic, sculptural interpretation of an infinite motif? In short, how did he do it? Even though Bill left some explanations, our own experiments and consultations with mathematicians did not yield an immediate understanding of how the sculpture was conceived and modeled.</p>
+          <p data-narr="ch5-1">Max Bill was consistently inspired by mathematics and logic in art. His approach, which he called &ldquo;verifiable logic,&rdquo; guided him from early experimentation toward a precise method of making&mdash;and explaining&mdash;his work: <strong>&ldquo;You can always understand my work, even if you don&rsquo;t like it.&rdquo;</strong> From the beginning of his career, Bill was fascinated by the Möbius strip. From his first attempts in 1936 to the realization of Continuity in Frankfurt, he produced dozens&mdash;if not hundreds&mdash;of variations on the infinity loop, exploring differences in scale, material, and environment.</p>
+          <p data-narr="ch5-2">But how are we to understand the topology of Continuity? Is it a Möbius strip, a variation on an endless loop, or simply an artistic, sculptural interpretation of an infinite motif? In short, how did he do it? Even though Bill left some explanations, our own experiments and consultations with mathematicians did not yield an immediate understanding of how the sculpture was conceived and modeled.</p>
         </div>
         <div>
-          <p class="quote-text">In Continuity, I intended to achieve something similar: a single surface, a single boundary. Theoretically, a double helix, twisted twice by half a turn and fused with one twisted only half a turn, should have resulted in something akin to an &lsquo;infinite loop,&rsquo; possessing only one surface and one boundary. For reasons unknown to me, this did not happen, so Continuity, despite the theoretically expected outcome, consists of two parallel bounded surfaces composed of infinitely many straight lines. This explanation may sound somewhat dry and simplistic, yet it is the only thing I can say about it myself.</p>
+          <p class="quote-text" data-narr="ch5-3">In Continuity, I intended to achieve something similar: a single surface, a single boundary. Theoretically, a double helix, twisted twice by half a turn and fused with one twisted only half a turn, should have resulted in something akin to an &lsquo;infinite loop,&rsquo; possessing only one surface and one boundary. For reasons unknown to me, this did not happen, so Continuity, despite the theoretically expected outcome, consists of two parallel bounded surfaces composed of infinitely many straight lines. This explanation may sound somewhat dry and simplistic, yet it is the only thing I can say about it myself.</p>
           <p class="quote-attr">Max Bill</p>
         </div>
         <div>
-          <p>The interesting thing to note is that Bill thought he had invented a completely new shape. Even more curious was that he discovered it by twisting a strip of paper, just as Möbius had done many years previously. &ldquo;Not long afterwards, people began to congratulate me on my fresh and original interpretation of the Egyptian symbol for infinity and the Möbius ribbon. I had never heard of either of them. My mathematical knowledge had never gone beyond routine architectural calculations, and I had no great interest in mathematics.&rdquo;</p>
-          <p>Barry Cipra (mathematician, Minnesota, USA): &ldquo;Bill&rsquo;s intuition that a single half twist connected to a double half twist should result in a single-sided, single-edge surface is quite correct; depending on the handedness of the twists, the loop you wind up with has either three twists or one. So it&rsquo;s a mystery how he managed to add 1 and 2 and get 4.&rdquo;</p>
-          <p>By carefully examining the sculpture itself and creating a 3D model using 360° video and photography (fig. 1), and by comparing it with Bill&rsquo;s metal sculpture from 1945&ndash;46&mdash;used by him as a 1:20 prototype (fig. 2)&mdash;we were able to analyze the work and conduct a series of spatial experiments. One of these resulted in an origami model that follows the original topology step by step and, surprisingly, resolves into a clear infinity-loop construction (fig. 3). Building on this, we developed a responsive interactive model that clearly demonstrates the topology of the Continuity. The result is striking: a pure mathematical model transforms into a work of art.</p>
+          <p data-narr="ch5-4">The interesting thing to note is that Bill thought he had invented a completely new shape. Even more curious was that he discovered it by twisting a strip of paper, just as Möbius had done many years previously. &ldquo;Not long afterwards, people began to congratulate me on my fresh and original interpretation of the Egyptian symbol for infinity and the Möbius ribbon. I had never heard of either of them. My mathematical knowledge had never gone beyond routine architectural calculations, and I had no great interest in mathematics.&rdquo;</p>
+          <p data-narr="ch5-5">Barry Cipra (mathematician, Minnesota, USA): &ldquo;Bill&rsquo;s intuition that a single half twist connected to a double half twist should result in a single-sided, single-edge surface is quite correct; depending on the handedness of the twists, the loop you wind up with has either three twists or one. So it&rsquo;s a mystery how he managed to add 1 and 2 and get 4.&rdquo;</p>
+          <p data-narr="ch5-6">By carefully examining the sculpture itself and creating a 3D model using 360° video and photography (fig. 1), and by comparing it with Bill&rsquo;s metal sculpture from 1945&ndash;46&mdash;used by him as a 1:20 prototype (fig. 2)&mdash;we were able to analyze the work and conduct a series of spatial experiments. One of these resulted in an origami model that follows the original topology step by step and, surprisingly, resolves into a clear infinity-loop construction (fig. 3). Building on this, we developed a responsive interactive model that clearly demonstrates the topology of the Continuity. The result is striking: a pure mathematical model transforms into a work of art.</p>
         </div>
       </div>
 
@@ -820,8 +807,8 @@ function applyTweaks(cfg) {
   };
   const a = accents[cfg.accent] || accents.yellow;
   root.style.setProperty('--signal-yellow', a.c);
-  // Optionally update facts bg
-  document.querySelectorAll('.facts').forEach(f => { f.style.background = a.c; f.style.color = a.ink; });
+  // Facts keeps its own fixed background + text colors (see .facts in styles.css);
+  // it is intentionally decoupled from the accent.
   // serif
   document.body.classList.toggle('no-serif', cfg.serif === 'sans');
   if (cfg.serif === 'sans') {
@@ -913,25 +900,21 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
   update();
 })();
 
-// Toggle 4-col grid overlay with G
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'g' || e.key === 'G') {
-    if (e.target.matches && e.target.matches('input, textarea, [contenteditable]')) return;
-    document.getElementById('gridOverlay').classList.toggle('is-on');
-  }
-});
-
 // Facts: scroll-driven sequence — each fact value zooms in big-centered, then docks into its row
 document.querySelectorAll('.facts').forEach((facts) => {
   const container = facts.querySelector('.container');
   const rows = [...facts.querySelectorAll('.fact-row')];
   if (!rows.length) return;
   const N = rows.length;
+  const note = facts.querySelector('.facts-note');
+  let noteTravel = 0; // px the note slides up; computed in measure()
 
   const SCROLL_PER_FACT_VH = 70;
 
   const setHeight = () => {
-    facts.style.minHeight = (window.innerHeight * (1 + N * SCROLL_PER_FACT_VH / 100)) + 'px';
+    // Extra scroll beyond the table animation == the note's travel, so the
+    // sticky container stays pinned until the note has finished arriving.
+    facts.style.minHeight = (window.innerHeight * (1 + N * SCROLL_PER_FACT_VH / 100) + noteTravel) + 'px';
   };
 
   let docked = [];
@@ -956,6 +939,20 @@ document.querySelectorAll('.facts').forEach((facts) => {
         noZoom: r.hasAttribute('data-no-zoom')
       };
     });
+    if (note) {
+      if (window.innerWidth <= 900) {
+        // Mobile: no slide — the note flows as a normal full-width block (CSS).
+        note.style.top = '';
+        note.style.transform = '';
+        noteTravel = 0;
+      } else {
+        const grid = facts.querySelector('.facts-grid');
+        const gridTop = grid.getBoundingClientRect().top - cRect.top;
+        const H = container.clientHeight; // sticky container is 100vh
+        note.style.top = gridTop + 'px';        // rest: note's top aligns with the table grid
+        noteTravel = Math.max(0, H - gridTop);  // start fully below the fold, slide up to rest
+      }
+    }
   };
 
   const update = () => {
@@ -1012,7 +1009,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // Width scales linearly with font-size for the same text.
       const ratio = fs / dockedFS;
       const curH = dp.height * ratio;
-      // Horizontal: anchor left edge to docked left (column 3) — no horizontal motion.
+      // Horizontal: anchor left edge to docked left (grid column 2) — no horizontal motion.
       // Vertical: slide from ~85% viewport bottom (active) up to docked top.
       const ENTRY_TOP = ch * 0.85 - curH;
       const ty = (ENTRY_TOP - dp.top) * (1 - localP);
@@ -1020,11 +1017,21 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // Fade in: opacity 0 at entry (localP=0), 1 at docked (localP=1).
       val.style.opacity = localP;
     });
+
+    // Note: once the table has finished settling, slide the body text up from
+    // below the fold (1:1 with scroll) until it aligns with the table. It then
+    // sits still while the pin holds, and the container unpins exactly as it
+    // arrives — so table + note leave the viewport together.
+    if (note && noteTravel) {
+      const tableEnd = N * segment;
+      const p = Math.max(0, Math.min(1, (scrolled - tableEnd) / noteTravel));
+      note.style.transform = `translateY(${noteTravel * (1 - p)}px)`;
+    }
   };
 
   const init = () => {
-    setHeight();
     measure();
+    setHeight();
     update();
   };
 
@@ -1037,7 +1044,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
   let rT;
   window.addEventListener('resize', () => {
     clearTimeout(rT);
-    rT = setTimeout(() => { setHeight(); measure(); update(); }, 120);
+    rT = setTimeout(() => { measure(); setHeight(); update(); }, 120);
   });
 });
 
@@ -2078,6 +2085,271 @@ document.querySelectorAll('.facts').forEach((facts) => {
   });
   stage.addEventListener('pointerleave', () => { lastX = -1e6; lastY = -1e6; });
 })();
+
+// ---- Read-aloud ----
+// Prefers pre-rendered ElevenLabs narration (assets/audio/manifest.json); if
+// that isn't present (not generated yet, offline, file://), it falls back to
+// the browser's built-in Web Speech voice so the button always works.
+function __initTTS() {
+  const btn = document.querySelector('.tts-toggle');
+  if (!btn) return;
+  const labelEl = btn.querySelector('.tts-label');
+
+  // Hide the custom cursor over the controls (same as the + menu button) so the
+  // system pointer shows cleanly instead of vanishing under `cursor: none`.
+  const controlsEl = btn.closest('.tts-controls');
+  if (controlsEl) {
+    const cur = document.getElementById('cursor');
+    const curDot = document.getElementById('cursorDot');
+    controlsEl.addEventListener('mouseenter', () => { if (cur) cur.classList.add('hide'); if (curDot) curDot.classList.add('hide'); });
+    controlsEl.addEventListener('mouseleave', () => { if (cur) cur.classList.remove('hide'); if (curDot) curDot.classList.remove('hide'); });
+  }
+
+  function setState(state) {
+    btn.dataset.state = state;
+    btn.setAttribute('aria-pressed', state === 'playing' ? 'true' : 'false');
+    if (labelEl) {
+      labelEl.textContent = state === 'playing' ? 'PAUSE'
+                          : state === 'paused'  ? 'RESUME'
+                          : 'PLAY';
+    }
+  }
+
+  fetch('./assets/audio/manifest.json', { cache: 'no-cache' })
+    .then(r => (r.ok ? r.json() : null))
+    .then(m => {
+      if (m && Array.isArray(m.sections) && m.sections.length) {
+        initAudioEngine(btn, setState, m);
+      } else {
+        initSpeechEngine(btn, setState);
+      }
+    })
+    .catch(() => initSpeechEngine(btn, setState));
+}
+
+// ---- ElevenLabs pre-rendered audio engine ----
+function initAudioEngine(btn, setState, manifest) {
+  const base = './assets/audio/';
+  const sections = manifest.sections;
+  const audio = new Audio();
+  audio.preload = 'auto';
+  let idx = 0;
+  let active = false;      // true while a play-through is in progress
+  let current = null;      // currently highlighted passage element
+
+  function clearHighlight() {
+    if (current) { current.classList.remove('tts-reading'); current = null; }
+    document.body.classList.remove('tts-reading-active');
+  }
+  function highlight(i) {
+    if (current) current.classList.remove('tts-reading');
+    current = null;
+    const sel = sections[i] && sections[i].anchor;
+    const el = sel && document.querySelector(sel);
+    if (!el) return;
+    current = el;
+    document.body.classList.add('tts-reading-active');
+    el.classList.add('tts-reading');
+    // Ease into view only when it's outside a comfortable middle band, so we
+    // don't yank the page on every passage.
+    const r = el.getBoundingClientRect();
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    if (r.top < vh * 0.18 || r.bottom > vh * 0.82) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  // State is driven by real media events, not the play() promise — swapping
+  // src between sections can reject play() with a benign AbortError, which must
+  // not be mistaken for "stop".
+  function playSection(i) {
+    idx = i;
+    if (idx >= sections.length) { active = false; idx = 0; clearHighlight(); setState('idle'); return; }
+    audio.src = base + sections[idx].file;
+    highlight(idx);
+    // Only the very first play needs a user gesture; advances rely on sticky
+    // activation and may reject with AbortError, which we ignore.
+    audio.play().catch(() => { if (idx === 0) { active = false; clearHighlight(); setState('idle'); } });
+  }
+
+  audio.addEventListener('playing', () => { if (active) setState('playing'); });
+  audio.addEventListener('ended', () => { if (active) playSection(idx + 1); });
+  audio.addEventListener('error', () => { if (active) { active = false; clearHighlight(); setState('idle'); } });
+
+  function stop() {
+    audio.pause();
+    try { audio.currentTime = 0; } catch (_) {}
+    active = false; idx = 0;
+    clearHighlight();
+    setState('idle');
+  }
+
+  // Start from the passage the reader is currently looking at, not the very top.
+  function pickStartIndex() {
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const band = vh * 0.35;
+    for (let i = 0; i < sections.length; i++) {
+      const el = document.querySelector(sections[i].anchor);
+      if (!el) continue;
+      if (el.getBoundingClientRect().bottom > band) return i; // first passage not scrolled past
+    }
+    return sections.length - 1; // scrolled past everything → start at the last
+  }
+
+  btn.addEventListener('click', () => {
+    const s = btn.dataset.state || 'idle';
+    if (s === 'idle')         { active = true; playSection(pickStartIndex()); }
+    else if (s === 'playing') { audio.pause(); setState('paused'); }       // keep highlight while paused
+    else if (s === 'paused')  { audio.play().catch(() => {}); }
+  });
+
+  // Prev / next paragraph jump (active during playback or pause).
+  const controls = btn.closest('.tts-controls');
+  if (controls) controls.classList.add('is-audio');
+  const prevBtn = controls && controls.querySelector('.tts-prev');
+  const nextBtn = controls && controls.querySelector('.tts-next');
+  if (prevBtn) prevBtn.addEventListener('click', () => { if (active) playSection(Math.max(0, idx - 1)); });
+  if (nextBtn) nextBtn.addEventListener('click', () => { if (active && idx < sections.length - 1) playSection(idx + 1); });
+
+  // Esc exits playback mode: stop, clear the highlight, back to idle.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && btn.dataset.state !== 'idle') stop();
+  });
+  window.addEventListener('beforeunload', () => { try { audio.pause(); } catch (_) {} });
+}
+
+// ---- Browser Web Speech fallback (used when no ElevenLabs audio is present) ----
+function initSpeechEngine(btn, setState) {
+  if (!('speechSynthesis' in window)) { btn.hidden = true; return; }
+  const synth = window.speechSynthesis;
+
+  const SKIP_SELECTOR = [
+    '.cursor', '.cursor-dot', '.progress', '.menu-btn', '.menu-label',
+    '.menu-overlay', '.tweaks', '.tts-toggle', '.big', '.fact-n',
+    '.hero-scroll', '.topo-toggle', '.topo-slider', '.lightbox',
+    '.tts-skip', '[aria-hidden="true"]', 'script', 'style', 'noscript'
+  ].join(',');
+
+  const READABLE_SEL = 'h1, h2, h3, h4, p, blockquote, li, figcaption, .cap, .stop-cap, .fact-row';
+
+  function isHidden(el) {
+    const cs = window.getComputedStyle(el);
+    return cs.display === 'none' || cs.visibility === 'hidden';
+  }
+  function clean(s) { return (s || '').replace(/\s+/g, ' ').trim(); }
+
+  function collectReadable() {
+    const out = [];
+    const seen = new WeakSet();
+    const nodes = document.body.querySelectorAll(READABLE_SEL);
+    for (const el of nodes) {
+      if (seen.has(el)) continue;
+      if (el.closest(SKIP_SELECTOR)) continue;
+      if (isHidden(el)) continue;
+
+      let text = '';
+      let kind = 'body';
+
+      if (el.classList.contains('fact-row')) {
+        const k = el.querySelector('.fact-key');
+        const v = el.querySelector('.fact-val');
+        const cap = el.querySelector('.fact-caption');
+        if (k && v) {
+          text = clean(k.textContent) + ': ' + clean(v.textContent);
+          if (cap) text += '. ' + clean(cap.textContent);
+          text += '.';
+        }
+      } else if (/^H[1-6]$/.test(el.tagName)) {
+        text = clean(el.textContent);
+        kind = 'heading';
+      } else {
+        text = clean(el.textContent);
+      }
+
+      if (text && text.length > 1) {
+        out.push({ text, kind });
+        // Mark descendants as already covered so we don't re-emit nested matches
+        el.querySelectorAll(READABLE_SEL).forEach(c => seen.add(c));
+      }
+    }
+    return out;
+  }
+
+  // Pick a voice when voices become available
+  let chosenVoice = null;
+  function pickVoice() {
+    const voices = synth.getVoices();
+    if (!voices || !voices.length) return;
+    chosenVoice = voices.find(v => v.lang === 'en-US') ||
+                  voices.find(v => v.lang && v.lang.startsWith('en')) ||
+                  voices[0];
+  }
+  pickVoice();
+  if ('onvoiceschanged' in synth) synth.addEventListener('voiceschanged', pickVoice);
+
+  // State
+  let resumeKick = null;
+  function startKick() {
+    stopKick();
+    // Chrome-style ~15s auto-pause workaround
+    resumeKick = setInterval(() => {
+      if (synth.speaking && !synth.paused) synth.resume();
+    }, 10000);
+  }
+  function stopKick() {
+    if (resumeKick) { clearInterval(resumeKick); resumeKick = null; }
+  }
+
+  function playAll() {
+    synth.cancel();
+    const items = collectReadable();
+    if (!items.length) return;
+    items.forEach((it, i) => {
+      const u = new SpeechSynthesisUtterance(it.text);
+      u.lang = 'en-US';
+      if (chosenVoice) u.voice = chosenVoice;
+      u.rate = 1;
+      u.pitch = it.kind === 'heading' ? 0.95 : 1;
+      const isLast = i === items.length - 1;
+      const finish = () => { if (isLast) { stopKick(); setState('idle'); } };
+      u.onend = finish;
+      u.onerror = finish;
+      synth.speak(u);
+    });
+    setState('playing');
+    startKick();
+  }
+
+  btn.addEventListener('click', () => {
+    const s = btn.dataset.state || 'idle';
+    if (s === 'idle')          playAll();
+    else if (s === 'playing') { synth.pause();  stopKick(); setState('paused'); }
+    else if (s === 'paused')  { synth.resume(); startKick(); setState('playing'); }
+  });
+  // Esc exits read-aloud mode.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && btn.dataset.state !== 'idle') { synth.cancel(); stopKick(); setState('idle'); }
+  });
+
+  window.addEventListener('beforeunload', () => synth.cancel());
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', __initTTS);
+} else {
+  __initTTS();
+}
 </script>
+<script src="./g-toolset.js" defer></script>
+<div class="tts-controls">
+  <button class="tts-prev" type="button" aria-label="Previous paragraph">
+    <span class="tts-icon" aria-hidden="true"></span>
+  </button>
+  <button class="tts-toggle" type="button" aria-label="Read page aloud" aria-pressed="false" data-state="idle">
+    <span class="tts-icon" aria-hidden="true"></span>
+  </button>
+  <button class="tts-next" type="button" aria-label="Next paragraph">
+    <span class="tts-icon" aria-hidden="true"></span>
+  </button>
+</div>
 </body>
 </html>

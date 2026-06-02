@@ -1,0 +1,90 @@
+{
+  "_comment": "Source script for ElevenLabs narration. One entry per on-page passage. 'anchor' points at the exact paragraph (tagged with data-narr in index.html) that gets highlighted and scrolled to while this clip plays. Edit text here, then run scripts/generate_narration.py to (re)render assets/audio/<id>.mp3 + manifest.json. Text is curated from the on-page prose with light cleanup so it reads naturally aloud; the journey scrollytelling captions are intentionally omitted.",
+  "sections": [
+    {
+      "id": "intro-1",
+      "anchor": "[data-narr=\"intro-1\"]",
+      "text": "Continuity — a colossal, four-and-a-half-metre-high granite sculpture shaped as an infinity loop, located in central Frankfurt, Germany. It was created by the Swiss architect and polymath Max Bill, who lived from 1908 to 1994, a prominent figure in modernism and concrete art."
+    },
+    {
+      "id": "intro-2",
+      "anchor": "[data-narr=\"intro-2\"]",
+      "text": "Imagine a two-hundred-ton block of granite, extracted from a quarry in Sardinia in the 1980s, carved into a work of art and shipped across the North Atlantic, then transported through Europe via canals and rivers — before finally being installed as a monumental infinity loop in the heart of Frankfurt's financial district. Such an undertaking, combining production and logistics, had not been seen since the transport of colossal sculptures carved from monoliths in ancient Egypt. So what was the idea behind it, and what made it possible forty years ago?"
+    },
+    {
+      "id": "ch1-1",
+      "anchor": "[data-narr=\"ch1-1\"]",
+      "text": "In Continuity, I attempted to realize an idea that had long been present in my mind: the representation of an infinite space in infinite motion. Subsequently, I engaged with the problems realized in it, which are extraordinarily fascinating. That sculpture consists of a band of uniform width throughout, whose edges are therefore parallel. It thus appears to be a two-sided surface, separated from the surrounding space by parallel lines and forming a new space. The phenomenon of this body, however, is that this new space-forming surface has only a single side, and that the seemingly parallel two lines are in fact only one single line — that is, a line running parallel to itself."
+    },
+    {
+      "id": "ch1-2",
+      "anchor": "[data-narr=\"ch1-2\"]",
+      "text": "In Continuity, I intended to achieve something similar: a surface, a boundary. Purely theoretically, from a twin band — one that is twisted one and a half times around itself and fused with another that is twisted only half a turn — one could obtain a form similar to the endless loop, but with only one surface and one boundary. For reasons unknown to me, this did not come about. Thus Continuity, despite a theoretically different expected result, consists of two parallel, bounded surfaces, composed of infinitely many straight lines."
+    },
+    {
+      "id": "ch1-3",
+      "anchor": "[data-narr=\"ch1-3\"]",
+      "text": "This explanation may seem somewhat dry and primitive, yet it is the only thing I can say about it myself. I can, however, add that for me such a sculpture represents something like a knot in space, a point of concentration of various latent directions, and that through its existence space is ordered, newly formed, and given aim and direction."
+    },
+    {
+      "id": "ch1-4",
+      "anchor": "[data-narr=\"ch1-4\"]",
+      "text": "There is continuity in our purpose. However, our purpose is also to see — and to see clearly. We designers are not working for the sake of machines, for some impersonal, superordinate entity such as industry, or state, or community. We are working for the wellbeing of every person, every individual, as part of a community. This purpose, this new humanism, is what I'd like to see as continuity. — Max Bill, Continuity and Change, 1953."
+    },
+    {
+      "id": "ch2-1",
+      "anchor": "[data-narr=\"ch2-1\"]",
+      "text": "Max Bill, who lived from 1908 to 1994, was a great Swiss polymath: architect, industrial and graphic designer, sculptor, painter — and also a prolific writer, scholar, and teacher."
+    },
+    {
+      "id": "ch2-2",
+      "anchor": "[data-narr=\"ch2-2\"]",
+      "text": "He attended the Bauhaus, where he was taught by Josef Albers, László Moholy-Nagy, Paul Klee, Wassily Kandinsky and Oskar Schlemmer. Bill remained closely associated with the Bauhaus school and was a key figure in developing and propagating its principles — as a guest lecturer at the Kunstgewerbeschule Zürich, and as a co-founder and first rector of the Ulm School of Design."
+    },
+    {
+      "id": "ch4-1",
+      "anchor": "[data-narr=\"ch4-1\"]",
+      "text": "In 1981, Max Bill met the young and energetic sculptor and photographer Dominique Stroobant. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity — the development of which took three years."
+    },
+    {
+      "id": "ch4-2",
+      "anchor": "[data-narr=\"ch4-2\"]",
+      "text": "Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-metre sculpture together with his team of four sculptors."
+    },
+    {
+      "id": "ch4-3",
+      "anchor": "[data-narr=\"ch4-3\"]",
+      "text": "Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation — often translating abstract mathematical principles into precise visual or sculptural expressions."
+    },
+    {
+      "id": "ch5-1",
+      "anchor": "[data-narr=\"ch5-1\"]",
+      "text": "Max Bill was consistently inspired by mathematics and logic in art. His approach, which he called verifiable logic, guided him from early experimentation toward a precise method of making — and explaining — his work: You can always understand my work, even if you don't like it. From the beginning of his career, Bill was fascinated by the Möbius strip. From his first attempts in 1936 to the realization of Continuity in Frankfurt, he produced dozens — if not hundreds — of variations on the infinity loop, exploring differences in scale, material, and environment."
+    },
+    {
+      "id": "ch5-2",
+      "anchor": "[data-narr=\"ch5-2\"]",
+      "text": "But how are we to understand the topology of Continuity? Is it a Möbius strip, a variation on an endless loop, or simply an artistic, sculptural interpretation of an infinite motif? In short, how did he do it? Even though Bill left some explanations, our own experiments and consultations with mathematicians did not yield an immediate understanding of how the sculpture was conceived and modeled."
+    },
+    {
+      "id": "ch5-3",
+      "anchor": "[data-narr=\"ch5-3\"]",
+      "text": "In Continuity, I intended to achieve something similar — a single surface, a single boundary. Theoretically, a double helix, twisted twice by half a turn and fused with one twisted only half a turn, should have resulted in something akin to an infinite loop, possessing only one surface and one boundary. For reasons unknown to me, this did not happen, so Continuity, despite the theoretically expected outcome, consists of two parallel bounded surfaces composed of infinitely many straight lines. This explanation may sound somewhat dry and simplistic, yet it is the only thing I can say about it myself. — Max Bill."
+    },
+    {
+      "id": "ch5-4",
+      "anchor": "[data-narr=\"ch5-4\"]",
+      "text": "The interesting thing to note is that Bill thought he had invented a completely new shape. Even more curious was that he discovered it by twisting a strip of paper, just as Möbius had done many years previously. Not long afterwards, people began to congratulate me on my fresh and original interpretation of the Egyptian symbol for infinity and the Möbius ribbon. I had never heard of either of them. My mathematical knowledge had never gone beyond routine architectural calculations, and I had no great interest in mathematics."
+    },
+    {
+      "id": "ch5-5",
+      "anchor": "[data-narr=\"ch5-5\"]",
+      "text": "The mathematician Barry Cipra observed: Bill's intuition that a single half twist connected to a double half twist should result in a single-sided, single-edge surface is quite correct; depending on the handedness of the twists, the loop you wind up with has either three twists or one. So it's a mystery how he managed to add one and two and get four."
+    },
+    {
+      "id": "ch5-6",
+      "anchor": "[data-narr=\"ch5-6\"]",
+      "text": "By carefully examining the sculpture itself and creating a 3D model using 360-degree video and photography, and by comparing it with Bill's metal sculpture from 1945 to 46 — used by him as a one-to-twenty prototype — we were able to analyze the work and conduct a series of spatial experiments. One of these resulted in an origami model that follows the original topology step by step and, surprisingly, resolves into a clear infinity-loop construction. The result is striking: a pure mathematical model transforms into a work of art."
+    }
+  ]
+}
