@@ -4,10 +4,11 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=13" />
+<link rel="stylesheet" href="styles.css?v=14" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
-<script src="https://cdn.jsdelivr.net/npm/d3@7" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/topojson-client@3" defer></script>
+<!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
+<script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js" defer></script>
 </head>
 <body class="dark">
   <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
@@ -211,15 +212,7 @@
 
         <div class="journey-grid">
           <aside class="journey-map-wrap is-zoomed">
-            <svg class="journey-map" id="graniteGlobe" viewBox="0 0 480 480" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-              <rect class="map-bg" x="0" y="0" width="480" height="480" fill="rgba(255,255,255,0.025)"/>
-              <g>
-                <g id="graniteGraticule"></g>
-                <g id="graniteLand"></g>
-                <g id="graniteRoute"></g>
-                <g id="graniteStops"></g>
-              </g>
-            </svg>
+            <div class="journey-map" id="graniteGlobe" aria-hidden="true"></div>
           </aside>
 
           <div class="journey-stops">
@@ -339,15 +332,7 @@
 
         <div class="journey-grid">
           <aside class="journey-map-wrap is-zoomed">
-            <svg class="journey-map" id="globeMap" viewBox="0 0 480 480" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-              <rect class="map-bg" x="0" y="0" width="480" height="480" fill="rgba(255,255,255,0.025)"/>
-              <g>
-                <g id="globeGraticule"></g>
-                <g id="globeLand"></g>
-                <g id="globeRoute"></g>
-                <g id="globeStops"></g>
-              </g>
-            </svg>
+            <div class="journey-map" id="globeMap" aria-hidden="true"></div>
           </aside>
 
           <div class="journey-stops">
@@ -1139,593 +1124,238 @@ document.querySelectorAll('.facts').forEach((facts) => {
   });
 })();
 
-// Sculpture Trip: orthographic globe centered on Europe, rotates toward active stop on scroll
+// ============================================================================
+// Journey globes — MapLibre GL (globe projection) drawing live Esri World
+// Imagery satellite tiles. Replaces the earlier d3 orthographic + Blue Marble
+// texture: tiles stay sharp at ANY zoom, so the camera can dive right down onto
+// the quarry / ports while wide shots still show the curved globe.
+//
+// Each section is a scroll-driven cinematic: an IntersectionObserver picks the
+// narrative stop nearest the viewport centre and eases the camera to it, while
+// the route line fills in (completed = solid, current = animated "ant-march"
+// dashes) and the active stop marker glows.
+// ----------------------------------------------------------------------------
 (() => {
-  const section = document.getElementById('sculpture-trip');
-  if (!section) return;
-  const svg = document.getElementById('globeMap');
-  if (!svg) return;
-  const NS = 'http://www.w3.org/2000/svg';
+  const ESRI_IMAGERY =
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+  const ESRI_ATTRIB = 'Imagery © Esri, Maxar, Earthstar Geographics';
+  const ROUTE = '#FFD500';
 
-  // Physical waypoints rendered as circles on the globe
-  const stopCoords = [
-    [10.04, 44.04],   // 0 Port of Carrara
-    [ 4.48, 51.92],   // 1 Rotterdam
-    [ 8.68, 50.11],   // 2 Frankfurt
-  ];
-  // Per narrative stop (1..4):
-  //   view  — camera override [lon, lat, scale]
-  //   past  — number of segments shown as completed (solid line)
-  //   flow  — segment index that is currently flowing (-1 if none)
-  //   glow  — globe-stop index that gets the active "glowing" marker (-1 if none)
-  // Scale stays fixed at 1800 from stop 1 onward — only the rotation (lat/lon)
-  // changes between stops, so the camera pans along the route instead of zooming
-  // out and in. This keeps the projection's reprojection cost stable.
-  const narrativeStates = [
-    {
-      view: [10, 43.5, 1800], past: 0, flow: -1, glow: 0, // 1 Carrara begin
-      meta: [['Date', '16 · 08 · 1986'], ['Place', 'Port of Carrara'], ['Vessel', 'MV Kupari']],
-    },
-    {
-      view: [-2, 44, 1800], past: 0, flow: 0, glow: -1, // 2 Atlantic
-      meta: [['Period', '16 · 08 — 02 · 09 · 1986'], ['Place', 'The Atlantic'], ['Distance', '+2,800 km · sea']],
-    },
-    {
-      view: [6, 50.5, 1800], past: 1, flow: 1, glow: -1, // 3 Rotterdam → Rhine
-      meta: [['Date', '02 — 06 · 09 · 1986'], ['Leg', 'Rhine · Main'], ['Distance', '+500 km · river']],
-    },
-    {
-      view: [8.2, 50.4, 1800], past: 2, flow: -1, glow: 2, // 4 Frankfurt arrival
-      meta: [['Date', '07 · 09 · 1986'], ['Place', 'Taunusanlage 12'], ['Total', '~4,720 km']],
-    },
-  ];
-
-  // Full sea+river route, split into 2 segments aligned with the 3 stops
-  const segmentCoords = [
-    // 1->2 Carrara → Rotterdam (Med + Gibraltar + Atlantic + Channel + North Sea)
-    [
-      [10.04, 44.04],   // Marina di Carrara
-      [10.00, 43.30],
-      [ 9.50, 42.20],
-      [ 9.20, 41.30],   // Bonifacio Strait
-      [ 8.20, 40.20],
-      [ 5.50, 38.80],
-      [ 0.00, 37.00],
-      [-5.40, 35.97],   // Strait of Gibraltar
-      [-7.20, 36.30],
-      [-9.40, 37.00],
-      [-9.60, 38.80],
-      [-9.50, 41.00],
-      [-9.30, 42.90],   // Cape Finisterre
-      [-7.20, 45.00],   // Bay of Biscay
-      [-5.80, 47.50],   // off Ushant
-      [-3.00, 49.40],   // entering Channel
-      [-1.00, 50.10],
-      [ 1.50, 50.95],   // Strait of Dover
-      [ 3.20, 51.55],
-      [ 4.10, 51.98],   // Hook of Holland
-      [ 4.48, 51.92],   // Rotterdam
+  const GRANITE = {
+    containerId: 'graniteGlobe',
+    sectionId: 'granite-trip',
+    overview: { center: [9.4, 41.9], zoom: 5.0 },
+    stops: [ [9.10, 41.05], [9.19, 41.24], [10.04, 44.04] ],
+    segments: [
+      [[9.10, 41.05], [9.15, 41.10], [9.18, 41.18], [9.19, 41.24]],
+      [[9.19, 41.24], [9.45, 41.80], [9.65, 42.40], [9.85, 43.10], [10.00, 43.60], [10.04, 44.04]],
     ],
-    // 2->3 Rhine + Main upriver to Frankfurt
-    [
-      [4.48, 51.92], [5.30, 51.60], [6.10, 51.30], [6.95, 50.95], [7.00, 50.70],
-      [7.60, 50.45], [8.20, 50.10], [8.68, 50.11],
+    states: [
+      { center: [9.12, 41.10], zoom: 9.2,  past: 0, flow: -1, glow: 0 },  // 1 quarry
+      { center: [9.18, 41.30], zoom: 8.6,  past: 0, flow: 0,  glow: 1 },  // 2 crossing → port
+      { center: [9.7,  42.65], zoom: 6.6,  past: 1, flow: 1,  glow: 2 },  // 3 sea crossing → Carrara
     ],
-  ];
+  };
 
-  const W = 480, H = 480, R_ZOOMED = 1100;
-  // Idle state: already zoomed in on Italy. The first narrative stop pans the
-  // camera toward Carrara; when the section leaves the viewport we return to this
-  // Italy view (no full-earth zoom-out).
-  const overviewView = [12.5, 42, 1300];
-  const initialRotation = [-overviewView[0], -overviewView[1], 0];
-  const R = overviewView[2];
-  const NUDGE = 0.85; // how strongly the globe follows the active stop (0 = no follow, 1 = centered)
+  const SCULPTURE = {
+    containerId: 'globeMap',
+    sectionId: 'sculpture-trip',
+    overview: { center: [1, 45], zoom: 3.4 },
+    stops: [ [10.04, 44.04], [4.48, 51.92], [8.68, 50.11] ],
+    segments: [
+      [ // Carrara → Rotterdam (Med · Gibraltar · Atlantic · Channel · North Sea)
+        [10.04, 44.04], [10.00, 43.30], [9.50, 42.20], [9.20, 41.30], [8.20, 40.20],
+        [5.50, 38.80], [0.00, 37.00], [-5.40, 35.97], [-7.20, 36.30], [-9.40, 37.00],
+        [-9.60, 38.80], [-9.50, 41.00], [-9.30, 42.90], [-7.20, 45.00], [-5.80, 47.50],
+        [-3.00, 49.40], [-1.00, 50.10], [1.50, 50.95], [3.20, 51.55], [4.10, 51.98], [4.48, 51.92],
+      ],
+      [ // Rotterdam → Frankfurt (Rhine · Main)
+        [4.48, 51.92], [5.30, 51.60], [6.10, 51.30], [6.95, 50.95], [7.00, 50.70],
+        [7.60, 50.45], [8.20, 50.10], [8.68, 50.11],
+      ],
+    ],
+    states: [
+      { center: [10.0, 43.9], zoom: 6.6, past: 0, flow: -1, glow: 0 },  // 1 Carrara
+      { center: [-3, 45],     zoom: 3.5, past: 0, flow: 0,  glow: -1 }, // 2 Atlantic (wide)
+      { center: [6.0, 50.7],  zoom: 5.6, past: 1, flow: 1,  glow: -1 }, // 3 Rotterdam → Rhine
+      { center: [8.55, 50.1], zoom: 7.6, past: 2, flow: -1, glow: 2 },  // 4 Frankfurt
+    ],
+  };
 
-  let projection, geoPath, world, land;
-  let currentRot = [...initialRotation];
-  let targetRot = [...initialRotation];
-  let currentScale = R;
-  let targetScale = R;
-  let activeStop = 0;
-  // Tracks whether the camera has zoomed in to the journey at least once during
-  // this section visit. After the first zoom-in we never zoom back out — between
-  // stops we hold the last active view, only the section-exit IO resets to idle.
-  let hasZoomedIn = false;
+  // Flowing dots for the "currently flowing" segment. A zero-length dash with a
+  // round line-cap renders as a perfect circle of diameter = line-width; with a
+  // gap of 2 (units are multiples of line width) the clear space between dots
+  // equals the dot diameter. We march the whole field forward by growing the
+  // leading gap each step. A wide period keeps spacing uniform between seams.
+  const DOT_GAP = 2, DOT_STEPS = 10, DOT_REPEAT = 24;
+  const DASH_SEQ = Array.from({ length: DOT_STEPS }, (_, f) => {
+    const d = (f / DOT_STEPS) * DOT_GAP;
+    const arr = [0, d];                                  // leading partial gap → the march
+    for (let j = 0; j < DOT_REPEAT - 1; j++) arr.push(0, DOT_GAP);
+    arr.push(0, DOT_GAP - d);                             // closing partial gap → period = DOT_REPEAT*GAP
+    return arr;
+  });
 
-  function lerp(a, b, t) { return a + (b - a) * t; }
-  function lerpAngle(a, b, t) {
-    let d = ((b - a + 540) % 360) - 180;
-    return a + d * t;
-  }
+  const routeFC = (segs) => ({
+    type: 'FeatureCollection',
+    features: segs.map((coords, i) => ({ type: 'Feature', properties: { seg: i }, geometry: { type: 'LineString', coordinates: coords } })),
+  });
+  const stopsFC = (pts) => ({
+    type: 'FeatureCollection',
+    features: pts.map((c, i) => ({ type: 'Feature', properties: { i }, geometry: { type: 'Point', coordinates: c } })),
+  });
 
-  function visibleAt(coord) {
-    const r = projection.rotate();
-    const lambda = coord[0] * Math.PI / 180;
-    const phi = coord[1] * Math.PI / 180;
-    const cl = -r[0] * Math.PI / 180;
-    const ph = -r[1] * Math.PI / 180;
-    const cosC = Math.sin(ph) * Math.sin(phi) + Math.cos(ph) * Math.cos(phi) * Math.cos(lambda - cl);
-    return cosC > 0;
-  }
+  function buildJourneyGlobe(cfg) {
+    const container = document.getElementById(cfg.containerId);
+    const section = document.getElementById(cfg.sectionId);
+    if (!container || !section) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function ensureNode(parent, tag, attrs) {
-    const el = document.createElementNS(NS, tag);
-    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
-    parent.appendChild(el);
-    return el;
-  }
-
-  function buildStatic() {
-    // Graticule
-    const gratG = document.getElementById('globeGraticule');
-    gratG.innerHTML = '';
-    const grat = d3.geoGraticule().step([15, 15])();
-    ensureNode(gratG, 'path', {
-      d: geoPath(grat) || '',
-      fill: 'none',
-      stroke: 'rgba(255,255,255,0.07)',
-      'stroke-width': '0.5',
-      class: 'g-graticule'
+    const map = new maplibregl.Map({
+      container,
+      attributionControl: { compact: true },
+      interactive: false,            // scroll-driven cinematic, not a pannable map
+      fadeDuration: 0,
+      center: cfg.overview.center,
+      zoom: cfg.overview.zoom,
+      style: {
+        version: 8,
+        projection: { type: 'globe' },
+        sources: {
+          sat: { type: 'raster', tiles: [ESRI_IMAGERY], tileSize: 256, maxzoom: 19, attribution: ESRI_ATTRIB },
+        },
+        layers: [
+          { id: 'space', type: 'background', paint: { 'background-color': '#05070d' } },
+          { id: 'sat', type: 'raster', source: 'sat', paint: { 'raster-fade-duration': 0 } },
+        ],
+      },
     });
 
-    // Land paths (one per country)
-    const landG = document.getElementById('globeLand');
-    landG.innerHTML = '';
-    land.features.forEach(f => {
-      ensureNode(landG, 'path', {
-        d: geoPath(f) || '',
-        fill: '#202020',
-        stroke: 'rgba(255,255,255,0.35)',
-        'stroke-width': '0.6',
-        'stroke-linejoin': 'round',
-        'stroke-linecap': 'round',
-        'shape-rendering': 'geometricPrecision',
-        'vector-effect': 'non-scaling-stroke',
-        class: 'g-country'
-      });
-    });
+    let started = false, inView = false, raf = 0, dashStep = -1, activeStop = -1;
+    let currentState = { center: cfg.overview.center, zoom: cfg.overview.zoom, past: 0, flow: -1, glow: -1 };
 
-    // Route segments
-    const routeG = document.getElementById('globeRoute');
-    routeG.innerHTML = '';
-    segmentCoords.forEach((coords, i) => {
-      ensureNode(routeG, 'path', {
-        d: geoPath({ type: 'LineString', coordinates: coords }) || '',
-        fill: 'none',
-        stroke: '#FFD500',
-        'stroke-width': '1.25',
-        'stroke-linecap': 'round',
-        opacity: '0',
-        'data-seg': i,
-        class: 'g-route'
-      });
-    });
-
-    // Stops
-    const stopsG = document.getElementById('globeStops');
-    stopsG.innerHTML = '';
-    stopCoords.forEach((c, i) => {
-      ensureNode(stopsG, 'circle', { 'data-i': i + 1, r: 3.5, fill: 'rgba(255,255,255,0.4)', class: 'g-stop' });
-    });
-  }
-
-  function update() {
-    // Smooth rotation + scale
-    currentRot[0] = lerpAngle(currentRot[0], targetRot[0], 0.07);
-    currentRot[1] = lerp(currentRot[1], targetRot[1], 0.07);
-    currentScale = lerp(currentScale, targetScale, 0.08);
-    projection.rotate(currentRot).scale(currentScale);
-
-    // Re-render countries + graticule + route
-    document.querySelectorAll('#globeGraticule path').forEach(p => {
-      p.setAttribute('d', geoPath(d3.geoGraticule().step([15, 15])()) || '');
-    });
-    document.querySelectorAll('#globeLand path').forEach((p, i) => {
-      p.setAttribute('d', geoPath(land.features[i]) || '');
-    });
-    const state = narrativeStates[activeStop - 1] || { past: 0, flow: -1, glow: -1 };
-    document.querySelectorAll('#globeRoute path').forEach((p, i) => {
-      p.setAttribute('d', geoPath({ type: 'LineString', coordinates: segmentCoords[i] }) || '');
-      const isFlowing = i === state.flow;
-      const isPast = i < state.past;
-      p.setAttribute('opacity', isPast || isFlowing ? '1' : '0');
-      p.classList.toggle('is-flowing', isFlowing);
-    });
-    document.querySelectorAll('#globeStops circle').forEach((c, i) => {
-      const coord = stopCoords[i];
-      const isGlowing = i === state.glow;
-      const isPast = i < state.past;
-      const visible = visibleAt(coord);
-      if (!visible) { c.style.display = 'none'; return; }
-      c.style.display = '';
-      const xy = projection(coord);
-      c.setAttribute('cx', xy[0]);
-      c.setAttribute('cy', xy[1]);
-      c.setAttribute('fill', isGlowing || isPast ? '#FFD500' : 'rgba(255,255,255,0.35)');
-      c.setAttribute('r', isGlowing ? 6 : 3.5);
-      c.classList.toggle('is-glowing', isGlowing);
-    });
-  }
-
-  let rafId = 0;
-  function tick() {
-    update();
-    const dx = Math.abs(((targetRot[0] - currentRot[0] + 540) % 360) - 180);
-    const dy = Math.abs(targetRot[1] - currentRot[1]);
-    const ds = Math.abs(targetScale - currentScale);
-    rafId = (dx > 0.05 || dy > 0.05 || ds > 0.5) ? requestAnimationFrame(tick) : 0;
-  }
-  function requestRender() {
-    if (rafId) cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(tick);
-  }
-
-  const wrap = section.querySelector('.journey-map-wrap');
-  const metaEl = document.getElementById('globeMeta');
-  function renderMeta(i) {
-    if (!metaEl) return;
-    const state = narrativeStates[i - 1];
-    const rows = metaEl.querySelectorAll(':scope > div');
-    rows.forEach((row, idx) => {
-      const pair = state && state.meta && state.meta[idx];
-      const dt = row.querySelector('dt');
-      const dd = row.querySelector('dd');
-      dt.textContent = pair ? pair[0] : '';
-      dd.textContent = pair ? pair[1] : '';
-    });
-  }
-  function setActive(i) {
-    if (i === activeStop) return;
-    activeStop = i;
-    const inRange = i >= 1 && i <= narrativeStates.length;
-    if (inRange) {
-      const view = narrativeStates[i - 1].view;
-      targetRot = [-view[0], -view[1], 0];
-      targetScale = view[2];
-      renderMeta(i);
-    } else {
-      targetRot = [...initialRotation];
-      targetScale = R;
-      renderMeta(0);
+    function applyState(st) {
+      if (!started) return;
+      map.setFilter('route-done', ['<', ['get', 'seg'], st.past]);
+      map.setFilter('route-flow', ['==', ['get', 'seg'], st.flow]);
+      map.setFilter('stop-glow', ['==', ['get', 'i'], st.glow]);
+      dashStep = -1;
     }
-    requestRender();
-  }
 
-  // Reset to overview view when section leaves the viewport. This is the only
-  // place we zoom back out — re-entering the section will then trigger one fresh
-  // zoom-in when the first stop reaches the viewport center band.
-  const sectionIO = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) {
-        targetScale = R;
-        targetRot = [...initialRotation];
-        activeStop = 0;
-        hasZoomedIn = false;
-        renderMeta(0);
-        requestRender();
+    function setActive(i) {
+      if (i === activeStop) return;
+      activeStop = i;
+      const s = (i >= 1 && i <= cfg.states.length) ? cfg.states[i - 1] : null;
+      currentState = s
+        ? { center: s.center, zoom: s.zoom, past: s.past, flow: s.flow, glow: s.glow }
+        : { center: cfg.overview.center, zoom: cfg.overview.zoom, past: 0, flow: -1, glow: -1 };
+      if (started) {
+        map.easeTo({ center: currentState.center, zoom: currentState.zoom, duration: 1600, essential: true });
+        applyState(currentState);
       }
-    });
-  }, { threshold: 0 });
-  sectionIO.observe(section);
-
-  function init() {
-    if (typeof d3 === 'undefined' || typeof topojson === 'undefined') return;
-    projection = d3.geoOrthographic()
-      .scale(R)
-      .translate([W / 2, H / 2])
-      .clipAngle(90)
-      .rotate(initialRotation);
-    geoPath = d3.geoPath(projection);
-
-    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then(w => {
-      world = w;
-      land = topojson.feature(w, w.objects.countries);
-      buildStatic();
-      update();
-
-      const stops = [...section.querySelectorAll('.stop[data-stop], .stop-lead[data-lead-for]')];
-
-      // Track which narrative stops currently intersect the viewport center band.
-      // Multiple narrative articles may map to the same globe stop (e.g. a video segment
-      // that shares the active map state with the previous stop), so we track elements
-      // and resolve their data-stop only at pick time.
-      const intersecting = new Set();
-      const stopIO = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting) intersecting.add(e.target);
-          else intersecting.delete(e.target);
-        });
-        pickActive();
-      }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
-      stops.forEach(s => stopIO.observe(s));
-
-      function pickActive() {
-        if (intersecting.size === 0) {
-          // Only reset to idle BEFORE the first zoom-in; after that, hold the
-          // last active view between stops so the camera never zooms back out.
-          if (!hasZoomedIn) setActive(0);
-          return;
-        }
-        // When multiple stops overlap the band (tall stops), pick the one closest to viewport center.
-        const vc = window.innerHeight / 2;
-        let bestEl = null, bestDist = Infinity;
-        intersecting.forEach(el => {
-          const r = el.getBoundingClientRect();
-          const c = (r.top + r.bottom) / 2;
-          const d = Math.abs(c - vc);
-          if (d < bestDist) { bestDist = d; bestEl = el; }
-        });
-        if (bestEl) {
-          const idx = parseInt(bestEl.dataset.stop || bestEl.dataset.leadFor, 10);
-          if (idx > 0) { hasZoomedIn = true; setActive(idx); }
-        }
-      }
-
-      // Re-evaluate after late layout shifts (images, fonts) so intersections are based on final geometry.
-      window.addEventListener('load', pickActive);
-      window.addEventListener('resize', pickActive, { passive: true });
-    });
-  }
-
-  // d3 may load after DOMContentLoaded depending on defer ordering — wait one frame
-  if (typeof d3 !== 'undefined' && typeof topojson !== 'undefined') init();
-  else window.addEventListener('load', init);
-})();
-
-// Granite Trip: orthographic globe — a full-earth overview that zooms into Sardinia
-// and pans up the Tyrrhenian to Carrara as the photos scroll past on the grid.
-// Mirrors the Sculpture Trip globe above; kept as a sibling rather than abstracted
-// so each map's geography and camera framing stays easy to tune independently.
-(() => {
-  const section = document.getElementById('granite-trip');
-  if (!section) return;
-  const svg = document.getElementById('graniteGlobe');
-  if (!svg) return;
-  const NS = 'http://www.w3.org/2000/svg';
-
-  // Physical waypoints rendered as circles on the globe
-  const stopCoords = [
-    [ 9.10, 41.05],   // 0 Cava Scarraciana (quarry)
-    [ 9.19, 41.24],   // 1 Santa Teresa Gallura (port)
-    [10.04, 44.04],   // 2 Marina di Carrara
-  ];
-  // Per narrative stop (1..3): camera view [lon, lat, scale], completed segments,
-  // the currently-flowing segment, and which stop marker glows.
-  const narrativeStates = [
-    {
-      view: [9.15, 41.25, 4200], past: 0, flow: -1, glow: 0, // 1 the quarry
-      meta: [['Place', 'Cava Scarraciana'], ['Date', '20 · 10 · 1983'], ['Mass', '500 → 180 t']],
-    },
-    {
-      view: [9.35, 41.7, 3400], past: 0, flow: 0, glow: 1, // 2 Sardinian crossing → port
-      meta: [['Leg', 'Sardinian crossing'], ['Date', '08 — 09 · 02 · 1984'], ['Convoy', '52 m platform']],
-    },
-    {
-      view: [9.75, 42.75, 2600], past: 1, flow: 1, glow: 2, // 3 Tyrrhenian sea crossing → Carrara
-      meta: [['Place', 'Marina di Carrara'], ['Date', '20 · 02 · 1984'], ['Distance', '+360 km · sea']],
-    },
-  ];
-
-  // Two segments: the overland Sardinian crossing, then the Tyrrhenian sea crossing.
-  const segmentCoords = [
-    [[9.10, 41.05], [9.15, 41.10], [9.18, 41.18], [9.19, 41.24]],
-    [[9.19, 41.24], [9.45, 41.80], [9.65, 42.40], [9.85, 43.10], [10.00, 43.60], [10.04, 44.04]],
-  ];
-
-  const W = 480, H = 480;
-  // Idle state: zoomed-out globe centred on Italy. The first narrative stop zooms the
-  // camera into Sardinia; the section-exit IO is the only place we return to overview.
-  const overviewView = [9.5, 42, 230];
-  const initialRotation = [-overviewView[0], -overviewView[1], 0];
-  const R = overviewView[2];
-
-  let projection, geoPath, land;
-  let currentRot = [...initialRotation];
-  let targetRot = [...initialRotation];
-  let currentScale = R;
-  let targetScale = R;
-  let activeStop = 0;
-  let hasZoomedIn = false;
-
-  function lerp(a, b, t) { return a + (b - a) * t; }
-  function lerpAngle(a, b, t) {
-    let d = ((b - a + 540) % 360) - 180;
-    return a + d * t;
-  }
-  function visibleAt(coord) {
-    const r = projection.rotate();
-    const lambda = coord[0] * Math.PI / 180;
-    const phi = coord[1] * Math.PI / 180;
-    const cl = -r[0] * Math.PI / 180;
-    const ph = -r[1] * Math.PI / 180;
-    const cosC = Math.sin(ph) * Math.sin(phi) + Math.cos(ph) * Math.cos(phi) * Math.cos(lambda - cl);
-    return cosC > 0;
-  }
-  function ensureNode(parent, tag, attrs) {
-    const el = document.createElementNS(NS, tag);
-    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
-    parent.appendChild(el);
-    return el;
-  }
-
-  const gratG = document.getElementById('graniteGraticule');
-  const landG = document.getElementById('graniteLand');
-  const routeG = document.getElementById('graniteRoute');
-  const stopsG = document.getElementById('graniteStops');
-
-  function buildStatic() {
-    gratG.innerHTML = '';
-    ensureNode(gratG, 'path', {
-      d: geoPath(d3.geoGraticule().step([15, 15])()) || '',
-      fill: 'none', stroke: 'rgba(255,255,255,0.07)', 'stroke-width': '0.5', class: 'g-graticule',
-    });
-    landG.innerHTML = '';
-    land.features.forEach(f => {
-      ensureNode(landG, 'path', {
-        d: geoPath(f) || '', fill: '#202020', stroke: 'rgba(255,255,255,0.35)',
-        'stroke-width': '0.6', 'stroke-linejoin': 'round', 'stroke-linecap': 'round',
-        'shape-rendering': 'geometricPrecision', 'vector-effect': 'non-scaling-stroke', class: 'g-country',
-      });
-    });
-    routeG.innerHTML = '';
-    segmentCoords.forEach((coords, i) => {
-      ensureNode(routeG, 'path', {
-        d: geoPath({ type: 'LineString', coordinates: coords }) || '',
-        fill: 'none', stroke: '#FFD500', 'stroke-width': '1.25', 'stroke-linecap': 'round',
-        opacity: '0', 'data-seg': i, class: 'g-route',
-      });
-    });
-    stopsG.innerHTML = '';
-    stopCoords.forEach((c, i) => {
-      ensureNode(stopsG, 'circle', { 'data-i': i + 1, r: 3.5, fill: 'rgba(255,255,255,0.4)', class: 'g-stop' });
-    });
-  }
-
-  function update() {
-    currentRot[0] = lerpAngle(currentRot[0], targetRot[0], 0.07);
-    currentRot[1] = lerp(currentRot[1], targetRot[1], 0.07);
-    currentScale = lerp(currentScale, targetScale, 0.08);
-    projection.rotate(currentRot).scale(currentScale);
-
-    gratG.querySelectorAll('path').forEach(p => {
-      p.setAttribute('d', geoPath(d3.geoGraticule().step([15, 15])()) || '');
-    });
-    landG.querySelectorAll('path').forEach((p, i) => {
-      p.setAttribute('d', geoPath(land.features[i]) || '');
-    });
-    const state = narrativeStates[activeStop - 1] || { past: 0, flow: -1, glow: -1 };
-    routeG.querySelectorAll('path').forEach((p, i) => {
-      p.setAttribute('d', geoPath({ type: 'LineString', coordinates: segmentCoords[i] }) || '');
-      const isFlowing = i === state.flow;
-      const isPast = i < state.past;
-      p.setAttribute('opacity', isPast || isFlowing ? '1' : '0');
-      p.classList.toggle('is-flowing', isFlowing);
-    });
-    stopsG.querySelectorAll('circle').forEach((c, i) => {
-      const coord = stopCoords[i];
-      const isGlowing = i === state.glow;
-      const isPast = i < state.past;
-      const visible = visibleAt(coord);
-      if (!visible) { c.style.display = 'none'; return; }
-      c.style.display = '';
-      const xy = projection(coord);
-      c.setAttribute('cx', xy[0]);
-      c.setAttribute('cy', xy[1]);
-      c.setAttribute('fill', isGlowing || isPast ? '#FFD500' : 'rgba(255,255,255,0.35)');
-      c.setAttribute('r', isGlowing ? 6 : 3.5);
-      c.classList.toggle('is-glowing', isGlowing);
-    });
-  }
-
-  let rafId = 0;
-  function tick() {
-    update();
-    const dx = Math.abs(((targetRot[0] - currentRot[0] + 540) % 360) - 180);
-    const dy = Math.abs(targetRot[1] - currentRot[1]);
-    const ds = Math.abs(targetScale - currentScale);
-    rafId = (dx > 0.05 || dy > 0.05 || ds > 0.5) ? requestAnimationFrame(tick) : 0;
-  }
-  function requestRender() {
-    if (rafId) cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(tick);
-  }
-
-  const metaEl = section.querySelector('.map-meta');
-  function renderMeta(i) {
-    if (!metaEl) return;
-    const state = narrativeStates[i - 1];
-    const rows = metaEl.querySelectorAll(':scope > div');
-    rows.forEach((row, idx) => {
-      const pair = state && state.meta && state.meta[idx];
-      row.querySelector('dt').textContent = pair ? pair[0] : '';
-      row.querySelector('dd').textContent = pair ? pair[1] : '';
-    });
-  }
-  function setActive(i) {
-    if (i === activeStop) return;
-    activeStop = i;
-    const inRange = i >= 1 && i <= narrativeStates.length;
-    if (inRange) {
-      const view = narrativeStates[i - 1].view;
-      targetRot = [-view[0], -view[1], 0];
-      targetScale = view[2];
-      renderMeta(i);
-    } else {
-      targetRot = [...initialRotation];
-      targetScale = R;
-      renderMeta(0);
     }
-    requestRender();
+
+    function frame(ts) {
+      raf = requestAnimationFrame(frame);
+      if (!started) return;
+      if (currentState.flow >= 0 && !reduceMotion) {
+        const s = Math.floor((ts / 48) % DASH_SEQ.length);
+        if (s !== dashStep) { map.setPaintProperty('route-flow', 'line-dasharray', DASH_SEQ[s]); dashStep = s; }
+      }
+      if (currentState.glow >= 0 && !reduceMotion) {
+        map.setPaintProperty('stop-glow', 'circle-radius', 7 + Math.sin(ts / 280) * 2.2);
+      }
+    }
+    function startAnim() { if (!raf) raf = requestAnimationFrame(frame); }
+    function stopAnim() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+
+    map.on('style.load', () => {
+      try { map.setProjection({ type: 'globe' }); } catch (e) {}
+      try {
+        map.setSky({
+          'sky-color': '#0a1226', 'horizon-color': '#15233c', 'fog-color': '#0a1226',
+          'sky-horizon-blend': 0.5, 'horizon-fog-blend': 0.6, 'fog-ground-blend': 0.7, 'atmosphere-blend': 0.8,
+        });
+      } catch (e) {}
+
+      map.addSource('route', { type: 'geojson', data: routeFC(cfg.segments) });
+      map.addLayer({
+        id: 'route-done', type: 'line', source: 'route', filter: ['<', ['get', 'seg'], -1],
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': ROUTE, 'line-width': 3, 'line-opacity': 0.95 },
+      });
+      map.addLayer({
+        id: 'route-flow', type: 'line', source: 'route', filter: ['==', ['get', 'seg'], -1],
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#FFE34D', 'line-width': 4.5, 'line-dasharray': [0, DOT_GAP] },
+      });
+
+      map.addSource('stops', { type: 'geojson', data: stopsFC(cfg.stops) });
+      map.addLayer({
+        id: 'stop-dot', type: 'circle', source: 'stops',
+        paint: {
+          'circle-radius': 4, 'circle-color': '#ffffff', 'circle-opacity': 0.55,
+          'circle-stroke-color': 'rgba(0,0,0,0.45)', 'circle-stroke-width': 1,
+        },
+      });
+      map.addLayer({
+        id: 'stop-glow', type: 'circle', source: 'stops', filter: ['==', ['get', 'i'], -1],
+        paint: {
+          'circle-radius': 7, 'circle-color': ROUTE, 'circle-blur': 0.45,
+          'circle-stroke-color': ROUTE, 'circle-stroke-width': 2, 'circle-stroke-opacity': 0.5,
+        },
+      });
+
+      started = true;
+      map.jumpTo({ center: currentState.center, zoom: currentState.zoom });
+      applyState(currentState);
+      if (inView) startAnim();
+    });
+
+    // --- scroll wiring (same picking logic as before) ---
+    const stops = [...section.querySelectorAll('.stop[data-stop], .stop-lead[data-lead-for]')];
+    const intersecting = new Set();
+    let hasZoomedIn = false;
+    const stopIO = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) intersecting.add(e.target); else intersecting.delete(e.target); });
+      pickActive();
+    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+    stops.forEach((s) => stopIO.observe(s));
+
+    function pickActive() {
+      if (intersecting.size === 0) { if (!hasZoomedIn) setActive(0); return; }
+      const vc = window.innerHeight / 2;
+      let bestEl = null, bestDist = Infinity;
+      intersecting.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        const d = Math.abs((r.top + r.bottom) / 2 - vc);
+        if (d < bestDist) { bestDist = d; bestEl = el; }
+      });
+      if (bestEl) {
+        const idx = parseInt(bestEl.dataset.stop || bestEl.dataset.leadFor, 10);
+        if (idx > 0) { hasZoomedIn = true; setActive(idx); }
+      }
+    }
+
+    const sectionIO = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) { inView = true; map.resize(); startAnim(); }
+        else { inView = false; stopAnim(); hasZoomedIn = false; setActive(0); }
+      });
+    }, { threshold: 0 });
+    sectionIO.observe(section);
+
+    window.addEventListener('load', pickActive);
+    window.addEventListener('resize', () => { map.resize(); pickActive(); }, { passive: true });
   }
 
-  // Reset to the overview view when the section leaves the viewport — the only place
-  // we zoom back out. Re-entering then triggers one fresh zoom-in on the first stop.
-  const sectionIO = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) {
-        targetScale = R;
-        targetRot = [...initialRotation];
-        activeStop = 0;
-        hasZoomedIn = false;
-        renderMeta(0);
-        requestRender();
-      }
-    });
-  }, { threshold: 0 });
-  sectionIO.observe(section);
-
-  function init() {
-    if (typeof d3 === 'undefined' || typeof topojson === 'undefined') return;
-    projection = d3.geoOrthographic()
-      .scale(R)
-      .translate([W / 2, H / 2])
-      .clipAngle(90)
-      .rotate(initialRotation);
-    geoPath = d3.geoPath(projection);
-
-    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then(w => {
-      land = topojson.feature(w, w.objects.countries);
-      buildStatic();
-      update();
-
-      const stops = [...section.querySelectorAll('.stop[data-stop], .stop-lead[data-lead-for]')];
-      const intersecting = new Set();
-      const stopIO = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting) intersecting.add(e.target);
-          else intersecting.delete(e.target);
-        });
-        pickActive();
-      }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
-      stops.forEach(s => stopIO.observe(s));
-
-      function pickActive() {
-        if (intersecting.size === 0) {
-          if (!hasZoomedIn) setActive(0);
-          return;
-        }
-        const vc = window.innerHeight / 2;
-        let bestEl = null, bestDist = Infinity;
-        intersecting.forEach(el => {
-          const r = el.getBoundingClientRect();
-          const c = (r.top + r.bottom) / 2;
-          const d = Math.abs(c - vc);
-          if (d < bestDist) { bestDist = d; bestEl = el; }
-        });
-        if (bestEl) {
-          const idx = parseInt(bestEl.dataset.stop || bestEl.dataset.leadFor, 10);
-          if (idx > 0) { hasZoomedIn = true; setActive(idx); }
-        }
-      }
-
-      window.addEventListener('load', pickActive);
-      window.addEventListener('resize', pickActive, { passive: true });
-    });
+  function initJourney() {
+    if (!window.maplibregl) { window.addEventListener('load', initJourney, { once: true }); return; }
+    buildJourneyGlobe(GRANITE);
+    buildJourneyGlobe(SCULPTURE);
   }
-
-  if (typeof d3 !== 'undefined' && typeof topojson !== 'undefined') init();
-  else window.addEventListener('load', init);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initJourney);
+  else initJourney();
 })();
 
 // Journey facts: count each value up from 0 when the strip scrolls into view —
