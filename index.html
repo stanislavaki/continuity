@@ -1287,7 +1287,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       map.addLayer({
         id: 'route-flow', type: 'line', source: 'route', filter: ['==', ['get', 'seg'], -1],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': '#FFE34D', 'line-width': 4.5, 'line-dasharray': [0, DOT_GAP] },
+        paint: { 'line-color': '#FFE34D', 'line-width': 5, 'line-dasharray': [0, DOT_GAP] },
       });
 
       map.addSource('stops', { type: 'geojson', data: stopsFC(cfg.stops) });
