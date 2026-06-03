@@ -1132,8 +1132,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
 //
 // Each section is a scroll-driven cinematic: an IntersectionObserver picks the
 // narrative stop nearest the viewport centre and eases the camera to it, while
-// the route line fills in (completed = solid, current = animated "ant-march"
-// dashes) and the active stop marker glows.
+// the route line fills in (completed = solid, current = a marching field of
+// round dots) and the active stop marker glows.
 // ----------------------------------------------------------------------------
 (() => {
   const ESRI_IMAGERY =
@@ -1182,19 +1182,13 @@ document.querySelectorAll('.facts').forEach((facts) => {
     ],
   };
 
-  // Flowing dots for the "currently flowing" segment. A zero-length dash with a
-  // round line-cap renders as a perfect circle of diameter = line-width; with a
-  // gap of 2 (units are multiples of line width) the clear space between dots
-  // equals the dot diameter. We march the whole field forward by growing the
-  // leading gap each step. A wide period keeps spacing uniform between seams.
-  const DOT_GAP = 2, DOT_STEPS = 10, DOT_REPEAT = 24;
-  const DASH_SEQ = Array.from({ length: DOT_STEPS }, (_, f) => {
-    const d = (f / DOT_STEPS) * DOT_GAP;
-    const arr = [0, d];                                  // leading partial gap → the march
-    for (let j = 0; j < DOT_REPEAT - 1; j++) arr.push(0, DOT_GAP);
-    arr.push(0, DOT_GAP - d);                             // closing partial gap → period = DOT_REPEAT*GAP
-    return arr;
-  });
+  // Flowing dots for the "currently flowing" segment. MapLibre's dashed-line trick
+  // (zero-length dash + round cap) rasterises the whole marching pattern into one
+  // fixed-width SDF texture, so on a zoomed-out globe each dot gets too few texels
+  // and renders as a blob. Instead we draw real GPU circles — always perfectly
+  // round — spaced along the segment in SCREEN pixels and march their phase each
+  // frame. DOT_PX = diameter, GAP_PX = clear gap; centre-to-centre = DOT_PX + GAP_PX.
+  const DOT_PX = 5, GAP_PX = 5, STEP_PX = DOT_PX + GAP_PX, FLOW_PXPS = 22;
 
   const routeFC = (segs) => ({
     type: 'FeatureCollection',
@@ -1231,15 +1225,15 @@ document.querySelectorAll('.facts').forEach((facts) => {
       },
     });
 
-    let started = false, inView = false, raf = 0, dashStep = -1, activeStop = -1;
+    let started = false, inView = false, raf = 0, activeStop = -1;
     let currentState = { center: cfg.overview.center, zoom: cfg.overview.zoom, past: 0, flow: -1, glow: -1 };
 
     function applyState(st) {
       if (!started) return;
       map.setFilter('route-done', ['<', ['get', 'seg'], st.past]);
-      map.setFilter('route-flow', ['==', ['get', 'seg'], st.flow]);
       map.setFilter('stop-glow', ['==', ['get', 'i'], st.glow]);
-      dashStep = -1;
+      // Static first paint; frame() then marches the dots unless reduced-motion.
+      renderFlowDots(st.flow, 0);
     }
 
     function setActive(i) {
@@ -1255,12 +1249,36 @@ document.querySelectorAll('.facts').forEach((facts) => {
       }
     }
 
+    // Evenly spaced round dots along the flowing segment. We walk the segment in
+    // SCREEN pixels so the gap stays a constant DOT_PX/GAP_PX regardless of zoom,
+    // then unproject each dot back to lng/lat. phasePx marches the field forward.
+    function renderFlowDots(flowIndex, phasePx) {
+      const src = map.getSource('flow-dots');
+      if (!src) return;
+      const coords = (flowIndex >= 0) ? cfg.segments[flowIndex] : null;
+      if (!coords) { src.setData({ type: 'FeatureCollection', features: [] }); return; }
+      const scr = coords.map((c) => map.project(c));
+      const feats = [];
+      let acc = 0, target = ((phasePx % STEP_PX) + STEP_PX) % STEP_PX;
+      for (let i = 0; i < scr.length - 1 && feats.length < 3000; i++) {
+        const a = scr[i], b = scr[i + 1];
+        const segLen = Math.hypot(b.x - a.x, b.y - a.y);
+        while (target <= acc + segLen && feats.length < 3000) {
+          const t = segLen ? (target - acc) / segLen : 0;
+          const ll = map.unproject([a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t]);
+          feats.push({ type: 'Feature', geometry: { type: 'Point', coordinates: [ll.lng, ll.lat] } });
+          target += STEP_PX;
+        }
+        acc += segLen;
+      }
+      src.setData({ type: 'FeatureCollection', features: feats });
+    }
+
     function frame(ts) {
       raf = requestAnimationFrame(frame);
       if (!started) return;
       if (currentState.flow >= 0 && !reduceMotion) {
-        const s = Math.floor((ts / 48) % DASH_SEQ.length);
-        if (s !== dashStep) { map.setPaintProperty('route-flow', 'line-dasharray', DASH_SEQ[s]); dashStep = s; }
+        renderFlowDots(currentState.flow, (ts * FLOW_PXPS) / 1000);
       }
       if (currentState.glow >= 0 && !reduceMotion) {
         map.setPaintProperty('stop-glow', 'circle-radius', 7 + Math.sin(ts / 280) * 2.2);
@@ -1284,10 +1302,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
         layout: { 'line-cap': 'round', 'line-join': 'round' },
         paint: { 'line-color': ROUTE, 'line-width': 3, 'line-opacity': 0.95 },
       });
+      map.addSource('flow-dots', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addLayer({
-        id: 'route-flow', type: 'line', source: 'route', filter: ['==', ['get', 'seg'], -1],
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': '#FFE34D', 'line-width': 5, 'line-dasharray': [0, DOT_GAP] },
+        id: 'flow-dots', type: 'circle', source: 'flow-dots',
+        paint: { 'circle-radius': DOT_PX / 2, 'circle-color': '#FFE34D' },
       });
 
       map.addSource('stops', { type: 'geojson', data: stopsFC(cfg.stops) });
