@@ -210,79 +210,38 @@
         </header>
 
         <div class="journey-grid">
-          <aside class="journey-map-wrap" id="sardiniaWrap">
-            <svg class="journey-map sardinia" id="sardiniaMap" viewBox="0 0 480 600" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-              <rect class="map-bg" x="0" y="0" width="480" height="600" fill="rgba(255,255,255,0.025)"/>
-              <g id="sardiniaLand"></g>
-              <g id="sardiniaRoute"></g>
-              <g id="sardiniaStops"></g>
-              <g id="sardiniaLabels"></g>
+          <aside class="journey-map-wrap is-zoomed">
+            <svg class="journey-map" id="graniteGlobe" viewBox="0 0 480 480" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <rect class="map-bg" x="0" y="0" width="480" height="480" fill="rgba(255,255,255,0.025)"/>
+              <g>
+                <g id="graniteGraticule"></g>
+                <g id="graniteLand"></g>
+                <g id="graniteRoute"></g>
+                <g id="graniteStops"></g>
+              </g>
             </svg>
           </aside>
 
           <div class="journey-stops">
-            <article class="stop" data-sardinia-stop="1">
-              <div class="stop-num">01 / 03</div>
+            <article class="stop" data-stop="1">
               <figure><img src="./assets/_journey/1%20italy/IMG_8408.jpeg" alt=""></figure>
-              <p class="stop-cap">The granite was found at <strong>Cava Scarraciana</strong>, a quarry in the sun-bleached silence of north-eastern Sardinia. On 20 October 1983, a 500-ton block was blasted from the rock face and reduced on site to 180 tons — a polyhedron ready for transport.</p>
-              <dl class="stop-meta">
-                <div><dt>Place</dt><dd>Cava Scarraciana</dd></div>
-                <div><dt>Date</dt><dd>20 · 10 · 1983</dd></div>
-                <div><dt>Mass</dt><dd>500 → 180 t</dd></div>
-              </dl>
-              <ol class="stop-diary">
-                <li><time>25 · 04 · 1983</time><p>The "Esagono" work collective is formed around Dominique Stroobant in Carrara.</p></li>
-                <li><time>13 · 09 · 1983</time><p>Max Bill and Rodolfo Costantino inspect the Scarraciana quarry.</p></li>
-                <li><time>20 · 10 · 1983</time><p>A granite block is blasted and extracted — 500 tons.</p></li>
-                <li><time>OCT — NOV 1983</time><p>The block is reduced to 300 tons, then to 180 tons, formed into a polyhedron, and loaded onto a Fagioli truck with a 52-metre platform.</p></li>
-              </ol>
-              <div class="stop-strip">
-                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8407.jpeg');"></div>
-                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8409.jpeg');"></div>
-                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8410.jpeg');"></div>
-                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8405.JPG');"></div>
-              </div>
             </article>
+            <p class="stop-cap" data-cap-for="1">The granite was found at <strong>Cava Scarraciana</strong>, a quarry in the sun-bleached silence of north-eastern Sardinia. On 20 October 1983, a 500-ton block was blasted from the rock face and reduced on site to 180 tons — a polyhedron ready for transport.</p>
 
-            <article class="stop" data-sardinia-stop="2">
-              <div class="stop-num">02 / 03</div>
+            <figure class="stop-lead" data-lead-for="1"><img src="./assets/_journey/1%20italy/IMG_8407.jpeg" alt=""></figure>
+
+            <article class="stop" data-stop="2">
               <figure><img src="./assets/_journey/1%20italy/IMG_8411.jpeg" alt=""></figure>
-              <p class="stop-cap">Loaded onto a Fagioli truck with a 52-metre platform, the block crossed Sardinia by night to the port of <strong>Santa Teresa Gallura</strong>. A temporary road was built to reach the highway; the public route was closed for two days, 8–9 February 1984.</p>
-              <dl class="stop-meta">
-                <div><dt>Leg</dt><dd>Sardinian crossing</dd></div>
-                <div><dt>Date</dt><dd>08 — 09 · 02 · 1984</dd></div>
-                <div><dt>Convoy</dt><dd>52 m platform</dd></div>
-              </dl>
-              <ol class="stop-diary">
-                <li><time>· · ·</time><p>A temporary road is built to the main highway.</p></li>
-                <li><time>08 — 09 · 02 · 1984</time><p>The road is blocked for two days while the convoy carries the block across Sardinia to the port of Santa Teresa di Gallura.</p></li>
-              </ol>
-              <div class="stop-strip">
-                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8413.jpeg');"></div>
-                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8415.jpeg');"></div>
-                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8416.jpeg');"></div>
-                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8419.jpeg');"></div>
-              </div>
             </article>
+            <p class="stop-cap" data-cap-for="2">Loaded onto a Fagioli truck with a 52-metre platform, the block crossed Sardinia by night to the port of <strong>Santa Teresa Gallura</strong>. A temporary road was built to reach the highway; the public route was closed for two days, 8–9 February 1984.</p>
 
-            <article class="stop" data-sardinia-stop="3">
-              <div class="stop-num">03 / 03</div>
+            <figure class="stop-lead" data-lead-for="2"><img src="./assets/_journey/1%20italy/IMG_8413.jpeg" alt=""></figure>
+
+            <article class="stop" data-stop="3">
               <figure><img src="./assets/_journey/1%20italy/IMG_8417.jpeg" alt=""></figure>
-              <p class="stop-cap">After a ten-day wait for fair weather, the cargo crossed the Tyrrhenian Sea to <strong>Marina di Carrara</strong>, where the workshop of the Esagono collective was waiting on the Tuscan coast.</p>
-              <dl class="stop-meta">
-                <div><dt>Place</dt><dd>Marina di Carrara</dd></div>
-                <div><dt>Date</dt><dd>20 · 02 · 1984</dd></div>
-                <div><dt>Distance</dt><dd>+360 km · sea</dd></div>
-              </dl>
-              <ol class="stop-diary">
-                <li><time>· · ·</time><p>Ten-day wait due to weather conditions.</p></li>
-                <li><time>20 · 02 · 1984</time><p>The ship arrives at the port of Marina di Carrara.</p></li>
-              </ol>
-              <div class="stop-strip">
-                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8418.jpeg');"></div>
-                <div style="background-image:url('./assets/_journey/1%20italy/IMG_8422.jpeg');"></div>
-              </div>
             </article>
+            <figure class="stop-lead" data-lead-for="3"><img src="./assets/_journey/1%20italy/IMG_8418.jpeg" alt=""></figure>
+            <p class="stop-cap" data-cap-for="3">After a ten-day wait for fair weather, the cargo crossed the Tyrrhenian Sea to <strong>Marina di Carrara</strong>, where the workshop of the Esagono collective was waiting on the Tuscan coast.</p>
           </div>
         </div>
       </div>
@@ -389,11 +348,6 @@
                 <g id="globeStops"></g>
               </g>
             </svg>
-            <dl class="map-meta" id="globeMeta" aria-live="polite">
-              <div><dt></dt><dd></dd></div>
-              <div><dt></dt><dd></dd></div>
-              <div><dt></dt><dd></dd></div>
-            </dl>
           </aside>
 
           <div class="journey-stops">
@@ -1260,10 +1214,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
   ];
 
   const W = 480, H = 480, R_ZOOMED = 1100;
-  // Idle state: zoomed-out globe centered on Italy/Mediterranean. The first
-  // narrative stop zooms the camera in toward Carrara; when the section leaves
-  // the viewport we return to this full-earth view.
-  const overviewView = [10, 40, 230];
+  // Idle state: already zoomed in on Italy. The first narrative stop pans the
+  // camera toward Carrara; when the section leaves the viewport we return to this
+  // Italy view (no full-earth zoom-out).
+  const overviewView = [12.5, 42, 1300];
   const initialRotation = [-overviewView[0], -overviewView[1], 0];
   const R = overviewView[2];
   const NUDGE = 0.85; // how strongly the globe follows the active stop (0 = no follow, 1 = centered)
@@ -1519,134 +1473,302 @@ document.querySelectorAll('.facts').forEach((facts) => {
   else window.addEventListener('load', init);
 })();
 
-// Granite Trip: static Sardinia + Tyrrhenian map. Highlights active stop on scroll.
+// Granite Trip: orthographic globe — a full-earth overview that zooms into Sardinia
+// and pans up the Tyrrhenian to Carrara as the photos scroll past on the grid.
+// Mirrors the Sculpture Trip globe above; kept as a sibling rather than abstracted
+// so each map's geography and camera framing stays easy to tune independently.
 (() => {
   const section = document.getElementById('granite-trip');
   if (!section) return;
-  const svg = document.getElementById('sardiniaMap');
+  const svg = document.getElementById('graniteGlobe');
   if (!svg) return;
   const NS = 'http://www.w3.org/2000/svg';
-  const W = 480, H = 600;
 
-  const stops = [
-    { coord: [9.10, 41.05], label: 'Cava Scarraciana' },
-    { coord: [9.19, 41.24], label: 'Santa Teresa Gallura' },
-    { coord: [10.04, 44.04], label: 'Marina di Carrara' },
+  // Physical waypoints rendered as circles on the globe
+  const stopCoords = [
+    [ 9.10, 41.05],   // 0 Cava Scarraciana (quarry)
+    [ 9.19, 41.24],   // 1 Santa Teresa Gallura (port)
+    [10.04, 44.04],   // 2 Marina di Carrara
+  ];
+  // Per narrative stop (1..3): camera view [lon, lat, scale], completed segments,
+  // the currently-flowing segment, and which stop marker glows.
+  const narrativeStates = [
+    {
+      view: [9.15, 41.25, 4200], past: 0, flow: -1, glow: 0, // 1 the quarry
+      meta: [['Place', 'Cava Scarraciana'], ['Date', '20 · 10 · 1983'], ['Mass', '500 → 180 t']],
+    },
+    {
+      view: [9.35, 41.7, 3400], past: 0, flow: 0, glow: 1, // 2 Sardinian crossing → port
+      meta: [['Leg', 'Sardinian crossing'], ['Date', '08 — 09 · 02 · 1984'], ['Convoy', '52 m platform']],
+    },
+    {
+      view: [9.75, 42.75, 2600], past: 1, flow: 1, glow: 2, // 3 Tyrrhenian sea crossing → Carrara
+      meta: [['Place', 'Marina di Carrara'], ['Date', '20 · 02 · 1984'], ['Distance', '+360 km · sea']],
+    },
   ];
 
-  // Two segments: overland Sardinia, then Tyrrhenian sea crossing
-  const segments = [
+  // Two segments: the overland Sardinian crossing, then the Tyrrhenian sea crossing.
+  const segmentCoords = [
     [[9.10, 41.05], [9.15, 41.10], [9.18, 41.18], [9.19, 41.24]],
     [[9.19, 41.24], [9.45, 41.80], [9.65, 42.40], [9.85, 43.10], [10.00, 43.60], [10.04, 44.04]],
   ];
 
-  let projection, geoPath;
+  const W = 480, H = 480;
+  // Idle state: zoomed-out globe centred on Italy. The first narrative stop zooms the
+  // camera into Sardinia; the section-exit IO is the only place we return to overview.
+  const overviewView = [9.5, 42, 230];
+  const initialRotation = [-overviewView[0], -overviewView[1], 0];
+  const R = overviewView[2];
 
-  function ensureNode(parent, tag, attrs = {}) {
+  let projection, geoPath, land;
+  let currentRot = [...initialRotation];
+  let targetRot = [...initialRotation];
+  let currentScale = R;
+  let targetScale = R;
+  let activeStop = 0;
+  let hasZoomedIn = false;
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function lerpAngle(a, b, t) {
+    let d = ((b - a + 540) % 360) - 180;
+    return a + d * t;
+  }
+  function visibleAt(coord) {
+    const r = projection.rotate();
+    const lambda = coord[0] * Math.PI / 180;
+    const phi = coord[1] * Math.PI / 180;
+    const cl = -r[0] * Math.PI / 180;
+    const ph = -r[1] * Math.PI / 180;
+    const cosC = Math.sin(ph) * Math.sin(phi) + Math.cos(ph) * Math.cos(phi) * Math.cos(lambda - cl);
+    return cosC > 0;
+  }
+  function ensureNode(parent, tag, attrs) {
     const el = document.createElementNS(NS, tag);
     for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
     parent.appendChild(el);
     return el;
   }
 
+  const gratG = document.getElementById('graniteGraticule');
+  const landG = document.getElementById('graniteLand');
+  const routeG = document.getElementById('graniteRoute');
+  const stopsG = document.getElementById('graniteStops');
+
+  function buildStatic() {
+    gratG.innerHTML = '';
+    ensureNode(gratG, 'path', {
+      d: geoPath(d3.geoGraticule().step([15, 15])()) || '',
+      fill: 'none', stroke: 'rgba(255,255,255,0.07)', 'stroke-width': '0.5', class: 'g-graticule',
+    });
+    landG.innerHTML = '';
+    land.features.forEach(f => {
+      ensureNode(landG, 'path', {
+        d: geoPath(f) || '', fill: '#202020', stroke: 'rgba(255,255,255,0.35)',
+        'stroke-width': '0.6', 'stroke-linejoin': 'round', 'stroke-linecap': 'round',
+        'shape-rendering': 'geometricPrecision', 'vector-effect': 'non-scaling-stroke', class: 'g-country',
+      });
+    });
+    routeG.innerHTML = '';
+    segmentCoords.forEach((coords, i) => {
+      ensureNode(routeG, 'path', {
+        d: geoPath({ type: 'LineString', coordinates: coords }) || '',
+        fill: 'none', stroke: '#FFD500', 'stroke-width': '1.25', 'stroke-linecap': 'round',
+        opacity: '0', 'data-seg': i, class: 'g-route',
+      });
+    });
+    stopsG.innerHTML = '';
+    stopCoords.forEach((c, i) => {
+      ensureNode(stopsG, 'circle', { 'data-i': i + 1, r: 3.5, fill: 'rgba(255,255,255,0.4)', class: 'g-stop' });
+    });
+  }
+
+  function update() {
+    currentRot[0] = lerpAngle(currentRot[0], targetRot[0], 0.07);
+    currentRot[1] = lerp(currentRot[1], targetRot[1], 0.07);
+    currentScale = lerp(currentScale, targetScale, 0.08);
+    projection.rotate(currentRot).scale(currentScale);
+
+    gratG.querySelectorAll('path').forEach(p => {
+      p.setAttribute('d', geoPath(d3.geoGraticule().step([15, 15])()) || '');
+    });
+    landG.querySelectorAll('path').forEach((p, i) => {
+      p.setAttribute('d', geoPath(land.features[i]) || '');
+    });
+    const state = narrativeStates[activeStop - 1] || { past: 0, flow: -1, glow: -1 };
+    routeG.querySelectorAll('path').forEach((p, i) => {
+      p.setAttribute('d', geoPath({ type: 'LineString', coordinates: segmentCoords[i] }) || '');
+      const isFlowing = i === state.flow;
+      const isPast = i < state.past;
+      p.setAttribute('opacity', isPast || isFlowing ? '1' : '0');
+      p.classList.toggle('is-flowing', isFlowing);
+    });
+    stopsG.querySelectorAll('circle').forEach((c, i) => {
+      const coord = stopCoords[i];
+      const isGlowing = i === state.glow;
+      const isPast = i < state.past;
+      const visible = visibleAt(coord);
+      if (!visible) { c.style.display = 'none'; return; }
+      c.style.display = '';
+      const xy = projection(coord);
+      c.setAttribute('cx', xy[0]);
+      c.setAttribute('cy', xy[1]);
+      c.setAttribute('fill', isGlowing || isPast ? '#FFD500' : 'rgba(255,255,255,0.35)');
+      c.setAttribute('r', isGlowing ? 6 : 3.5);
+      c.classList.toggle('is-glowing', isGlowing);
+    });
+  }
+
+  let rafId = 0;
+  function tick() {
+    update();
+    const dx = Math.abs(((targetRot[0] - currentRot[0] + 540) % 360) - 180);
+    const dy = Math.abs(targetRot[1] - currentRot[1]);
+    const ds = Math.abs(targetScale - currentScale);
+    rafId = (dx > 0.05 || dy > 0.05 || ds > 0.5) ? requestAnimationFrame(tick) : 0;
+  }
+  function requestRender() {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const metaEl = section.querySelector('.map-meta');
+  function renderMeta(i) {
+    if (!metaEl) return;
+    const state = narrativeStates[i - 1];
+    const rows = metaEl.querySelectorAll(':scope > div');
+    rows.forEach((row, idx) => {
+      const pair = state && state.meta && state.meta[idx];
+      row.querySelector('dt').textContent = pair ? pair[0] : '';
+      row.querySelector('dd').textContent = pair ? pair[1] : '';
+    });
+  }
+  function setActive(i) {
+    if (i === activeStop) return;
+    activeStop = i;
+    const inRange = i >= 1 && i <= narrativeStates.length;
+    if (inRange) {
+      const view = narrativeStates[i - 1].view;
+      targetRot = [-view[0], -view[1], 0];
+      targetScale = view[2];
+      renderMeta(i);
+    } else {
+      targetRot = [...initialRotation];
+      targetScale = R;
+      renderMeta(0);
+    }
+    requestRender();
+  }
+
+  // Reset to the overview view when the section leaves the viewport — the only place
+  // we zoom back out. Re-entering then triggers one fresh zoom-in on the first stop.
+  const sectionIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) {
+        targetScale = R;
+        targetRot = [...initialRotation];
+        activeStop = 0;
+        hasZoomedIn = false;
+        renderMeta(0);
+        requestRender();
+      }
+    });
+  }, { threshold: 0 });
+  sectionIO.observe(section);
+
   function init() {
     if (typeof d3 === 'undefined' || typeof topojson === 'undefined') return;
-
-    // Frame the region: cover Sardinia + Tyrrhenian + Tuscan coast
-    const bbox = {
-      type: 'FeatureCollection',
-      features: [
-        { type: 'Feature', geometry: { type: 'Point', coordinates: [7.5, 39.5] } },
-        { type: 'Feature', geometry: { type: 'Point', coordinates: [11.5, 44.6] } },
-      ],
-    };
-    projection = d3.geoMercator().fitExtent([[24, 24], [W - 24, H - 24]], bbox);
+    projection = d3.geoOrthographic()
+      .scale(R)
+      .translate([W / 2, H / 2])
+      .clipAngle(90)
+      .rotate(initialRotation);
     geoPath = d3.geoPath(projection);
 
     d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then(w => {
-      const land = topojson.feature(w, w.objects.countries);
+      land = topojson.feature(w, w.objects.countries);
+      buildStatic();
+      update();
 
-      const landG = document.getElementById('sardiniaLand');
-      land.features.forEach(f => {
-        ensureNode(landG, 'path', {
-          d: geoPath(f) || '',
-          fill: '#202020',
-          stroke: 'rgba(255,255,255,0.35)',
-          'stroke-width': '0.6',
-          'stroke-linejoin': 'round',
+      const stops = [...section.querySelectorAll('.stop[data-stop], .stop-lead[data-lead-for]')];
+      const intersecting = new Set();
+      const stopIO = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) intersecting.add(e.target);
+          else intersecting.delete(e.target);
         });
-      });
+        pickActive();
+      }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+      stops.forEach(s => stopIO.observe(s));
 
-      const routeG = document.getElementById('sardiniaRoute');
-      segments.forEach((coords, i) => {
-        ensureNode(routeG, 'path', {
-          d: geoPath({ type: 'LineString', coordinates: coords }) || '',
-          opacity: '0',
-          'data-seg': i,
-          class: 'g-route',
+      function pickActive() {
+        if (intersecting.size === 0) {
+          if (!hasZoomedIn) setActive(0);
+          return;
+        }
+        const vc = window.innerHeight / 2;
+        let bestEl = null, bestDist = Infinity;
+        intersecting.forEach(el => {
+          const r = el.getBoundingClientRect();
+          const c = (r.top + r.bottom) / 2;
+          const d = Math.abs(c - vc);
+          if (d < bestDist) { bestDist = d; bestEl = el; }
         });
-      });
-
-      const stopsG = document.getElementById('sardiniaStops');
-      const labG = document.getElementById('sardiniaLabels');
-      stops.forEach((s, i) => {
-        const xy = projection(s.coord);
-        ensureNode(stopsG, 'circle', {
-          cx: xy[0], cy: xy[1], r: '3.5',
-          fill: 'rgba(255,255,255,0.5)',
-          'data-i': String(i + 1),
-        });
-        const label = ensureNode(labG, 'text', {
-          x: String(xy[0] + 10),
-          y: String(xy[1] + 4),
-        });
-        label.textContent = s.label;
-      });
-
-      // Region caption for the island itself.
-      const sardiniaXY = projection([9.05, 40.20]);
-      const region = ensureNode(labG, 'text', {
-        x: String(sardiniaXY[0]),
-        y: String(sardiniaXY[1]),
-        class: 'region-label',
-        'text-anchor': 'middle',
-      });
-      region.textContent = 'Sardinia';
-
-      function setActive(idx) {
-        // Stop 1 is the origin — pulsing dot, no outgoing route. Stop 1→2 segment always flowing dotted when shown. Stop 2→3 hidden for now.
-        const isOrigin = idx === 1;
-        stopsG.querySelectorAll('circle').forEach((c, i) => {
-          const stopNum = i + 1;
-          const isPast = stopNum < idx;
-          const isActive = stopNum === idx;
-          c.style.display = '';
-          c.setAttribute('fill', isActive ? '#FFD500' : (isPast ? '#FFD500' : 'rgba(255,255,255,0.5)'));
-          c.setAttribute('r', isActive ? '6' : '3.5');
-          c.classList.toggle('is-glowing', isActive && isOrigin);
-        });
-        routeG.querySelectorAll('path').forEach((p, i) => {
-          // Each segment shows only while its destination stop is active, and always flowing dotted.
-          const visible = idx === i + 2;
-          p.setAttribute('opacity', visible ? '1' : '0');
-          p.classList.toggle('is-flowing', visible);
-        });
+        if (bestEl) {
+          const idx = parseInt(bestEl.dataset.stop || bestEl.dataset.leadFor, 10);
+          if (idx > 0) { hasZoomedIn = true; setActive(idx); }
+        }
       }
 
-      const io = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-          if (!e.isIntersecting) return;
-          setActive(parseInt(e.target.dataset.sardiniaStop));
-        });
-      }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
-      section.querySelectorAll('[data-sardinia-stop]').forEach(s => io.observe(s));
-
-      setActive(1);
+      window.addEventListener('load', pickActive);
+      window.addEventListener('resize', pickActive, { passive: true });
     });
   }
 
   if (typeof d3 !== 'undefined' && typeof topojson !== 'undefined') init();
   else window.addEventListener('load', init);
+})();
+
+// Journey facts: count each value up from 0 when the strip scrolls into view —
+// one after another (distance, then countries, then time). Distance steps by 100.
+(() => {
+  const facts = document.querySelector('.journey-facts');
+  if (!facts) return;
+  const values = [...facts.querySelectorAll('.fact-value')];
+  if (!values.length) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; // keep final values
+
+  // The numeric text node is the first child, so the unit <span> (km / months) stays intact.
+  const items = values.map(el => {
+    const node = el.firstChild;
+    const target = parseInt(node.textContent.replace(/[^\d]/g, ''), 10) || 0;
+    const big = target >= 1000;
+    return { node, target, step: big ? 100 : 1, duration: big ? 1300 : 500 };
+  });
+  items.forEach(it => { it.node.textContent = '0'; });
+
+  // Animate one value 0 → target, then invoke done().
+  function animate(it, done) {
+    const start = performance.now();
+    function frame(now) {
+      const t = Math.min(1, (now - start) / it.duration);
+      const val = t >= 1 ? it.target : Math.min(it.target, Math.round(it.target * t / it.step) * it.step);
+      it.node.textContent = val.toLocaleString('en-US');
+      if (t < 1) requestAnimationFrame(frame);
+      else if (done) done();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // Chain the values so each starts only once the previous has finished.
+  function runFrom(i) {
+    if (i >= items.length) return;
+    animate(items[i], () => runFrom(i + 1));
+  }
+
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.forEach(e => { if (e.isIntersecting) { obs.disconnect(); runFrom(0); } });
+  }, { threshold: 0.4 });
+  io.observe(facts);
 })();
 
 // Journey lightbox: click small images to open enlarged view; arrows navigate all images in #journey

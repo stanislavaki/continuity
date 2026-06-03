@@ -1521,19 +1521,18 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 /* Journey · facts strip + sub-chapter heads */
 .journey-facts {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 20px;
+  grid-template-columns: repeat(8, 1fr);
+  column-gap: var(--col-gap);
   margin-bottom: 100px;
 }
 .journey-facts > div {
-  background: #333333;
-  border-radius: 20px;
-  padding: 28px 32px 36px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  min-height: 220px;
+  gap: 14px;
 }
+.journey-facts > div:nth-child(1) { grid-column: 1 / span 4; }
+.journey-facts > div:nth-child(2) { grid-column: 5 / span 2; }
+.journey-facts > div:nth-child(3) { grid-column: 7 / span 2; }
 .journey-facts .fact-label {
   display: block;
   font-family: var(--sans);
@@ -1591,46 +1590,6 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   text-transform: uppercase;
   opacity: .55;
   margin: 16px 0 0;
-}
-
-/* Sardinia map specific */
-.journey-map.sardinia {
-  aspect-ratio: 4 / 5;
-  clip-path: none;
-  background: var(--bill-blue);
-}
-.journey-map.sardinia .map-bg { opacity: 0; }
-.journey-map .map-bg { fill: var(--bill-blue); }
-#sardiniaLand path {
-  fill: #202020;
-  stroke: rgba(255,255,255,.35);
-  stroke-width: 0.6;
-  vector-effect: non-scaling-stroke;
-}
-#sardiniaRoute path {
-  fill: none;
-  stroke: #FFD500;
-  stroke-width: 1.25;
-  stroke-linecap: round;
-  vector-effect: non-scaling-stroke;
-  transition: opacity .5s ease;
-}
-#sardiniaStops circle {
-  transition: r .35s ease, fill .35s ease;
-}
-#sardiniaLabels text {
-  fill: rgba(255,255,255,.7);
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-}
-#sardiniaLabels text.region-label {
-  fill: rgba(255,255,255,.55);
-  font-family: var(--serif, var(--mono));
-  font-size: 10px;
-  letter-spacing: .2em;
-  font-style: italic;
 }
 
 /* Per-stop diary list */
@@ -1931,16 +1890,15 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 #sculpture-trip .stop-cap[data-cap-for="1"] { grid-column: 5 / span 4; grid-row: 2; margin-top: 25vh; }
 #sculpture-trip .stop[data-stop="2"] { grid-column: 6 / span 3; grid-row: 3; margin-top: 35vh; }
 #sculpture-trip .stop-cap[data-cap-for="2"] { grid-column: 1 / span 4; grid-row: 4; margin-top: 30vh; }
-#sculpture-trip .stop-lead[data-lead-for="3"] { grid-column: 1 / span 4; grid-row: 5; margin: 30vh 0 0; pointer-events: auto; box-shadow: 0 24px 60px rgba(0,0,0,.55); }
+#sculpture-trip .stop-lead[data-lead-for="3"] { grid-column: 1 / span 4; grid-row: 5; margin: 30vh 0 0; pointer-events: auto; }
 #sculpture-trip .stop-lead img { display: block; width: 100%; height: auto; }
 #sculpture-trip .stop-cap[data-cap-for="3"] { grid-column: 5 / span 4; grid-row: 6; margin-top: 25vh; }
 #sculpture-trip .stop[data-stop="3"] { grid-column: 2 / span 3; grid-row: 7; margin-top: 25vh; }
-#sculpture-trip .stop-lead[data-lead-for="4"] { grid-column: 2 / span 6; grid-row: 8; margin: calc(50vh - 180px) 0 0; pointer-events: auto; box-shadow: 0 24px 60px rgba(0,0,0,.55); }
+#sculpture-trip .stop-lead[data-lead-for="4"] { grid-column: 2 / span 6; grid-row: 8; margin: calc(50vh - 180px) 0 0; pointer-events: auto; }
 #sculpture-trip .stop[data-stop="4"] { grid-column: 6 / span 3; grid-row: 9; margin-top: 30px; }
 #sculpture-trip .stop-cap[data-cap-for="4"] { grid-column: 1 / span 4; grid-row: 10; margin-top: 25vh; }
 #sculpture-trip .stop figure {
   background: rgba(0,0,0,.35);
-  box-shadow: 0 24px 60px rgba(0,0,0,.55);
 }
 #sculpture-trip .stop-cap {
   pointer-events: auto;
@@ -1972,6 +1930,131 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   }
   #sculpture-trip .stop[data-stop="1"] { margin-top: 0; }
   #sculpture-trip .map-meta {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 16px;
+  }
+}
+
+/* Granite Trip · same full-bleed sticky globe + grid-overlaid photos as Sculpture Trip */
+#granite-trip .journey-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  column-gap: 0;
+  position: relative;
+}
+#granite-trip .journey-map-wrap {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  position: sticky;
+  top: 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  height: 100vh;
+  display: block;
+  z-index: 0;
+  background: var(--black);
+  overflow: hidden;
+}
+#granite-trip .journey-map {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  clip-path: none;
+}
+#granite-trip .journey-map .map-bg { display: none; }
+#granite-trip .map-meta {
+  position: absolute;
+  left: max(24px, calc(50vw - 50% + 24px));
+  bottom: 24px;
+  margin: 0;
+  padding: 14px 20px;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  pointer-events: none;
+  grid-template-columns: repeat(3, minmax(120px, max-content));
+  column-gap: 32px;
+  row-gap: 0;
+  border-top: none;
+  padding-top: 14px;
+  z-index: 2;
+}
+#granite-trip .map-meta dt { opacity: .7; }
+#granite-trip .map-meta dd { color: #fff; }
+
+#granite-trip .journey-stops {
+  grid-column: 1;
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  column-gap: var(--col-gap);
+  row-gap: 0;
+  z-index: 1;
+  position: relative;
+  padding: 95vh 0 30vh;
+  pointer-events: none;
+}
+#granite-trip .stop {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-top: none !important;
+  align-self: start;
+  pointer-events: auto;
+}
+#granite-trip .stop[data-stop="1"]        { grid-column: 1 / span 5; grid-row: 1; margin-top: 0; }
+#granite-trip .stop-cap[data-cap-for="1"] { grid-column: 5 / span 4; grid-row: 2; margin-top: 25vh; }
+#granite-trip .stop-lead[data-lead-for="1"] { grid-column: 1 / span 3; grid-row: 3; margin: 30vh 0 0; }
+#granite-trip .stop[data-stop="2"]        { grid-column: 5 / span 4; grid-row: 4; margin-top: 35vh; }
+#granite-trip .stop-cap[data-cap-for="2"] { grid-column: 1 / span 4; grid-row: 5; margin-top: 30vh; }
+#granite-trip .stop-lead[data-lead-for="2"] { grid-column: 2 / span 5; grid-row: 6; margin: 30vh 0 0; }
+#granite-trip .stop[data-stop="3"]        { grid-column: 1 / span 5; grid-row: 7; margin-top: 30vh; }
+#granite-trip .stop-lead[data-lead-for="3"] { grid-column: 1 / span 8; grid-row: 8; margin-top: 25vh; }
+#granite-trip .stop-cap[data-cap-for="3"] { grid-column: 1 / span 4; grid-row: 9; margin-top: 25vh; }
+#granite-trip .stop-lead { pointer-events: auto; }
+#granite-trip .stop-lead img { display: block; width: 100%; height: auto; }
+#granite-trip .stop figure {
+  background: rgba(0,0,0,.35);
+}
+#granite-trip .stop-cap {
+  pointer-events: auto;
+  margin: 0;
+  padding: 0;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: 0;
+  border-top: none;
+  font-family: var(--sans);
+  font-size: clamp(20px, 1.7vw, 26px);
+  line-height: 1.35;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: #fff;
+}
+#granite-trip .stop-cap strong { font-weight: 700; }
+
+@media (max-width: 900px) {
+  #granite-trip .journey-stops {
+    grid-template-columns: 1fr;
+    padding-top: 25vh;
+    padding-bottom: 25vh;
+  }
+  #granite-trip .stop[data-stop],
+  #granite-trip .stop-lead[data-lead-for] {
+    grid-column: 1;
+    margin-top: 30vh;
+  }
+  #granite-trip .stop[data-stop="1"] { margin-top: 0; }
+  #granite-trip .stop-cap[data-cap-for] { grid-column: 1; }
+  #granite-trip .map-meta {
     left: 12px;
     right: 12px;
     bottom: 12px;
@@ -2020,6 +2103,7 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   .journey-map-wrap { position: static; height: auto; aspect-ratio: 4/5; }
   .stop { min-height: auto; padding: 40px 0; }
   .journey-facts { grid-template-columns: 1fr; gap: 24px; padding: 24px 0; margin-bottom: 60px; }
+  .journey-facts > div:nth-child(n) { grid-column: 1 / -1; }
   .journey-sub { margin-bottom: 80px; }
   .sub-head { grid-template-columns: 1fr; gap: 8px; margin-bottom: 48px; }
   .diary-list li { grid-template-columns: 1fr; gap: 6px; }
