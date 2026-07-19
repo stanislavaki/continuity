@@ -173,9 +173,9 @@ body.light .cursor { color: #000; }
 }
 body.dark .menu-btn { mix-blend-mode: normal; color: #fff; }
 body .menu-btn.is-open { z-index: 600; mix-blend-mode: normal; color: #fff; }
-.menu-btn:not(.is-open):hover svg { transform: rotate(-20deg); }
+.menu-btn:not(.is-open):hover svg { transform: scale(1.1); }
 .menu-btn.is-open svg { transform: rotate(135deg); }
-.menu-btn.is-open:hover svg { transform: rotate(155deg); }
+.menu-btn.is-open:hover svg { transform: rotate(135deg) scale(1.1); }
 
 #ch5 { overflow: visible; }
 #ch5 .chapter-head { margin-bottom: 0; }
@@ -188,9 +188,10 @@ body .menu-btn.is-open { z-index: 600; mix-blend-mode: normal; color: #fff; }
   align-items: center;
   gap: 24px;
 }
-.scroll-video-sticky video {
+.scroll-video-sticky video,
+.scroll-video-sticky img {
   display: block;
-  width: 48vw;
+  width: 69.12vw;
   height: auto;
 }
 .video-scrubber {
@@ -1324,6 +1325,18 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   .quote-text, .quote-attr { margin-left: 0; }
   .quote-block .quote-mark { position: static; margin-bottom: -40px; }
   .quote-text { padding-top: 0; }
+}
+
+/* Deutsche Bank · Herbert Zapp portrait — inline in the body column, directly
+   before the db-11 paragraph, spanning columns 5–7 of the 8-column grid
+   (the left three of the body's four columns). */
+.db-portrait {
+  width: calc(75% - var(--col-gap) / 4);
+  margin: 0 0 1.4em;
+}
+.db-portrait img { display: block; width: 100%; height: auto; }
+@media (max-width: 900px) {
+  .db-portrait { width: 100%; margin: 0 0 28px; }
 }
 
 /* Journey · sticky map + scrolling stops */
