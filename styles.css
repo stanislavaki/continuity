@@ -267,10 +267,11 @@ body .menu-btn.is-open { z-index: 600; mix-blend-mode: normal; color: #fff; }
   z-index: 500;
   display: grid;
   place-items: center;
-  padding: 120px var(--gutter) 60px;
+  padding: clamp(72px, 11vh, 120px) var(--gutter) clamp(40px, 7vh, 60px);
   opacity: 0;
   pointer-events: none;
   transition: opacity .4s ease;
+  overflow-y: auto;
 }
 .menu-overlay.is-open { opacity: 1; pointer-events: auto; }
 .menu-label {
@@ -298,10 +299,10 @@ body .menu-btn.is-open { z-index: 600; mix-blend-mode: normal; color: #fff; }
   color: rgba(255,255,255,0.5);
   font-family: var(--sans);
   font-weight: 700;
-  font-size: clamp(32px, 4.4vw, 64px);
+  font-size: clamp(18px, min(3.8vw, 5vh), 44px);
   letter-spacing: -0.03em;
   line-height: 1.2;
-  padding: 14px 0;
+  padding: clamp(7px, 1.2vh, 14px) 0;
   border-bottom: 1px solid rgba(255,255,255,0.1);
   display: flex;
   justify-content: space-between;
