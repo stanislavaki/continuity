@@ -36,13 +36,13 @@
       <svg viewBox="0 0 48 48"><path d="M 0 19.96 L 48 19.96 L 48 27.879 L 0 27.879 L 0 19.96 Z M 20.087 48 L 20.087 0 L 27.993 0 L 27.993 48 L 20.087 48 Z"/></svg>
     </button>
     <nav class="menu-nav">
-      <a href="#ch1" data-close><span>Introduction to the sculpture</span><span class="num">01</span></a>
+      <a href="#top" data-close><span>Intro</span><span class="num">00</span></a>
+      <a href="#ch1" data-close><span>Mathematics of the sculpture</span><span class="num">01</span></a>
       <a href="#ch2" data-close><span>Max Bill</span><span class="num">02</span></a>
-      <a href="#ch3" data-close><span>Journey from Sardinia to Frankfurt</span><span class="num">03</span></a>
-      <a href="#ch-db" data-close><span>Deutsche Bank</span><span class="num">04</span></a>
-      <a href="#ch4" data-close><span>The making</span><span class="num">05</span></a>
-      <a href="#ch5" data-close><span>Mathematics of the sculpture</span><span class="num">06</span></a>
-      <a href="#ch6" data-close><span>Walk around</span><span class="num">+</span></a>
+      <a href="#ch3" data-close><span>Deutsche Bank</span><span class="num">03</span></a>
+      <a href="#ch4" data-close><span>The making</span><span class="num">04</span></a>
+      <a href="#ch5" data-close><span>Journey from Sardinia to Frankfurt</span><span class="num">05</span></a>
+      <a href="#walk" data-close><span>Walk around</span><span class="num">+</span></a>
     </nav>
   </div>
 
@@ -76,66 +76,128 @@
       </div>
     </header>
 
-    <!-- INTRO spacer (sticky sculpture pins across this) -->
-    <section class="intro dark-section"></section>
+    <!-- INTRO · facts rail. The sticky sculpture pins across this whole block,
+         so lengthening the rail is what keeps it fixed longer. The facts are
+         ordinary flow content on the 8-column grid — cols 1–2 or 7–8 per
+         fact — so they ride past the sculpture on either side rather than
+         floating over it. Height/Weight share col 7–8; Place/Year share a
+         row, one per column, so that pair lands on screen together. -->
+    <section class="intro dark-section" id="introFacts">
+      <div class="container">
+        <div class="facts-rail">
+          <div class="rail-fact rail-fact--left reveal">
+            <span class="rail-key">Material</span>
+            <span class="rail-val">Granite (Sardinia)</span>
+          </div>
+          <div class="rail-fact rail-fact--right reveal">
+            <span class="rail-key">Height</span>
+            <span class="rail-val">4.5 m</span>
+          </div>
+          <div class="rail-fact rail-fact--right reveal">
+            <span class="rail-key">Weight</span>
+            <span class="rail-val">80 t</span>
+          </div>
+          <div class="rail-fact rail-fact--left reveal">
+            <span class="rail-key">Year</span>
+            <span class="rail-val">1986</span>
+          </div>
+        </div>
+        </div>
+    </section>
   </div><!-- /.sticky-group -->
 
-  <!-- LEAD paragraph (now empty placeholder block) -->
-  <section class="lead dark-section">
-    <div class="container"></div>
-  </section>
-
-  <!-- Lead body block -->
-  <section class="dark-section" style="padding: 120px 0;">
+  <!-- Place · the closing fact. It sits outside the sticky group on purpose:
+       it starts at column 5 and crosses the sculpture's centre line, so it can
+       only share the screen once the sculpture has unpinned. By then both are
+       in normal flow, so they hold this arrangement and scroll up as one. -->
+  <section class="intro-place dark-section">
     <div class="container">
-      <div class="article-body">
-        <p data-narr="intro-2">Imagine a 200-ton block of granite, extracted from a quarry in Sardinia in the 1980s, carved into a work of art and shipped across the North Atlantic, then transported through Europe via canals and rivers — before finally being installed as a monumental infinity loop in the heart of Frankfurt's financial district. Such an undertaking, combining production and logistics, had not been seen since the transport of colossal sculptures carved from monoliths in ancient Egypt. So what was the idea behind it, and what made it possible forty years ago?</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CHAPTER 1 -->
-  <section class="chapter dark-section" id="ch1">
-    <div class="container">
-      <div class="chapter-head">
-        <div class="chapter-num">1</div>
-        <h2 class="chapter-title">A Sculpture Continuity</h2>
-      </div>
-    </div>
-  </section>
-
-  <section class="article dark-section">
-    <div class="container">
-      <div class="article-grid">
-        <div class="article-body">
-          <p data-narr="ch1-1">&ldquo;In Continuity, I attempted to realize an idea that had long been present in my mind: the representation of an infinite space in infinite motion. Subsequently, I engaged with the problems realized in it, which are extraordinarily fascinating. That sculpture consists of a band of uniform width throughout, whose edges are therefore parallel. It thus appears to be a two-sided surface, separated from the surrounding space by parallel lines and forming a new space. The phenomenon of this &ldquo;body,&rdquo; however, is that this new space-forming surface has only a single side, and that the seemingly parallel two lines are in fact only one single line&mdash;that is, a line running parallel to itself.&rdquo;</p>
-          <p data-narr="ch1-2">In Continuity, I intended to achieve something similar: a surface, a boundary. Purely theoretically, from a twin band&mdash;one that is twisted one and a half times around itself and fused with another that is twisted only half a turn&mdash;one could obtain a form similar to the &ldquo;endless loop,&rdquo; but with only one surface and one boundary. For reasons unknown to me, this did not come about. Thus Continuity, despite a theoretically different expected result, consists of two parallel, bounded surfaces, composed of infinitely many straight lines.</p>
-          <p data-narr="ch1-3">This explanation may seem somewhat dry and primitive, yet it is the only thing I can say about it myself. I can, however, add that for me such a sculpture represents something like a &ldquo;knot in space,&rdquo; a point of concentration of various latent directions, and that through its existence space is ordered, newly formed, and given aim and direction.</p>
-          <p class="quote-text" data-narr="ch1-4">There is continuity in our purpose. However our purpose is also to see&mdash;and to see clearly. We [designers] are not working for the sake of machines, for some impersonal, superordinate entity such as &lsquo;industry&rsquo; or &lsquo;state&rsquo; or &lsquo;community&rsquo;. We are working for the wellbeing of every person, every individual, as part of a community. &lt;&hellip;&gt; This purpose, this new humanism, is what I&rsquo;d like to see as continuity.</p>
-          <p class="quote-attr">Max Bill, &ldquo;Continuity and change&rdquo;, 1953</p>
+      <div class="facts-rail facts-rail--tail">
+        <div class="rail-fact rail-fact--wide reveal">
+          <span class="rail-key">Place</span>
+          <span class="rail-val">Frankfurt am Main, Germany</span>
         </div>
       </div>
     </div>
   </section>
 
-
-  <!-- FACTS -->
-  <section class="facts">
+  <!-- Intro, continued: scene-setting paragraph flows straight into Max Bill
+       on Continuity (was Chapter 1) — one continuous block of text. -->
+  <section class="article dark-section flush-top">
     <div class="container">
-      <h3 class="facts-title">Facts</h3>
-      <div class="facts-grid">
-        <div class="fact-row"><span class="fact-key">Year</span><span class="fact-val">1986</span><span class="fact-n">01 / 05</span></div>
-        <div class="fact-row" data-no-zoom><span class="fact-key">Place</span><span class="fact-val">Frankfurt am Main, Germany</span><span class="fact-n">02 / 05</span></div>
-        <div class="fact-row"><span class="fact-key">Height</span><span class="fact-val">4.5 m</span><span class="fact-n">03 / 05</span></div>
-        <div class="fact-row"><span class="fact-key">Weight</span><span class="fact-val">80 t</span><span class="fact-n">04 / 05</span></div>
-        <div class="fact-row"><span class="fact-key">Material</span><span class="fact-val">Granite (Sardinia)</span><span class="fact-n">05 / 05</span></div>
+      <div class="article-grid">
+        <div class="article-body">
+          <p data-narr="intro-2">Imagine a 200-ton block of granite, extracted from a quarry in Sardinia in the 1980s, carved into a work of art and shipped across the North Atlantic, then transported through Europe via canals and rivers — before finally being installed as a monumental infinity loop in the heart of Frankfurt's financial district. Such an undertaking, combining production and logistics, had not been seen since the transport of colossal sculptures carved from monoliths in ancient Egypt. So what was the idea behind it, and what made it possible forty years ago?</p>
+          <p data-narr="ch1-1">&ldquo;In Continuity, I attempted to realize an idea that had long been present in my mind: the representation of an infinite space in infinite motion. Subsequently, I engaged with the problems realized in it, which are extraordinarily fascinating. That sculpture consists of a band of uniform width throughout, whose edges are therefore parallel. It thus appears to be a two-sided surface, separated from the surrounding space by parallel lines and forming a new space. The phenomenon of this &ldquo;body,&rdquo; however, is that this new space-forming surface has only a single side, and that the seemingly parallel two lines are in fact only one single line&mdash;that is, a line running parallel to itself.&rdquo;</p>
+          <p data-narr="ch1-2">In Continuity, I intended to achieve something similar: a surface, a boundary. Purely theoretically, from a twin band&mdash;one that is twisted one and a half times around itself and fused with another that is twisted only half a turn&mdash;one could obtain a form similar to the &ldquo;endless loop,&rdquo; but with only one surface and one boundary. For reasons unknown to me, this did not come about. Thus Continuity, despite a theoretically different expected result, consists of two parallel, bounded surfaces, composed of infinitely many straight lines.</p>
+          <p data-narr="ch1-3">This explanation may seem somewhat dry and primitive, yet it is the only thing I can say about it myself. I can, however, add that for me such a sculpture represents something like a &ldquo;knot in space,&rdquo; a point of concentration of various latent directions, and that through its existence space is ordered, newly formed, and given aim and direction.</p>
+        </div>
       </div>
-      <!-- Narrative continuation. Lives inside the sticky container so the table
-           stays pinned; the scroll JS slides this up from below (cols 5–8) until
-           it aligns with the table, then the pin releases and both exit together. -->
-      <div class="facts-note" id="factsNote">
-        <p class="facts-note-body">Realised over three years of continuous work, the sculpture was conceived by the Swiss artist, architect and Bauhaus-trained polymath Max Bill. Its production was led on site by Dominique Stroobant, chief of production, who directed the cutting, shaping and assembly of the granite and coordinated the considerable logistics the piece demanded. The commission was completed on a budget of roughly 2.3 million euros in today&rsquo;s terms &mdash; the equivalent of its 1986 cost in Deutsche Marks &mdash; a figure that reflects both the scale of the material and the precision the work required.</p>
+    </div>
+  </section>
+  <!-- Pull-quote band: the quote's own colour becomes the ground. -->
+  <section class="quote-band quote-band--green">
+    <div class="container">
+      <p class="quote-text" data-narr="ch1-4">There is continuity in our purpose. However our purpose is also to see&mdash;and to see clearly. We [designers] are not working for the sake of machines, for some impersonal, superordinate entity such as &lsquo;industry&rsquo; or &lsquo;state&rsquo; or &lsquo;community&rsquo;. We are working for the wellbeing of every person, every individual, as part of a community. &lt;&hellip;&gt; This purpose, this new humanism, is what I&rsquo;d like to see as continuity.</p>
+      <p class="quote-attr">Max Bill, &ldquo;Continuity and change&rdquo;, 1953</p>
+    </div>
+  </section>
+
+
+  <!-- Closing note for the facts, which now roll past the sculpture above.
+       Kept in its original position, restyled as ordinary dark-ground prose. -->
+  <section class="article dark-section flush-top" id="factsNote">
+    <div class="container">
+      <div class="article-grid">
+        <div class="article-body">
+          <p>Realised over three years of continuous work, the sculpture was conceived by the Swiss artist, architect and Bauhaus-trained polymath Max Bill. Its production was led on site by Dominique Stroobant, chief of production, who directed the cutting, shaping and assembly of the granite and coordinated the considerable logistics the piece demanded. The commission was completed on a budget of roughly 2.3 million euros in today&rsquo;s terms &mdash; the equivalent of its 1986 cost in Deutsche Marks &mdash; a figure that reflects both the scale of the material and the precision the work required.</p>
+        </div>
       </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 1 · Mathematics -->
+  <section class="chapter math" id="ch1">
+    <div class="container">
+      <div class="chapter-head">
+        <div class="chapter-num">1</div>
+        <h2 class="chapter-title">Mathematics behind the sculpture</h2>
+      </div>
+
+      <div class="scroll-video-sticky">
+        <!-- Pinned for the height of this box, then released — long enough
+             that the crossfade below reads as a slow, deliberate dissolve
+             rather than a quick swap. -->
+        <div class="math-visual-pin" id="mathVisualPin">
+        <div class="math-visual-stage">
+            <div class="math-visual-frame">
+              <img id="operaScrollVideo" class="math-visual-img math-visual-img--base" src="./assets/math-fold.png" alt="The loop rendered as a folded paper band">
+              <img class="math-visual-img math-visual-img--overlay" src="./assets/math-cube.png" alt="Line diagram of two cubes sharing a face">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="math-body">
+        <div>
+          <p data-narr="ch5-1">Max Bill was consistently inspired by mathematics and logic in art. His approach, which he called &ldquo;verifiable logic,&rdquo; guided him from early experimentation toward a precise method of making&mdash;and explaining&mdash;his work: <strong>&ldquo;You can always understand my work, even if you don&rsquo;t like it.&rdquo;</strong> From the beginning of his career, Bill was fascinated by the Möbius strip. From his first attempts in 1936 to the realization of Continuity in Frankfurt, he produced dozens&mdash;if not hundreds&mdash;of variations on the infinity loop, exploring differences in scale, material, and environment.</p>
+          <p data-narr="ch5-2">But how are we to understand the topology of Continuity? Is it a Möbius strip, a variation on an endless loop, or simply an artistic, sculptural interpretation of an infinite motif? In short, how did he do it? Even though Bill left some explanations, our own experiments and consultations with mathematicians did not yield an immediate understanding of how the sculpture was conceived and modeled.</p>
+        </div>
+        <div>
+          <p data-narr="ch5-4">The interesting thing to note is that Bill thought he had invented a completely new shape. Even more curious was that he discovered it by twisting a strip of paper, just as Möbius had done many years previously. &ldquo;Not long afterwards, people began to congratulate me on my fresh and original interpretation of the Egyptian symbol for infinity and the Möbius ribbon. I had never heard of either of them. My mathematical knowledge had never gone beyond routine architectural calculations, and I had no great interest in mathematics.&rdquo;</p>
+          <p data-narr="ch5-5">Barry Cipra (mathematician, Minnesota, USA): &ldquo;Bill&rsquo;s intuition that a single half twist connected to a double half twist should result in a single-sided, single-edge surface is quite correct; depending on the handedness of the twists, the loop you wind up with has either three twists or one. So it&rsquo;s a mystery how he managed to add 1 and 2 and get 4.&rdquo;</p>
+          <p data-narr="ch5-6">By carefully examining the sculpture itself and creating a 3D model using 360° video and photography (fig. 1), and by comparing it with Bill&rsquo;s metal sculpture from 1945&ndash;46&mdash;used by him as a 1:20 prototype (fig. 2)&mdash;we were able to analyze the work and conduct a series of spatial experiments. One of these resulted in an origami model that follows the original topology step by step and, surprisingly, resolves into a clear infinity-loop construction (fig. 3). Building on this, we developed a responsive interactive model that clearly demonstrates the topology of the Continuity. The result is striking: a pure mathematical model transforms into a work of art.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Pull-quote band: the quote's own colour becomes the ground. -->
+  <section class="quote-band quote-band--red dark-section">
+    <div class="container">
+      <p class="quote-text" data-narr="ch5-3">In Continuity, I intended to achieve something similar: a single surface, a single boundary. Theoretically, a double helix, twisted twice by half a turn and fused with one twisted only half a turn, should have resulted in something akin to an &lsquo;infinite loop,&rsquo; possessing only one surface and one boundary. For reasons unknown to me, this did not happen, so Continuity, despite the theoretically expected outcome, consists of two parallel bounded surfaces composed of infinitely many straight lines. This explanation may sound somewhat dry and simplistic, yet it is the only thing I can say about it myself.</p>
+      <p class="quote-attr">Max Bill</p>
     </div>
   </section>
 
@@ -161,30 +223,136 @@
     </div>
   </section>
 
-  <!-- Bill works · timeline chart -->
-  <section class="bill-works light-section">
+  <!-- Bill · graph placeholder -->
+  <section class="bill-reveal light-section" id="billReveal">
+    <span class="bill-reveal-placeholder">Graph on concrete art</span>
+  </section>
+
+  <!-- Bill and Concrete Art -->
+  <section class="article light-section">
     <div class="container">
-      <h3 class="bill-works-title">Max Bill's works</h3>
-      <div class="bill-works-chart" style="min-height:480px; display:flex; align-items:center; justify-content:center;">
-        <span style="font-family:var(--mono); font-size:18px; letter-spacing:.2em; color:rgba(0,0,0,.4); text-transform:uppercase;">Graph TBD</span>
+      <div class="article-grid">
+        <div class="article-body">
+          <p data-narr="ch2-3">The term <em>concrete art</em> was not Bill&rsquo;s invention. It was coined in 1930 by the Dutch painter <strong>Theo van Doesburg</strong>, founder of De Stijl, in a manifesto published in the single issue of his journal <em>Art Concret</em>. The argument was deliberately contrary: a painting should not <em>abstract</em> from nature, because that leaves it forever secondary to the thing it was drawn from. A plane is a plane, a colour is a colour, and a work built from them is not an abstraction of reality but a concrete reality in its own right. Van Doesburg died the following year, and the idea might have gone with him.</p>
+          <p data-narr="ch2-4">It was Bill who gave it a second life and a working method. In 1936, in the catalogue for an exhibition at the Kunsthaus Z&uuml;rich, he set out his own definition: concrete design is design that arises of its own accord, following its own laws, without deriving them from natural phenomena or modelling itself on them. Where van Doesburg had written a polemic, Bill proposed a discipline &mdash; mathematics as the generative instrument rather than the decorative one. A progression, a rotation, a division of a surface could be stated as a rule and then simply carried out. This is the sense behind his remark that one can always understand his work, even without liking it: the rule is available for inspection.</p>
+          <p data-narr="ch2-5">From there he built the movement an infrastructure. He organised the first international exhibition of concrete art in Basel in 1944, founded the bulletin <em>abstrakt/konkret</em> for Zurich&rsquo;s Galerie des Eaux Vives, and took a teaching post at the Kunstgewerbeschule the same year &mdash; work that made the <strong>Z&uuml;rcher Konkrete</strong> a school rather than a tendency. He carried the argument into industrial design through <em>die gute Form</em>, and into education as co-founder and first rector of the Ulm School of Design. Through his exhibitions and his contacts in Brazil and Argentina, the idea travelled to Latin America, where it produced movements of its own. Continuity belongs to that lineage: a form derived from a rule, made concrete in eighty tons of granite.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Bill · cursor-reveal section -->
-  <section class="bill-reveal light-section" id="billReveal">
-    <div class="bill-reveal-stage" id="billRevealStage"></div>
-    <div class="bill-reveal-fact">
-      <span class="fact-label">year</span>
-      <strong class="fact-value" id="billRevealYear">—</strong>
-    </div>
-  </section>
-
-  <!-- CHAPTER 3 · Journey -->
-  <section class="chapter dark-section" id="ch3">
+  <!-- CHAPTER 3 · Deutsche Bank -->
+  <section class="chapter dark-section db-section" id="ch3">
     <div class="container">
       <div class="chapter-head">
         <div class="chapter-num">3</div>
+        <h2 class="chapter-title">Why Deutsche Bank commissioned a sculpture</h2>
+      </div>
+    </div>
+  </section>
+
+  <!-- Deutsche Bank · article -->
+  <section class="article dark-section db-section db-body">
+    <div class="container">
+      <div class="article-grid">
+        <div class="article-body">
+          <p data-narr="db-1">Why would one of Germany's leading banks decide to place a large sculpture in front of its headquarters?</p>
+          <p data-narr="db-2">As the Deutsche Bank Twin Towers rose in Frankfurt between 1979 and 1984, the bank's senior management faced a crucial question: what monumental artwork should stand at the threshold of the new headquarters? In 1981, while construction continued, the board began to search for a proper sculptor. Deutsche Bank had long committed to art and culture — a programme whose scope is evident today across the Towers' sixty floors, where the collection spans a hundred international artworks from more than forty countries.</p>
+
+          <p data-narr="db-3">The choice had to meet several criteria. The artist should come from the German-speaking countries. The work should fit Deutsche Bank's collecting profile — meaning significant contemporary art. It should relate less to the building's facade than to the plaza in front of it. And the artist should be free in his solution, while that solution still reflected the functions of the bank.</p>
+
+          <p data-narr="db-4">Few names fit better than Max Bill. An established Swiss artist and sculptor, modern and unexpected, his work corresponded closely to the bank's vision. Since his Bauhaus years, Bill had built an art of precise geometry, calculation and mathematics — carried through painting, sculpture and graphic work, an approach as innovative as it was rigorous.</p>
+
+          <p data-narr="db-5">Bill first proposed a coloured column, conceived to present the viewer with numbers and quantities. Yet when the board asked how he himself would decide in their place, he gave his preference to Continuity — the work recommended by the bank's art advisers.</p>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pull-quote band: the quote's own colour becomes the ground. -->
+  <section class="quote-band quote-band--white">
+    <div class="container">
+      <p class="quote-text" data-narr="db-6">The chance to finally bring this long-running hit, now approaching its fortieth anniversary, to life was so tempting that I cast aside all my reservations about its age — and a wave of almost insurmountable difficulties that was welling up inside me — and decided to take the plunge on this adventure.</p>
+      <p class="quote-attr">Max Bill</p>
+    </div>
+  </section>
+
+  <section class="article dark-section db-section db-body">
+    <div class="container">
+      <div class="article-grid">
+        <div class="article-body">
+
+          <p data-narr="db-7">Kontinuität worked through contrast to the straight Twin Towers while proposing harmony. The sculpture had once been destroyed by vandals in Zurich, and the idea of the unbroken continuity of world trade and banking — together with the restoration of art as a restoration of life in post-war Germany — suited the commission perfectly. The work was given to Max Bill.</p>
+
+          <p data-narr="db-8">Carving the large granite sculpture took three years. It required a second sculptor, Dominique Stroobant, charged with its realisation alongside the bank's management. Stroobant approached the task with rigour. He set up the firm, hired assistants, found a suitable quarry for the granite in Sardinia, and built a workshop in the port of Carrara — working for three years always in consultation with, and under the supervision of, Max Bill.</p>
+
+          <p data-narr="db-9">At haus bill — the home where Max Bill's widow Angela Thomas lives today — we found a large archive of documentation, accounts and invoices connected to the sculpture. Stroobant was responsible for the entire management: the extensive correspondence with Deutsche Bank over shipments, the selection and ordering of transport, the payment of invoices, the preparations for the opening, and the accompanying exhibition.</p>
+
+          <p data-narr="db-10">It is precisely these documents — the notebooks, drawings, draft letters, expense calculations and photographs of the work in progress — that allow us today to understand the full complexity of realising such an ambitious idea. Stroobant did not simply make the sculpture: he coordinated an entire logistics operation, smoothed away bureaucratic obstacles, and ensured quality at every stage. Deutsche Bank, for its part, placed its trust in his experience and his sense of responsibility.</p>
+
+
+          <p data-narr="db-13">Deutsche Bank's investment in art was never purely aesthetic. It reflected a broader conviction — that cultural engagement is part of what an institution owes to its people and to society, building cultural capital that extends from the workplace to the city and beyond. Kontinuität is perhaps the most eloquent expression of that idea: a sculpture whose name speaks to the unbroken continuity of this commitment.</p>
+
+          <div class="db-zapp-anchor" style="margin-top:1.2em;">
+            <p data-narr="db-11">At the sculpture's inauguration in 1986, Herbert Zapp — board member and initiator of the Deutsche Bank art collection programme, who had begun acquiring works to fill the bank's buildings seven years earlier — said:</p>
+            <figure class="db-portrait">
+              <img src="./assets/_db/herbert-zapp.jpg" alt="Herbert Zapp">
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pull-quote band: the quote's own colour becomes the ground. -->
+  <section class="quote-band quote-band--dbblue dark-section">
+    <div class="container">
+      <p class="quote-text" data-narr="db-12">Max Bill's sculpture does not simply correspond to the bank building — it occupies an urbanistically significant setting, and will be seen and rediscovered daily by many people. Whether from a car, a park bench, on foot, from the Opernplatz or from the Taunusanlage: from every angle, and for everyone who takes pleasure in it, this granite sculpture with its infinite loop is meant to be an offering, a point of reference.</p>
+      <p class="quote-attr">Herbert Zapp, Deutsche Bank board</p>
+    </div>
+  </section>
+
+
+  <!-- CHAPTER 4 · The making -->
+  <section class="chapter paper-section" id="ch4" style="color:#000;background:#fff;">
+    <div class="container">
+      <div class="chapter-head">
+        <div class="chapter-num">4</div>
+        <h2 class="chapter-title">From granite block to sculpture</h2>
+      </div>
+    </div>
+  </section>
+
+  <section class="paper-section" style="padding:0;background:#fff;">
+    <div class="container">
+      <div class="article-grid">
+        <div style="grid-column: 1 / span 3;">
+          <div class="article-image" style="aspect-ratio:auto; background:none;">
+            <img src="./assets/H__6322.jpg" alt="" style="display:block; width:100%; height:auto;"/>
+          </div>
+        </div>
+        <div class="article-body">
+          <p data-narr="ch4-1">In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity — the development of which took three years.</p>
+          <p data-narr="ch4-2">Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
+          <p data-narr="ch4-3">Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation — often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
+        </div>
+      </div>
+    </div>
+    <!-- Outside .container so it runs the full width of the section; no 100vw
+         trick, so it can't overshoot into a horizontal scrollbar. -->
+    <div class="video-fullbleed">
+      <div style="position:relative; width:100%; padding-top:56.25%; background:#000;">
+        <iframe src="https://player.vimeo.com/video/1201575787?title=0&byline=0&portrait=0&dnt=1" style="position:absolute; inset:0; width:100%; height:100%; border:0;" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" allowfullscreen title="Continuity — the making"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 5 · Journey -->
+  <section class="chapter dark-section" id="ch5">
+    <div class="container">
+      <div class="chapter-head">
+        <div class="chapter-num">5</div>
         <h2 class="chapter-title">A journey from a Sardinian quarry to Frankfurt's financial district</h2>
       </div>
     </div>
@@ -369,136 +537,20 @@
     </div>
   </section>
 
-  <!-- CHAPTER 4 · Deutsche Bank -->
-  <section class="chapter paper-section" id="ch-db" style="color:#000;background:#fff;">
+  <!-- Chapter 5 · sub-chapter 04 — Walk around. Its own background, but part of
+       the Journey chapter: sub-head treatment, no chapter number. -->
+  <section class="walk" id="walk">
     <div class="container">
-      <div class="chapter-head">
-        <div class="chapter-num">4</div>
-        <h2 class="chapter-title">Why Deutsche Bank commissioned a sculpture</h2>
-      </div>
-    </div>
-  </section>
-
-  <!-- Deutsche Bank · article -->
-  <section class="article paper-section" style="background:#fff; padding:0 0 120px;">
-    <div class="container">
-      <div class="article-grid">
-        <div class="article-body">
-          <p data-narr="db-1">Why would one of Germany's leading banks decide to place a large sculpture in front of its headquarters?</p>
-          <p data-narr="db-2">As the Deutsche Bank Twin Towers rose in Frankfurt between 1979 and 1984, the bank's senior management faced a crucial question: what monumental artwork should stand at the threshold of the new headquarters? In 1981, while construction continued, the board began to search for a proper sculptor. Deutsche Bank had long committed to art and culture — a programme whose scope is evident today across the Towers' sixty floors, where the collection spans a hundred international artworks from more than forty countries.</p>
-
-          <p data-narr="db-3">The choice had to meet several criteria. The artist should come from the German-speaking countries. The work should fit Deutsche Bank's collecting profile — meaning significant contemporary art. It should relate less to the building's facade than to the plaza in front of it. And the artist should be free in his solution, while that solution still reflected the functions of the bank.</p>
-
-          <p data-narr="db-4">Few names fit better than Max Bill. An established Swiss artist and sculptor, modern and unexpected, his work corresponded closely to the bank's vision. Since his Bauhaus years, Bill had built an art of precise geometry, calculation and mathematics — carried through painting, sculpture and graphic work, an approach as innovative as it was rigorous.</p>
-
-          <p data-narr="db-5">Bill first proposed a coloured column, conceived to present the viewer with numbers and quantities. Yet when the board asked how he himself would decide in their place, he gave his preference to Continuity — the work recommended by the bank's art advisers.</p>
-
-          <p class="quote-text" data-narr="db-6">The chance to finally bring this long-running hit, now approaching its fortieth anniversary, to life was so tempting that I cast aside all my reservations about its age — and a wave of almost insurmountable difficulties that was welling up inside me — and decided to take the plunge on this adventure.</p>
-          <p class="quote-attr" style="color:rgba(0,0,0,0.5);">— Max Bill</p>
-
-          <p data-narr="db-7">Kontinuität worked through contrast to the straight Twin Towers while proposing harmony. The sculpture had once been destroyed by vandals in Zurich, and the idea of the unbroken continuity of world trade and banking — together with the restoration of art as a restoration of life in post-war Germany — suited the commission perfectly. The work was given to Max Bill.</p>
-
-          <p data-narr="db-8">Carving the large granite sculpture took three years. It required a second sculptor, Dominique Stroobant, charged with its realisation alongside the bank's management. Stroobant approached the task with rigour. He set up the firm, hired assistants, found a suitable quarry for the granite in Sardinia, and built a workshop in the port of Carrara — working for three years always in consultation with, and under the supervision of, Max Bill.</p>
-
-          <p data-narr="db-9">At haus bill — the home where Max Bill's widow Angela Thomas lives today — we found a large archive of documentation, accounts and invoices connected to the sculpture. Stroobant was responsible for the entire management: the extensive correspondence with Deutsche Bank over shipments, the selection and ordering of transport, the payment of invoices, the preparations for the opening, and the accompanying exhibition.</p>
-
-          <p data-narr="db-10">It is precisely these documents — the notebooks, drawings, draft letters, expense calculations and photographs of the work in progress — that allow us today to understand the full complexity of realising such an ambitious idea. Stroobant did not simply make the sculpture: he coordinated an entire logistics operation, smoothed away bureaucratic obstacles, and ensured quality at every stage. Deutsche Bank, for its part, placed its trust in his experience and his sense of responsibility.</p>
-
-          <div class="db-zapp-anchor" style="margin-top:1.2em;">
-            <figure class="db-portrait">
-              <img src="./assets/_db/herbert-zapp.jpg" alt="Herbert Zapp">
-            </figure>
-            <p data-narr="db-11">At the sculpture's inauguration in 1986, Herbert Zapp — board member and initiator of the Deutsche Bank art collection programme, who had begun acquiring works to fill the bank's buildings seven years earlier — said:</p>
-          </div>
-
-          <p class="quote-text" data-narr="db-12">Max Bill's sculpture does not simply correspond to the bank building — it occupies an urbanistically significant setting, and will be seen and rediscovered daily by many people. Whether from a car, a park bench, on foot, from the Opernplatz or from the Taunusanlage: from every angle, and for everyone who takes pleasure in it, this granite sculpture with its infinite loop is meant to be an offering, a point of reference.</p>
-          <p class="quote-attr" style="color:rgba(0,0,0,0.5);">— Herbert Zapp, Deutsche Bank board</p>
-
-          <p data-narr="db-13">Deutsche Bank's investment in art was never purely aesthetic. It reflected a broader conviction — that cultural engagement is part of what an institution owes to its people and to society, building cultural capital that extends from the workplace to the city and beyond. Kontinuität is perhaps the most eloquent expression of that idea: a sculpture whose name speaks to the unbroken continuity of this commitment.</p>
+      <header class="sub-head">
+        <div class="sub-num">04</div>
+        <div class="sub-head-text">
+          <h3 class="sub-title">Walk around — a Gaussian splatting scene</h3>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CHAPTER 5 · The making -->
-  <section class="chapter paper-section" id="ch4" style="color:#000;background:#fff;">
-    <div class="container">
-      <div class="chapter-head">
-        <div class="chapter-num">5</div>
-        <h2 class="chapter-title">From granite block to sculpture — a team challenge</h2>
-      </div>
-    </div>
-  </section>
-
-  <section class="paper-section" style="padding:0 0 120px;background:#fff;">
-    <div class="container">
-      <div class="article-grid">
-        <div style="grid-column: 1 / span 3;">
-          <div class="article-image" style="aspect-ratio:auto; background:none;">
-            <img src="./assets/H__6322.jpg" alt="" style="display:block; width:100%; height:auto;"/>
-          </div>
-        </div>
-        <div class="article-body">
-          <p data-narr="ch4-1">In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity — the development of which took three years.</p>
-          <p data-narr="ch4-2">Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
-          <p data-narr="ch4-3">Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation — often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
-        </div>
-        <div style="grid-column: 1 / -1; margin-top:48px;">
-          <div style="position:relative; width:100%; padding-top:56.25%; background:#000;">
-            <iframe src="https://player.vimeo.com/video/1201575787?title=0&byline=0&portrait=0&dnt=1" style="position:absolute; inset:0; width:100%; height:100%; border:0;" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" allowfullscreen title="Continuity — the making"></iframe>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CHAPTER 6 · Mathematics -->
-  <section class="chapter math" id="ch5">
-    <div class="container">
-      <div class="chapter-head">
-        <div class="chapter-num">6</div>
-        <h2 class="chapter-title">Mathematics behind the sculpture</h2>
-      </div>
-
-      <div class="scroll-video-sticky">
-        <img id="operaScrollVideo" src="./assets/math-loop.png" alt="Continuity — the infinity-loop sculpture">
-        <input type="range" id="operaScrubber" class="video-scrubber" min="0" max="1000" value="0" step="1" aria-label="Scrub 3D model">
-      </div>
-
-      <div class="math-body">
-        <div>
-          <p data-narr="ch5-1">Max Bill was consistently inspired by mathematics and logic in art. His approach, which he called &ldquo;verifiable logic,&rdquo; guided him from early experimentation toward a precise method of making&mdash;and explaining&mdash;his work: <strong>&ldquo;You can always understand my work, even if you don&rsquo;t like it.&rdquo;</strong> From the beginning of his career, Bill was fascinated by the Möbius strip. From his first attempts in 1936 to the realization of Continuity in Frankfurt, he produced dozens&mdash;if not hundreds&mdash;of variations on the infinity loop, exploring differences in scale, material, and environment.</p>
-          <p data-narr="ch5-2">But how are we to understand the topology of Continuity? Is it a Möbius strip, a variation on an endless loop, or simply an artistic, sculptural interpretation of an infinite motif? In short, how did he do it? Even though Bill left some explanations, our own experiments and consultations with mathematicians did not yield an immediate understanding of how the sculpture was conceived and modeled.</p>
-        </div>
-        <div>
-          <p class="quote-text" data-narr="ch5-3">In Continuity, I intended to achieve something similar: a single surface, a single boundary. Theoretically, a double helix, twisted twice by half a turn and fused with one twisted only half a turn, should have resulted in something akin to an &lsquo;infinite loop,&rsquo; possessing only one surface and one boundary. For reasons unknown to me, this did not happen, so Continuity, despite the theoretically expected outcome, consists of two parallel bounded surfaces composed of infinitely many straight lines. This explanation may sound somewhat dry and simplistic, yet it is the only thing I can say about it myself.</p>
-          <p class="quote-attr">Max Bill</p>
-        </div>
-        <div>
-          <p data-narr="ch5-4">The interesting thing to note is that Bill thought he had invented a completely new shape. Even more curious was that he discovered it by twisting a strip of paper, just as Möbius had done many years previously. &ldquo;Not long afterwards, people began to congratulate me on my fresh and original interpretation of the Egyptian symbol for infinity and the Möbius ribbon. I had never heard of either of them. My mathematical knowledge had never gone beyond routine architectural calculations, and I had no great interest in mathematics.&rdquo;</p>
-          <p data-narr="ch5-5">Barry Cipra (mathematician, Minnesota, USA): &ldquo;Bill&rsquo;s intuition that a single half twist connected to a double half twist should result in a single-sided, single-edge surface is quite correct; depending on the handedness of the twists, the loop you wind up with has either three twists or one. So it&rsquo;s a mystery how he managed to add 1 and 2 and get 4.&rdquo;</p>
-          <p data-narr="ch5-6">By carefully examining the sculpture itself and creating a 3D model using 360° video and photography (fig. 1), and by comparing it with Bill&rsquo;s metal sculpture from 1945&ndash;46&mdash;used by him as a 1:20 prototype (fig. 2)&mdash;we were able to analyze the work and conduct a series of spatial experiments. One of these resulted in an origami model that follows the original topology step by step and, surprisingly, resolves into a clear infinity-loop construction (fig. 3). Building on this, we developed a responsive interactive model that clearly demonstrates the topology of the Continuity. The result is striking: a pure mathematical model transforms into a work of art.</p>
-        </div>
-      </div>
-
-      <div style="margin-top:48px; min-height:922px; display:flex; align-items:center; justify-content:center;">
-        <span style="font-family:var(--mono); font-size:18px; letter-spacing:.2em; color:rgba(255,255,255,.4); text-transform:uppercase;">Content TBD</span>
-      </div>
-
-    </div>
-  </section>
-
-
-  <!-- CHAPTER 6 · Walk around -->
-  <section class="chapter walk" id="ch6">
-    <div class="container">
-      <div class="chapter-head">
-        <div class="chapter-num">+</div>
-        <h2 class="chapter-title">Walk around — a Gaussian splatting scene</h2>
-      </div>
+      </header>
       <div class="walk-stage"></div>
     </div>
   </section>
+
 
   <!-- FOOTER -->
   <footer class="site-footer">
@@ -655,6 +707,16 @@ menuBtn.addEventListener('click', () => {
 menuClose.addEventListener('click', closeMenu);
 document.querySelectorAll('[data-close]').forEach(a => a.addEventListener('click', closeMenu));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+// #top lives on the sticky hero, so the browser's anchor scroll resolves it a
+// couple hundred pixels in — you land mid-transition with the title already
+// gone. Send Intro (and the logo) to the real top of the document instead.
+document.querySelectorAll('a[href="#top"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
 
 // ========== Topology model (parametric band) ==========
 // Draws a projected annular band with n half-twists. Simple but gives right topology readout.
@@ -875,21 +937,74 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
   window.addEventListener('resize', fit);
 })();
 
-// Hero sculpture: grow by 15% as it sticks across the sticky-group
+// Hero sculpture: grows and spins clockwise a full turn as it sticks across
+// the sticky-group, landing back at 0°/360° (visually identical) exactly as
+// the pin releases. Growth never exceeds the clear strip between grid columns
+// 2 and 7 — the facts rail rides past in those columns and must not be clipped.
+//
+// ROT_EXTENT is how far the *visible* sculpture reaches from its own centre at
+// the worst rotation angle, as a fraction of element width. Measured by drawing
+// sculpture-3d.png to a canvas at every 15° and rescanning its alpha bbox: it
+// peaks at 0.482 (60° on the left, 240° on the right) versus 0.372/0.407 when
+// upright. Clamping on that single rotation-independent figure is what keeps
+// the object clear of the facts at every angle — a safety multiplier on the
+// upright numbers would have to be 1.30 to match, and is easier to get wrong.
 (() => {
   const group = document.querySelector('.sticky-group');
   const sculpture = document.querySelector('.sticky-sculpture');
   if (!group || !sculpture) return;
+  const ROT_EXTENT = 0.482, X_OFF = 30, GAP = 24, ROT_DELAY_VH = 0.5;
+
+  let limitScale = Infinity;
+  const measure = () => {
+    const l = document.querySelector('.rail-fact--left');
+    const r = document.querySelector('.rail-fact--right');
+    const base = sculpture.offsetWidth;
+    // Below 900px the rail runs full width (see CSS) — nothing to clear.
+    if (!l || !r || !base || window.innerWidth <= 900) { limitScale = Infinity; return; }
+    const clearL = l.getBoundingClientRect().right;
+    const clearR = r.getBoundingClientRect().left;
+    // Measured about the centred position, since the turn also eases X_OFF to
+    // 0: off-centre, the tighter side alone would set the limit and cost far
+    // more size than the offset is worth.
+    const cx = window.innerWidth / 2;
+    const limitW = (Math.min(cx - clearL, clearR - cx) - GAP) / ROT_EXTENT;
+    limitScale = limitW / base;
+  };
+
   const update = () => {
     const rect = group.getBoundingClientRect();
     const total = Math.max(1, group.offsetHeight - window.innerHeight);
     const scrolled = Math.max(0, -rect.top);
     const p = Math.min(1, scrolled / total);
-    const scale = 1 + 0.15 * p;
-    sculpture.style.transform = `translate(calc(-50% + 30px), calc(-50% + 30px)) scale(${scale})`;
+
+    // Stay upright over the hero photo, then hold a beat on the black screen
+    // before the turn begins — so the rotation reads as a deliberate move on
+    // the black ground, not as something already underway on arrival.
+    const hero = document.querySelector('.hero');
+    const rotStart = (hero ? hero.offsetHeight : window.innerHeight) + ROT_DELAY_VH * window.innerHeight;
+    const rotSpan = Math.max(1, total - rotStart);
+    const rp = Math.min(1, Math.max(0, (scrolled - rotStart) / rotSpan));
+    const angle = rp * 360;
+
+    // A spinning object sweeps a wider envelope than an upright one, so on
+    // narrower viewports the rotation-safe size is below 1. Blend into it as
+    // the turn starts rather than up front, which would shrink the hero —
+    // where the sculpture is upright and has no facts to clear anyway. The
+    // same blend recentres the sculpture (X_OFF -> 0), which is what keeps the
+    // clearance symmetric and the required shrink modest.
+    const grown = 1 + 0.15 * p;
+    const ease = rp <= 0 ? 0 : Math.min(1, rp / 0.25);
+    const eased = ease * ease * (3 - 2 * ease);   // smoothstep, so the size settles without a step
+    const scale = grown * (1 - eased) + Math.min(grown, limitScale) * eased;
+    const off = X_OFF * (1 - eased);
+    sculpture.style.transform = `translate(calc(-50% + ${off}px), calc(-50% + ${off}px)) scale(${scale}) rotate(${angle}deg)`;
   };
+
   window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
+  window.addEventListener('resize', () => { measure(); update(); });
+  window.addEventListener('load', () => { measure(); update(); });
+  measure();
   update();
 })();
 
@@ -1041,18 +1156,31 @@ document.querySelectorAll('.facts').forEach((facts) => {
   });
 });
 
-// Manual scrubber control — video is paused; user drives playback via the slider.
+// Math visual crossfade, run in two stages across the pin: the cube fades in
+// over the fold through the first half, both are held together through the
+// middle, then the fold fades out through the second half — so the pair
+// genuinely hands over instead of staying stacked on top of each other. The
+// whole thing is held off until the stage has settled into its sticky position
+// and finishes before it lets go, so no part is spent off-screen.
 (() => {
-  const v = document.getElementById('operaScrollVideo');
-  if (!v || typeof v.pause !== 'function') return;  // image placeholder → scrubber inert for now
-  v.pause();
-  const s = document.getElementById('operaScrubber');
-  if (!s) return;
-  s.addEventListener('input', () => {
-    if (!v.duration || !isFinite(v.duration)) return;
-    v.pause();
-    v.currentTime = (Number(s.value) / 1000) * v.duration;
-  });
+  const pin = document.getElementById('mathVisualPin');
+  const overlay = document.querySelector('.math-visual-img--overlay');
+  const base = document.querySelector('.math-visual-img--base');
+  if (!pin || !overlay || !base) return;
+  const HOLD_IN = 0.2, HOLD_OUT = 0.85;  // fraction of the pin spent fading
+
+  const update = () => {
+    const rect = pin.getBoundingClientRect();
+    const total = Math.max(1, pin.offsetHeight - window.innerHeight);
+    const p = Math.min(1, Math.max(0, -rect.top) / total);
+    const t = Math.min(1, Math.max(0, (p - HOLD_IN) / (HOLD_OUT - HOLD_IN)));
+    overlay.style.opacity = Math.min(1, t / 0.5);              // in over 1st half
+    base.style.opacity = 1 - Math.max(0, (t - 0.5) / 0.5);     // out over 2nd half
+  };
+
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
 })();
 
 // Bill's works · interactive timeline chart
@@ -1848,66 +1976,6 @@ document.querySelectorAll('.facts').forEach((facts) => {
   if (mq.addEventListener) mq.addEventListener('change', setup);
   else mq.addListener(setup);
   setup();
-})();
-
-// Bill cursor-reveal · spawn colored placeholder tiles where the cursor moves
-(function () {
-  const stage = document.getElementById('billRevealStage');
-  if (!stage) return;
-  const COLORS = ['#FF002F','#97D776','#FFBCB4','#12277E','#FFD500','#000000','#FAF4EA'];
-  const MAX = 200;
-  const MIN_STEP = 60;
-  let lastX = -1e6, lastY = -1e6;
-  let lastColor = -1;
-  const shuffleBag = [];
-  function nextColor() {
-    if (shuffleBag.length === 0) {
-      const pool = COLORS.map((_, i) => i);
-      for (let i = pool.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [pool[i], pool[j]] = [pool[j], pool[i]];
-      }
-      if (pool[0] === lastColor && pool.length > 1) [pool[0], pool[1]] = [pool[1], pool[0]];
-      shuffleBag.push(...pool);
-    }
-    lastColor = shuffleBag.shift();
-    return COLORS[lastColor];
-  }
-  const yearEl = document.getElementById('billRevealYear');
-  function nextYear() { return 1936 + Math.floor(Math.random() * 51); }
-  function spawn(x, y) {
-    const portrait = Math.random() < 0.5;
-    let w, h;
-    if (portrait) {
-      h = MAX;
-      w = Math.round(MAX * (0.5 + Math.random() * 0.4));
-    } else {
-      w = MAX;
-      h = Math.round(MAX * (0.4 + Math.random() * 0.4));
-    }
-    const tile = document.createElement('div');
-    tile.className = 'bill-reveal-tile';
-    tile.style.width = w + 'px';
-    tile.style.height = h + 'px';
-    tile.style.background = nextColor();
-    tile.style.left = (x - w / 2) + 'px';
-    tile.style.top = (y - h / 2) + 'px';
-    const year = nextYear();
-    tile.dataset.year = year;
-    stage.appendChild(tile);
-    while (stage.childElementCount > 8) stage.firstElementChild.remove();
-    if (yearEl) yearEl.textContent = year;
-  }
-  stage.addEventListener('pointermove', (e) => {
-    const r = stage.getBoundingClientRect();
-    const x = e.clientX - r.left;
-    const y = e.clientY - r.top;
-    const dx = x - lastX, dy = y - lastY;
-    if (dx * dx + dy * dy < MIN_STEP * MIN_STEP) return;
-    lastX = x; lastY = y;
-    spawn(x, y);
-  });
-  stage.addEventListener('pointerleave', () => { lastX = -1e6; lastY = -1e6; });
 })();
 
 // ---- Read-aloud ----

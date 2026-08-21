@@ -177,9 +177,9 @@ body .menu-btn.is-open { z-index: 600; mix-blend-mode: normal; color: #fff; }
 .menu-btn.is-open svg { transform: rotate(135deg); }
 .menu-btn.is-open:hover svg { transform: rotate(135deg) scale(1.1); }
 
-#ch5 { overflow: visible; }
-#ch5 .chapter-head { margin-bottom: 0; }
-#ch5 .math-body { margin-top: 200px; }
+#ch1 { overflow: visible; }
+#ch1 .chapter-head { margin-bottom: 0; }
+#ch1 .math-body { margin-top: 200px; }
 .scroll-video-sticky {
   width: 100%;
   margin-top: 20px;
@@ -194,55 +194,72 @@ body .menu-btn.is-open { z-index: 600; mix-blend-mode: normal; color: #fff; }
   width: 69.12vw;
   height: auto;
 }
-.video-scrubber {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 48vw;
-  height: 32px;
-  background: transparent;
-  cursor: pointer;
-  margin: 0;
-  padding: 0;
-}
-.video-scrubber:focus { outline: none; }
-.video-scrubber::-webkit-slider-runnable-track {
-  height: 4px;
-  background: rgba(255,255,255,.18);
-  border-radius: 2px;
-}
-.video-scrubber::-moz-range-track {
-  height: 4px;
-  background: rgba(255,255,255,.18);
-  border-radius: 2px;
-}
-.video-scrubber::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 14px;
-  height: 32px;
-  border-radius: 8px;
-  background: #FFD500;
-  border: none;
-  margin-top: -14px;
-  cursor: grab;
-  transition: transform .15s ease;
-}
-.video-scrubber:hover::-webkit-slider-thumb,
-.video-scrubber:active::-webkit-slider-thumb { transform: scale(1.15); }
-.video-scrubber:active::-webkit-slider-thumb { cursor: grabbing; }
-.video-scrubber::-moz-range-thumb {
-  width: 14px;
-  height: 32px;
-  border-radius: 8px;
-  background: #FFD500;
-  border: none;
-  cursor: grab;
-  transition: transform .15s ease;
-}
-.video-scrubber:hover::-moz-range-thumb,
-.video-scrubber:active::-moz-range-thumb { transform: scale(1.15); }
-.video-scrubber:active::-moz-range-thumb { cursor: grabbing; }
 
+/* Math visual: the loop render holds still while the fold diagram fades in
+   over it. The pin is a tall block; the stage sticks to the middle of the
+   viewport inside it, so the scroll distance the pin adds is exactly the
+   distance the crossfade has to play out over. */
+.math-visual-pin {
+  width: 100%;
+  height: 260vh;
+  position: relative;
+}
+/* Full-viewport sticky pane rather than a half-height box nudged up by a
+   transform: the transform version rendered the art ~half its own height above
+   its layout position, which is what drove it up over the chapter title. This
+   way the art starts below the title and only pins once the title has left. */
+.math-visual-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* `position: sticky` makes this a stacking context, so the images' `screen`
+     blending resolves against the stage rather than the section behind it.
+     Blending the whole pane too lets their black field drop out against the
+     section instead of drawing an opaque rectangle over it. */
+  mix-blend-mode: screen;
+}
+/* Carries the box the two renders are centred in — sized to the cube, the
+   wider of the pair. */
+.math-visual-frame {
+  position: relative;
+  width: 69.12vw;
+  aspect-ratio: 1577 / 997;
+  max-height: 82vh;
+}
+/* Both PNGs are art on a solid black field, not transparent cut-outs. Composited
+   with `screen`, that black drops out against the section's own black instead of
+   drawing an opaque rectangle — which is what was cropping the chapter numeral
+   above. `screen` also makes the crossfade read as one image dissolving into the
+   other rather than a box fading in over a box.
+   Scoped under the frame so these outrank `.scroll-video-sticky img`, which
+   would otherwise force the 69.12vw section width onto both. */
+.math-visual-frame .math-visual-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: auto;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+}
+/* Fold shows first, at half the width of the cube it resolves into. */
+.math-visual-frame .math-visual-img--base {
+  /* The fold leads the pair, so it carries the size: 50% + 15% + 20%. */
+  width: 69%;
+  max-width: none;
+}
+.math-visual-frame .math-visual-img--overlay {
+  width: 100%;
+  opacity: 0;
+  will-change: opacity;
+}
+@media (max-width: 900px) {
+  /* Shorter hold on small screens — 260vh of pin is a long thumb-scroll. */
+  .math-visual-pin { height: 180vh; }
+  .math-visual-frame { width: 100%; }
+}
 /* Scroll progress */
 .progress {
   position: fixed;
@@ -530,10 +547,88 @@ section { position: relative; }
   background: var(--black);
   color: #fff;
   position: relative;
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-  padding: 0 var(--gutter) 80px;
+  padding: 0;
+}
+
+/* Intro facts rail ------------------------------------------------------
+   Supplies the scroll length that holds the sticky sculpture fixed, and
+   carries the facts past it one at a time. Cols 1–2 and 7–8 are the two
+   strips of the 8-column grid that stay clear of the sculpture at its
+   centred min(54vw, 672px) width, so nothing overlaps the object. */
+.facts-rail {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+  row-gap: 55vh;
+  padding: 42vh 0 30vh;
+  position: relative;
+  z-index: 6;
+}
+.rail-fact {
+  padding-top: 14px;
+}
+.rail-fact--left  { grid-column: 1 / 3; }
+.rail-fact--right { grid-column: 7 / 9; }
+/* Place: starts at column 5 and runs to the edge. It crosses the sculpture's
+   centre line, so it is placed last, where the sculpture has already unpinned
+   and scrolled up out of its way. */
+.rail-fact--wide  { grid-column: 5 / 9; }
+/* One fact per row — without explicit rows the two narrow strips would pack
+   side by side into the same row. */
+.rail-fact:nth-child(1) { grid-row: 1; }
+.rail-fact:nth-child(2) { grid-row: 2; }
+.rail-fact:nth-child(3) { grid-row: 3; }
+.rail-fact:nth-child(4) { grid-row: 4; }
+.rail-key {
+  display: block;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 8px;
+}
+.rail-val {
+  display: block;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: clamp(26px, 2.9vw, 50px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+/* Place sits below the sculpture rather than beside it, so it needs no
+   clearance from the column strips — only enough lead-in that the sculpture
+   has cleared the middle of the screen before it arrives. */
+.intro-place {
+  position: relative;
+  z-index: 6;
+  /* Transparent so the sculpture stays visible as it travels up behind this
+     block — body already paints the same black. */
+  background: transparent;
+}
+.facts-rail--tail {
+  row-gap: 0;
+  /* The sticky sculpture carries a -1 x width margin-bottom to pull the hero
+     up to y=0, which drags this section up under it too. The top padding is
+     what buys Place back its own space below the released sculpture. */
+  padding: 26vh 0 34vh;
+}
+
+@media (max-width: 900px) {
+  /* No clear strip beside a 96vw sculpture — run the facts full width and
+     scrim them so they stay legible as they cross it. */
+  .facts-rail { row-gap: 34vh; padding: 30vh 0 24vh; }
+  .rail-fact--left,
+  .rail-fact--right,
+  .rail-fact--wide { grid-column: 1 / -1; }
+  .rail-fact {
+    /* Crisp under the rule, fading out at the foot, so the panel reads as a
+       deliberate band rather than a smudge over the sculpture. */
+    background: linear-gradient(to bottom, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.88) 72%, rgba(0,0,0,0) 100%);
+    padding: 14px 16px 20px;
+    margin: 0 -16px;
+  }
+  .rail-key { margin-bottom: 12px; }
 }
 .intro-text {
   position: relative;
@@ -548,10 +643,6 @@ section { position: relative; }
 }
 .intro-text strong { font-weight: 700; }
 
-/* Lead paragraph (standalone section after the sticky group releases) */
-.lead {
-  padding: 160px 0 160px;
-}
 .intro-lead {
   margin: 0;
   font-size: clamp(28px, 2.6vw, 44px);
@@ -896,8 +987,8 @@ section { position: relative; }
   margin-left: calc(-100% - 24px);
   width: calc(200% + 24px);
 }
-#ch5 .quote-text { color: var(--bill-blue); padding-top: 40px; }
-#ch5 .quote-attr { margin-left: calc(50% + 12px); margin-bottom: 20px; }
+#ch1 .quote-text { color: var(--bill-blue); padding-top: 40px; }
+#ch1 .quote-attr { margin-left: calc(50% + 12px); margin-bottom: 20px; }
 .math-body blockquote {
   margin: 0;
   padding: 0;
@@ -1001,8 +1092,11 @@ section { position: relative; }
   color: #fff;
   padding: 120px 0;
 }
-#ch6 .chapter-num,
-#ch6 .chapter-title { color: #000; }
+/* Walk around reads as a sub-chapter of the Journey, on its own ground:
+   dark ink on the pink field instead of the dark-section white. */
+.walk .sub-head { border-top-color: rgba(0,0,0,.25); }
+.walk .sub-num { color: #000; opacity: .6; }
+.walk .sub-title { color: #000; }
 .walk-stage {
   aspect-ratio: 16/9;
   background: url(./assets/hero-sculpture.png) center/cover no-repeat;
@@ -1331,12 +1425,49 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 /* Deutsche Bank · Herbert Zapp portrait — inline in the body column, directly
    before the db-11 paragraph, spanning columns 5–7 of the 8-column grid
    (the left three of the body's four columns). */
+/* Deutsche Bank chapter — its own ground, deep blue rather than paper.
+   Declared after .dark-section so it overrides that rule's black, and after
+   .article-body .quote-text so the pull-quotes drop their green/blue ink. */
+.db-section {
+  background: #0018A8;
+  color: #fff;
+}
+.db-section .chapter-num,
+.db-section .chapter-title { color: #fff; }
+.db-section .article-body .quote-text,
+.db-section .quote-text { color: #fff; }
+.db-section .quote-attr { color: rgba(255,255,255,0.55); }
+
+/* Zapp portrait + its lead-in. The anchor breaks out of .article-body's
+   right-half column (grid-column 3/5) to the full 8-column measure, then
+   splits it in two: the paragraph takes page columns 1–4, the portrait 5–8.
+   `align-items: end` is what sits them on a shared baseline at the foot. */
+.db-zapp-anchor {
+  /* .article-body spans grid-column 3/5 of a 4-col grid = 4 page columns +
+     3 gaps. Doubling that and adding one gap gives the full 8-column measure,
+     so the gap term must be var(--col-gap), not a fixed 24px. */
+  margin-left: calc(-100% - var(--col-gap));
+  width: calc(200% + var(--col-gap));
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--col-gap);
+  align-items: end;
+}
+.db-zapp-anchor > p { grid-column: 1; margin: 0; }
 .db-portrait {
-  width: calc(75% - var(--col-gap) / 4);
-  margin: 0 0 1.4em;
+  grid-column: 2;
+  width: 100%;
+  margin: 0;
 }
 .db-portrait img { display: block; width: 100%; height: auto; }
 @media (max-width: 900px) {
+  .db-zapp-anchor {
+    margin-left: 0;
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+  .db-zapp-anchor > p,
+  .db-portrait { grid-column: 1; }
   .db-portrait { width: 100%; margin: 0 0 28px; }
 }
 
@@ -2165,70 +2296,92 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   .journey-meta strong { font-size: 18px; }
 }
 
-/* Bill's works · interactive chart */
-.bill-works { background: var(--bg); color: #000; padding: 80px 0 120px; }
-.bill-works-title {
-  font-size: clamp(28px, 3vw, 48px);
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  margin-bottom: 36px;
-}
-.bill-works-chart { width: 100%; }
-.bill-works-chart svg { width: 100%; height: auto; display: block; overflow: visible; }
-
 /* Bill cursor-reveal section */
 .bill-reveal {
-  background: var(--bg);
+  background: #D9D9D9;
   color: #000;
   height: 100vh;
   width: 100%;
   padding: 0;
   position: relative;
-  cursor: none;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
 }
-.bill-reveal-stage {
-  position: absolute;
-  inset: 0;
+.bill-reveal-placeholder {
+  font-family: var(--mono);
+  font-size: 18px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,.4);
+}
+
+/* Full-bleed video. Sits outside .container, so plain 100% is already the full
+   section width — no 100vw, which counts the scrollbar and overflows. */
+.video-fullbleed {
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+  margin-top: 48px;
 }
-.bill-reveal-tile {
-  position: absolute;
-  pointer-events: none;
-  will-change: transform, opacity;
+
+/* Pull-quote bands -----------------------------------------------------
+   Each quote gets its own full-width section, grounded in the colour the
+   quote text used to be set in. Ink is whichever of black/white has the
+   higher WCAG contrast on that ground: on #00934C black wins (5.28 vs 3.98),
+   on #002BDE white wins (8.75 vs 2.40). */
+.quote-band {
+  padding: 13px 0 140px;
 }
-.bill-reveal-fact {
-  position: sticky;
-  bottom: 0;
-  align-self: flex-start;
-  padding: 0 32px 32px;
-  pointer-events: none;
-  z-index: 2;
-  color: #000;
+/* Body copy meets a band at the same distance one paragraph sits from the
+   next: `.article-body p + p` is 1.2em, and .article-body's font-size is
+   clamp(20px, 1.7vw, 26px). The em can't be inherited here — on the section
+   it would resolve against the root size — so the same product is restated. */
+.quote-band + section.article { padding-top: calc(1.2 * clamp(20px, 1.7vw, 26px)); }
+/* Any section that runs into a band, chapters included — #ch1 was still
+   holding .math's 120px below its body copy. Only the bottom is generalised:
+   a chapter *after* a band opens on its big numeral and keeps its own
+   padding-top, so that rule stays scoped to .article. */
+section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)); }
+/* The band's measure is the 8-column grid, so the attribution can be placed
+   on a real column rather than nudged with a margin. */
+.quote-band > .container {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--col-gap);
 }
-.bill-reveal-fact .fact-label {
-  display: block;
+.quote-band .quote-text {
+  grid-column: 1 / -1;
+  padding-top: 0;
+  margin-left: 0;
+  width: 100%;
+  max-width: none;
+  color: inherit;
+}
+/* The attribution reads as the quote's closing line: no gap above it, and a
+   line box the height of one quote line (.quote-text is line-height 1.08 at
+   clamp(30px, 3.8vw, 60px)), so it lands on that same rhythm despite being
+   set much smaller. Full-strength ink, not a faded tint of it. */
+.quote-band .quote-attr {
+  grid-column: 5 / -1;
+  margin-top: 0;
+  margin-left: 0;
+  /* Set as body copy — matches .article-body's size, weight and tracking. */
   font-family: var(--sans);
-  font-size: clamp(14px, 1vw, 18px);
   font-weight: 500;
-  letter-spacing: 0;
-  text-transform: lowercase;
-  opacity: .5;
-  margin-bottom: 8px;
+  font-size: clamp(20px, 1.7vw, 26px);
+  letter-spacing: -0.005em;
+  line-height: calc(1.08 * clamp(30px, 3.8vw, 60px));
+  color: inherit;
+  opacity: 1;
 }
-.bill-reveal-fact .fact-value {
-  display: block;
-  font-size: clamp(48px, 6vw, 96px);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  color: #000;
-}
+.quote-band--green { background: #00934C; color: #000; }
+.quote-band--red   { background: #C90101; color: #fff; }
+.quote-band--white { background: #fff;    color: #0018A8; }
+.quote-band--dbblue{ background: #0018A8; color: #fff; }
+
+/* Section paddings lifted out of inline styles so the band adjacency rules
+   above can override them. */
+.article.flush-top { padding-top: 0; }
+.db-body { padding: 0 0 120px; }
 
 /* Journey lightbox */
 .lightbox {
