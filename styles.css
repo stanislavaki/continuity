@@ -1949,50 +1949,10 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 
 /* Sculpting · gallery + intro + process list */
 /* Typography now comes from .article-body, so it matches the body text
-   everywhere else; only the trailing space is kept. */
-.sculpt-intro p { margin: 0 0 60px; }
-.sculpt-captions {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 80px;
-  /* The full 8-column measure, so the rule above still runs the whole width —
-     but the captions themselves are placed on page columns 5–8, stacking in a
-     single column down the right half. */
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  column-gap: var(--col-gap);
-  row-gap: 32px;
-  border-top: 1px solid rgba(255,255,255,.18);
-  padding-top: 32px;
-}
-.sculpt-captions li {
-  grid-column: 5 / 9;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  column-gap: var(--col-gap);
-  align-items: baseline;
-}
-.sc-num {
-  grid-column: 1;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: .2em;
-  opacity: .55;
-}
-.sculpt-captions h5 {
-  grid-column: 2 / span 2;
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0 0 6px;
-  letter-spacing: -0.01em;
-}
-.sculpt-captions p {
-  grid-column: 2 / span 2;
-  font-size: 15px;
-  line-height: 17px;
-  margin: 0;
-  opacity: .75;
-}
+   everywhere else. The trailing space belongs below the block, not between
+   its paragraphs — those keep the shared .article-body rhythm. */
+.sculpt-intro p { margin: 0; }
+.sculpt-intro p:last-child { margin-bottom: 60px; }
 .sculpt-gallery {
   display: block;
   margin: 60px 0;
@@ -2315,8 +2275,6 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   }
   .sg-note { display: none; }
   .sculpt-process li { grid-template-columns: 40px 1fr; gap: 16px; }
-  .sculpt-captions { grid-template-columns: 1fr; row-gap: 24px; }
-  .sculpt-captions li { grid-column: 1; }
 }
 
 @media (max-width: 600px) {

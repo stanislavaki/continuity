@@ -368,7 +368,7 @@
            the right, on the same 4-column article grid the chapters above use. -->
       <div class="journey-sub" id="granite-trip">
         <header class="sub-head">
-          <div class="sub-num">01</div>
+          <div class="sub-num">5.1</div>
           <div class="sub-head-text">
             <h3 class="sub-title">Granite Trip</h3>
             <p class="sub-route">Quarry Scarraciana → Porto di Santa Teresa Gallura → Porto Marina di Carrara</p>
@@ -416,7 +416,7 @@
       <!-- ============== SUB-CHAPTER 2 · SCULPTING ============== -->
       <div class="journey-sub" id="sculpting">
         <header class="sub-head">
-          <div class="sub-num">02</div>
+          <div class="sub-num">5.2</div>
           <div class="sub-head-text">
             <h3 class="sub-title">Sculpting</h3>
             <p class="sub-route">Workshop · Marina di Carrara · February 1984&nbsp;— June 1986</p>
@@ -429,51 +429,12 @@
         <div class="article-grid">
           <div class="article-body sculpt-intro">
           <p>A site near the port was chosen for convenient stone transport and waste handling&nbsp;— roughly 120 tons of granite would have to be removed. A temporary metal building rose around the block, with a separate pavilion housing the four-fold magnified plaster model that served as the master measurement.</p>
+          <p>Work began in <strong>February 1984</strong>. A grid of &ldquo;measuring points&rdquo; was carried across from that enlarged gypsum model using giant dividers, so that every dimension cut into the granite could be referred back to a single authority.</p>
+          <p>The cutting was done with drilling machines and diamond chains made specially for the job&nbsp;— ordinary ones are built for marble, not granite. Most of the work happened inside the block, by methods both intricate and dangerous: only two people could be within the stone at a time, so the carving ran in shifts, and the long internal channels that the loop&rsquo;s hidden topology depends on were opened out gradually.</p>
+          <p>By <strong>January 1985</strong> the main through-cuts were complete and the interior shape had begun to emerge. On <strong>22 March 1986</strong> the sculpture was turned over onto three support points so that carving could continue across the faces it had been resting on. It was finished on <strong>30 June 1986</strong>.</p>
           </div>
         </div>
 
-        <ol class="sculpt-captions">
-          <li>
-            <span class="sc-num">1</span>
-            <h5>Workshop built</h5>
-            <p>Work began February 1984. A site near the port was chosen for stone transport and waste handling.</p>
-          </li>
-          <li>
-            <span class="sc-num">2</span>
-            <h5>Measurement transfer</h5>
-            <p>A grid of "measuring points" was transferred from a four-fold magnified gypsum model using giant dividers.</p>
-          </li>
-          <li>
-            <span class="sc-num">3</span>
-            <h5>Diamond chains</h5>
-            <p>The carving used drilling machines and specially made diamond chains&nbsp;— regular chains are made for marble, not granite.</p>
-          </li>
-          <li>
-            <span class="sc-num">4</span>
-            <h5>Carving from the inside</h5>
-            <p>The sculpture was carved from the inside using complex and dangerous methods. Work was done in shifts: only two people could be inside at a time.</p>
-          </li>
-          <li>
-            <span class="sc-num">5</span>
-            <h5>Internal channels</h5>
-            <p>Gradually, long internal channels&nbsp;— necessary for the loop's hidden topology&nbsp;— were cut out.</p>
-          </li>
-          <li>
-            <span class="sc-num">6</span>
-            <h5>January 1985</h5>
-            <p>Main through-cuts completed. The interior shape begins to emerge.</p>
-          </li>
-          <li>
-            <span class="sc-num">7</span>
-            <h5>22 March 1986</h5>
-            <p>The sculpture is turned over and placed on three support points; carving continues.</p>
-          </li>
-          <li>
-            <span class="sc-num">8</span>
-            <h5>30 June 1986</h5>
-            <p>The sculpture is completed.</p>
-          </li>
-        </ol>
 
         <div class="sculpt-gallery">
           <figure class="sg-bookend">
@@ -506,7 +467,7 @@
       <!-- ============== SUB-CHAPTER 3 · SCULPTURE TRIP ============== -->
       <div class="journey-sub" id="sculpture-trip">
         <header class="sub-head">
-          <div class="sub-num">03</div>
+          <div class="sub-num">5.3</div>
           <div class="sub-head-text">
             <h3 class="sub-title">Sculpture Trip</h3>
             <p class="sub-route">Port of Carrara → Gibraltar → Portugal → Bay of Biscay → English Channel → Rotterdam → Rhine · Main → Frankfurt am Main</p>
@@ -1792,37 +1753,39 @@ document.querySelectorAll('.facts').forEach((facts) => {
   //   align        'below' = one gap under the photo's bottom edge
   //                'foot'  = bottom edge level with the photo's
   //   col/span     = where it sits on the 8-column grid
-  //   cap          = 1-based index into the numbered list above, which stays
-  //                  the single source of the copy
+  //   settle       = optional per-slot override of SETTLED; a larger value
+  //                  brings the block on while the easing tail is still
+  //                  running, which reads as settled but arrives sooner
+  //   always       = never gated on settling, so it never fades in or out
   //
   // Each block takes the column band its anchor photo leaves empty. Anchoring
   // to the photo rather than to the row matters for the last one: J-7 stays
   // stuck on screen long after its row's foot has scrolled away.
-  //   settle       = optional per-slot override of SETTLED; a larger value
-  //                  brings the block on while the easing tail is still
-  //                  running, which reads as settled but arrives sooner
   const SLOTS = [
-    { track: 'top', at: 'end',   anchor: 'j2', align: 'below', col: 1, span: 2, cap: 2, settle: 0.16 },
-    // Rides with J-7 the whole way rather than being gated on the grid
-    // settling, so it never fades in or out.
-    { track: 'bot', at: 'start', anchor: 'j7', align: 'below', col: 7, span: 2, cap: 3, always: true },
-    { track: 'mid', at: 'end',   anchor: 'j5', align: 'below', col: 7, span: 2, cap: 7 },
-    { track: 'bot', at: 'end',   anchor: 'j7', align: 'foot',  col: 1, span: 2, cap: 4 }
+    { track: 'top', at: 'end',   anchor: 'j2', align: 'below', col: 1, span: 2, settle: 0.16,
+      title: 'Measurement transfer',
+      body:  'A grid of "measuring points" was transferred from a four-fold magnified gypsum model using giant dividers.' },
+    { track: 'bot', at: 'start', anchor: 'j7', align: 'below', col: 7, span: 2, always: true,
+      title: 'Diamond chains',
+      body:  'The carving used drilling machines and specially made diamond chains \u2014 regular chains are made for marble, not granite.' },
+    { track: 'mid', at: 'end',   anchor: 'j5', align: 'below', col: 7, span: 2,
+      title: '22 March 1986',
+      body:  'The sculpture is turned over and placed on three support points; carving continues.' },
+    { track: 'bot', at: 'end',   anchor: 'j7', align: 'foot',  col: 1, span: 2,
+      title: 'Carving from the inside',
+      body:  'The sculpture was carved from the inside using complex and dangerous methods. Work was done in shifts: only two people could be inside at a time.' }
   ];
-  const capItems = document.querySelectorAll('.sculpt-captions li');
   const notes = SLOTS.map(cfg => {
-    const src = capItems[cfg.cap - 1];
-    if (!src) return null;
     const el = document.createElement('div');
     el.className = 'sg-note';
-    el.innerHTML = src.innerHTML;
-    const num = el.querySelector('.sc-num');
-    if (num) num.remove(); // the list above is where the numbering lives
-
-    el.setAttribute('aria-hidden', 'true'); // the list above is the readable copy
+    const h = document.createElement('h5');
+    h.textContent = cfg.title;
+    const body = document.createElement('p');
+    body.textContent = cfg.body;
+    el.append(h, body);
     canvas.appendChild(el);
     return Object.assign({ el }, cfg);
-  }).filter(Boolean);
+  });
 
   // How close to a keyframe counts as "settled". The tiles ease in and out,
   // so the last few percent of progress barely moves them.
