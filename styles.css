@@ -530,7 +530,8 @@ section { position: relative; }
   opacity: 0.55;
 }
 .chapter-title {
-  font-size: clamp(42px, 6vw, 96px);
+  /* 74px on desktop, still clamped so it scales down on narrow screens. */
+  font-size: clamp(42px, 6.28vw, 74px);
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.02;
@@ -1472,7 +1473,7 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 }
 
 /* Journey · sticky map + scrolling stops */
-.journey { padding: 40px 0 0; background: var(--black); color: #fff; }
+.journey { padding: 140px 0 0; background: var(--black); color: #fff; }
 .journey-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1554,6 +1555,98 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   font-weight: 700;
   font-size: 22px;
   letter-spacing: -0.015em;
+}
+
+/* Reworked sub-chapter heads: centred, and without the hairline the remaining
+   sub-chapters still carry above theirs. */
+#granite-trip .sub-head,
+#sculpting .sub-head {
+  border-top: none;
+  padding-top: 0;
+  text-align: center;
+}
+
+/* Granite Trip: photographs stacked down the left half of the article grid,
+   opposite the text column (which keeps its usual grid-column 3/5), plus one
+   closing figure across the full measure. */
+/* The column occupies page columns 1-4, so a 4-track grid inside it lines up
+   with those page columns exactly — letting a photo span 3 of them. */
+.journey-photos {
+  grid-column: 1 / 3;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+  row-gap: var(--col-gap);
+  align-content: start;
+}
+.journey-photos figure { grid-column: 1 / -1; }
+.journey-photos figure:nth-child(1) { grid-column: 1 / 4; }  /* page columns 1-3 */
+.journey-photos figure { margin: 0; }
+.journey-photos img,
+.journey-photo-measure img,
+.journey-photo-bleed img { display: block; width: 100%; height: auto; }
+
+/* Lead paragraphs sit above the opening image, in the same right-hand column
+   the rest of the account uses. Rows are explicit: the photo column and the
+   body would otherwise not share one. */
+.granite-lead {
+  grid-row: 1;
+  margin-bottom: 60px;
+}
+/* Opening figure: the full 8-column measure, inside the container gutters. */
+.journey-photo-measure {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 0 0 var(--col-gap);
+}
+/* Two photographs side by side across the full measure, four page columns
+   each. Sits in its own row between the opening image and the text row. */
+.journey-photo-pair {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--col-gap);
+  margin-bottom: var(--col-gap);
+}
+.journey-photo-pair figure { margin: 0; }
+/* Second of the pair drops 100px, staggering the two. Uses margin rather than
+   a transform so the row grows with it and nothing below is overlapped. */
+.journey-photo-pair figure:nth-child(2) { margin-top: 100px; }
+/* Both align to the top of their own cell, or the shorter one would stretch. */
+.journey-photo-pair figure { align-self: start; }
+.journey-photo-pair img { display: block; width: 100%; height: auto; }
+
+.journey-photos { grid-row: 4; }
+.article-grid > .journey-photo-measure ~ .article-body { grid-row: 4; }
+/* Six page columns, flush to column 1. .article-grid tracks are two page
+   columns wide, so 1/4 spans page columns 1-6. */
+.journey-photo-six {
+  grid-column: 1 / 4;
+  grid-row: 5;
+  margin: var(--col-gap) 0 0;
+}
+.journey-photo-six img { display: block; width: 100%; height: auto; }
+/* Account resumes below that image rather than alongside it. Scoped through
+   .article-grid to outrank the `.journey-photo-measure ~ .article-body` rule
+   above, which also matches this block and would pin it back to row 4. */
+.article-grid > .article-body.granite-tail {
+  grid-row: 6;
+  margin-top: 60px;
+}
+
+/* Closing figure: edge to edge, escaping the container's gutters. The grid area
+   is centred in the viewport, so 50% - 50vw lands on the viewport's left edge.
+   --sbw is the scrollbar width, set in JS: plain 100vw counts the scrollbar and
+   would overflow into a horizontal scroll. */
+.journey-photo-bleed {
+  grid-column: 1 / -1;
+  grid-row: 7;
+  width: calc(100vw - var(--sbw, 0px));
+  margin: var(--col-gap) 0 0 calc(50% - (100vw - var(--sbw, 0px)) / 2);
+}
+@media (max-width: 900px) {
+  .journey-photos { grid-column: 1 / -1; }
 }
 
 .journey-stops {
@@ -1673,6 +1766,18 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   font-weight: 500;
 }
 /* Journey · facts strip + sub-chapter heads */
+/* Journey figures band: signal yellow ground, black type, generous air. */
+.journey-facts-band {
+  background: #FFD500;
+  color: #000;
+  padding: 70px 0 280px;
+}
+/* Scoped through .journey-facts so these outrank the strip's own colour
+   rules, which are declared later in the file. */
+.journey-facts-band .journey-facts { margin-bottom: 0; }
+.journey-facts-band .journey-facts .fact-value { color: #000; }
+.journey-facts-band .journey-facts .fact-label { color: #000; opacity: .55; }
+
 .journey-facts {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
@@ -1698,11 +1803,12 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 }
 .journey-facts .fact-value {
   display: block;
-  font-size: clamp(48px, 6vw, 96px);
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  /* 134px on desktop, clamped so it still scales down on narrow screens. */
+  font-size: clamp(48px, 11.3vw, 134px);
+  font-weight: 500;
+  letter-spacing: -10px;
   line-height: 1;
-  color: #fff;
+  color: #FFD500;
 }
 .journey-facts .fact-unit {
   font-size: 0.4em;
@@ -1836,13 +1942,9 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 .diary-list p { font-size: 16px; line-height: 1.5; margin: 0; opacity: .85; }
 
 /* Sculpting · gallery + intro + process list */
-.sculpt-intro p {
-  font-size: clamp(18px, 1.6vw, 22px);
-  line-height: 1.55;
-  max-width: 70ch;
-  margin: 0 0 60px;
-  opacity: .85;
-}
+/* Typography now comes from .article-body, so it matches the body text
+   everywhere else; only the trailing space is kept. */
+.sculpt-intro p { margin: 0 0 60px; }
 .sculpt-captions {
   list-style: none;
   padding: 0;
@@ -2095,132 +2197,6 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 }
 
 /* Granite Trip · same full-bleed sticky globe + grid-overlaid photos as Sculpture Trip */
-#granite-trip .journey-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto;
-  column-gap: 0;
-  position: relative;
-}
-#granite-trip .journey-map-wrap {
-  grid-column: 1;
-  grid-row: 1;
-  align-self: start;
-  position: sticky;
-  top: 0;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  height: 100vh;
-  display: block;
-  z-index: 0;
-  background: radial-gradient(circle at 50% 46%, #0a1426 0%, #060a14 52%, #02040a 100%);
-  overflow: hidden;
-}
-#granite-trip .journey-map {
-  width: 100%;
-  height: 100%;
-  aspect-ratio: auto;
-  clip-path: none;
-  position: relative;
-  z-index: 1;
-}
-#granite-trip .journey-map .map-bg { display: none; }
-#granite-trip .map-meta {
-  position: absolute;
-  left: max(24px, calc(50vw - 50% + 24px));
-  bottom: 24px;
-  margin: 0;
-  padding: 14px 20px;
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 12px;
-  pointer-events: none;
-  grid-template-columns: repeat(3, minmax(120px, max-content));
-  column-gap: 32px;
-  row-gap: 0;
-  border-top: none;
-  padding-top: 14px;
-  z-index: 2;
-}
-#granite-trip .map-meta dt { opacity: .7; }
-#granite-trip .map-meta dd { color: #fff; }
-
-#granite-trip .journey-stops {
-  grid-column: 1;
-  grid-row: 1;
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  column-gap: var(--col-gap);
-  row-gap: 0;
-  z-index: 1;
-  position: relative;
-  padding: 95vh 0 30vh;
-  pointer-events: none;
-}
-#granite-trip .stop {
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  border-top: none !important;
-  align-self: start;
-  pointer-events: auto;
-}
-#granite-trip .stop[data-stop="1"]        { grid-column: 1 / span 5; grid-row: 1; margin-top: 0; }
-#granite-trip .stop-cap[data-cap-for="1"] { grid-column: 5 / span 4; grid-row: 2; margin-top: 25vh; }
-#granite-trip .stop-lead[data-lead-for="1"] { grid-column: 1 / span 3; grid-row: 3; margin: 30vh 0 0; }
-#granite-trip .stop[data-stop="2"]        { grid-column: 5 / span 4; grid-row: 4; margin-top: 35vh; }
-#granite-trip .stop-cap[data-cap-for="2"] { grid-column: 1 / span 4; grid-row: 5; margin-top: 30vh; }
-#granite-trip .stop-lead[data-lead-for="2"] { grid-column: 2 / span 5; grid-row: 6; margin: 30vh 0 0; }
-#granite-trip .stop[data-stop="3"]        { grid-column: 1 / span 5; grid-row: 7; margin-top: 30vh; }
-#granite-trip .stop-lead[data-lead-for="3"] { grid-column: 1 / span 8; grid-row: 8; margin-top: 25vh; }
-#granite-trip .stop-cap[data-cap-for="3"] { grid-column: 1 / span 4; grid-row: 9; margin-top: 25vh; }
-#granite-trip .stop-lead { pointer-events: auto; }
-#granite-trip .stop-lead img { display: block; width: 100%; height: auto; }
-#granite-trip .stop figure {
-  background: rgba(0,0,0,.35);
-}
-#granite-trip .stop-cap {
-  pointer-events: auto;
-  margin: 0;
-  padding: 0;
-  background: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  border-radius: 0;
-  border-top: none;
-  font-family: var(--sans);
-  font-size: clamp(20px, 1.7vw, 26px);
-  line-height: 1.35;
-  font-weight: 500;
-  letter-spacing: -0.005em;
-  color: #fff;
-}
-#granite-trip .stop-cap strong { font-weight: 700; }
-
-@media (max-width: 900px) {
-  #granite-trip .journey-stops {
-    grid-template-columns: 1fr;
-    padding-top: 25vh;
-    padding-bottom: 25vh;
-  }
-  #granite-trip .stop[data-stop],
-  #granite-trip .stop-lead[data-lead-for] {
-    grid-column: 1;
-    margin-top: 30vh;
-  }
-  #granite-trip .stop[data-stop="1"] { margin-top: 0; }
-  #granite-trip .stop-cap[data-cap-for] { grid-column: 1; }
-  #granite-trip .map-meta {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 16px;
-  }
-}
-
 .sculpt-process {
   list-style: none;
   padding: 0;
@@ -2329,7 +2305,9 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
    higher WCAG contrast on that ground: on #00934C black wins (5.28 vs 3.98),
    on #002BDE white wins (8.75 vs 2.40). */
 .quote-band {
-  padding: 13px 0 140px;
+  /* 46px on desktop, kept as a clamp so it still scales down on narrow screens. */
+  --quote-size: clamp(27px, 3.89vw, 46px);
+  padding: 177px 0;
 }
 /* Body copy meets a band at the same distance one paragraph sits from the
    next: `.article-body p + p` is 1.2em, and .article-body's font-size is
@@ -2349,7 +2327,20 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   column-gap: var(--col-gap);
 }
 .quote-band .quote-text {
-  grid-column: 1 / -1;
+  /* Columns 5–8; the attribution takes 1–2. Both are pinned to row 1: the
+     quote comes first in source order, and grid's sparse auto-placement will
+     not backtrack to columns 1–2, so the attribution would otherwise drop to
+     a second row and its column would collapse to zero height. */
+  grid-column: 5 / -1;
+  grid-row: 1;
+  font-size: var(--quote-size);
+  /* 48px at the 46px desktop size, as a ratio so the leading tracks the clamp
+     down with the size. */
+  line-height: 1.043;
+  font-weight: 700;
+  /* Set lowercase — punctuation is untouched, only the capitals go. */
+  text-transform: lowercase;
+  letter-spacing: -0.7px;
   padding-top: 0;
   margin-left: 0;
   width: 100%;
@@ -2358,18 +2349,26 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
 }
 /* The attribution reads as the quote's closing line: no gap above it, and a
    line box the height of one quote line (.quote-text is line-height 1.08 at
-   clamp(30px, 3.8vw, 60px)), so it lands on that same rhythm despite being
-   set much smaller. Full-strength ink, not a faded tint of it. */
+   --quote-size), so it lands on that same rhythm despite being set much
+   smaller. Full-strength ink, not a faded tint of it. */
+/* Attribution rides columns 1–2. Its column stretches the full height of the
+   quote so the sticky <p> inside has somewhere to travel; the margins that
+   put its baseline on the quote's first and last lines are measured and set
+   in JS, since the two differ in size and half-leading. */
+.quote-credit-col {
+  grid-column: 1 / 3;
+  grid-row: 1;
+  align-self: stretch;
+  position: relative;
+}
 .quote-band .quote-attr {
-  grid-column: 5 / -1;
-  margin-top: 0;
+  position: sticky;
   margin-left: 0;
   /* Set as body copy — matches .article-body's size, weight and tracking. */
   font-family: var(--sans);
   font-weight: 500;
   font-size: clamp(20px, 1.7vw, 26px);
   letter-spacing: -0.005em;
-  line-height: calc(1.08 * clamp(30px, 3.8vw, 60px));
   color: inherit;
   opacity: 1;
 }
