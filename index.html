@@ -87,7 +87,7 @@
         <div class="facts-rail">
           <div class="rail-fact rail-fact--left reveal">
             <span class="rail-key">Material</span>
-            <span class="rail-val">Granite (Sardinia)</span>
+            <span class="rail-val">Granite</span>
           </div>
           <div class="rail-fact rail-fact--right reveal">
             <span class="rail-key">Height</span>
@@ -359,18 +359,7 @@
     </div>
   </section>
 
-  <!-- Journey: facts + 3 sub-chapters -->
-  <!-- Journey figures on their own ground. -->
-  <section class="journey-facts-band light-section">
-    <div class="container">
-      <div class="journey-facts">
-        <div><span class="fact-label">distance</span><strong class="fact-value">2,800<span class="fact-unit">km</span></strong></div>
-        <div><span class="fact-label">countries</span><strong class="fact-value">5</strong></div>
-        <div><span class="fact-label">time</span><strong class="fact-value">6<span class="fact-unit">mo</span></strong></div>
-      </div>
-    </div>
-  </section>
-
+  <!-- Journey: 3 sub-chapters -->
   <section class="journey dark-section" id="journey">
     <div class="container">
 
@@ -445,42 +434,42 @@
 
         <ol class="sculpt-captions">
           <li>
-            <span class="sc-num">I</span>
+            <span class="sc-num">1</span>
             <h5>Workshop built</h5>
             <p>Work began February 1984. A site near the port was chosen for stone transport and waste handling.</p>
           </li>
           <li>
-            <span class="sc-num">II</span>
+            <span class="sc-num">2</span>
             <h5>Measurement transfer</h5>
             <p>A grid of "measuring points" was transferred from a four-fold magnified gypsum model using giant dividers.</p>
           </li>
           <li>
-            <span class="sc-num">III</span>
+            <span class="sc-num">3</span>
             <h5>Diamond chains</h5>
             <p>The carving used drilling machines and specially made diamond chains&nbsp;— regular chains are made for marble, not granite.</p>
           </li>
           <li>
-            <span class="sc-num">IV</span>
+            <span class="sc-num">4</span>
             <h5>Carving from the inside</h5>
             <p>The sculpture was carved from the inside using complex and dangerous methods. Work was done in shifts: only two people could be inside at a time.</p>
           </li>
           <li>
-            <span class="sc-num">V</span>
+            <span class="sc-num">5</span>
             <h5>Internal channels</h5>
             <p>Gradually, long internal channels&nbsp;— necessary for the loop's hidden topology&nbsp;— were cut out.</p>
           </li>
           <li>
-            <span class="sc-num">VI</span>
+            <span class="sc-num">6</span>
             <h5>January 1985</h5>
             <p>Main through-cuts completed. The interior shape begins to emerge.</p>
           </li>
           <li>
-            <span class="sc-num">VII</span>
+            <span class="sc-num">7</span>
             <h5>22 March 1986</h5>
             <p>The sculpture is turned over and placed on three support points; carving continues.</p>
           </li>
           <li>
-            <span class="sc-num">VIII</span>
+            <span class="sc-num">8</span>
             <h5>30 June 1986</h5>
             <p>The sculpture is completed.</p>
           </li>
@@ -506,6 +495,10 @@
 
           <figure class="sg-bookend sg-bookend--narrow">
             <img src="./assets/_journey/2%20sculpting/J-8.jpg" alt="">
+            <figcaption class="sg-endnote">
+              <h5>30 June 1986</h5>
+              <p>The sculpture is completed.</p>
+            </figcaption>
           </figure>
         </div>
       </div>
@@ -1786,6 +1779,55 @@ document.querySelectorAll('.facts').forEach((facts) => {
   const tiles = stage.querySelectorAll('.sg-tile');
   if (!tiles.length) return;
 
+  // ── Captions carried into the gallery ────────────────────────────────
+  // Four fixed slots, each on the same 8-column grid the tiles use, each tied
+  // to one track at rest. A slot shows only while its track is settled — at
+  // the start or the end of that track's swap, never mid-transition.
+  //
+  //   at   'start' = track sitting on its first keyframe
+  //        'end'   = track sitting on its last keyframe
+  //   col/span     = where the text sits on the 8-column grid
+  //   anchor       = the photo the block hangs off, so it travels with that
+  //                  photo and is on screen whenever the photo is
+  //   align        'below' = one gap under the photo's bottom edge
+  //                'foot'  = bottom edge level with the photo's
+  //   col/span     = where it sits on the 8-column grid
+  //   cap          = 1-based index into the numbered list above, which stays
+  //                  the single source of the copy
+  //
+  // Each block takes the column band its anchor photo leaves empty. Anchoring
+  // to the photo rather than to the row matters for the last one: J-7 stays
+  // stuck on screen long after its row's foot has scrolled away.
+  //   settle       = optional per-slot override of SETTLED; a larger value
+  //                  brings the block on while the easing tail is still
+  //                  running, which reads as settled but arrives sooner
+  const SLOTS = [
+    { track: 'top', at: 'end',   anchor: 'j2', align: 'below', col: 1, span: 2, cap: 2, settle: 0.16 },
+    // Rides with J-7 the whole way rather than being gated on the grid
+    // settling, so it never fades in or out.
+    { track: 'bot', at: 'start', anchor: 'j7', align: 'below', col: 7, span: 2, cap: 3, always: true },
+    { track: 'mid', at: 'end',   anchor: 'j5', align: 'below', col: 7, span: 2, cap: 7 },
+    { track: 'bot', at: 'end',   anchor: 'j7', align: 'foot',  col: 1, span: 2, cap: 4 }
+  ];
+  const capItems = document.querySelectorAll('.sculpt-captions li');
+  const notes = SLOTS.map(cfg => {
+    const src = capItems[cfg.cap - 1];
+    if (!src) return null;
+    const el = document.createElement('div');
+    el.className = 'sg-note';
+    el.innerHTML = src.innerHTML;
+    const num = el.querySelector('.sc-num');
+    if (num) num.remove(); // the list above is where the numbering lives
+
+    el.setAttribute('aria-hidden', 'true'); // the list above is the readable copy
+    canvas.appendChild(el);
+    return Object.assign({ el }, cfg);
+  }).filter(Boolean);
+
+  // How close to a keyframe counts as "settled". The tiles ease in and out,
+  // so the last few percent of progress barely moves them.
+  const SETTLED = 0.02;
+
   // Each keyframe = [colStart, colSpan, top%] on an 8-col grid.
   // Every tile is visible at all times (no opacity). Tiles are arranged in
   // three vertical tracks with strict left-to-right column ordering inside
@@ -1924,6 +1966,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
 
     // Pass 1: per-tile progress + width/height.
     const data = [];
+    const trackProgress = {};
     tiles.forEach(tile => {
       const k = KF[tile.dataset.kf];
       if (!k) return;
@@ -1941,6 +1984,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       const aspect = tile.naturalWidth / tile.naturalHeight || 1;
       const heightPx = widthPx / aspect;
       const leftPx = (c - 1) * (cwPx + gap);
+      trackProgress[trackName] = p; // tiles in a track share a trigger
       data.push({ tile, kf: tile.dataset.kf, trackName, leftPx, widthPx, heightPx, aspect });
     });
 
@@ -1949,14 +1993,17 @@ document.querySelectorAll('.facts').forEach((facts) => {
     // bookend to the first tile.
     let cursor = 0;
     let lastBottom = 0;
+    const trackTops = {}, trackHeights = {};
     for (const trackName of ORDER) {
       let maxH = 0;
+      trackTops[trackName] = cursor;
       for (const d of data) if (d.trackName === trackName) {
         d.tile.style.setProperty('--x', d.leftPx + 'px');
         d.tile.style.setProperty('--y', cursor + 'px');
         d.tile.style.setProperty('--w', d.widthPx + 'px');
         if (d.heightPx > maxH) maxH = d.heightPx;
       }
+      trackHeights[trackName] = maxH;
       lastBottom = cursor + maxH;
       cursor = lastBottom + gap;
     }
@@ -1968,6 +2015,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     //         appears to slide down through the canvas at scroll speed.
     // Phase 3: J-7 detaches and runs its own scale + column-move animation,
     //         landing one --col-gap below J-6.
+    let j7Parked = false;
     const j7 = data.find(d => d.kf === 'j7');
     const j6 = data.find(d => d.kf === 'j6');
     if (j7 && j6) {
@@ -2023,6 +2071,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       } else {
         // Phase 4: scale done — park J-7 at the canvas-y it occupied at the
         // moment the sticky scale finished, then let it scroll naturally.
+        j7Parked = true;
         j7W = kN[1] * cwPx + (kN[1] - 1) * gap;
         j7L = (kN[0] - 1) * (cwPx + gap);
         j7Y = STICKY_VIEW_Y - phase3EndRectTop;
@@ -2036,10 +2085,79 @@ document.querySelectorAll('.facts').forEach((facts) => {
       if (j7Bottom > lastBottom) lastBottom = j7Bottom;
     }
 
+    // Notes go last, once every tile — J-7's phase overrides included — has
+    // its final box, so the free-space measurement sees the real layout.
+    const notesBottom = placeNotes(data, canvasW, cwPx, gap, trackProgress, j7Parked);
+    if (notesBottom > lastBottom) lastBottom = notesBottom;
+
     // Shrink the stage to exactly the content height. The stage's
     // margin-bottom then provides exactly one --col-gap to the J-8 bookend.
     stage.style.height = lastBottom + 'px';
   }
+
+  // Place each note in its declared slot, but only while that track is
+  // settled on a keyframe — mid-transition the tiles are still moving and any
+  // gap is momentary, so the text stays hidden. A final overlap test against
+  // the real tile boxes is the backstop: if anything would touch, don't show.
+  function placeNotes(data, canvasW, cwPx, gap, trackProgress, j7Parked) {
+    if (!notes.length) return 0;
+
+    // Read boxes back off the DOM so J-7's phased placement is included.
+    const boxes = data.map(d => {
+      const width = parseFloat(d.tile.style.getPropertyValue('--w')) || 0;
+      return {
+        kf: d.kf,
+        left: parseFloat(d.tile.style.getPropertyValue('--x')) || 0,
+        top: parseFloat(d.tile.style.getPropertyValue('--y')) || 0,
+        width,
+        height: width / (d.aspect || 1)
+      };
+    });
+    const boxOf = kf => boxes.find(b => b.kf === kf);
+
+    let bottom = 0;
+
+    notes.forEach(note => {
+      const hide = () => { note.el.classList.remove('is-on'); };
+      const p = trackProgress[note.track];
+      if (p == null) return hide();
+
+      // Settled? The bottom row also has to wait for J-7 to finish its own
+      // phased move before it counts as at rest.
+      const tol = note.settle != null ? note.settle : SETTLED;
+      const settled = note.always || (note.at === 'start'
+        ? p <= tol
+        : (p >= 1 - tol && (note.track !== 'bot' || j7Parked)));
+      if (!settled) return hide();
+
+      const left = (note.col - 1) * (cwPx + gap);
+      const width = note.span * cwPx + (note.span - 1) * gap;
+
+      // Sit either at the top of the track or one gap under a named tile.
+      // Width first — the height needed to position it depends on the wrap.
+      note.el.style.setProperty('--x', left + 'px');
+      note.el.style.setProperty('--w', width + 'px');
+      const h = note.el.offsetHeight;
+
+      const a = boxOf(note.anchor);
+      if (!a) return hide();
+      const top = note.align === 'foot'
+        ? a.top + a.height - h
+        : a.top + a.height + gap;
+      note.el.style.setProperty('--y', top + 'px');
+
+      // Touching any image at all disqualifies the placement.
+      const clash = boxes.some(b =>
+        left < b.left + b.width && left + width > b.left &&
+        top  < b.top  + b.height && top  + h     > b.top);
+      if (clash) return hide();
+
+      note.el.classList.add('is-on');
+      if (top + h > bottom) bottom = top + h;
+    });
+    return bottom;
+  }
+
   function onScroll() {
     if (raf == null) raf = requestAnimationFrame(update);
   }

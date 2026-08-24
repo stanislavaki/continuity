@@ -503,6 +503,9 @@ section { position: relative; }
   position: relative;
   overflow: hidden;
 }
+/* Ch5 runs straight into the Journey sub-chapters, which bring their own top
+   padding — so it gives up its own foot rather than stacking two gaps. */
+#ch5 { padding-bottom: 0; }
 .chapter-head {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -584,8 +587,8 @@ section { position: relative; }
   display: block;
   font-family: var(--mono);
   font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: lowercase;
   opacity: 0.55;
   margin-bottom: 8px;
 }
@@ -593,7 +596,7 @@ section { position: relative; }
   display: block;
   font-family: var(--sans);
   font-weight: 700;
-  font-size: clamp(26px, 2.9vw, 50px);
+  font-size: clamp(30px, 4.35vw, 56px);
   line-height: 1.05;
   letter-spacing: -0.03em;
 }
@@ -1441,7 +1444,8 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 
 /* Zapp portrait + its lead-in. The anchor breaks out of .article-body's
    right-half column (grid-column 3/5) to the full 8-column measure, then
-   splits it in two: the paragraph takes page columns 1–4, the portrait 5–8.
+   restates that measure as its own 8 tracks so the two children can be placed
+   on real page columns: the paragraph takes 1–5, the portrait 6–8.
    `align-items: end` is what sits them on a shared baseline at the foot. */
 .db-zapp-anchor {
   /* .article-body spans grid-column 3/5 of a 4-col grid = 4 page columns +
@@ -1450,13 +1454,13 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   margin-left: calc(-100% - var(--col-gap));
   width: calc(200% + var(--col-gap));
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(8, 1fr);
   column-gap: var(--col-gap);
   align-items: end;
 }
-.db-zapp-anchor > p { grid-column: 1; margin: 0; }
+.db-zapp-anchor > p { grid-column: 1 / 6; margin: 0; }
 .db-portrait {
-  grid-column: 2;
+  grid-column: 6 / 9;
   width: 100%;
   margin: 0;
 }
@@ -1844,10 +1848,12 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 }
 .sub-route {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.7;
-  letter-spacing: .05em;
-  text-transform: uppercase;
+  letter-spacing: .09em;
+  /* Small caps rather than uppercase, so the authored casing survives: proper
+     nouns keep full-height capitals and everything else drops to small caps. */
+  font-variant-caps: small-caps;
   opacity: .55;
   margin: 16px 0 0;
 }
@@ -1949,14 +1955,18 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   list-style: none;
   padding: 0;
   margin: 0 0 80px;
+  /* The full 8-column measure, so the rule above still runs the whole width —
+     but the captions themselves are placed on page columns 5–8, stacking in a
+     single column down the right half. */
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(8, 1fr);
   column-gap: var(--col-gap);
   row-gap: 32px;
   border-top: 1px solid rgba(255,255,255,.18);
   padding-top: 32px;
 }
 .sculpt-captions li {
+  grid-column: 5 / 9;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   column-gap: var(--col-gap);
@@ -2005,6 +2015,24 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 .sg-bookend--narrow img {
   grid-column: 3 / 7;
 }
+/* Closing caption to the right of the final photo, sitting on the image's
+   own bottom edge rather than its top. */
+.sg-endnote {
+  grid-column: 7 / 9;
+  align-self: end;
+}
+.sg-endnote h5 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+.sg-endnote p {
+  font-size: 15px;
+  line-height: 1.45;
+  margin: 0;
+  opacity: .75;
+}
 .sg-stage {
   position: relative;
   height: 300vh;
@@ -2029,6 +2057,38 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   background-color: rgba(255,255,255,.04);
   will-change: left, top, width;
 }
+/* Captions dropped into the gallery's own coordinate space. The script
+   measures the gaps left between tiles each frame and only fades a note in
+   when the gap is wide enough to hold it, so text never sits on an image. */
+.sg-note {
+  position: absolute;
+  left: var(--x, 0px);
+  top: var(--y, 0px);
+  width: var(--w, 0px);
+  opacity: 0;
+  pointer-events: none;
+  will-change: left, top, width, opacity;
+}
+/* Fade in once the grid settles, but cut out instantly: on the way out the
+   tiles are already moving back into this space, and a lingering fade would
+   leave text sitting over an image. */
+.sg-note.is-on {
+  opacity: 1;
+  transition: opacity .35s ease;
+}
+.sg-note h5 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+.sg-note p {
+  font-size: 15px;
+  line-height: 1.45;
+  margin: 0;
+  opacity: .75;
+}
+
 .sg-cap {
   display: grid;
   grid-template-columns: 60px 1fr;
@@ -2243,6 +2303,7 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   .diary-list li { grid-template-columns: 1fr; gap: 6px; }
   .sg-bookend--narrow { display: block; }
   .sg-bookend--narrow img { grid-column: auto; }
+  .sg-endnote { margin-top: 20px; }
   .sg-stage { height: auto; margin: var(--col-gap) 0; }
   .sg-pin { position: static; height: auto; display: block; }
   .sg-canvas { height: auto; display: flex; flex-direction: column; gap: var(--col-gap); }
@@ -2252,8 +2313,10 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
     height: auto;
     opacity: 1;
   }
+  .sg-note { display: none; }
   .sculpt-process li { grid-template-columns: 40px 1fr; gap: 16px; }
   .sculpt-captions { grid-template-columns: 1fr; row-gap: 24px; }
+  .sculpt-captions li { grid-column: 1; }
 }
 
 @media (max-width: 600px) {
