@@ -42,7 +42,6 @@
       <a href="#ch3" data-close><span>Deutsche Bank</span><span class="num">03</span></a>
       <a href="#ch4" data-close><span>The making</span><span class="num">04</span></a>
       <a href="#ch5" data-close><span>Journey from Sardinia to Frankfurt</span><span class="num">05</span></a>
-      <a href="#walk" data-close><span>Walk around</span><span class="num">+</span></a>
     </nav>
   </div>
 
@@ -372,6 +371,7 @@
           <div class="sub-head-text">
             <h3 class="sub-title">Granite Trip</h3>
             <p class="sub-route">Quarry Scarraciana → Porto di Santa Teresa Gallura → Porto Marina di Carrara</p>
+            <p class="sub-dates">October 1983&nbsp;— February 1984</p>
           </div>
         </header>
 
@@ -419,7 +419,8 @@
           <div class="sub-num">5.2</div>
           <div class="sub-head-text">
             <h3 class="sub-title">Sculpting</h3>
-            <p class="sub-route">Workshop · Marina di Carrara · February 1984&nbsp;— June 1986</p>
+            <p class="sub-route">Marina di Carrara</p>
+            <p class="sub-dates">February 1984&nbsp;— June 1986</p>
           </div>
         </header>
 
@@ -471,12 +472,18 @@
           <div class="sub-head-text">
             <h3 class="sub-title">Sculpture Trip</h3>
             <p class="sub-route">Port of Carrara → Gibraltar → Portugal → Bay of Biscay → English Channel → Rotterdam → Rhine · Main → Frankfurt am Main</p>
+            <p class="sub-dates">August&nbsp;— September 1986</p>
           </div>
         </header>
 
         <div class="journey-grid">
           <aside class="journey-map-wrap is-zoomed">
             <div class="journey-map" id="globeMap" aria-hidden="true"></div>
+            <!-- The Walk-around scene, sitting on the map's centre point, which
+                 is the sculpture's real coordinate. Opens as a speck, grows,
+                 then turns — a title card for the chapter it hands off to. -->
+            <img class="map-reveal" id="mapReveal" src="./assets/hero-sculpture.png" alt="" aria-hidden="true">
+            <p class="map-reveal-cap" id="mapRevealCap" aria-hidden="true">Walk around&nbsp;— a Gaussian splatting scene</p>
           </aside>
 
           <div class="journey-stops">
@@ -505,34 +512,11 @@
             <p class="stop-cap" data-cap-for="4">In Frankfurt, a <strong>Colonia crane</strong> moved from the Osthafen to Taunusanlage 12 lifted the 80-tonne sculpture above the trees and into place beside the Deutsche Bank towers the following morning.</p>
           </div>
         </div>
-
-        <img class="journey-finale" src="./assets/_journey/3%20sculpture%20trip/Bill_2014-1024x768.jpg" alt="">
       </div>
 
     </div>
   </section>
 
-  <!-- Chapter 5 · sub-chapter 04 — Walk around. Its own background, but part of
-       the Journey chapter: sub-head treatment, no chapter number. -->
-  <section class="walk" id="walk">
-    <div class="container">
-      <header class="sub-head">
-        <div class="sub-num">04</div>
-        <div class="sub-head-text">
-          <h3 class="sub-title">Walk around — a Gaussian splatting scene</h3>
-        </div>
-      </header>
-      <div class="walk-stage"></div>
-    </div>
-  </section>
-
-
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    <div class="container">
-      <div class="big" aria-label="toward kontinuität"><div class="big-track" aria-hidden="true"><span>toward kontinuität&nbsp;</span><span>toward kontinuität&nbsp;</span><span>toward kontinuität&nbsp;</span><span>toward kontinuität&nbsp;</span></div></div>
-    </div>
-  </footer>
 
   <!-- Tweaks panel -->
   <div class="tweaks" id="tweaks">
@@ -635,7 +619,7 @@ function onScroll() {
   });
   if (cur) {
     const classes = cur.className;
-    const dark = classes.includes('dark-section') || classes.includes('hero') || classes.includes('quote-block') || classes.includes('math') || classes.includes('topo') || classes.includes('walk') || classes.includes('site-footer') || classes.includes('math-body-follow') || classes.includes('intro');
+    const dark = classes.includes('dark-section') || classes.includes('hero') || classes.includes('quote-block') || classes.includes('math') || classes.includes('topo') || classes.includes('math-body-follow') || classes.includes('intro');
     document.body.classList.toggle('dark', dark);
     document.body.classList.toggle('light', !dark);
   }
@@ -811,7 +795,7 @@ rotateTopo();
 })();
 
 // ========== Reveal ==========
-document.querySelectorAll('.chapter-title, .facts-title, .intro-lead, .big').forEach(el => el.classList.add('reveal'));
+document.querySelectorAll('.chapter-title, .facts-title, .intro-lead').forEach(el => el.classList.add('reveal'));
 onScroll();
 
 // ========== Persistent scroll position ==========
@@ -1368,7 +1352,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
   const ESRI_IMAGERY =
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   const ESRI_ATTRIB = 'Imagery © Esri, Maxar, Earthstar Geographics';
-  const ROUTE = '#FFD500';
+  const ROUTE = '#FFFFFF';   // path and stop marks alike — the map is monochrome
 
   const GRANITE = {
     containerId: 'graniteGlobe',
@@ -1389,8 +1373,15 @@ document.querySelectorAll('.facts').forEach((facts) => {
   const SCULPTURE = {
     containerId: 'globeMap',
     sectionId: 'sculpture-trip',
-    overview: { center: [1, 45], zoom: 3.4 },
-    stops: [ [10.04, 44.04], [4.48, 51.92], [8.68, 50.11] ],
+    // Opens on the whole globe with Italy dead centre; the first stop then
+    // dives six zoom levels down onto Carrara. `fly` marks that descent so it
+    // arcs rather than snapping — see setActive.
+    overview: { center: [10.04, 44.04], zoom: 1.35, fly: true },
+    // The Frankfurt stop is the sculpture itself, not the city centre: OSM node
+    // 7147230422 (Max Bill, 1986, granite, 4.5 m, 80 t) at Taunusanlage 12.
+    // Roughly a kilometre from the old placeholder — invisible at zoom 7,
+    // but the final state now lands at street level, where it would show.
+    stops: [ [10.04, 44.04], [4.48, 51.92], [8.667519, 50.113137] ],
     segments: [
       [ // Carrara → Rotterdam (Med · Gibraltar · Atlantic · Channel · North Sea)
         [10.04, 44.04], [10.00, 43.30], [9.50, 42.20], [9.20, 41.30], [8.20, 40.20],
@@ -1400,24 +1391,31 @@ document.querySelectorAll('.facts').forEach((facts) => {
       ],
       [ // Rotterdam → Frankfurt (Rhine · Main)
         [4.48, 51.92], [5.30, 51.60], [6.10, 51.30], [6.95, 50.95], [7.00, 50.70],
-        [7.60, 50.45], [8.20, 50.10], [8.68, 50.11],
+        [7.60, 50.45], [8.20, 50.10], [8.667519, 50.113137],
       ],
     ],
     states: [
       { center: [10.0, 43.9], zoom: 6.6, past: 0, flow: -1, glow: 0 },  // 1 Carrara
       { center: [-3, 45],     zoom: 3.5, past: 0, flow: 0,  glow: -1 }, // 2 Atlantic (wide)
       { center: [6.0, 50.7],  zoom: 5.6, past: 1, flow: 1,  glow: -1 }, // 3 Rotterdam → Rhine
-      { center: [8.55, 50.1], zoom: 7.6, past: 2, flow: -1, glow: 2 },  // 4 Frankfurt
+      // Lands on the sculpture at street level, centred exactly on it — the
+      // captions float over the map rather than sitting beside it, so there is
+      // no column to steer clear of. (The old 0.13 deg offset was framing for
+      // zoom 7.6; at this depth the viewport spans about 0.007 deg, so it would
+      // have thrown the marker nine screens off.) `fly` because 5.6 -> 18 is far
+      // too much ground for an ease to cover.
+      { center: [8.667519, 50.113137], zoom: 18, past: 2, flow: -1, glow: 2, fly: true },  // 4 Frankfurt · Taunusanlage 12
     ],
   };
 
-  // Flowing dots for the "currently flowing" segment. MapLibre's dashed-line trick
-  // (zero-length dash + round cap) rasterises the whole marching pattern into one
-  // fixed-width SDF texture, so on a zoomed-out globe each dot gets too few texels
-  // and renders as a blob. Instead we draw real GPU circles — always perfectly
-  // round — spaced along the segment in SCREEN pixels and march their phase each
-  // frame. DOT_PX = diameter, GAP_PX = clear gap; centre-to-centre = DOT_PX + GAP_PX.
-  const DOT_PX = 5, GAP_PX = 5, STEP_PX = DOT_PX + GAP_PX, FLOW_PXPS = 22;
+  // The "currently flowing" segment is a solid line carrying a bright band that
+  // sweeps along it — a skeleton-loader shimmer. Drawn with line-gradient over
+  // line-progress, which is why the route source below sets lineMetrics.
+  //
+  // FLOW_MS   one sweep, end to end
+  // FLOW_W    the band's half-width, as a fraction of the segment
+  // FLOW_N    how finely the gradient is sampled (see paintFlow)
+  const FLOW_MS = 2600, FLOW_W = 0.18, FLOW_N = 20, FLOW_DIM = 0.28, FLOW_LIT = 1;
 
   const routeFC = (segs) => ({
     type: 'FeatureCollection',
@@ -1461,56 +1459,69 @@ document.querySelectorAll('.facts').forEach((facts) => {
       if (!started) return;
       map.setFilter('route-done', ['<', ['get', 'seg'], st.past]);
       map.setFilter('stop-glow', ['==', ['get', 'i'], st.glow]);
-      // Static first paint; frame() then marches the dots unless reduced-motion.
-      renderFlowDots(st.flow, 0);
+      map.setFilter('route-flow', ['==', ['get', 'seg'], st.flow]);
+      // Static first paint; frame() then sweeps it unless reduced-motion.
+      paintFlow(0);
     }
+
+    // Index 0 (and the initial -1) mean the overview; 1..n are the narrative
+    // stops. Either end can be marked `fly`.
+    const stateAt = (n) => (n >= 1 && n <= cfg.states.length) ? cfg.states[n - 1] : null;
+    const isDeep = (n) => (n <= 0) ? !!cfg.overview.fly : !!(stateAt(n) || {}).fly;
 
     function setActive(i) {
       if (i === activeStop) return;
+      const prev = activeStop;
       activeStop = i;
-      const s = (i >= 1 && i <= cfg.states.length) ? cfg.states[i - 1] : null;
+      const s = stateAt(i);
       currentState = s
         ? { center: s.center, zoom: s.zoom, past: s.past, flow: s.flow, glow: s.glow }
         : { center: cfg.overview.center, zoom: cfg.overview.zoom, past: 0, flow: -1, glow: -1 };
       if (started) {
-        map.easeTo({ center: currentState.center, zoom: currentState.zoom, duration: 1600, essential: true });
+        // Two moves here cross a dozen zoom levels at once: the opening drop from
+        // the globe, and the closing dive onto Taunusanlage. easeTo interpolates
+        // straight through that, which reads as a snap — flyTo arcs out and back
+        // in. Checked at BOTH ends so scrolling back up climbs out the same way
+        // it came down; ordinary stop-to-stop hops keep the plain ease.
+        if (isDeep(i) || isDeep(prev)) {
+          map.flyTo({ center: currentState.center, zoom: currentState.zoom, duration: 3800, curve: 1.3, essential: true });
+        } else {
+          map.easeTo({ center: currentState.center, zoom: currentState.zoom, duration: 1600, essential: true });
+        }
         applyState(currentState);
       }
     }
 
-    // Evenly spaced round dots along the flowing segment. We walk the segment in
-    // SCREEN pixels so the gap stays a constant DOT_PX/GAP_PX regardless of zoom,
-    // then unproject each dot back to lng/lat. phasePx marches the field forward.
-    function renderFlowDots(flowIndex, phasePx) {
-      const src = map.getSource('flow-dots');
-      if (!src) return;
-      const coords = (flowIndex >= 0) ? cfg.segments[flowIndex] : null;
-      if (!coords) { src.setData({ type: 'FeatureCollection', features: [] }); return; }
-      const scr = coords.map((c) => map.project(c));
-      const feats = [];
-      let acc = 0, target = ((phasePx % STEP_PX) + STEP_PX) % STEP_PX;
-      for (let i = 0; i < scr.length - 1 && feats.length < 3000; i++) {
-        const a = scr[i], b = scr[i + 1];
-        const segLen = Math.hypot(b.x - a.x, b.y - a.y);
-        while (target <= acc + segLen && feats.length < 3000) {
-          const t = segLen ? (target - acc) / segLen : 0;
-          const ll = map.unproject([a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t]);
-          feats.push({ type: 'Feature', geometry: { type: 'Point', coordinates: [ll.lng, ll.lat] } });
-          target += STEP_PX;
-        }
-        acc += segLen;
+    // Repaint the flowing segment's gradient for time ts. The band is sampled at
+    // FLOW_N fixed positions rather than expressed as a few stops slid along the
+    // line: fixed positions are strictly increasing by construction, so the stop
+    // list never needs clamping fixups as the band runs off either end.
+    function paintFlow(ts) {
+      if (!map.getLayer('route-flow')) return;
+      // The head travels from just off one end to just off the other, so the
+      // band enters and leaves instead of popping in mid-line.
+      const t = reduceMotion ? 0.5 : ((ts % FLOW_MS) / FLOW_MS);
+      const head = t * (1 + 2 * FLOW_W) - FLOW_W;
+      const stops = [];
+      for (let i = 0; i < FLOW_N; i++) {
+        const pos = i / (FLOW_N - 1);
+        let k = Math.max(0, 1 - Math.abs(pos - head) / FLOW_W);
+        k = k * k * (3 - 2 * k);            // smoothstep, so the band has no hard edge
+        const a = FLOW_DIM + (FLOW_LIT - FLOW_DIM) * k;
+        stops.push(pos, 'rgba(255,255,255,' + a.toFixed(3) + ')');
       }
-      src.setData({ type: 'FeatureCollection', features: feats });
+      map.setPaintProperty('route-flow', 'line-gradient',
+        ['interpolate', ['linear'], ['line-progress'], ...stops]);
     }
 
     function frame(ts) {
       raf = requestAnimationFrame(frame);
       if (!started) return;
       if (currentState.flow >= 0 && !reduceMotion) {
-        renderFlowDots(currentState.flow, (ts * FLOW_PXPS) / 1000);
+        paintFlow(ts);
       }
       if (currentState.glow >= 0 && !reduceMotion) {
-        map.setPaintProperty('stop-glow', 'circle-radius', 7 + Math.sin(ts / 280) * 2.2);
+        map.setPaintProperty('stop-glow', 'circle-radius', 16 + Math.sin(ts / 280) * 3);
       }
     }
     function startAnim() { if (!raf) raf = requestAnimationFrame(frame); }
@@ -1525,31 +1536,40 @@ document.querySelectorAll('.facts').forEach((facts) => {
         });
       } catch (e) {}
 
-      map.addSource('route', { type: 'geojson', data: routeFC(cfg.segments) });
+      // lineMetrics is what makes ['line-progress'] available to the flow layer's
+      // gradient; route-done shares the source and ignores it.
+      map.addSource('route', { type: 'geojson', lineMetrics: true, data: routeFC(cfg.segments) });
       map.addLayer({
         id: 'route-done', type: 'line', source: 'route', filter: ['<', ['get', 'seg'], -1],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
         paint: { 'line-color': ROUTE, 'line-width': 3, 'line-opacity': 0.95 },
       });
-      map.addSource('flow-dots', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addLayer({
-        id: 'flow-dots', type: 'circle', source: 'flow-dots',
-        paint: { 'circle-radius': DOT_PX / 2, 'circle-color': '#FFE34D' },
+        id: 'route-flow', type: 'line', source: 'route', filter: ['==', ['get', 'seg'], -1],
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        // line-gradient supersedes line-color, so the alpha ramp carries the
+        // whole look. paintFlow overwrites this on the first applyState.
+        paint: { 'line-width': 3, 'line-gradient':
+          ['interpolate', ['linear'], ['line-progress'], 0, 'rgba(255,255,255,0.28)', 1, 'rgba(255,255,255,0.28)'] },
       });
 
       map.addSource('stops', { type: 'geojson', data: stopsFC(cfg.stops) });
+      // Flat and hard-edged: solid white, a true black 2px ring, nothing soft.
+      // Both the old translucent fill and the blurred halo below are gone.
       map.addLayer({
         id: 'stop-dot', type: 'circle', source: 'stops',
         paint: {
-          'circle-radius': 4, 'circle-color': '#ffffff', 'circle-opacity': 0.55,
-          'circle-stroke-color': 'rgba(0,0,0,0.45)', 'circle-stroke-width': 1,
+          'circle-radius': 8, 'circle-color': '#ffffff',
+          'circle-stroke-color': '#000000', 'circle-stroke-width': 2,
         },
       });
+      // The active stop is the same mark at twice the size — scale alone marks
+      // it, so no second colour competes with the white route.
       map.addLayer({
         id: 'stop-glow', type: 'circle', source: 'stops', filter: ['==', ['get', 'i'], -1],
         paint: {
-          'circle-radius': 7, 'circle-color': ROUTE, 'circle-blur': 0.45,
-          'circle-stroke-color': ROUTE, 'circle-stroke-width': 2, 'circle-stroke-opacity': 0.5,
+          'circle-radius': 16, 'circle-color': '#ffffff',
+          'circle-stroke-color': '#000000', 'circle-stroke-width': 2,
         },
       });
 
@@ -1603,6 +1623,73 @@ document.querySelectorAll('.facts').forEach((facts) => {
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initJourney);
   else initJourney();
+})();
+
+// ========== Sculpture Trip · closing reveal ==========
+// The satellite camera gets to the sculpture's doorstep but never to the
+// sculpture — Esri has nothing over Taunusanlage past z19, where 4.5 m of
+// granite is a few pixels in the towers' shadow. So the last beat hands off to
+// the photograph: the hero image opens as a speck at the map's centre point,
+// which is the sculpture's own coordinate, then rushes forward to fill the
+// frame while the map dissolves under it. Ends on the same framing the page
+// opened with, closing the loop the sculpture is named for.
+//
+// Scroll-driven off the sticky pin: the map stays put until the stops column's
+// foot reaches the viewport floor, so the reveal simply claims the last
+// screenful of scroll before that release.
+(() => {
+  const wrap   = document.querySelector('#sculpture-trip .journey-map-wrap');
+  const stops  = document.querySelector('#sculpture-trip .journey-stops');
+  const mapEl  = document.querySelector('#sculpture-trip .journey-map');
+  const reveal = document.getElementById('mapReveal');
+  const cap    = document.getElementById('mapRevealCap');
+  if (!wrap || !stops || !mapEl || !reveal || !cap) return;
+
+  const SEED_PX = 10;                                    // the speck on the marker
+  const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+  const seg = (v, a, b) => clamp((v - a) / (b - a));     // a sub-beat of the window
+
+  function update() {
+    const vh = window.innerHeight;
+    // Measured every frame rather than cached: the pinned gallery above this
+    // one changes the page's geometry as it plays, so a value read at load is
+    // stale by the time anyone gets here.
+    const unpinAt = stops.getBoundingClientRect().bottom + window.scrollY - vh;
+    const span = vh * 1.8;
+    const p = clamp((window.scrollY - (unpinAt - span)) / span);
+
+    // Beat 1 — the speck fades up and sits still long enough to be read as a
+    // point on the map.
+    reveal.style.setProperty('--reveal-on', seg(p, 0, 0.10).toFixed(3));
+
+    // Beat 2 — it rushes forward as the satellite view goes. Growth is
+    // geometric rather than linear: constant *relative* growth reads as a
+    // camera moving toward the object, where a linear lerp would spend almost
+    // the whole run already big.
+    const grow = seg(p, 0.22, 0.52);
+    // The full 8-column measure. Read off the stops column rather than
+    // recomputed, so it stays the grid's own width at any viewport: the wrap is
+    // full-bleed and the container is centred, so a card this wide centred on
+    // the viewport lands exactly on columns 1-8.
+    const full = stops.clientWidth;
+    reveal.style.setProperty('--reveal-w', (SEED_PX * Math.pow(full / SEED_PX, grow)).toFixed(1) + 'px');
+    // Gone before the sculpture is full, so it lands on clean ground.
+    mapEl.style.setProperty('--map-fade', (1 - seg(p, 0.22, 0.47)).toFixed(3));
+
+    // Beat 3 — a full clockwise turn, the same move the sculpture makes over
+    // the opening. It starts only once the scene has arrived and held a beat,
+    // so the turn reads as a deliberate second gesture rather than the tail of
+    // the zoom. The title card comes up under it, naming the chapter next.
+    reveal.style.setProperty('--reveal-rot', (seg(p, 0.62, 1) * 360).toFixed(1) + 'deg');
+    cap.style.setProperty('--cap-on', seg(p, 0.55, 0.68).toFixed(3));
+  }
+
+  let raf = 0;
+  const onScroll = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; update(); }); };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  window.addEventListener('load', update);
+  update();
 })();
 
 // Journey facts: count each value up from 0 when the strip scrolls into view —
@@ -1680,8 +1767,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
   // Full-width images shouldn't open the lightbox on click,
   // but they do appear in the slide deck so arrows can reach them.
   function isClickToOpen(el) {
-    if (el.classList.contains('sg-img')) return false;        // sg-full image
-    if (el.classList.contains('journey-finale')) return false; // closing image
+    if (el.classList.contains('sg-img')) return false;  // sg-full image
     return true;
   }
 
@@ -1741,7 +1827,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
   if (!tiles.length) return;
 
   // ── Captions carried into the gallery ────────────────────────────────
-  // Four fixed slots, each on the same 8-column grid the tiles use, each tied
+  // Three fixed slots, each on the same 8-column grid the tiles use, each tied
   // to one track at rest. A slot shows only while its track is settled — at
   // the start or the end of that track's swap, never mid-transition.
   //
@@ -1765,9 +1851,6 @@ document.querySelectorAll('.facts').forEach((facts) => {
     { track: 'top', at: 'end',   anchor: 'j2', align: 'below', col: 1, span: 2, settle: 0.16,
       title: 'Measurement transfer',
       body:  'A grid of "measuring points" was transferred from a four-fold magnified gypsum model using giant dividers.' },
-    { track: 'bot', at: 'start', anchor: 'j7', align: 'below', col: 7, span: 2, always: true,
-      title: 'Diamond chains',
-      body:  'The carving used drilling machines and specially made diamond chains \u2014 regular chains are made for marble, not granite.' },
     { track: 'mid', at: 'end',   anchor: 'j5', align: 'below', col: 7, span: 2,
       title: '22 March 1986',
       body:  'The sculpture is turned over and placed on three support points; carving continues.' },
@@ -2291,7 +2374,7 @@ function initSpeechEngine(btn, setState) {
 
   const SKIP_SELECTOR = [
     '.cursor', '.cursor-dot', '.progress', '.menu-btn', '.menu-label',
-    '.menu-overlay', '.tweaks', '.tts-toggle', '.big', '.fact-n',
+    '.menu-overlay', '.tweaks', '.tts-toggle', '.fact-n',
     '.hero-scroll', '.topo-toggle', '.topo-slider', '.lightbox',
     '.tts-skip', '[aria-hidden="true"]', 'script', 'style', 'noscript'
   ].join(',');

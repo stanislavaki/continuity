@@ -1090,104 +1090,6 @@ section { position: relative; }
 .topo-prop .v.ok { color: var(--signal-yellow); }
 .topo-prop .v.no { color: var(--signal-red); }
 
-/* Walk around */
-.walk {
-  background: #FFBCB4;
-  color: #fff;
-  padding: 120px 0;
-}
-/* Walk around reads as a sub-chapter of the Journey, on its own ground:
-   dark ink on the pink field instead of the dark-section white. */
-.walk .sub-head { border-top-color: rgba(0,0,0,.25); }
-.walk .sub-num { color: #000; opacity: .6; }
-.walk .sub-title { color: #000; }
-.walk-stage {
-  aspect-ratio: 16/9;
-  background: url(./assets/hero-sculpture.png) center/cover no-repeat;
-  background-color: #1a1a1a;
-  position: relative;
-  overflow: hidden;
-  border-radius: 9999px;
-}
-.walk-stage::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at 50% 50%, transparent 50%, rgba(0,0,0,.5) 100%);
-  border-radius: inherit;
-}
-.walk-stage .ctrl {
-  position: absolute;
-  bottom: 24px; left: 50%;
-  transform: translateX(-50%);
-  display: flex; gap: 12px; align-items: center;
-  font-family: var(--mono); font-size: 11px; letter-spacing: .15em; text-transform: uppercase;
-  color: rgba(255,255,255,.8);
-  background: rgba(0,0,0,.5);
-  backdrop-filter: blur(10px);
-  padding: 10px 18px;
-  border: 1px solid rgba(255,255,255,.1);
-}
-.walk-stage .badge-orbit {
-  position: absolute;
-  top: 24px; right: 24px;
-  font-family: var(--mono); font-size: 11px; letter-spacing: .15em; text-transform: uppercase;
-  color: rgba(255,255,255,.8);
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(0,0,0,.4); padding: 8px 12px;
-}
-.walk-stage .badge-orbit .d { width: 8px; height: 8px; border-radius: 50%; background: var(--signal-orange); animation: pulse 2s infinite; }
-
-/* Footer */
-.site-footer {
-  background: var(--black);
-  color: #fff;
-  padding: 80px 0 40px;
-}
-.site-footer .big {
-  font-size: clamp(40px, 7vw, 120px);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 0.95;
-  padding: 120px 0;
-  margin-top: -30px;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  width: 100vw;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.site-footer .big-track {
-  display: inline-block;
-  white-space: nowrap;
-  will-change: transform;
-  animation: footer-marquee 28s linear infinite;
-}
-.site-footer .big-track > span {
-  display: inline-block;
-  white-space: nowrap;
-}
-@keyframes footer-marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .site-footer .big-track { animation: none; }
-}
-.site-footer .big em { font-family: var(--serif);  font-weight: 400; }
-.footer-meta {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 32px;
-  border-top: 1px solid rgba(255,255,255,.15);
-  padding-top: 40px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.6);
-}
-.footer-meta h4 { color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .15em; margin-bottom: 10px; }
-.footer-meta p { margin: 4px 0; line-height: 1.5; }
 
 /* Panels for Tweaks */
 .tweaks {
@@ -1420,7 +1322,6 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   .facts-note { position: static; transform: none; margin-top: 40px; }
   .facts-note-body { grid-column: 1 / -1; }
   .timeline-row { grid-template-columns: 1fr; gap: 8px; }
-  .footer-meta { grid-template-columns: repeat(2, 1fr); }
   .quote-text, .quote-attr { margin-left: 0; }
   .quote-block .quote-mark { position: static; margin-bottom: -40px; }
   .quote-text { padding-top: 0; }
@@ -1561,10 +1462,9 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   letter-spacing: -0.015em;
 }
 
-/* Reworked sub-chapter heads: centred, and without the hairline the remaining
-   sub-chapters still carry above theirs. */
-#granite-trip .sub-head,
-#sculpting .sub-head {
+/* Journey sub-chapter heads: centred, and without the hairline .sub-head
+   carries by default. */
+.journey-sub .sub-head {
   border-top: none;
   padding-top: 0;
   text-align: center;
@@ -1846,7 +1746,10 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   color: #fff;
   margin: 0;
 }
-.sub-route {
+/* Every sub-chapter head carries the same two lines: where, then when. Shared
+   treatment so they read as one block, with the dates set back a step. */
+.sub-route,
+.sub-dates {
   font-family: var(--mono);
   font-size: 14px;
   line-height: 1.7;
@@ -1854,9 +1757,9 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   /* Small caps rather than uppercase, so the authored casing survives: proper
      nouns keep full-height capitals and everything else drops to small caps. */
   font-variant-caps: small-caps;
-  opacity: .55;
-  margin: 16px 0 0;
 }
+.sub-route { opacity: .55; margin: 16px 0 0; }
+.sub-dates { opacity: .38; margin: 2px 0 0; }
 
 /* Per-stop diary list */
 .stop-diary {
@@ -2079,18 +1982,6 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   max-width: 60ch;
 }
 
-.journey-finale {
-  display: block;
-  width: 100vw;
-  max-width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  height: auto;
-  background-color: rgba(255,255,255,.04);
-  margin-top: 80px;
-  margin-bottom: 0;
-}
-
 /* Sculpture Trip · full-bleed sticky map with photos overlaid on an 8-col grid */
 #sculpture-trip .journey-grid {
   display: grid;
@@ -2123,6 +2014,66 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   z-index: 1;
 }
 #sculpture-trip .journey-map .map-bg { display: none; }
+/* Shade the map back so the text riding over it stays dominant. Only the
+   canvas dims — the attribution below keeps its full contrast — and the
+   wrap's near-black gradient behind is what the missing 40% reads as. */
+#sculpture-trip .journey-map .maplibregl-canvas { opacity: .6; }
+/* Driven by the closing reveal, and multiplied by the shading above: the whole
+   satellite view (attribution included) dissolves as the photograph takes over. */
+#sculpture-trip .journey-map { opacity: var(--map-fade, 1); }
+
+/* Closing reveal — the Walk-around scene, pinned to the map's centre point,
+   which is the sculpture's real coordinate. It opens as a 10px speck (the
+   object at map scale) and grows while the satellite view dissolves beneath
+   it. This is the only way to actually show the thing: Esri has no imagery
+   over Taunusanlage past z19, where 4.5 m of granite is a few pixels in the
+   towers' shadow.
+   It carries the walk stage's own shape — 16:9, cover, fully rounded — so the
+   card reads as that chapter arriving, and so the turn sweeps as a blob rather
+   than throwing rectangular corners around.
+   Width is set in px by script rather than scaled with a transform, so the
+   image re-samples sharp at every step instead of being a 10px bitmap blown
+   up. */
+#sculpture-trip .map-reveal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--reveal-w, 10px);
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 9999px;
+  background-color: #1a1a1a;
+  transform: translate(-50%, -50%) rotate(var(--reveal-rot, 0deg));
+  opacity: var(--reveal-on, 0);
+  /* Same shadow the hero gives it, expressed against its own width so it stays
+     in proportion all the way down to the speck. */
+  filter: drop-shadow(0 calc(var(--reveal-w, 10px) * .06)
+                        calc(var(--reveal-w, 10px) * .12) rgba(0,0,0,.45));
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Title card under the turning sculpture, naming the chapter it hands off to. */
+#sculpture-trip .map-reveal-cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6vh;
+  margin: 0;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.7;
+  letter-spacing: .09em;
+  /* Small caps rather than uppercase, matching the route lines above, so the
+     authored casing survives. */
+  font-variant-caps: small-caps;
+  color: #fff;
+  opacity: var(--cap-on, 0);
+  z-index: 3;
+  pointer-events: none;
+}
 #sculpture-trip .map-meta {
   position: absolute;
   left: max(24px, calc(50vw - 50% + 24px));
@@ -2153,7 +2104,11 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   row-gap: 0;
   z-index: 1;
   position: relative;
-  padding: 95vh 0 30vh;
+  /* The map is sticky inside this grid, so it stays pinned for exactly as long
+     as this column keeps scrolling. The tail is therefore the whole closing
+     act: once the last caption has cleared, the map holds alone for a scroll,
+     then the reveal plays out over the screenful before the pin releases. */
+  padding: 95vh 0 340vh;
   pointer-events: none;
 }
 #sculpture-trip .stop {
@@ -2166,15 +2121,31 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 }
 #sculpture-trip .stop[data-stop="1"] { grid-column: 1 / span 5; grid-row: 1; margin-top: 0; }
 #sculpture-trip .stop-cap[data-cap-for="1"] { grid-column: 5 / span 4; grid-row: 2; margin-top: 25vh; }
-#sculpture-trip .stop[data-stop="2"] { grid-column: 6 / span 3; grid-row: 3; margin-top: 35vh; }
-#sculpture-trip .stop-cap[data-cap-for="2"] { grid-column: 1 / span 4; grid-row: 4; margin-top: 30vh; }
+/* Video and its caption share a row — footage left, text right — with the
+   footage setting the row's height, so ending the caption on the row's
+   baseline sits it on the video's bottom edge. */
+#sculpture-trip .stop[data-stop="2"] { grid-column: 1 / span 3; grid-row: 3; margin-top: 35vh; }
+#sculpture-trip .stop-cap[data-cap-for="2"] {
+  grid-column: 5 / span 4;
+  grid-row: 3;
+  margin-top: 0;
+  align-self: end;
+}
 #sculpture-trip .stop-lead[data-lead-for="3"] { grid-column: 1 / span 4; grid-row: 5; margin: 30vh 0 0; pointer-events: auto; }
 #sculpture-trip .stop-lead img { display: block; width: 100%; height: auto; }
 #sculpture-trip .stop-cap[data-cap-for="3"] { grid-column: 5 / span 4; grid-row: 6; margin-top: 25vh; }
 #sculpture-trip .stop[data-stop="3"] { grid-column: 2 / span 3; grid-row: 7; margin-top: 25vh; }
 #sculpture-trip .stop-lead[data-lead-for="4"] { grid-column: 2 / span 6; grid-row: 8; margin: calc(50vh - 180px) 0 0; pointer-events: auto; }
-#sculpture-trip .stop[data-stop="4"] { grid-column: 6 / span 3; grid-row: 9; margin-top: 30px; }
-#sculpture-trip .stop-cap[data-cap-for="4"] { grid-column: 1 / span 4; grid-row: 10; margin-top: 25vh; }
+/* The closing photograph shares a row with the closing caption — image in the
+   left half, text in the right. The photograph sets the row's height, so
+   ending the caption on the row's baseline sits it on the image's bottom edge. */
+#sculpture-trip .stop[data-stop="4"] { grid-column: 1 / span 3; grid-row: 10; margin-top: 25vh; }
+#sculpture-trip .stop-cap[data-cap-for="4"] {
+  grid-column: 5 / span 4;
+  grid-row: 10;
+  margin-top: 0;
+  align-self: end;
+}
 #sculpture-trip .stop figure {
   background: rgba(0,0,0,.35);
 }
@@ -2195,12 +2166,11 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   color: #fff;
 }
 #sculpture-trip .stop-cap strong { font-weight: 700; }
-#sculpture-trip .journey-finale { margin-top: 0; }
 @media (max-width: 900px) {
   #sculpture-trip .journey-stops {
     grid-template-columns: 1fr;
     padding-top: 25vh;
-    padding-bottom: 25vh;
+    padding-bottom: 280vh;   /* same closing hold and reveal as on desktop */
   }
   #sculpture-trip .stop[data-stop] {
     grid-column: 1;
