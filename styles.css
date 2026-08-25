@@ -425,8 +425,26 @@ section { position: relative; }
   .hero-intro { grid-column: 1; text-shadow: none; }
 }
 
-.logo-img { height: 66px; width: auto; display: block; mix-blend-mode: normal; isolation: isolate; }
-.logo { mix-blend-mode: normal; isolation: isolate; }
+/* Logo in the page's top-left corner, matching the placement used on the other
+   Méridien sites — values measured off charging-bull.beta-mrdn.world: 25/27 in
+   from the corner at desktop, tucked to 18/24.86 below 1024 where the corner is
+   tighter. Absolute, so it scrolls away with the hero rather than following the
+   viewport. Offsets resolve against .topbar, which sits at the document's very
+   top corner, so they land as page coordinates. */
+.logo {
+  position: absolute;
+  top: 27px;
+  left: 25px;
+  z-index: 101;
+  mix-blend-mode: normal;
+  isolation: isolate;
+}
+.logo-img { height: 68px; width: auto; display: block; mix-blend-mode: normal; isolation: isolate; }
+
+@media (max-width: 1023.98px) {
+  .logo { top: 24.86px; left: 18px; }
+  .logo-img { height: 60.54px; }
+}
 
 .hero-sculpture {
   position: absolute;
@@ -2432,3 +2450,75 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
 /* Utility */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
 .reveal.in { opacity: 1; transform: none; }
+
+/* ============================================================
+   FOOTER — the studio's standing footer, matched to the other
+   Méridien projects (measured off charging-bull.beta-mrdn.world):
+   a full-height black panel, three columns at 1.6/1.7/0.7, the
+   logo hung in its own top-left corner rather than in the flow.
+   ============================================================ */
+.site-footer {
+  position: relative;
+  background: #000;
+  color: #767676;
+  font-family: var(--sans);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 96px 64px 96px 46px;
+}
+/* Logo and socials are row 1 of the grid, not free-floating: that is what puts
+   every column's first line of text on one shared baseline in row 2. */
+.footer-logo { line-height: 0; align-self: center; }
+.footer-logo img { height: 68px; width: auto; display: block; }
+.footer-social { align-self: center; }
+
+.footer-grid {
+  max-width: 1480px;
+  display: grid;
+  grid-template-columns: 1.6fr 1.7fr 0.7fr;
+  column-gap: clamp(40px, 5vw, 80px);
+  row-gap: 48px;
+  font-size: clamp(15px, 1.05vw, 18px);
+  line-height: 1.6;
+}
+.footer-col { display: flex; flex-direction: column; gap: 48px; }
+.footer-col p { margin: 0; }
+
+.footer-copy { color: #A5A5A5; }
+.footer-lede { color: #E6E6E6; }
+
+.footer-social { display: flex; align-items: center; gap: 12px; }
+.footer-rowend { min-height: 0; }   /* empty cell that closes row 1 — must stay in flow */
+.footer-social a {
+  display: block;
+  width: 48px;
+  height: 48px;
+  color: #A5A5A5;
+  opacity: .9;
+  transition: opacity 150ms ease, color 150ms ease;
+}
+.footer-social a:hover { opacity: 1; color: #E6E6E6; }
+.footer-social svg { width: 100%; height: 100%; display: block; }
+
+.site-footer a { color: #E6E6E6; text-decoration: none; }
+.site-footer p a { text-decoration: underline; text-underline-offset: 3px; }
+.site-footer a:hover { color: #fff; }
+
+/* "Back to top" keeps the column's block rhythm; the policy links below are a
+   list, so they set close with their own tighter leading. */
+.footer-nav a { width: max-content; }
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+
+@media (max-width: 1023.98px) {
+  .site-footer { padding: 64px 32px; min-height: auto; }
+  .footer-logo { display: none; }
+  .footer-rowend { display: none; }   /* single column: no row to close */
+  .footer-grid { grid-template-columns: 1fr; row-gap: 40px; }
+  .footer-col { gap: 40px; }
+}
