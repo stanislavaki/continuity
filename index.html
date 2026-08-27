@@ -318,7 +318,7 @@
     </div>
   </section>
 
-  <section class="paper-section" style="padding:0;background:#fff;">
+  <section class="paper-section making-body" style="background:#fff;">
     <div class="container">
       <div class="article-grid">
         <div style="grid-column: 1 / span 3;">
@@ -332,6 +332,25 @@
           <p data-narr="ch4-3">Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation&nbsp;— often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
           <p>In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity&nbsp;— the development of which took three years.</p>
           <p>Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pull-quote band: the quote's own colour becomes the ground. -->
+  <section class="quote-band quote-band--green">
+    <div class="container">
+      <p class="quote-text">I reckoned right at the start that the Kontinuit&auml;t sculpture would take us about 20,000 hours to make. That is how it turned out in practice&nbsp;&mdash; we kept a detailed record of our working time.</p>
+      <div class="quote-credit-col">
+        <p class="quote-attr">Dominique Stroobant, May 2026</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="paper-section making-body" style="background:#fff;">
+    <div class="container">
+      <div class="article-grid">
+        <div class="article-body">
           <p>Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation&nbsp;— often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
           <p>In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity&nbsp;— the development of which took three years.</p>
           <p>Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
@@ -414,7 +433,10 @@
       </div>
 
       <!-- ============== SUB-CHAPTER 2 · SCULPTING ============== -->
-      <div class="journey-sub" id="sculpting">
+      <!-- The one lit room in the journey: white ground, black ink. A
+           <section> rather than a <div> so the scroll handler that themes the
+           header and cursor sees it and flips them to their light state. -->
+      <section class="journey-sub light-section" id="sculpting">
         <header class="sub-head">
           <div class="sub-num">5.2</div>
           <div class="sub-head-text">
@@ -463,7 +485,7 @@
             </figcaption>
           </figure>
         </div>
-      </div>
+      </section>
 
       <!-- ============== SUB-CHAPTER 3 · SCULPTURE TRIP ============== -->
       <div class="journey-sub" id="sculpture-trip">
@@ -650,8 +672,12 @@ function onScroll() {
   const sections = document.querySelectorAll('section, header:not(.sub-head), footer');
   let cur = null;
   sections.forEach(sec => {
-    const top = sec.offsetTop;
-    const bot = top + sec.offsetHeight;
+    // Measured from the viewport, not via offsetTop: #sculpting is nested
+    // inside .journey, which is positioned, so its offsetTop is relative to
+    // that section rather than the page and would never match vpMid.
+    const r = sec.getBoundingClientRect();
+    const top = r.top + s;
+    const bot = top + r.height;
     if (vpMid >= top && vpMid < bot) cur = sec;
   });
   if (cur) {

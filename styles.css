@@ -1872,6 +1872,40 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 /* Typography now comes from .article-body, so it matches the body text
    everywhere else. The trailing space belongs below the block, not between
    its paragraphs — those keep the shared .article-body rhythm. */
+/* Sculpting · the white room ---------------------------------------------
+   The ground is a pseudo-element rather than a background on the block
+   itself, so the sub-chapter keeps the container's measure and stays on the
+   page grid while the white runs to both edges. `isolation` gives it a
+   stacking context, so the negative z-index lands behind this sub-chapter's
+   own content but still on top of .journey's black. */
+/* The white starts straight off the granite trip's closing bleed image — no
+   black gap between the two sub-chapters, since the room's own padding is
+   what opens the space. */
+.journey-sub:has(+ #sculpting) { margin-bottom: 0; }
+#sculpting {
+  position: relative;
+  isolation: isolate;
+  background: none;
+  padding: 120px 0;
+}
+#sculpting::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  /* Same scrollbar-aware full-bleed measure as .journey-photo-bleed. */
+  left: calc(50% - (100vw - var(--sbw, 0px)) / 2);
+  width: calc(100vw - var(--sbw, 0px));
+  background: #fff;
+}
+/* .sub-title is set in white for the dark journey; here it follows the ink. */
+#sculpting .sub-title { color: inherit; }
+/* Placeholder tint held behind images until they decode — inverted, since the
+   white-on-white version of it shows nothing. */
+#sculpting .sg-bookend img,
+#sculpting .sg-tile { background-color: rgba(0,0,0,.04); }
+
 .sculpt-intro p { margin: 0; }
 .sculpt-intro p:last-child { margin-bottom: 60px; }
 .sculpt-gallery {
@@ -2385,6 +2419,12 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
 .quote-band--red   { background: #C90101; color: #fff; }
 .quote-band--white { background: #fff;    color: #0018A8; }
 .quote-band--dbblue{ background: #0018A8; color: #fff; }
+
+/* Chapter 4's body runs as two sections so the Stroobant pull-quote can sit
+   between them at full width. Padding stays here rather than inline so the
+   band adjacency rules above outrank it and own the space on both sides. */
+.making-body { padding: 0; }
+.quote-band + section.making-body { padding-top: calc(1.2 * clamp(20px, 1.7vw, 26px)); }
 
 /* Section paddings lifted out of inline styles so the band adjacency rules
    above can override them. */
