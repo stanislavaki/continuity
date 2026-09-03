@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=63" />
+<link rel="stylesheet" href="styles.css?v=75" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -552,17 +552,14 @@
             <article class="stop" data-stop="1">
               <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8441.jpeg" alt=""></figure>
             </article>
-            <p class="stop-cap" data-cap-for="1">Between 4 and 8 August 1986, the finished <strong>Continuity</strong> was mounted into a sturdy steel transport frame in Carrara and loaded onto the cargo ship <strong>MV Kupari</strong>.</p>
 
             <article class="stop" data-stop="2">
               <figure class="has-video">
                 <video src="./assets/_journey/3%20sculpture%20trip/6749362-hd_1920_1080_24fps.mp4" autoplay muted loop playsinline preload="metadata"></video>
               </figure>
             </article>
-            <p class="stop-cap" data-cap-for="2">The Kupari sailed via the <strong>Strait of Gibraltar</strong>, west of Portugal, across the <strong>Bay of Biscay</strong> and through the <strong>English Channel</strong> to the North Sea&nbsp;— a 2,800 km open-water passage taking just over two weeks.</p>
 
             <figure class="stop-lead" data-lead-for="3"><img src="./assets/_journey/3%20sculpture%20trip/IMG_8446.jpeg" alt=""></figure>
-            <p class="stop-cap" data-cap-for="3">After unloading in <strong>Rotterdam</strong>, the sculpture was transferred to a river barge and pushed up the <strong>Rhine</strong> and <strong>Main</strong> rivers toward the German interior.</p>
             <article class="stop" data-stop="3">
               <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8443.jpeg" alt=""></figure>
             </article>
@@ -571,7 +568,18 @@
             <article class="stop" data-stop="4">
               <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8449.jpeg" alt=""></figure>
             </article>
+
+            <!-- The four accounts read as one passage now rather than as a
+                 caption apiece: the photographs above them are pinned and fade
+                 through in sequence, so there is nothing for a caption to sit
+                 beside. This block keeps the paragraphs separate and scrolls
+                 normally through the middle of the sequence. -->
+            <div class="stop-caps">
+            <p class="stop-cap" data-cap-for="1">Between 4 and 8 August 1986, the finished <strong>Continuity</strong> was mounted into a sturdy steel transport frame in Carrara and loaded onto the cargo ship <strong>MV Kupari</strong>.</p>
+            <p class="stop-cap" data-cap-for="2">The Kupari sailed via the <strong>Strait of Gibraltar</strong>, west of Portugal, across the <strong>Bay of Biscay</strong> and through the <strong>English Channel</strong> to the North Sea&nbsp;— a 2,800 km open-water passage taking just over two weeks.</p>
+            <p class="stop-cap" data-cap-for="3">After unloading in <strong>Rotterdam</strong>, the sculpture was transferred to a river barge and pushed up the <strong>Rhine</strong> and <strong>Main</strong> rivers toward the German interior.</p>
             <p class="stop-cap" data-cap-for="4">In Frankfurt, a <strong>Colonia crane</strong> moved from the Osthafen to Taunusanlage 12 lifted the 80-tonne sculpture above the trees and into place beside the Deutsche Bank towers the following morning.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -711,6 +719,9 @@ function onScroll() {
   // down but hoists, and it keeps its state on itself, so the synchronous
   // onScroll() call below cannot hit a binding that is still in its dead zone.
   crailSync(s, h + window.innerHeight);
+  // Sculpture Trip's pinned photographs, on the same terms — see the block near
+  // the closing reveal. Also hoisted, also keeps its state on itself.
+  stFade(s);
   // Parallax hero
   if (heroBg) heroBg.style.transform = `translateY(${s * 0.25}px) scale(${1.02 + s/20000})`;
 
@@ -1898,22 +1909,22 @@ document.querySelectorAll('.facts').forEach((facts) => {
       });
 
       map.addSource('stops', { type: 'geojson', data: stopsFC(cfg.stops) });
-      // Flat and hard-edged: solid white, a true black 2px ring, nothing soft.
-      // Both the old translucent fill and the blurred halo below are gone.
+      // Flat and hard-edged: solid white, no ring at all. Nothing translucent,
+      // nothing blurred, and no outline to soften the mark against the plate.
       map.addLayer({
         id: 'stop-dot', type: 'circle', source: 'stops',
         paint: {
           'circle-radius': 8, 'circle-color': '#ffffff',
-          'circle-stroke-color': '#000000', 'circle-stroke-width': 2,
+          'circle-stroke-width': 0,
         },
       });
       // The active stop is the same mark at twice the size — scale alone marks
-      // it, so no second colour competes with the white route.
+      // it, so no second colour and no outline competes with the white route.
       map.addLayer({
         id: 'stop-glow', type: 'circle', source: 'stops', filter: ['==', ['get', 'i'], -1],
         paint: {
           'circle-radius': 16, 'circle-color': '#ffffff',
-          'circle-stroke-color': '#000000', 'circle-stroke-width': 2,
+          'circle-stroke-width': 0,
         },
       });
 
@@ -1967,6 +1978,192 @@ document.querySelectorAll('.facts').forEach((facts) => {
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initJourney);
   else initJourney();
+})();
+
+// ========== Sculpture Trip · pinned photographs ==========
+// The photographs no longer travel with the page. Each one fades up, holds
+// still in the viewport while it is being looked at, and fades away again
+// before the next arrives — so the sequence reads as a series of held frames
+// over the globe rather than as a column of pictures going by.
+//
+// They are held by position: fixed, not by a transform that cancels the scroll.
+// That distinction is the whole point. A scroll-cancelling transform has to be
+// rewritten on every scroll event, and scroll events are dispatched on the main
+// thread while the page itself scrolls on the compositor — so the correction
+// always lands a frame or so behind the ground it is correcting against, and the
+// photograph visibly lags and catches up. Fixed elements are simply not moved by
+// scrolling at all, so there is nothing to keep in step and nothing to fall
+// behind. No ancestor here carries a transform, filter or containment, so fixed
+// resolves against the viewport as intended.
+//
+// The cost is that a fixed photograph leaves the flow, and its box would
+// collapse — and those boxes are the sequence's clock, since where each sits in
+// the column decides when its photograph appears. So each box is given its own
+// measured height to hold open. Nothing else about the grid changes: the columns
+// and spans are exactly as they were, and the .stop article itself is never
+// touched, so the sticky globe and the IntersectionObserver that drives its
+// active stop still see the layout they were written against.
+//
+// A scroll event therefore writes opacity and nothing else.
+function stFadeInit() {
+  const stops = document.querySelector('#sculpture-trip .journey-stops');
+  if (!stops) return null;
+  // Each photograph's window reaches halfway to its neighbours, so the windows
+  // tile the section without overlapping however the rows are spaced. Within its
+  // own window it fades up over the first 30%, holds for the middle 40%, and
+  // fades out over the last 30%.
+  const FADE_IN = 0.30, HOLD = 0.40;
+  // Where each comes to rest, as a fraction of the viewport height from the top.
+  // They differ so the sequence keeps the varied placement the grid gives it in
+  // the other axis — the wide plates sit high, the narrow ones lower — and each
+  // is clamped so nothing is ever pinned off the screen.
+  const SLOT = { s1: 0.12, s2: 0.24, l3: 0.16, s3: 0.28, l4: 0.14, s4: 0.26 };
+  // How far after its own box a photograph waits before it begins, as a
+  // fraction of the viewport. The box is what cues the globe — the
+  // IntersectionObserver further down watches these same boxes to fly the map —
+  // so a photograph that starts on its box starts on top of the move it is
+  // meant to follow. The first two are the ones that matter: the globe's dive
+  // onto Carrara is a 3800ms flight down a dozen zoom levels, and the pull back
+  // out to the Atlantic is nearly as far. Holding these two back lets each land
+  // before its photograph arrives over it. The rest are cued on their boxes as
+  // before, their map moves being ordinary stop-to-stop eases.
+  const CUE = { s1: 0.55, s2: 0.55 };
+  const items = [];
+  stops.querySelectorAll('.stop[data-stop], .stop-lead[data-lead-for]').forEach(box => {
+    // The pinned child, never the box: .stop carries a backing panel behind its
+    // photograph, so the figure is what has to be held for the two to stay
+    // together, while .stop-lead is itself the figure and hands the job on to
+    // its image.
+    const art = box.matches('.stop-lead') ? box.querySelector('img') : box.querySelector('figure');
+    if (!art) return;
+    const key = box.dataset.stop ? 's' + box.dataset.stop : 'l' + box.dataset.leadFor;
+    items.push({ box, art, slot: SLOT[key] !== undefined ? SLOT[key] : 0.18,
+                 cue: CUE[key] !== undefined ? CUE[key] : 0,
+                 top: 0, h: 0, anchor: 0, cueAt: 0, a: -1, b: -1, lastOp: -1 });
+  });
+  if (!items.length) return null;
+  return { items, fadeIn: FADE_IN, hold: HOLD, docH: -1, vh: -1, w: -1,
+           reduced: window.matchMedia('(prefers-reduced-motion: reduce)') };
+}
+
+// Reads every photograph's natural geometry, then pins them all to it. The three
+// passes are not fussiness: releasing one photograph back into the flow moves
+// everything below it, so nothing may be measured until all of them are
+// released, and nothing may be pinned until all of them are measured.
+function stFadeMeasure(st) {
+  // Pass one — let them all fall back into the flow.
+  st.items.forEach(it => {
+    it.art.style.position = '';
+    it.art.style.top = '';
+    it.art.style.left = '';
+    it.art.style.width = '';
+    it.box.style.height = '';
+  });
+
+  // Pass two — read. The box gives the document position that times the
+  // sequence; the photograph inside gives the frame to pin.
+  const s = window.scrollY;
+  st.items.forEach(it => {
+    const b = it.box.getBoundingClientRect();
+    const a = it.art.getBoundingClientRect();
+    it.top = b.top + s;
+    it.h = b.height;
+    it.anchor = it.top + it.h / 2;
+    // Where this photograph's own beat sits, which is its box plus whatever
+    // wait it has been given. The box still cues the map from where it is.
+    it.cueAt = it.anchor + it.cue * window.innerHeight;
+    it.artL = a.left;
+    it.artW = a.width;
+    it.artH = a.height;
+  });
+  st.items.sort((p, q) => p.cueAt - q.cueAt);
+
+  // Pass three — hold the boxes open at the height they just had, and pin the
+  // photographs to the viewport at their own resting places.
+  const vh = window.innerHeight;
+  st.items.forEach(it => {
+    it.box.style.height = it.h + 'px';
+    const rest = Math.max(vh * 0.06, Math.min(vh * it.slot, vh - it.artH - vh * 0.06));
+    it.art.style.position = 'fixed';
+    it.art.style.top = rest + 'px';
+    it.art.style.left = it.artL + 'px';
+    it.art.style.width = it.artW + 'px';
+  });
+
+  // Each window reaches halfway to its neighbours' beats; the first and last
+  // borrow their one gap for the missing side, so the opening photograph is
+  // already fading up as the section arrives rather than snapping on.
+  st.items.forEach((it, i) => {
+    const prev = i > 0 ? st.items[i - 1].cueAt : null;
+    const next = i < st.items.length - 1 ? st.items[i + 1].cueAt : null;
+    const up   = prev !== null ? (it.cueAt - prev) / 2 : (next !== null ? (next - it.cueAt) / 2 : vh);
+    const down = next !== null ? (next - it.cueAt) / 2 : (prev !== null ? (it.cueAt - prev) / 2 : vh);
+    // A photograph given a wait must not merely peak late, it must not have
+    // begun: without this clamp the window still opens halfway back towards the
+    // previous beat, which for the first two is before the globe has even been
+    // told to move. Clamped, nothing shows until the wait is served.
+    it.a = Math.max(it.cueAt - up, it.anchor + it.cue * vh);
+    it.b = it.cueAt + down;
+  });
+
+  st.docH = document.documentElement.scrollHeight;
+  st.vh = vh;
+  st.w = window.innerWidth;
+}
+
+function stFade(scrollTop) {
+  const st = stFade.state || (stFade.state = stFadeInit());
+  if (!st) return;
+  if (st.reduced.matches) return;
+
+  const vh = window.innerHeight;
+  // The journey grid and the maps settle after load and shift everything below
+  // them, so re-measure whenever the page's height or the viewport changes
+  // rather than trusting one pass at startup.
+  if (st.docH !== document.documentElement.scrollHeight || st.vh !== vh || st.w !== window.innerWidth) {
+    stFadeMeasure(st);
+  }
+
+  // The eye's line: a photograph's window is read against the middle of the
+  // screen, the same probe the chapter rail and the body theme use.
+  const eye = scrollTop + vh / 2;
+
+  for (const it of st.items) {
+    const span = it.b - it.a;
+    const t = span > 0 ? (eye - it.a) / span : 0;
+
+    let op = 0;
+    if (t > 0 && t < 1) {
+      if (t < st.fadeIn) op = t / st.fadeIn;
+      else if (t < st.fadeIn + st.hold) op = 1;
+      else op = (1 - t) / (1 - st.fadeIn - st.hold);
+      // Smoothed at both ends so the ramps arrive and leave rather than
+      // starting and stopping flat.
+      op = op * op * (3 - 2 * op);
+    }
+
+    const q = Math.round(op * 100) / 100;
+    if (q !== it.lastOp) {
+      it.art.style.opacity = q;
+      // A photograph at nothing is still a fixed box sitting over the page, so
+      // it has to be taken out of the way as well as out of sight — otherwise
+      // six of them would be quietly swallowing clicks on every other section.
+      it.art.style.visibility = q > 0 ? 'visible' : 'hidden';
+      it.art.style.pointerEvents = q > 0.5 ? 'auto' : 'none';
+      it.lastOp = q;
+    }
+  }
+}
+
+(() => {
+  const st = stFade.state || (stFade.state = stFadeInit());
+  if (!st) return;
+  const remeasure = () => { st.docH = -1; stFade(window.scrollY); };
+  window.addEventListener('resize', remeasure);
+  window.addEventListener('load', remeasure);
+  // The photographs decide the section's rhythm, so they must not be left at
+  // whatever the stylesheet's resting state was until the first scroll.
+  stFade(window.scrollY);
 })();
 
 // ========== Sculpture Trip · closing reveal ==========
