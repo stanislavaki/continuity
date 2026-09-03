@@ -466,12 +466,14 @@ section { position: relative; }
      holder and the holders read as small supports under it. */
   --sculpt-w: calc(1450 * var(--plate-px));
   /* The base line: plate px below the plate's centre (y=720 of 1440). The near
-     block's top front edge passes under the sculpture's centre at about y=982;
-     1030 puts the base 48 plate px below that -- about 4% of the sculpture's
-     height, which is how far the real base dips past the near holder's top
-     edge -- so the rounded underside covers part of the block's face and reads
-     as resting on it. Smaller lifts it. */
-  --plinth-dy: 310;
+     holder's top FRONT edge passes under the sculpture's centre at about
+     y=1045 (its back edge, higher on screen at ~982, is the one to ignore --
+     the base has to meet the near edge or it reads as hovering). 1090 puts the
+     base ~45 plate px below that, about 4% of the sculpture's height, which
+     is how far the real base dips past the near holder's edge in photographs
+     of the piece: the rounded underside covers part of the block's face and
+     reads as resting on it. Smaller lifts it. */
+  --plinth-dy: 370;
   position: absolute;
   left: 50%;
   bottom: calc(-4vh - 160px);
