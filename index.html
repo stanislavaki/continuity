@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=41" />
+<link rel="stylesheet" href="styles.css?v=62" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -42,6 +42,34 @@
       <a href="#ch3" data-close><span>Deutsche Bank</span><span class="num">03</span></a>
       <a href="#ch4" data-close><span>The making</span><span class="num">04</span></a>
       <a href="#ch5" data-close><span>Journey from Sardinia to Frankfurt</span><span class="num">05</span></a>
+    </nav>
+  </div>
+
+  <!-- Chapter rail — second contents control, on the left gutter at the
+       vertical centre. Six bars, one per chapter: the one you are in runs
+       long and fills as you read through it. Clicking any of them opens
+       .crail-panel below. The + button and its overlay above are unchanged. -->
+  <button class="crail" id="crail" aria-label="Contents" aria-expanded="false" aria-controls="crailPanel">
+    <span class="crail-bar" aria-hidden="true"><span class="crail-fill"></span></span>
+    <span class="crail-bar" aria-hidden="true"><span class="crail-fill"></span></span>
+    <span class="crail-bar" aria-hidden="true"><span class="crail-fill"></span></span>
+    <span class="crail-bar" aria-hidden="true"><span class="crail-fill"></span></span>
+    <span class="crail-bar" aria-hidden="true"><span class="crail-fill"></span></span>
+    <span class="crail-bar" aria-hidden="true"><span class="crail-fill"></span></span>
+  </button>
+
+  <div class="crail-panel" id="crailPanel" role="dialog" aria-label="Contents" aria-hidden="true">
+    <nav class="crail-nav">
+      <!-- One marker for the whole list: it rides from the chapter you are in
+           to whichever row the pointer is over, turning on its corner as it
+           travels and squaring up again when it lands. -->
+      <span class="crail-marker" id="crailMarker" aria-hidden="true"><i></i></span>
+      <a href="#top" class="crail-link" style="--i:0" data-crail-close><span class="crail-txt">Intro</span></a>
+      <a href="#ch1" class="crail-link" style="--i:1" data-crail-close><span class="crail-txt">Mathematics of the sculpture</span></a>
+      <a href="#ch2" class="crail-link" style="--i:2" data-crail-close><span class="crail-txt">Max Bill</span></a>
+      <a href="#ch3" class="crail-link" style="--i:3" data-crail-close><span class="crail-txt">Deutsche Bank</span></a>
+      <a href="#ch4" class="crail-link" style="--i:4" data-crail-close><span class="crail-txt">The making</span></a>
+      <a href="#ch5" class="crail-link" style="--i:5" data-crail-close><span class="crail-txt">Journey from Sardinia to Frankfurt</span></a>
     </nav>
   </div>
 
@@ -668,6 +696,13 @@ function onScroll() {
   const h = document.documentElement.scrollHeight - window.innerHeight;
   const s = window.scrollY;
   progressBar.style.width = (s / h * 100) + '%';
+  // Chapter rail. It rides this handler rather than adding a second scroll
+  // listener, and reuses the two measurements just taken. It goes first so that
+  // a throw anywhere below — the route marker, the timeline, the reveal pass —
+  // cannot strand the rail on a stale chapter. The function is declared further
+  // down but hoists, and it keeps its state on itself, so the synchronous
+  // onScroll() call below cannot hit a binding that is still in its dead zone.
+  crailSync(s, h + window.innerHeight);
   // Parallax hero
   if (heroBg) heroBg.style.transform = `translateY(${s * 0.25}px) scale(${1.02 + s/20000})`;
 
@@ -717,6 +752,7 @@ function onScroll() {
     const r = el.getBoundingClientRect();
     if (r.top < window.innerHeight * 0.9) el.classList.add('in');
   });
+
 }
 window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
@@ -733,6 +769,217 @@ menuBtn.addEventListener('click', () => {
 menuClose.addEventListener('click', closeMenu);
 document.querySelectorAll('[data-close]').forEach(a => a.addEventListener('click', closeMenu));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+// ========== Chapter rail ==========
+// The six bars on the left gutter, and the card they open. Additive to the +
+// button above, which keeps its own overlay.
+//
+// A "chapter" here is the span from one chapter anchor to the next, so the six
+// ranges tile the document end to end with no gaps and no overlaps. That is
+// what keeps the active bar from flickering at boundaries and from going blank
+// over the quote bands, the pinned math visual and the long sticky sculpture —
+// scroll position always falls inside exactly one range, whatever is on screen.
+// onScroll() above runs once synchronously, before this block's own
+// declarations are evaluated, so the id list lives on the state object rather
+// than in a module-level const that would still be in its dead zone.
+function crailInit() {
+  const rail = document.getElementById('crail');
+  const panel = document.getElementById('crailPanel');
+  if (!rail || !panel) return null;
+  return {
+    rail, panel,
+    ids: ['top', 'ch1', 'ch2', 'ch3', 'ch4', 'ch5'],
+    bars: [...rail.querySelectorAll('.crail-bar')],
+    fills: [...rail.querySelectorAll('.crail-fill')],
+    links: [...panel.querySelectorAll('.crail-link')],
+    marker: panel.querySelector('.crail-marker'),
+    tops: null,     // chapter start offsets, filled by crailMeasure
+    docH: -1,       // scrollHeight the tops were measured against
+    active: -1,     // last written active index
+    pct: -1,        // last written fill percentage, rounded to whole percent
+    centers: null,  // bar centres in the viewport, for the magnification falloff
+    pointerY: null, // where the pointer is on the rail, or null when it is away
+    markY: null,    // last y written to the marker
+    hoverIndex: null, // row the pointer is on, or null when it is off the list
+  };
+}
+
+// ---- Dock magnification ----------------------------------------------------
+// The bars behave like the icons in the macOS Dock: the one nearest the pointer
+// swells most, its neighbours less, on a raised-cosine falloff that reaches
+// about two bars either side. Their vertical centres never move while this
+// happens — length does not shift siblings in a column, and thickness is a
+// scaleY, which is painted rather than laid out — so the centres can be
+// measured once and only re-read when the viewport changes.
+function crailCenters(st) {
+  if (!st.centers) {
+    st.centers = st.bars.map(b => {
+      const r = b.getBoundingClientRect();
+      return r.top + r.height / 2;
+    });
+  }
+  return st.centers;
+}
+
+function crailPaint(st) {
+  const centers = crailCenters(st);
+  const pitch = centers.length > 1 ? Math.abs(centers[1] - centers[0]) : 25;
+  const reach = pitch * 2.2;
+  for (let n = 0; n < st.bars.length; n++) {
+    let k = 0;
+    if (st.pointerY !== null) {
+      const d = Math.min(1, Math.abs(st.pointerY - centers[n]) / reach);
+      k = 0.5 * (1 + Math.cos(Math.PI * d));   // 1 under the pointer, 0 at the edge of reach
+    }
+    const base = n === st.active ? 34 : 18;
+    st.bars[n].style.setProperty('--w', (base + k * 22).toFixed(1));
+    st.bars[n].style.setProperty('--k', (1 + k * 0.85).toFixed(3));
+  }
+}
+
+// ---- The travelling marker -------------------------------------------------
+// It sits in the column the titles are indented past, so it can move between
+// rows without any of them shifting. Its rotation is a state rather than a
+// flourish: square on the chapter you are actually in, and turned onto its
+// corner for as long as it is pointing at any other row. The class is set
+// before the early return below, because the chapter you are in can change
+// underneath a marker that is not moving — scrolling while the pointer rests on
+// a row has to square it up, or unsquare it, without any travel at all.
+function crailMark(st, index) {
+  const link = st.links[index];
+  if (!link || !st.marker) return;
+  st.marker.classList.toggle('is-rhomb', index !== st.active);
+  const y = link.offsetTop + (link.offsetHeight - st.marker.offsetHeight) / 2;
+  if (st.markY !== null && Math.abs(y - st.markY) < 0.5) return;
+  st.markY = y;
+  st.marker.style.setProperty('--y', y.toFixed(1));
+}
+
+// Chapter tops are measured from the viewport, not offsetTop: #ch5's journey
+// sub-chapters sit inside a positioned ancestor, and the same is true of other
+// anchors here, so offsetTop would be relative to the wrong box.
+function crailMeasure(st, docH) {
+  const s = window.scrollY;
+  st.tops = st.ids.map((id, i) => {
+    if (i === 0) return 0;   // Intro starts at the top of the document
+    const el = document.getElementById(id);
+    return el ? Math.round(el.getBoundingClientRect().top + s) : Infinity;
+  });
+  st.docH = docH;
+}
+
+function crailSync(scrollTop, docH) {
+  const st = crailSync.state || (crailSync.state = crailInit());
+  if (!st) return;
+
+  // The page grows as the journey grid, the maps and the lightbox images settle,
+  // so re-measure whenever the document's height has moved rather than trusting
+  // a single load-time pass. Comparing scrollHeight is free here because
+  // onScroll() has already read it.
+  if (st.docH !== docH) crailMeasure(st, docH);
+
+  // Read at the viewport's midpoint, the same probe the body theme uses, so the
+  // rail and the dark/light flip always agree about where you are.
+  const probe = scrollTop + window.innerHeight / 2;
+  let i = 0;
+  while (i + 1 < st.tops.length && probe >= st.tops[i + 1]) i++;
+
+  const start = st.tops[i];
+  const end = i + 1 < st.tops.length && st.tops[i + 1] !== Infinity ? st.tops[i + 1] : docH;
+  const span = Math.max(1, end - start);
+  const pct = Math.round(Math.min(1, Math.max(0, (probe - start) / span)) * 100);
+
+  if (i !== st.active) {
+    st.bars.forEach((b, n) => b.classList.toggle('is-active', n === i));
+    st.links.forEach((a, n) => a.classList.toggle('is-active', n === i));
+    // Chapters behind you carry a full bar, chapters ahead an empty one; only
+    // the one you are in moves, and it is repainted below on every frame.
+    st.fills.forEach((f, n) => { if (n !== i) f.style.width = n < i ? '100%' : '0%'; });
+    st.active = i;
+    st.pct = -1;
+    crailPaint(st);
+    // The marker stays wherever the pointer has put it, but squareness is a
+    // fact about the chapter you are now in, so re-mark either way.
+    crailMark(st, st.hoverIndex !== null ? st.hoverIndex : i);
+  }
+  if (pct !== st.pct) {
+    st.fills[i].style.width = pct + '%';
+    st.pct = pct;
+  }
+}
+
+(() => {
+  const st = crailSync.state || (crailSync.state = crailInit());
+  if (!st) return;
+  const { rail, panel } = st;
+
+  function crailOpen(open) {
+    panel.classList.toggle('is-open', open);
+    rail.classList.toggle('is-open', open);
+    rail.setAttribute('aria-expanded', String(open));
+    panel.setAttribute('aria-hidden', String(!open));
+    if (open) {
+      // Opening puts pointer-events: none on the rail, so its own pointerleave
+      // will never arrive and the bars would stay frozen mid-swell. Let them go.
+      st.pointerY = null;
+      crailPaint(st);
+      st.hoverIndex = null;
+      crailMark(st, st.active);
+    }
+  }
+  const crailClose = () => crailOpen(false);
+
+  rail.addEventListener('click', () => crailOpen(!panel.classList.contains('is-open')));
+
+  // Dock magnification: track the pointer down the rail, one paint per frame.
+  let magFrame = 0;
+  rail.addEventListener('pointermove', e => {
+    st.pointerY = e.clientY;
+    if (magFrame) return;
+    magFrame = requestAnimationFrame(() => { magFrame = 0; crailPaint(st); });
+  });
+  rail.addEventListener('pointerleave', () => { st.pointerY = null; crailPaint(st); });
+
+  // Closing on the link's own click would race the smooth scroll the anchor
+  // starts, so let the click through and close on the next frame.
+  panel.querySelectorAll('[data-crail-close]').forEach(a => {
+    a.addEventListener('click', () => requestAnimationFrame(crailClose));
+  });
+
+  // The panel is the whole viewport now, so "outside" is measured against the
+  // list of titles: a press anywhere on the blur closes the menu.
+  const nav = panel.querySelector('.crail-nav');
+
+  // The marker follows the pointer through the list and falls back to the
+  // chapter you are actually in once the pointer leaves it.
+  st.links.forEach((a, i) => {
+    a.addEventListener('pointerenter', () => { st.hoverIndex = i; crailMark(st, i); });
+  });
+  nav.addEventListener('pointerleave', () => { st.hoverIndex = null; crailMark(st, st.active); });
+  document.addEventListener('pointerdown', e => {
+    if (!panel.classList.contains('is-open')) return;
+    if (nav.contains(e.target) || rail.contains(e.target)) return;
+    crailClose();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') crailClose(); });
+  // The + overlay takes the whole screen; CSS hides the rail while it is open,
+  // but the card should also give up its state so it does not spring back.
+  menuBtn.addEventListener('click', crailClose);
+
+  // Chapter tops shift with the layout, and the rail's own first paint needs a
+  // measured pass — onScroll() re-measures whenever the document height moves.
+  // The bar centres and the marker's row offsets are viewport-relative, so they
+  // are thrown away here too and rebuilt on the next paint.
+  window.addEventListener('resize', () => {
+    st.docH = -1; st.centers = null; st.markY = null;
+    onScroll();
+    crailPaint(st);
+    crailMark(st, st.active < 0 ? 0 : st.active);
+  });
+  onScroll();
+  crailPaint(st);
+  crailMark(st, st.active < 0 ? 0 : st.active);
+})();
 
 // #top lives on the sticky hero, so the browser's anchor scroll resolves it a
 // couple hundred pixels in — you land mid-transition with the title already
@@ -2463,7 +2710,7 @@ function initSpeechEngine(btn, setState) {
 
   const SKIP_SELECTOR = [
     '.cursor', '.cursor-dot', '.progress', '.menu-btn', '.menu-label',
-    '.menu-overlay', '.tweaks', '.tts-toggle', '.fact-n',
+    '.menu-overlay', '.crail', '.crail-panel', '.tweaks', '.tts-toggle', '.fact-n',
     '.hero-scroll', '.topo-toggle', '.topo-slider', '.lightbox',
     '.tts-skip', '[aria-hidden="true"]', 'script', 'style', 'noscript'
   ].join(',');

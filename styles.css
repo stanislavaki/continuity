@@ -188,6 +188,11 @@ body .menu-btn.is-open { z-index: 600; mix-blend-mode: normal; color: #fff; }
 .menu-btn:not(.is-open):hover svg { transform: scale(1.1); }
 .menu-btn.is-open svg { transform: rotate(135deg); }
 .menu-btn.is-open:hover svg { transform: rotate(135deg) scale(1.1); }
+/* The chapter rail is the navigation now. The + button is the only way into
+   .menu-overlay, so hiding it puts that whole menu out of reach — and out of the
+   tab order — while leaving its markup, styles and handlers untouched. Remove
+   this one rule to bring it back. */
+.menu-btn { display: none; }
 
 #ch1 { overflow: visible; }
 #ch1 .chapter-head { margin-bottom: 0; }
@@ -366,6 +371,279 @@ body .menu-btn.is-open { z-index: 600; mix-blend-mode: normal; color: #fff; }
   width: 48px; height: 48px; cursor: none;
 }
 .menu-close svg { width: 28px; height: 28px; fill: currentColor; transform: rotate(45deg); }
+
+/* ============================================================
+   CHAPTER RAIL — the second contents control, additive to the
+   + button and its full-screen .menu-overlay above, which are
+   left untouched.
+
+   Closed, it is six hairline bars stacked at the left gutter on
+   the vertical centre line: one per chapter, muted for chapters
+   still ahead, inked for chapters already read, and for the
+   chapter you are in a longer bar whose ink fills left to right
+   as you move through it. So the rail carries two readings at
+   once — which chapter, and how far into it.
+
+   Clicked, it opens .crail-panel: the same six entries as large
+   type on a floating card that grows out of the rail's own
+   anchor. Namespaced `crail-` because `.facts-rail`, `.rail-fact`,
+   `.rail-key` and `.rail-val` are already taken by the facts rail
+   in the intro.
+   ============================================================ */
+.crail {
+  position: fixed;
+  left: var(--gutter);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 300;               /* over the page, under .menu-overlay (500) */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 21px;
+  /* The bars are 4px tall, so the button itself is nearly unhittable. Padding
+     grows the target out to the right and down without moving the bars off the
+     gutter — the flex box is left-aligned. Kept to 12px on the right: this box
+     is invisible but still swallows clicks, and in the journey it lies over
+     photographs that open the lightbox, so it should not reach further into the
+     column than a comfortable target needs (46px at the active bar's width). */
+  padding: 14px 12px 14px 0;
+  background: transparent;
+  border: none;
+  /* The hand, as over a link. Never `none`: TWEAK_DEFAULTS ships the custom
+     cursor off, which puts the body back on the native pointer, and hiding that
+     would leave nothing at all over the control. */
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity .3s ease, transform .5s cubic-bezier(.22, 1, .36, 1);
+}
+/* Length and thickness are both driven from JS — see crailPaint(), which sets
+   --w (the bar's length in px, resting length plus its share of the swell under
+   the pointer) and --k (the thickness multiplier). Neither affects the layout:
+   width does not move siblings in a column, and thickness is a scaleY, which is
+   painted rather than laid out. That is what keeps the bars' vertical centres
+   fixed while they magnify, so the falloff can be measured once. */
+.crail-bar {
+  position: relative;
+  display: block;
+  width: calc(var(--w, 18) * 1px);
+  height: 4px;
+  overflow: hidden;
+  transform: scaleY(var(--k, 1));
+  transform-origin: left center;
+  transition: width .18s cubic-bezier(.22, 1, .36, 1),
+              transform .18s cubic-bezier(.22, 1, .36, 1),
+              background-color .45s ease;
+}
+.crail-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: calc(var(--p, 0) * 100%);
+  /* Same tracking as .progress-bar: the fill follows the scroll directly
+     rather than easing behind it, so it reads as a position, not an animation. */
+  transition: width .08s linear, background-color .45s ease;
+}
+/* An active chapter at 0% would otherwise show as a bare 34px track with no
+   ink at all, which reads as "not here". Keep a sliver. */
+.crail-bar.is-active .crail-fill { min-width: 5px; }
+
+/* Theme. Every fixed control on this page flips with the body.dark /
+   body.light classes that onScroll() sets from the section under the
+   viewport's midpoint; the rail follows the same convention rather than
+   the mix-blend-mode: difference trick .menu-btn uses, because a blended
+   2px bar disappears against the mid-greys of the granite photographs. */
+body.dark  .crail-bar  { background: rgba(255, 255, 255, 0.45); }
+body.dark  .crail-fill { background: #fff; }
+body.light .crail-bar  { background: rgba(0, 0, 0, 0.28); }
+body.light .crail-fill { background: #000; }
+/* Over the flat grounds a bare bar is enough, but the rail also crosses the
+   hero photograph and the journey plates, where a 2px line at 45% would sink
+   into the mid-greys. A halo the colour of the ground it belongs to carries it
+   across those without putting a visible box around it. */
+body.dark  .crail { filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.65)); }
+body.light .crail { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.75)); }
+
+/* ---- The opened card ---- */
+/* No frame around the list. The panel is the whole viewport: it takes the page
+   out of focus behind itself and the titles sit straight on that blur, on the
+   same gutter and centre line the bars occupy. */
+.crail-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 420;               /* over the page, under .menu-overlay (500) */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: var(--gutter);
+  backdrop-filter: blur(22px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .34s ease,
+              visibility 0s linear .34s,
+              background-color .45s ease;
+}
+.crail-panel.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;       /* a click on the blur closes the menu */
+  transition: opacity .34s ease, visibility 0s, background-color .45s ease;
+}
+.crail.is-open { opacity: 0; pointer-events: none; transform: translateY(-50%) translateX(-8px); }
+
+/* A thin wash over the blur. Without it the muted titles have to hold their
+   own against whatever photograph happens to be underneath. */
+body.dark .crail-panel {
+  background: rgba(5, 5, 5, 0.55);
+}
+body.light .crail-panel {
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.crail-nav {
+  position: relative;         /* the travelling marker is placed against this */
+  /* Declared once here so the marker can be cut from the same measure as the
+     titles instead of being kept in step by hand. */
+  --crail-type: clamp(22px, 2.2vw, 36px);
+  display: flex;
+  flex-direction: column;
+  width: min(clamp(420px, 48vw, 760px), 100%);
+  max-height: 100%;
+  /* overflow-y: auto is here so a list taller than the viewport can still be
+     reached, but CSS will not let one axis scroll while the other stays
+     visible — overflow-x resolves to auto alongside it, and that clipped the
+     corner off the marker when it turned. A square standing on its corner
+     reaches (sqrt2 - 1) / 2 of its width past its own box on every side, so the
+     scroll box is padded by a little more than that and pulled back by an equal
+     negative margin. Content-box sizing keeps the measure of the titles exactly
+     as it was, and .crail-marker takes the same figure as its `left` — an
+     absolutely positioned child is placed against the padding box, so without
+     that it would simply move out with the padding and be clipped again. */
+  --crail-swing: calc(var(--crail-type) * 0.19);
+  box-sizing: content-box;
+  padding: var(--crail-swing);
+  margin: calc(var(--crail-swing) * -1);
+  overflow-y: auto;
+}
+.crail-link {
+  display: grid;
+  /* One fixed column for the contents glyph so every label starts on the
+     same x whether or not its row is carrying the mark. */
+  grid-template-columns: clamp(26px, 2.2vw, 38px) 1fr;
+  align-items: center;
+  gap: clamp(11px, 1.1vw, 18px);
+  padding: clamp(7px, 1vh, 14px) 0;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: var(--crail-type);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  cursor: pointer;              /* the hand, as on the rail */
+  transition: color .25s ease, opacity .25s ease;
+}
+.crail-txt {
+  /* The first column is the marker's lane and holds no child of its own, so the
+     title has to be placed into the second one explicitly — grid would
+     otherwise auto-place it into the narrow lane and wrap every word. */
+  grid-column: 2;
+  /* Titles are never cut. The card is sized so the longest of them —
+     "Journey from Sardinia to Frankfurt" — sits on one line at the desktop
+     end of the type ramp, and below that it wraps rather than truncating. */
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+/* One marker for the whole list rather than a mark per row. It rests on the
+   chapter you are in and rides to whichever row the pointer is over, through
+   the column the titles are indented past — so nothing in the list shifts as
+   it moves. Its two transforms are split across two elements on purpose: the
+   outer one carries the travel, the inner one the spin, so they can run at
+   different lengths. */
+.crail-marker {
+  position: absolute;
+  left: var(--crail-swing);   /* cancels the scroll box's padding — see .crail-nav */
+  top: 0;
+  /* Cap height, so the square reads as another capital in the line rather than
+     as a bullet beside it. 0.704 is Struve's own cap-height ratio, measured off
+     the rendered face at this weight. */
+  width: calc(var(--crail-type) * 0.704);
+  height: calc(var(--crail-type) * 0.704);
+  pointer-events: none;
+  transform: translateY(calc(var(--y, 0) * 1px));
+  transition: transform .42s cubic-bezier(.22, 1, .36, 1);
+}
+.crail-marker i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: currentColor;
+  /* The same length and easing as the travel above, so the corner turns over
+     exactly as the marker moves and the two read as one gesture. */
+  transition: transform .42s cubic-bezier(.22, 1, .36, 1);
+}
+/* Square only where you actually are. The moment the marker leaves the chapter
+   you are in it turns onto its corner and stays a rhombus for as long as it is
+   pointing somewhere else — squaring up again only when it comes back. */
+.crail-marker.is-rhomb i { transform: rotate(45deg); }
+
+/* Full ink, the same as the row it is marking — which is white on the dark
+   half of the site and black on the light half, where a white square would
+   have nothing to sit against. */
+body.dark  .crail-marker { color: #fff; }
+body.light .crail-marker { color: #000; }
+
+body.dark  .crail-link { color: rgba(255, 255, 255, 0.46); }
+body.dark  .crail-link.is-active,
+body.dark  .crail-link:hover { color: #fff; }
+body.light .crail-link { color: rgba(0, 0, 0, 0.38); }
+body.light .crail-link.is-active,
+body.light .crail-link:hover { color: #000; }
+
+/* Rows arrive after the card, one behind the next, so the list reads as
+   settling into place instead of appearing whole. */
+.crail-link {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: color .25s ease, opacity .3s ease, transform .38s cubic-bezier(.22, 1, .36, 1);
+}
+.crail-panel.is-open .crail-link {
+  opacity: 1;
+  transform: none;
+  /* Positional, matching `color, opacity, transform` above: only the entrance
+     staggers. A single value here would also delay the colour, so hovering a
+     row and the active row changing would both lag by up to a quarter second. */
+  transition-delay: 0s,
+                    calc(90ms + var(--i) * 34ms),
+                    calc(90ms + var(--i) * 34ms);
+}
+
+/* The + overlay and the journey lightbox both own the whole screen when
+   open, and .lb-prev sits on exactly this gutter and centre line. Stand down
+   for both. */
+body:has(.menu-overlay.is-open) .crail,
+body:has(.menu-overlay.is-open) .crail-panel,
+body:has(.lightbox.is-open) .crail,
+body:has(.lightbox.is-open) .crail-panel {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  /* Not enough width to sit a card on the gutter without covering the
+     column it is meant to navigate. The + button remains the nav here. */
+  .crail, .crail-panel { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .crail, .crail-bar, .crail-fill, .crail-link, .crail-marker, .crail-marker i,
+  /* .crail-panel.is-open restates the whole transition shorthand, so it has to
+     be named here too or it outranks this rule and keeps its full fade. */
+  .crail-panel, .crail-panel.is-open {
+    transition-duration: 1ms;
+  }
+  /* Zeroed with it: the closed rule delays `visibility` behind the fade, which
+     would otherwise hold the blur on screen for 340ms after it has gone. */
+  .crail-panel, .crail-panel.is-open { transition-delay: 0s; }
+  .crail-panel.is-open .crail-link { transition-delay: 0ms; }
+}
 
 /* ============ SECTIONS ============ */
 section { position: relative; }
@@ -1209,6 +1487,14 @@ section { position: relative; }
   gap: 0;
   mix-blend-mode: difference;
   isolation: isolate;
+}
+/* Line the play triangle up with the left edge of the chapter rail's bars. The
+   64px button centres a 24px icon and the triangle is inset another 4px inside
+   that, so the button's own box has to start 24px left of the gutter for the
+   triangle's edge to land on it. Only where the rail exists: below 901px it is
+   hidden and these controls keep their own inset. */
+@media (min-width: 901px) {
+  .tts-controls { left: calc(var(--gutter) - 24px); }
 }
 .tts-toggle {
   display: inline-flex;
