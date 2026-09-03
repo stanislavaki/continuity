@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=62" />
+<link rel="stylesheet" href="styles.css?v=63" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -179,6 +179,14 @@
 
   <!-- CHAPTER 1 · Mathematics -->
   <section class="chapter math" id="ch1">
+    <!-- The project's own 8-column grid, drawn rather than implied: this is the
+         chapter about how the sculpture was measured, so the measure the page
+         itself is set on is left showing. Placed before .container so that both
+         boxes, being positioned with z-index auto, paint in document order and
+         the grid falls behind the text. -->
+    <div class="math-grid" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
     <div class="container">
       <div class="chapter-head">
         <div class="chapter-num">1</div>

@@ -1322,6 +1322,35 @@ section { position: relative; }
 
 /* Math section */
 .math { background: var(--black); color: #fff; padding: 120px 0; position: relative; }
+/* ---- The column grid, as part of the chapter rather than as a dev overlay ----
+   Same box as .container and the same eight columns the layout is set on, so
+   the lines land exactly on the edges the text is measured to. Both boxes are
+   positioned with z-index auto, so they paint in document order — the grid is
+   written first in the markup and falls behind. Neither takes a z-index of its
+   own on purpose: that would make .container a stacking context and the sticky
+   visual inside it would then screen-blend against nothing, drawing its black
+   field as an opaque rectangle instead of dropping it out. */
+.math-grid {
+  --math-grid-ink: rgba(255, 0, 51, 0.3);
+  position: absolute;
+  inset: 0;
+  margin-inline: auto;
+  max-width: var(--maxw);
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: var(--col-gap);
+  pointer-events: none;
+}
+.math-grid i {
+  border-left: 1px solid var(--math-grid-ink);
+  border-right: 1px solid var(--math-grid-ink);
+}
+.math > .container { position: relative; }
+@media (max-width: 900px) {
+  /* Eight columns of hairlines behind body text is noise at this width. */
+  .math-grid { display: none; }
+}
 .math-head {
   display: grid;
   grid-template-columns: 1fr 1fr;
