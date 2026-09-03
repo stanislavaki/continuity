@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=23" />
+<link rel="stylesheet" href="styles.css?v=34" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -64,15 +64,13 @@
 
   <!-- Sticky sculpture group: hero + intro share a carrier so the sculpture pins across them -->
   <div class="sticky-group">
-    <img class="hero-sculpture sticky-sculpture" src="./assets/sculpture-3d.png" alt="" aria-hidden="true"/>
+    <video class="hero-sculpture sticky-sculpture" src="./assets/sculpture-rotation-alpha.webm"
+           muted playsinline preload="auto" aria-hidden="true"></video>
 
     <!-- HERO -->
     <header class="hero" id="top">
       <div class="hero-bg" id="heroBg"></div>
       <h1 class="hero-title">toward kontinuität</h1>
-      <div class="hero-intro-grid">
-        <p class="hero-intro" data-narr="intro-1"><strong>Continuity</strong>, a colossal 4.5-meter-high granite sculpture shaped as an infinity loop, located in central Frankfurt, Germany. It was created by the Swiss architect and polymath <strong>Max Bill</strong> (1908—1994), a prominent figure in modernism and concrete art.</p>
-      </div>
     </header>
 
     <!-- INTRO · facts rail. The sticky sculpture pins across this whole block,
@@ -83,6 +81,12 @@
          row, one per column, so that pair lands on screen together. -->
     <section class="intro dark-section" id="introFacts">
       <div class="container">
+        <!-- Opening paragraph. Moved down off the hero photograph: it now opens
+             the black section, in the right-hand columns, and rides up past the
+             pinned sculpture ahead of the facts. -->
+        <div class="intro-opening">
+          <p class="intro-opening-text" data-narr="intro-1"><strong>Continuity</strong>, a colossal 4.5-meter-high granite sculpture shaped as an infinity loop, located in central Frankfurt, Germany. It was created by the Swiss architect and polymath <strong>Max Bill</strong> (1908—1994), a prominent figure in modernism and concrete art.</p>
+        </div>
         <div class="facts-rail">
           <div class="rail-fact rail-fact--left reveal">
             <span class="rail-key">Material</span>
@@ -916,9 +920,9 @@ function applyTweaks(cfg) {
     heroBg.style.backgroundImage = "repeating-linear-gradient(0deg, rgba(255,255,255,.12) 0 1px, transparent 1px 30px), repeating-linear-gradient(90deg, rgba(255,255,255,.12) 0 1px, transparent 1px 30px)";
   } else {
     heroBg.style.background = '';
-    heroBg.style.backgroundImage = "url(./assets/hero-pool.png)";
+    heroBg.style.backgroundImage = "url(./assets/hero-site.jpg)";
     heroBg.style.backgroundSize = 'cover';
-    heroBg.style.backgroundPosition = 'center';
+    heroBg.style.backgroundPosition = 'calc(50% - 30px) center';
   }
 }
 
@@ -959,74 +963,96 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
   window.addEventListener('resize', fit);
 })();
 
-// Hero sculpture: grows and spins clockwise a full turn as it sticks across
-// the sticky-group, landing back at 0°/360° (visually identical) exactly as
-// the pin releases. Growth never exceeds the clear strip between grid columns
-// 2 and 7 — the facts rail rides past in those columns and must not be clipped.
+// Hero sculpture. Two things happen across the sticky-group, and neither of
+// them is a resize: the sculpture holds ONE size for the whole pin, and it turns
+// exactly once, tied to the scrollbar in both directions.
 //
-// ROT_EXTENT is how far the *visible* sculpture reaches from its own centre at
-// the worst rotation angle, as a fraction of element width. Measured by drawing
-// sculpture-3d.png to a canvas at every 15° and rescanning its alpha bbox: it
-// peaks at 0.482 (60° on the left, 240° on the right) versus 0.372/0.407 when
-// upright. Clamping on that single rotation-independent figure is what keeps
-// the object clear of the facts at every angle — a safety multiplier on the
-// upright numbers would have to be 1.30 to match, and is easier to get wrong.
+// SIZE. It renders at a single size throughout — see --sculpt-w in styles.css,
+// which is set so it reads as a 4.5m object standing in the site photograph.
+// It used to grow 15% down the span and then blend into a clearance-safe size as
+// the facts arrived; the blend landed right at the photo/black seam and read as
+// a pop, and any growth at all makes the object look like it is approaching
+// rather than standing still. Nothing here touches the transform any more; the
+// stylesheet owns it.
+//
+// TURN. The clip is one seamless revolution (192 frames at 24fps, last frame
+// matching first). Scroll depth through the span maps straight onto
+// currentTime: down turns it forward, up turns it back, it holds frame 0 until
+// it has cleared the photograph, and it holds the final frame from the moment
+// the pin releases — which is the same scroll offset at which the Place fact
+// arrives. That direct mapping only became possible once the asset was
+// re-encoded with a keyframe every 4 frames. The delivered file had 2 keyframes
+// in 192, so every seek decoded from the top of the clip (107ms median, 700ms
+// worst) and Chrome dropped the ones it could not service: the turn arrived in
+// visible steps. With dense keyframes a seek is under 1ms in either direction.
+// (ffmpeg has to decode this file with -c:v libvpx-vp9; its native VP9 decoder
+// silently drops the alpha.)
 (() => {
   const group = document.querySelector('.sticky-group');
   const sculpture = document.querySelector('.sticky-sculpture');
   if (!group || !sculpture) return;
-  const ROT_EXTENT = 0.482, X_OFF = 30, GAP = 24, ROT_DELAY_VH = 0.5;
 
-  let limitScale = Infinity;
-  const measure = () => {
-    const l = document.querySelector('.rail-fact--left');
-    const r = document.querySelector('.rail-fact--right');
-    const base = sculpture.offsetWidth;
-    // Below 900px the rail runs full width (see CSS) — nothing to clear.
-    if (!l || !r || !base || window.innerWidth <= 900) { limitScale = Infinity; return; }
-    const clearL = l.getBoundingClientRect().right;
-    const clearR = r.getBoundingClientRect().left;
-    // Measured about the centred position, since the turn also eases X_OFF to
-    // 0: off-centre, the tighter side alone would set the limit and cost far
-    // more size than the offset is worth.
-    const cx = window.innerWidth / 2;
-    const limitW = (Math.min(cx - clearL, clearR - cx) - GAP) / ROT_EXTENT;
-    limitScale = limitW / base;
+  // CONTENT_TOP: the sculpture's visible content starts 0.210 down its frame
+  // (measured over all 192 frames), which is what tells us when the object, not
+  // its empty margin, has left the photo. SPIN_CLEAR_VH is the beat held after
+  // that, so the turn reads as a deliberate move on the black rather than
+  // something already under way at the seam.
+  const CONTENT_TOP = 0.210, SPIN_CLEAR_VH = 0.15;
+  const FPS = 24, EASE_IN = 0.22;
+
+  // Progress -> position in the clip. Quadratic out of rest so the sculpture
+  // does not simply switch on, then constant speed for the body of the turn,
+  // the two joined where their slopes match; scaled so it still reaches exactly
+  // 1 at the end of the pin. A pure smoothstep would ease out as well, and a
+  // heavy object arriving at a dead stop just as it completes a revolution
+  // reads as the animation running out rather than the turn finishing.
+  const shape = (q) => {
+    const a = EASE_IN, k = 1 / (1 - a / 2);
+    return (q < a ? (q * q) / (2 * a) : a / 2 + (q - a)) * k;
+  };
+
+  // Seeks are coalesced into one rAF and skipped below half a frame: scroll
+  // fires far more often than 24fps has anything new to show.
+  let want = 0, queued = false;
+  const flush = () => {
+    queued = false;
+    if (!sculpture.duration) return;
+    if (Math.abs(sculpture.currentTime - want) < 0.5 / FPS) return;
+    try { sculpture.currentTime = want; } catch (e) {}
   };
 
   const update = () => {
     const rect = group.getBoundingClientRect();
     const total = Math.max(1, group.offsetHeight - window.innerHeight);
     const scrolled = Math.max(0, -rect.top);
-    const p = Math.min(1, scrolled / total);
 
-    // Stay upright over the hero photo, then hold a beat on the black screen
-    // before the turn begins — so the rotation reads as a deliberate move on
-    // the black ground, not as something already underway on arrival.
-    const hero = document.querySelector('.hero');
-    const rotStart = (hero ? hero.offsetHeight : window.innerHeight) + ROT_DELAY_VH * window.innerHeight;
-    const rotSpan = Math.max(1, total - rotStart);
-    const rp = Math.min(1, Math.max(0, (scrolled - rotStart) / rotSpan));
-    const angle = rp * 360;
+    // The sculpture has cleared the hero photo once the photo's bottom edge has
+    // risen past the top of its visible content. That is read off the rendered
+    // box, not the sticky `top`: the stylesheet places the sculpture by
+    // transform, and the box is where it actually is. It is pinned for the
+    // whole range this matters over, so the value is stable.
+    const vh = window.innerHeight;
+    const heroH = (document.querySelector('.hero') || {}).offsetHeight || vh;
+    const box = sculpture.getBoundingClientRect();
+    const contentTop = box.top + CONTENT_TOP * box.height;
+    const spinStart = heroH - contentTop + SPIN_CLEAR_VH * vh;
+    const spinSpan = Math.max(1, total - spinStart);
 
-    // A spinning object sweeps a wider envelope than an upright one, so on
-    // narrower viewports the rotation-safe size is below 1. Blend into it as
-    // the turn starts rather than up front, which would shrink the hero —
-    // where the sculpture is upright and has no facts to clear anyway. The
-    // same blend recentres the sculpture (X_OFF -> 0), which is what keeps the
-    // clearance symmetric and the required shrink modest.
-    const grown = 1 + 0.15 * p;
-    const ease = rp <= 0 ? 0 : Math.min(1, rp / 0.25);
-    const eased = ease * ease * (3 - 2 * ease);   // smoothstep, so the size settles without a step
-    const scale = grown * (1 - eased) + Math.min(grown, limitScale) * eased;
-    const off = X_OFF * (1 - eased);
-    sculpture.style.transform = `translate(calc(-50% + ${off}px), calc(-50% + ${off}px)) scale(${scale}) rotate(${angle}deg)`;
+    if (sculpture.duration) {
+      // Last frame repeats the first: stop one frame short of the wrap.
+      const maxT = sculpture.duration - 1 / FPS;
+      const q = Math.min(1, Math.max(0, (scrolled - spinStart) / spinSpan));
+      want = shape(q) * maxT;
+      if (!queued) { queued = true; requestAnimationFrame(flush); }
+    }
   };
 
+  // Nothing can be positioned until the duration is known, and the first frame
+  // has to be decoded for the hero to show anything at all.
+  sculpture.addEventListener('loadedmetadata', update);
   window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', () => { measure(); update(); });
-  window.addEventListener('load', () => { measure(); update(); });
-  measure();
+  window.addEventListener('resize', update);
+  window.addEventListener('load', update);
   update();
 })();
 

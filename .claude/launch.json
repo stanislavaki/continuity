@@ -4,7 +4,10 @@
     {
       "name": "kontinuitat-lp",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "python3 -m http.server \"${PORT:-4174}\""],
+      "runtimeArgs": [
+        "-c",
+        "python3 scripts/serve.py \"${PORT:-4174}\""
+      ],
       "port": 4174,
       "autoPort": true
     }

@@ -377,9 +377,11 @@ section { position: relative; }
 .hero-bg {
   position: absolute;
   inset: 0;
-  background-image: url(./assets/hero-pool.png);
+  background-image: url(./assets/hero-site.jpg);
   background-size: cover;
-  background-position: center;
+  /* Shifted with the sculpture when it was recentred (it used to sit 30px
+     right of centre), so the plate keeps the same relationship to it. */
+  background-position: calc(50% - 30px) center;
   transform: scale(1.02);
   will-change: transform;
 }
@@ -396,33 +398,30 @@ section { position: relative; }
   text-shadow: 0 4px 60px rgba(0,0,0,0.35);
 }
 .hero-title em { font-style: normal; font-family: var(--serif); font-weight: 400;  }
-.hero-intro-grid {
-  position: absolute;
-  left: 0; right: 0;
-  bottom: 32px;
-  z-index: 2;
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 0 var(--gutter);
-  box-sizing: border-box;
+/* Opening paragraph. It used to sit over the hero photograph; it now opens the
+   black section instead, riding up the right-hand columns ahead of the facts.
+   Unlike the facts it is NOT lifted above the sculpture: it stays in normal
+   flow, which paints beneath every positioned element, so the pinned object
+   (z-index 5) passes in front of it where the two overlap. */
+.intro-opening {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--col-gap);
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+  padding-top: 14vh;
 }
-.hero-intro {
-  grid-column: 3 / 5;
+.intro-opening-text {
+  grid-column: 6 / 9;
   margin: 0;
   color: #fff;
   font-size: clamp(16px, 1.3vw, 20px);
   line-height: 1.4;
   font-weight: 500;
   letter-spacing: -0.005em;
-  text-shadow: 0 2px 24px rgba(0,0,0,0.4);
 }
-.hero-intro strong { font-weight: 700; }
+.intro-opening-text strong { font-weight: 700; }
 @media (max-width: 900px) {
-  .hero-intro-grid { grid-template-columns: 1fr; bottom: 80px; }
-  .hero-intro { grid-column: 1; text-shadow: none; }
+  .intro-opening { padding-top: 12vh; }
+  .intro-opening-text { grid-column: 1 / -1; text-shadow: 0 2px 18px rgba(0,0,0,0.55); }
 }
 
 /* Logo in the page's top-left corner, matching the placement used on the other
@@ -446,12 +445,39 @@ section { position: relative; }
   .logo-img { height: 60.54px; }
 }
 
+/* The sculpture is a VP9+alpha video, one revolution over 192 frames, that the
+   scroll script scrubs by currentTime. Nothing here rotates or resizes it: it
+   holds one size and one place for the whole pin.
+
+   Both are expressed in PLATE pixels, not screen pixels. The hero photograph is
+   a 2560x1440 plate drawn with background-size: cover, so a taller window crops
+   its sides and a wider one its top and bottom -- the plinth slides up and down
+   the screen with the window's shape. --plate-px is one plate pixel on screen
+   (the larger of the two cover ratios, times the 1.02 idle scale .hero-bg
+   carries), and sizing and placing the sculpture through it is what keeps it on
+   the same spot of the photograph, sitting on the same blocks, at every
+   viewport shape. */
 .hero-sculpture {
+  --plate-px: calc(1.02 * max(100vw / 2560, 100vh / 1440));
+  /* Frame width in plate px. The visible body spans 0.621 of the frame at rest,
+     so this is ~900 plate px of granite over holders whose near block runs
+     ~600 plate px along its top edge -- calibrated against a photograph of the
+     real piece, where the sculpture is roughly one and a half times the long
+     holder and the holders read as small supports under it. */
+  --sculpt-w: calc(1450 * var(--plate-px));
+  /* The base line: plate px below the plate's centre (y=720 of 1440). The near
+     block's top front edge passes under the sculpture's centre at about y=982;
+     1030 puts the base 48 plate px below that -- about 4% of the sculpture's
+     height, which is how far the real base dips past the near holder's top
+     edge -- so the rounded underside covers part of the block's face and reads
+     as resting on it. Smaller lifts it. */
+  --plinth-dy: 310;
   position: absolute;
   left: 50%;
   bottom: calc(-4vh - 160px);
   transform: translateX(-50%);
-  width: min(54vw, 672px);
+  width: var(--sculpt-w);
+  aspect-ratio: 1 / 1;   /* known before metadata loads, so the pin never jumps */
   height: auto;
   z-index: 1;
   pointer-events: none;
@@ -463,21 +489,40 @@ section { position: relative; }
 .sticky-sculpture {
   position: sticky;
   top: 50vh;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  /* Centred on the margin, not on the `left` inset. On a sticky box `left` is a
+     containment edge, so it gets clamped back inside the container once the
+     element is wide enough — which silently pulled the sculpture off centre
+     when the video's larger frame replaced the still. margin-left + translate
+     is pure flow, so it centres at any width, including the >100% one the
+     mobile rule asks for. */
+  left: auto;
+  margin-left: 50%;
+  /* The flow box stays pinned with its top at 50vh, and the sculpture is moved
+     from there by transform alone. Sticky positioning cannot lift an element
+     above its own flow position, so putting the plate offset into `top` left
+     the sculpture sitting low at the top of the page and only correct once the
+     page had scrolled that far; a transform is free of that. The Y term lands
+     the visible base (0.854 down the frame at rest, so 0.354 below its centre)
+     on the plinth line: 50vh is where the plate's centre line falls, and
+     --plinth-dy is the drop from there. Pin and release are untouched. */
+  transform: translate(-50%, calc(-50% + var(--plinth-dy) * var(--plate-px) - 0.354 * var(--sculpt-w)));
   bottom: auto;
-  width: min(54vw, 672px);
+  width: var(--sculpt-w);
   height: auto;
   z-index: 5;
   pointer-events: none;
   filter: drop-shadow(0 40px 80px rgba(0,0,0,.45));
   display: block;
-  margin: 0;
+  margin-top: 0;
+  margin-right: 0;
   /* Pull subsequent content up so hero starts at y=0 while sticky still pins */
-  margin-bottom: calc(-1 * min(54vw, 672px));
+  margin-bottom: calc(-1 * var(--sculpt-w));
 }
 @media (max-width: 900px) {
-  .hero-sculpture { width: 96vw; bottom: -2vh; }
+  /* A phone shows only the middle of the plate, so plate-scaling the sculpture
+     would put it at twice the screen width. It keeps a screen-relative width
+     here; its base still sits on the plinth line. */
+  .hero-sculpture { --sculpt-w: 106vw; bottom: -2vh; }
 }
 .hero-footer {
   position: absolute;
@@ -582,7 +627,9 @@ section { position: relative; }
   grid-template-columns: repeat(8, minmax(0, 1fr));
   column-gap: var(--col-gap);
   row-gap: 55vh;
-  padding: 42vh 0 30vh;
+  /* Shorter than it was: the opening paragraph above now carries part of the
+     lead-in before the first fact. */
+  padding: 30vh 0 30vh;
   position: relative;
   z-index: 6;
 }
@@ -637,19 +684,20 @@ section { position: relative; }
 }
 
 @media (max-width: 900px) {
-  /* No clear strip beside a 96vw sculpture — run the facts full width and
-     scrim them so they stay legible as they cross it. */
-  .facts-rail { row-gap: 34vh; padding: 30vh 0 24vh; }
+  /* No clear strip beside a full-bleed sculpture — the facts run full width and
+     cross it. They carry no panel behind them: the type sits directly on the
+     stone, and only a soft shadow separates it, so the sculpture reads as one
+     continuous object rather than being sliced by opaque bands. */
+  .facts-rail { row-gap: 34vh; padding: 20vh 0 24vh; }
   .rail-fact--left,
   .rail-fact--right,
   .rail-fact--wide { grid-column: 1 / -1; }
   .rail-fact {
-    /* Crisp under the rule, fading out at the foot, so the panel reads as a
-       deliberate band rather than a smudge over the sculpture. */
-    background: linear-gradient(to bottom, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.88) 72%, rgba(0,0,0,0) 100%);
-    padding: 14px 16px 20px;
-    margin: 0 -16px;
+    background: none;
+    padding: 14px 0 20px;
   }
+  .rail-key,
+  .rail-val { text-shadow: 0 2px 18px rgba(0,0,0,0.55); }
   .rail-key { margin-bottom: 12px; }
 }
 .intro-text {
