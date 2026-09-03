@@ -38,6 +38,18 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+/* One plate pixel on screen. The hero photograph is a 2560x1440 plate drawn
+   with background-size: cover, so this is the larger of the two cover ratios,
+   times the 1.02 idle scale .hero-bg carries. The sculpture is sized and
+   placed through it, which is what keeps it on the same spot of the plate at
+   every viewport shape. */
+:root {
+  --plate-px: calc(1.02 * max(100vw / 2560, 100vh / 1440));
+  /* Where the sculpture's base sits: plate px below the plate's centre line.
+     Explained where it is used, on .hero-sculpture; it lives here because the
+     Place block below the pin measures its own gap from the same figure. */
+  --plinth-dy: 400;
+}
 html, body { background: var(--bg); color: var(--ink); font-family: var(--sans); }
 html { scroll-behavior: smooth; }
 body {
@@ -458,7 +470,6 @@ section { position: relative; }
    the same spot of the photograph, sitting on the same blocks, at every
    viewport shape. */
 .hero-sculpture {
-  --plate-px: calc(1.02 * max(100vw / 2560, 100vh / 1440));
   /* Frame width in plate px. The visible body spans 0.621 of the frame at rest,
      so this is ~900 plate px of granite over holders whose near block runs
      ~600 plate px along its top edge -- calibrated against a photograph of the
@@ -468,12 +479,11 @@ section { position: relative; }
   /* The base line: plate px below the plate's centre (y=720 of 1440). The near
      holder's top FRONT edge passes under the sculpture's centre at about
      y=1045 (its back edge, higher on screen at ~982, is the one to ignore --
-     the base has to meet the near edge or it reads as hovering). 1090 puts the
-     base ~45 plate px below that, about 4% of the sculpture's height, which
-     is how far the real base dips past the near holder's edge in photographs
-     of the piece: the rounded underside covers part of the block's face and
-     reads as resting on it. Smaller lifts it. */
-  --plinth-dy: 370;
+     the base has to meet the near edge or it reads as hovering). 1120 puts
+     the base ~55 plate px below that front edge and ~30 above the block's
+     bottom at the sculpture's centre -- set by eye against photographs of the
+     piece, so the rounded underside sits into the holder's face and reads as
+     resting on it. Smaller lifts it. Declared on :root (see there). */
   position: absolute;
   left: 50%;
   bottom: calc(-4vh - 160px);
@@ -681,8 +691,11 @@ section { position: relative; }
   row-gap: 0;
   /* The sticky sculpture carries a -1 x width margin-bottom to pull the hero
      up to y=0, which drags this section up under it too. The top padding is
-     what buys Place back its own space below the released sculpture. */
-  padding: 26vh 0 34vh;
+     what buys Place back its own space below the released sculpture -- and
+     the sculpture's base hangs --plinth-dy plate px below the line the pin
+     releases on, so the padding is measured from there: a fixed 26vh let the
+     label touch the base at squarer windows. */
+  padding: calc(var(--plinth-dy) * var(--plate-px) + 16vh) 0 34vh;
 }
 
 @media (max-width: 900px) {
