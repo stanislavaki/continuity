@@ -49,6 +49,11 @@
      Explained where it is used, on .hero-sculpture; it lives here because the
      Place block below the pin measures its own gap from the same figure. */
   --plinth-dy: 400;
+  /* The route arrow, drawn (Arrow-down.svg, 44x56). Held here as a token so the
+     one path is defined once; it is used as a mask, so the fill in the file is
+     irrelevant and the colour comes from whatever currentColor is where it is
+     drawn. */
+  --arrow-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='56' viewBox='0 0 44 56'%3E%3Cpath d='M24.0001 47.3071L40.3851 30.9221L43.2135 33.7505L22.0003 54.9637L0.787109 33.7505L3.61554 30.9221L20.0005 47.3071V-0.25H24.0001V47.3071Z' fill='%23000'/%3E%3C/svg%3E");
 }
 html, body { background: var(--bg); color: var(--ink); font-family: var(--sans); }
 html { scroll-behavior: smooth; }
@@ -477,9 +482,9 @@ body .menu-btn.is-open { z-index: 600; color: #fff; }
 
 /* Theme. Every fixed control on this page flips with the body.dark /
    body.light classes that onScroll() sets from the section under the
-   viewport's midpoint; the rail follows the same convention rather than
-   the mix-blend-mode: difference trick .menu-btn uses, because a blended
-   2px bar disappears against the mid-greys of the granite photographs. */
+   viewport's midpoint -- the rail, the + menu button and the read-aloud
+   cluster alike. A 2px bar is what made the case: blended against the
+   mid-greys of the granite photographs it disappears entirely. */
 body.dark  .crail-bar  { background: rgba(255, 255, 255, 0.45); }
 body.dark  .crail-fill { background: #fff; }
 body.light .crail-bar  { background: rgba(0, 0, 0, 0.28); }
@@ -1552,8 +1557,14 @@ section { position: relative; }
 }
 .tweak-row input[type=color] { width: 32px; height: 24px; padding: 0; border-radius: 0; }
 
-/* Read-aloud controls (fixed, bottom-left). The whole cluster inverts against
-   the page background via difference blend (same approach as the + menu button). */
+/* Read-aloud controls (fixed, bottom-left). Every glyph in the cluster -- the
+   play triangle, the pause bars, the two chevrons -- is drawn out of
+   currentColor, so the whole thing takes its ink from one property, and that
+   property follows the body.dark / body.light classes onScroll() sets from the
+   section under the viewport's midpoint. It used to invert the page behind it
+   with a difference blend instead, which is legible over flat black and flat
+   white but shifts colour across the photographs and goes to another mid-grey
+   over a mid-grey. Same convention as .menu-btn and .crail. */
 .tts-controls {
   position: fixed;
   left: 24px;
@@ -1562,9 +1573,9 @@ section { position: relative; }
   display: inline-flex;
   align-items: center;
   gap: 0;
-  mix-blend-mode: difference;
-  isolation: isolate;
 }
+body.dark  .tts-controls { color: #fff; }
+body.light .tts-controls { color: #000; }
 /* Line the play triangle up with the left edge of the chapter rail's bars. The
    64px button centres a 24px icon and the triangle is inset another 4px inside
    that, so the button's own box has to start 24px left of the gutter for the
@@ -1581,7 +1592,7 @@ section { position: relative; }
   height: 64px;
   padding: 0;
   background: transparent;
-  color: #fff;
+  color: inherit;
   border: none;
   border-radius: 0;
   cursor: pointer;
@@ -1907,12 +1918,24 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 }
 
 /* Journey sub-chapter heads: centred, and without the hairline .sub-head
-   carries by default. */
+   carries by default. Laid out on the same four-track head the chapters use, so
+   the number can take the same column -- see .sub-num. */
 .journey-sub .sub-head {
   border-top: none;
   padding-top: 0;
   text-align: center;
+  /* Queried by .sub-num, which sizes itself to one of these columns. Read from
+     the head's own inline size rather than 100vw so a scrollbar cannot throw
+     the figure out. */
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: start;
+  gap: var(--col-gap);
 }
+/* The title, route and dates keep the full measure and stay centred, as
+   .chapter-title does over the number beside it. */
+.journey-sub .sub-head-text { grid-column: 1 / -1; }
 
 /* Granite Trip: photographs stacked down the left half of the article grid,
    opposite the text column (which keeps its usual grid-column 3/5), plus one
@@ -2174,11 +2197,46 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   padding-top: 12px;
   margin-bottom: 80px;
 }
+/* The three small lines of the head -- number, route, dates -- are set as body
+   copy, not as labels: the same face, weight, size, leading and tracking the
+   article columns use, so the head speaks in the page's own voice instead of a
+   mono caption's. They are set at full strength too, in the ink of the section
+   they are in, which the body theme has already resolved -- pure white on the
+   journey's near-black, pure black on Sculpting's white. */
+.sub-route,
+.sub-dates {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(20px, 1.7vw, 26px);
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+}
+/* Set as the chapter numbers are: the same face, weight, leading and tracking,
+   in the same column of the same four-track head.
+   The size is the one place it parts company with them. .chapter-num derives
+   its size from the head, so the numeral's ink fills exactly one column; this
+   is set outright instead, because a three-character number filling a column
+   came out larger than the head wanted. It falls back to the derived figure
+   only when the head is too narrow to hold 216px -- so the number is a fixed
+   size on any real desktop and starts scaling once the column can no longer
+   carry it. */
 .sub-num {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: .2em;
-  opacity: .55;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: min(216px, calc((100cqw - 3 * var(--col-gap)) / 4 / 1.27 * 1.36));
+  line-height: 0.85;
+  /* Tighter than the chapter numeral's -0.04em: three characters set at this
+     size leave the pair of digits floating apart, and the point of the figure
+     is that it reads as one mark. Held in em rather than the -20px it was
+     picked at, so it keeps its proportion as the container query resizes the
+     head. */
+  letter-spacing: -0.1em;
+  grid-column: 2 / 3;
+  justify-self: start;
+  text-align: left;
+  /* The optical left overhang, in proportion to the size, as .chapter-num. */
+  margin-left: -0.056em;
+  opacity: 0.96;
   margin-bottom: 24px;
 }
 .sub-head-text { display: block; }
@@ -2190,20 +2248,43 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   color: #fff;
   margin: 0;
 }
-/* Every sub-chapter head carries the same two lines: where, then when. Shared
-   treatment so they read as one block, with the dates set back a step. */
-.sub-route,
-.sub-dates {
-  font-family: var(--mono);
-  font-size: 14px;
-  line-height: 1.7;
-  letter-spacing: .09em;
-  /* Small caps rather than uppercase, so the authored casing survives: proper
-     nouns keep full-height capitals and everything else drops to small caps. */
-  font-variant-caps: small-caps;
+/* The air either side of the route is carried here as padding rather than as
+   margins on the three lines, so it cannot collapse against them and the block
+   sits the same distance under the title as it does above the dates. */
+.sub-route { margin: 0; padding: 64px 0; }
+/* The route reads as a descent rather than a line: one place to a row, with the
+   arrow turned to match. The arrows are drawn between the rows rather than
+   written into the sentence, so a route is only its places and the punctuation
+   is the stylesheet's business — which is what lets 5.2, a route of one place,
+   sit there without a dangling arrow after it. */
+.sub-route {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-.sub-route { opacity: .55; margin: 16px 0 0; }
-.sub-dates { opacity: .38; margin: 2px 0 0; }
+/* The drawn arrow, at its own 44x56. Carried as a mask filled with currentColor
+   rather than as an <img> or a background: the file is a black fill, and these
+   heads sit on the journey's near-black as well as on Sculpting's white, so the
+   arrow has to take the section's ink the way the text either side of it does.
+   Masked, one file serves both. */
+.sub-route span + span::before {
+  content: '';
+  display: block;
+  /* Half the drawing's own 44x56. At full size it read as a third element in
+     the route rather than as the join between two. */
+  width: 22px;
+  height: 28px;
+  margin: 8px auto;
+  background-color: currentColor;
+  -webkit-mask: var(--arrow-down) no-repeat center / contain;
+  mask: var(--arrow-down) no-repeat center / contain;
+  /* Held back further than the places it joins, so the eye reads the names and
+     takes the arrows as punctuation. */
+  opacity: .4;
+}
+/* No margin of its own: the route above owns the gap, so there is one number to
+   change rather than two that collapse into each other. */
+.sub-dates { margin: 0; }
 
 /* Per-stop diary list */
 .stop-diary {
@@ -2770,6 +2851,11 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   .journey-facts > div:nth-child(n) { grid-column: 1 / -1; }
   .journey-sub { margin-bottom: 80px; }
   .sub-head { grid-template-columns: 1fr; gap: 8px; margin-bottom: 48px; }
+  /* Back to the single column with the head. Left at 2 / 3 the number would
+     open implicit tracks beside a one-track grid and drag the head off the
+     measure; the container query keeps sizing it against the head's own width,
+     which is now the full column. */
+  .journey-sub .sub-num { grid-column: 1; font-size: min(216px, calc(100cqw / 1.27)); }
   .diary-list li { grid-template-columns: 1fr; gap: 6px; }
   .sg-bookend--narrow { display: block; }
   .sg-bookend--narrow img { grid-column: auto; }
