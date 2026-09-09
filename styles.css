@@ -54,6 +54,16 @@
      irrelevant and the colour comes from whatever currentColor is where it is
      drawn. */
   --arrow-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='56' viewBox='0 0 44 56'%3E%3Cpath d='M24.0001 47.3071L40.3851 30.9221L43.2135 33.7505L22.0003 54.9637L0.787109 33.7505L3.61554 30.9221L20.0005 47.3071V-0.25H24.0001V47.3071Z' fill='%23000'/%3E%3C/svg%3E");
+  /* The bar the pause, the cross and the lightbox's own cross are all struck
+     with. A 45-degree arm of this height is this thick measured across itself,
+     the same as an upright bar of this width, so the marks carry the same
+     weight. Held at the root rather than on .tts-controls because the cross is
+     cut twice now -- once beside the transport, once under the lightbox. */
+  --tts-bar: 6px;
+  /* The cross's arm, corner to corner. At 45 degrees it spans len / sqrt(2)
+     each way, so 34px puts the mark in a 24px square -- the pause bars' own
+     height, which is what makes the two read as the same size. */
+  --tts-x-len: 34px;
 }
 html, body { background: var(--bg); color: var(--ink); font-family: var(--sans); }
 html { scroll-behavior: smooth; }
@@ -653,15 +663,22 @@ body.light .crail-link:hover { color: #000; }
 
 /* The + overlay and the journey lightbox both own the whole screen when
    open, and .lb-prev sits on exactly this gutter and centre line. Stand down
-   for both. */
+   for both. The read-aloud transport goes with them: it holds the bottom-left
+   gutter at a z-index above the lightbox, so it was the one thing still
+   showing through the deck. Reading is not stopped, only its controls are put
+   away -- the voice carries on under the pictures, and the transport is back
+   the moment the deck closes. */
 body:has(.menu-overlay.is-open) .crail,
 body:has(.menu-overlay.is-open) .crail-panel,
 body:has(.lightbox.is-open) .crail,
-body:has(.lightbox.is-open) .crail-panel {
+body:has(.lightbox.is-open) .crail-panel,
+body:has(.lightbox.is-open) .tts-controls {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
 }
+/* Matched to the rail's own stand-down so the two leave together. */
+.tts-controls { transition: opacity .3s ease, visibility .3s ease; }
 
 @media (max-width: 900px) {
   /* Not enough width to sit a card on the gutter without covering the
@@ -1587,14 +1604,6 @@ section { position: relative; }
      because that is the form a CSS triangle's borders take. */
   --tts-tri-w: 19px;
   --tts-tri-h: 12px;
-  /* The bar the pause and the cross are both struck with. A 45-degree arm of
-     this height is this thick measured across itself, the same as an upright
-     bar of this width, so the two marks carry the same weight. */
-  --tts-bar: 6px;
-  /* The cross's arm, corner to corner. At 45 degrees it spans len / sqrt(2)
-     each way, so 34px puts the mark in a 24px square -- the pause bars' own
-     height, which is what makes the two read as the same size. */
-  --tts-x-len: 34px;
 }
 .tts-toggle { grid-area: 2 / 1; }
 .tts-prev   { grid-area: 2 / 2; }
@@ -3112,7 +3121,16 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   background: rgba(0,0,0,0.94);
   z-index: 700;
   display: none;
-  padding: 80px var(--gutter);
+  /* The arrow turned on its side is as wide as it was tall: 14 strokes. Held
+     as a token so the flanks the picture has to keep clear of are measured off
+     the arrow itself rather than guessed -- re-cut the bar and the photo makes
+     room on its own. */
+  --lb-arrow-box: calc(var(--tts-bar) * 14);
+  --lb-arrow-air: 24px;
+  /* Side padding is the gutter the arrows sit on, plus the arrows, plus air.
+     The stage can then take all the room it is given and the picture still
+     stops short of them. */
+  padding: 80px calc(var(--gutter) + var(--lb-arrow-box) + var(--lb-arrow-air));
   box-sizing: border-box;
 }
 .lightbox.is-open { display: block; }
@@ -3139,25 +3157,114 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   cursor: pointer;
   z-index: 701;
 }
-.lb-close { right: var(--gutter); bottom: 24px; }
-.lb-close svg {
-  width: 28px; height: 28px;
-  fill: currentColor;
-  transform: rotate(45deg);
+/* Centred on the page rather than cornered: the stage's 80px bottom padding is
+   the band the image never reaches into, so the cross sits under the picture on
+   its centre line and reads as belonging to it. Wider than the other two
+   buttons only so the arms have room -- the mark itself is the transport's. */
+.lb-close {
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: 64px;
 }
-.lb-prev { left: var(--gutter); top: 50%; transform: translateY(-50%); }
-.lb-next { right: var(--gutter); top: 50%; transform: translateY(-50%); }
-.lb-prev svg, .lb-next svg { width: 36px; height: 36px; }
-.lb-prev:hover, .lb-next:hover, .lb-close:hover { opacity: .6; }
+.lb-x {
+  position: relative;
+  display: block;
+  width: 30px; height: 30px;
+  transition: transform .2s ease;
+}
+.lb-x::before,
+.lb-x::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--tts-x-len);
+  height: var(--tts-bar);
+  margin: calc(var(--tts-bar) / -2) 0 0 calc(var(--tts-x-len) / -2);
+  background: currentColor;
+}
+.lb-x::before { transform: rotate(45deg); }
+.lb-x::after  { transform: rotate(-45deg); }
+.lb-close:hover .lb-x { transform: scale(1.12); }
+@media (prefers-reduced-motion: reduce) {
+  .lb-x, .lb-close:hover .lb-x { transition: none; transform: none; }
+  .lb-arrow { transition: none; }
+  .lb-prev:hover .lb-arrow { transform: rotate(90deg); }
+  .lb-next:hover .lb-arrow { transform: rotate(-90deg); }
+}
+.lb-prev, .lb-next {
+  top: 50%; transform: translateY(-50%);
+  width: var(--lb-arrow-box); height: var(--lb-arrow-box);
+}
+.lb-prev { left: var(--gutter); }
+.lb-next { right: var(--gutter); }
+/* The drawing is 44x56 on a 4-wide stem, so it measures 11 strokes across and
+   14 down. Sized in --tts-bar rather than in pixels, the arrow's line comes out
+   exactly as thick as the cross's arm -- 6px each -- and stays that way if the
+   bar is ever re-cut. Turned on the span, not the button, so the button keeps
+   the translate that centres it. */
+.lb-arrow {
+  display: block;
+  transition: transform .2s ease;
+  width: calc(var(--tts-bar) * 11);
+  height: calc(var(--tts-bar) * 14);
+  background-color: currentColor;
+  -webkit-mask: var(--arrow-down) no-repeat center / contain;
+  mask: var(--arrow-down) no-repeat center / contain;
+}
+/* Turned before it is moved: the translate is written first so it acts in the
+   page's frame, not in the arrow's rotated one -- written the other way round
+   the prev arrow would slide up the screen instead of leftward. */
+.lb-prev .lb-arrow { transform: rotate(90deg); }
+.lb-next .lb-arrow { transform: rotate(-90deg); }
+/* Leans the way it is about to take you, the same tell the transport's own
+   paragraph jumps give. One stroke's worth of travel -- 2px reads on a 38px
+   icon but vanishes under an arrow this size, so the move is scaled to the
+   mark. Fading was the wrong signal here: it made the way forward fainter the
+   moment you reached for it. */
+.lb-prev:hover .lb-arrow { transform: translateX(calc(var(--tts-bar) * -1)) rotate(90deg); }
+.lb-next:hover .lb-arrow { transform: translateX(var(--tts-bar)) rotate(-90deg); }
+/* Above the picture, on the same centre line as the cross below it, so the two
+   pieces of chrome bracket the image instead of sitting in its corners -- and
+   so the count is clear of the read-aloud transport, which holds the bottom-left
+   gutter whenever a chapter is being read. */
 .lb-counter {
   position: fixed;
-  left: var(--gutter);
-  bottom: 32px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: .2em;
+  left: 50%;
+  top: 32px;
+  transform: translateX(-50%);
+  /* .article-body's ramp rather than the tracked-out mono it was set in, so the
+     count is spoken in the same voice as the prose the pictures sit in and not
+     as instrument chrome. Held back in tone, though: it labels the picture, it
+     does not compete with it. */
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(20px, 1.7vw, 26px);
+  line-height: 1.35;
+  letter-spacing: -0.005em;
   color: rgba(255,255,255,.6);
   z-index: 701;
+}
+/* Below this the flanks cost more than they are worth: gutter + arrow + air on
+   both sides takes better than half a phone's width, and the picture is what
+   the deck is for. So the three controls come off the sides and form one row
+   under the image -- prev, cross, next -- which is the shape the read-aloud
+   transport already takes at the other corner. Sizes are untouched, only where
+   they sit, so the arrow's line and the cross's arm stay the same weight. */
+@media (max-width: 600px) {
+  .lightbox { padding: 72px var(--gutter) 110px; }
+  .lb-prev, .lb-next {
+    top: auto;
+    /* Centre-line of the row, which the 48px-tall cross sitting at 24px puts
+       at 48px up: drop the arrow half its own height below that. */
+    bottom: calc(48px - var(--lb-arrow-box) / 2);
+    transform: none;
+  }
+  /* Half the cross's 64px box, one gap, then the arrow's own width. */
+  .lb-prev { left: 50%;  margin-left:  calc(-32px - 16px - var(--lb-arrow-box)); }
+  .lb-next { right: 50%; margin-right: calc(-32px - 16px - var(--lb-arrow-box)); }
+  .lb-counter { top: 24px; }
 }
 .lb-clickable { cursor: pointer; }
 
