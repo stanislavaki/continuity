@@ -2702,22 +2702,15 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
      no free space at all: it resolves to 0px, every .stop with it, and the
      photographs inside them are then pinned at width 0 and never seen. */
   #sculpture-trip .stop-lead[data-lead-for] { grid-column: 1; }
-  #sculpture-trip .stop-caps {
-    grid-column: 1;
-    /* On desktop the four accounts have the right half of the grid to
-       themselves and the photographs pass beside them. Stacked, they would pass
-       over them instead — so the clearance that was in the row has to be made
-       in the column, and it has to be bought twice over. The lead photograph
-       above fades out across the second half of the gap to the next beat, so
-       every screenful added here pushes that beat down as well and buys only
-       half a screenful of quiet. What is enough therefore rises with the
-       viewport: 180vh clears it at 375px, 200vh at 320 where the passage grows
-       taller than the screen, and 240vh at the top of this range, where a
-       full-measure photograph is 900px wide and nearly a screen tall. Take the
-       widest, since below it the lead is still a few percent up as the reading
-       starts. */
-    margin: 240vh 0 80vh;
-  }
+  /* Only the column. The clearance around the accounts is already read off the
+     viewport rather than off the grid — the photographs cross a full-width hem,
+     so nothing in either layout can stand beside them and the gap either side
+     has to be bought in time — and the same 100vh/80vh holds here. The spare
+     narrows as the screen does, since the passage grows by wrapping while the
+     clearance is a fixed count of screens: 330/410px at 900, 140/140 at 375,
+     and at 320×700, where 814px of text has to pass a 700px screen, 120px
+     before and 50px after. Thin at the bottom end, but never crossed. */
+  #sculpture-trip .stop-caps { grid-column: 1; }
   #sculpture-trip .map-meta {
     left: 12px;
     right: 12px;
