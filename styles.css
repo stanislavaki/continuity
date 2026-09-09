@@ -1570,10 +1570,36 @@ section { position: relative; }
   left: 24px;
   bottom: 24px;
   z-index: 950;
-  display: inline-flex;
+  /* Two rows, with the play button in the corner of both: the exit opens above
+     it and the paragraph jumps open to its right, so the one control that is
+     always there never moves and stays on the gutter it was aligned to. A grid
+     rather than a row because the exit has to sit on the toggle's own column,
+     and because anchoring at `bottom` means the second row grows upward. */
+  display: inline-grid;
+  grid-template-columns: auto auto auto;
   align-items: center;
+  justify-items: center;
   gap: 0;
+  /* The one triangle every mark in this cluster is cut from: the play button is
+     a single one, the paragraph jumps are two of it side by side. Held here so
+     the three cannot drift apart -- they had, the jumps having been drawn at
+     11x16 against the play triangle's 19x24. --tts-tri-h is the half-height,
+     because that is the form a CSS triangle's borders take. */
+  --tts-tri-w: 19px;
+  --tts-tri-h: 12px;
+  /* The bar the pause and the cross are both struck with. A 45-degree arm of
+     this height is this thick measured across itself, the same as an upright
+     bar of this width, so the two marks carry the same weight. */
+  --tts-bar: 6px;
+  /* The cross's arm, corner to corner. At 45 degrees it spans len / sqrt(2)
+     each way, so 34px puts the mark in a 24px square -- the pause bars' own
+     height, which is what makes the two read as the same size. */
+  --tts-x-len: 34px;
 }
+.tts-toggle { grid-area: 2 / 1; }
+.tts-prev   { grid-area: 2 / 2; }
+.tts-next   { grid-area: 2 / 3; }
+.tts-exit   { grid-area: 1 / 1; }
 body.dark  .tts-controls { color: #fff; }
 body.light .tts-controls { color: #000; }
 /* Line the play triangle up with the left edge of the chapter rail's bars. The
@@ -1612,6 +1638,12 @@ body.light .tts-controls { color: #000; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* Both drawn 10px back towards the play button. Shifted rather than closed up
+     with the column gap, because the gap sets the space between these two as
+     well and only the space before them was wanted -- and because moving them
+     in the layout would drag the grid's tracks with them. */
+  position: relative;
+  left: -10px;
   width: 0;
   height: 64px;
   padding: 0;
@@ -1620,7 +1652,10 @@ body.light .tts-controls { color: #000; }
   opacity: 0;
   transform: scale(.6);
   background: transparent;
-  color: #fff;
+  /* From the cluster, like the play button and the exit -- these two were left
+     hard-coded white and so stayed white over the light sections while the
+     other two turned black. Every mark here is drawn out of currentColor. */
+  color: inherit;
   border: none;
   cursor: pointer;
   pointer-events: none;
@@ -1634,11 +1669,13 @@ body.light .tts-controls { color: #000; }
 .tts-next .tts-icon {
   position: relative;
   display: block;
-  width: 24px;
-  height: 24px;
+  /* Exactly two triangles wide and one tall, so the pair stands the same height
+     as the play button's single one and no taller. */
+  width: calc(var(--tts-tri-w) * 2);
+  height: calc(var(--tts-tri-h) * 2);
   transition: transform .2s ease;
 }
-/* Built from the play triangle, doubled — next = ▶▶, prev = ◀◀ (flipped) */
+/* Literally the play triangle, doubled — next = ▶▶, prev = ◀◀ (flipped) */
 .tts-next .tts-icon::before,
 .tts-next .tts-icon::after {
   content: "";
@@ -1646,12 +1683,12 @@ body.light .tts-controls { color: #000; }
   top: 50%;
   transform: translateY(-50%);
   width: 0; height: 0;
-  border-left: 11px solid currentColor;
-  border-top: 8px solid transparent;
-  border-bottom: 8px solid transparent;
+  border-left: var(--tts-tri-w) solid currentColor;
+  border-top: var(--tts-tri-h) solid transparent;
+  border-bottom: var(--tts-tri-h) solid transparent;
 }
-.tts-next .tts-icon::before { left: 1px; }
-.tts-next .tts-icon::after  { left: 12px; }
+.tts-next .tts-icon::before { left: 0; }
+.tts-next .tts-icon::after  { left: var(--tts-tri-w); }
 .tts-prev .tts-icon::before,
 .tts-prev .tts-icon::after {
   content: "";
@@ -1659,23 +1696,86 @@ body.light .tts-controls { color: #000; }
   top: 50%;
   transform: translateY(-50%);
   width: 0; height: 0;
-  border-right: 11px solid currentColor;
-  border-top: 8px solid transparent;
-  border-bottom: 8px solid transparent;
+  border-right: var(--tts-tri-w) solid currentColor;
+  border-top: var(--tts-tri-h) solid transparent;
+  border-bottom: var(--tts-tri-h) solid transparent;
 }
-.tts-prev .tts-icon::before { right: 1px; }
-.tts-prev .tts-icon::after  { right: 12px; }
+.tts-prev .tts-icon::before { right: 0; }
+.tts-prev .tts-icon::after  { right: var(--tts-tri-w); }
 .tts-prev:hover .tts-icon { transform: translateX(-2px); }
 .tts-next:hover .tts-icon { transform: translateX(2px); }
+/* The exit cross — two bars of the same stock the pause bars are cut from,
+   crossed. Drawn rather than set as a glyph so it keeps its weight against the
+   triangles beside it at any size. */
+/* Sized to hold the rotated arms: they reach len / sqrt(2) from the centre,
+   plus half the stroke turning the corner. */
+.tts-exit .tts-icon { position: relative; display: block; width: 30px; height: 30px; transition: transform .2s ease; }
+.tts-exit .tts-icon::before,
+.tts-exit .tts-icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--tts-x-len);
+  height: var(--tts-bar);
+  margin: calc(var(--tts-bar) / -2) 0 0 calc(var(--tts-x-len) / -2);
+  background: currentColor;
+}
+.tts-exit .tts-icon::before { transform: rotate(45deg); }
+.tts-exit .tts-icon::after  { transform: rotate(-45deg); }
+.tts-exit:hover .tts-icon { transform: scale(1.12); }
+/* Set apart only once they are out. Carried on the open state rather than on
+   the grid itself so the collapsed tracks do not reserve gaps between three
+   buttons of which only one is showing -- and so the play button, which owns
+   the first column, cannot be pushed off the gutter it is aligned to. */
+.tts-controls.is-audio:not(:has(.tts-toggle[data-state="idle"])) {
+  column-gap: 12px;
+}
 .tts-controls.is-audio:not(:has(.tts-toggle[data-state="idle"])) .tts-prev,
 .tts-controls.is-audio:not(:has(.tts-toggle[data-state="idle"])) .tts-next {
-  width: 34px;
+  width: calc(var(--tts-tri-w) * 2 + 6px);
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+/* The exit collapses upward rather than sideways: it owns a row of its own, so
+   what has to go to nothing when there is nothing to exit is its height, not
+   its width. Otherwise the cluster would reserve an empty row above the
+   transport whenever the page is idle. */
+.tts-exit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(.6);
+  background: transparent;
+  color: inherit;
+  border: none;
+  cursor: pointer;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: height .24s cubic-bezier(.22, 1, .36, 1),
+              transform .24s cubic-bezier(.22, 1, .36, 1),
+              opacity .18s ease-out;
+  transition-delay: .08s;   /* last of the three to arrive */
+  /* Sits just clear of the transport's row -- close enough to read as this
+     cluster's way out rather than as a fourth, separate control, but not so
+     close that it crowds the play button now the cross is drawn at full
+     weight. */
+  margin-bottom: -2px;
+}
+.tts-controls.is-audio:not(:has(.tts-toggle[data-state="idle"])) .tts-exit {
+  height: 56px;
   opacity: 1;
   transform: scale(1);
   pointer-events: auto;
 }
 @media (prefers-reduced-motion: reduce) {
-  .tts-prev, .tts-next { transition: none; transform: none; }
+  .tts-prev, .tts-next, .tts-exit { transition: none; transform: none; }
 }
 /* play triangle (idle / paused) */
 .tts-toggle[data-state="idle"] .tts-icon::before,
@@ -1685,9 +1785,9 @@ body.light .tts-controls { color: #000; }
   top: 50%; left: 4px;
   transform: translateY(-50%);
   width: 0; height: 0;
-  border-left: 19px solid currentColor;
-  border-top: 12px solid transparent;
-  border-bottom: 12px solid transparent;
+  border-left: var(--tts-tri-w) solid currentColor;
+  border-top: var(--tts-tri-h) solid transparent;
+  border-bottom: var(--tts-tri-h) solid transparent;
 }
 /* pause bars (playing) */
 .tts-toggle[data-state="playing"] .tts-icon::before,
@@ -1695,7 +1795,7 @@ body.light .tts-controls { color: #000; }
   content: "";
   position: absolute;
   top: 1px; bottom: 1px;
-  width: 6px;
+  width: var(--tts-bar);
   background: currentColor;
   animation: tts-pulse 1.4s ease-in-out infinite;
 }

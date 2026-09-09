@@ -3097,7 +3097,11 @@ function initAudioEngine(btn, setState, manifest) {
   if (prevBtn) prevBtn.addEventListener('click', () => { if (active) playSection(Math.max(0, idx - 1)); });
   if (nextBtn) nextBtn.addEventListener('click', () => { if (active && idx < sections.length - 1) playSection(idx + 1); });
 
-  // Esc exits playback mode: stop, clear the highlight, back to idle.
+  // Esc exits playback mode: stop, clear the highlight, back to idle. The cross
+  // beside the transport does the same thing by hand -- Esc is the only way out
+  // otherwise, and it is not a key anyone finds without being told.
+  const exitBtn = controls && controls.querySelector('.tts-exit');
+  if (exitBtn) exitBtn.addEventListener('click', stop);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && btn.dataset.state !== 'idle') stop();
   });
@@ -3212,9 +3216,14 @@ function initSpeechEngine(btn, setState) {
     else if (s === 'playing') { synth.pause();  stopKick(); setState('paused'); }
     else if (s === 'paused')  { synth.resume(); startKick(); setState('playing'); }
   });
-  // Esc exits read-aloud mode.
+  // Leaving read-aloud mode, by the cross beside the transport or by Esc. One
+  // function so the two cannot drift apart.
+  function exit() { synth.cancel(); stopKick(); setState('idle'); }
+  const exitBtn = btn.closest('.tts-controls') &&
+                  btn.closest('.tts-controls').querySelector('.tts-exit');
+  if (exitBtn) exitBtn.addEventListener('click', () => { if (btn.dataset.state !== 'idle') exit(); });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && btn.dataset.state !== 'idle') { synth.cancel(); stopKick(); setState('idle'); }
+    if (e.key === 'Escape' && btn.dataset.state !== 'idle') exit();
   });
 
   window.addEventListener('beforeunload', () => synth.cancel());
@@ -3234,6 +3243,12 @@ if (document.readyState === 'loading') {
     <span class="tts-icon" aria-hidden="true"></span>
   </button>
   <button class="tts-next" type="button" aria-label="Next paragraph">
+    <span class="tts-icon" aria-hidden="true"></span>
+  </button>
+  <!-- Leaves reading mode altogether, which until now only Esc could do -- and
+       Esc is not a key anyone finds without being told. Revealed with the
+       paragraph jumps, since there is nothing to leave until playback starts. -->
+  <button class="tts-exit" type="button" aria-label="Exit read aloud">
     <span class="tts-icon" aria-hidden="true"></span>
   </button>
 </div>
