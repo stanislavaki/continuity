@@ -2613,11 +2613,25 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 
 /* The four accounts as one passage, in the right half, scrolling normally
    through the middle of the sequence — row 6 sits between the third and fourth
-   photographs, which is the middle of the six. */
+   photographs, which is the middle of the six.
+
+   The margins are the clearance. The photographs cross the bottom of the screen
+   on a hem that runs the full width, so there is no column the text can hold to
+   keep out of their way — the only way past each other is in time. These two
+   margins open the column far enough either side of the accounts that the
+   photograph before has left the screen before the first line arrives and the
+   one after has not yet entered when the last line leaves. They are read off the
+   viewport because that is what the clearance is made of: a photograph needs a
+   screen's width to cross, and the block needs a screen's height to pass.
+
+   They are uneven because the boxes either side are: the lead plate above is
+   tall and sits right on the accounts, while the stop below carries a margin of
+   its own, so the top has further to push to buy the same clearance. Measured at
+   1111×889 this leaves about 190px spare at each end. */
 #sculpture-trip .stop-caps {
   grid-column: 5 / span 4;
   grid-row: 6;
-  margin: 0;
+  margin: 100vh 0 80vh;
   align-self: center;
   pointer-events: auto;
   display: flex;
@@ -2625,13 +2639,14 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   gap: 1.2em;
 }
 
-/* The photographs are pinned and faded from the script, which holds them with
-   position: fixed and writes nothing but opacity as you scroll. Everything here
-   is the resting state it starts from — in the flow, at full opacity — so the
-   section reads exactly as it did before if the script never runs. */
+/* The photographs are carried across the bottom of the screen by the script,
+   which holds them with position: fixed and writes nothing but a translate as
+   you scroll. Everything here is the resting state it starts from — in the flow,
+   untransformed — so the section reads exactly as it did before if the script
+   never runs. */
 #sculpture-trip .stop figure,
 #sculpture-trip .stop-lead img {
-  will-change: opacity;
+  will-change: transform;
 }
 @media (prefers-reduced-motion: reduce) {
   /* Nothing is pinned and nothing fades: the photographs simply scroll. The
@@ -2642,6 +2657,7 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
     opacity: 1 !important;
     visibility: visible !important;
     width: auto !important;
+    transform: none !important;
     will-change: auto;
   }
   #sculpture-trip .stop,

@@ -2009,15 +2009,29 @@ function stFadeInit() {
   const stops = document.querySelector('#sculpture-trip .journey-stops');
   if (!stops) return null;
   // Each photograph's window reaches halfway to its neighbours, so the windows
-  // tile the section without overlapping however the rows are spaced. Within its
-  // own window it fades up over the first 30%, holds for the middle 40%, and
-  // fades out over the last 30%.
-  const FADE_IN = 0.30, HOLD = 0.40;
-  // Where each comes to rest, as a fraction of the viewport height from the top.
-  // They differ so the sequence keeps the varied placement the grid gives it in
-  // the other axis — the wide plates sit high, the narrow ones lower — and each
-  // is clamped so nothing is ever pinned off the screen.
-  const SLOT = { s1: 0.12, s2: 0.24, l3: 0.16, s3: 0.28, l4: 0.14, s4: 0.26 };
+  // tile the section without overlapping however the rows are spaced. That window
+  // is now the length of one traverse: over it the photograph crosses the screen
+  // once, right to left.
+  // The photographs no longer come to rest anywhere. They ride a single line
+  // across the bottom of the screen, entering from the right and leaving at the
+  // left, so the whole sequence reads as one procession passing the globe rather
+  // than as six plates being shown in turn. BOTTOM is the hem they sit on.
+  const BOTTOM = 200;
+  // How far each traverse reaches past its own tiled window. At 1 the windows
+  // tile exactly and the screen is only ever crossed by one photograph; above 1
+  // consecutive ones overlap, so a departing photograph is still leaving as the
+  // next arrives.
+  const SPREAD = 1;
+  // The longest a single crossing may take, as a fraction of the viewport, taken
+  // symmetrically either side of the cue. Without a ceiling the windows tile the
+  // section edge to edge — every photograph's run reaches halfway to its
+  // neighbours, so widening the column to make room for something else just
+  // stretches the two photographs around it and the screen is never clear. The
+  // ceiling is what lets a gap in the column stay a gap, which is how the
+  // accounts get a stretch of scroll with no photograph crossing them. It also
+  // squares each run on its own cue, so a photograph is mid-screen exactly as
+  // the map arrives at its leg rather than a little past it.
+  const MAX_RUN = 1.0;
   // How far after its own box a photograph waits before it begins, as a
   // fraction of the viewport. The box is what cues the globe — the
   // IntersectionObserver further down watches these same boxes to fly the map —
@@ -2037,12 +2051,14 @@ function stFadeInit() {
     const art = box.matches('.stop-lead') ? box.querySelector('img') : box.querySelector('figure');
     if (!art) return;
     const key = box.dataset.stop ? 's' + box.dataset.stop : 'l' + box.dataset.leadFor;
-    items.push({ box, art, slot: SLOT[key] !== undefined ? SLOT[key] : 0.18,
+    items.push({ box, art,
                  cue: CUE[key] !== undefined ? CUE[key] : 0,
-                 top: 0, h: 0, anchor: 0, cueAt: 0, a: -1, b: -1, lastOp: -1 });
+                 top: 0, h: 0, anchor: 0, cueAt: 0, a: -1, b: -1,
+                 lastX: null, lastOn: null });
   });
   if (!items.length) return null;
-  return { items, fadeIn: FADE_IN, hold: HOLD, docH: -1, vh: -1, w: -1,
+  return { items, bottom: BOTTOM, spread: SPREAD, maxRun: MAX_RUN,
+           docH: -1, vh: -1, w: -1,
            reduced: window.matchMedia('(prefers-reduced-motion: reduce)') };
 }
 
@@ -2055,9 +2071,14 @@ function stFadeMeasure(st) {
   st.items.forEach(it => {
     it.art.style.position = '';
     it.art.style.top = '';
+    it.art.style.bottom = '';
     it.art.style.left = '';
     it.art.style.width = '';
+    it.art.style.transform = '';
+    it.art.style.visibility = '';
     it.box.style.height = '';
+    it.lastX = null;
+    it.lastOn = null;
   });
 
   // Pass two — read. The box gives the document position that times the
@@ -2078,16 +2099,29 @@ function stFadeMeasure(st) {
   });
   st.items.sort((p, q) => p.cueAt - q.cueAt);
 
-  // Pass three — hold the boxes open at the height they just had, and pin the
-  // photographs to the viewport at their own resting places.
+  // Pass three — hold the boxes open at the height they just had, and stand the
+  // photographs on the hem at the bottom of the screen. Only the left edge is
+  // left to the scroll: each is parked at left 0 and moved by a translate, so a
+  // scroll writes a transform the compositor can take and never a layout.
   const vh = window.innerHeight;
+  const vw = document.documentElement.clientWidth;
   st.items.forEach(it => {
     it.box.style.height = it.h + 'px';
-    const rest = Math.max(vh * 0.06, Math.min(vh * it.slot, vh - it.artH - vh * 0.06));
+    // The grid's width is only a starting point now that the photographs are off
+    // the grid: a tall one is brought down until it clears the hem and the top of
+    // the screen both, keeping its own proportions.
+    const room = vh - st.bottom - vh * 0.06;
+    const w = it.artH > room ? it.artW * room / it.artH : it.artW;
+    it.travelW = w;
+    // The run: in from just past the right edge, out to just past the left.
+    it.from = vw;
+    it.to = -w;
     it.art.style.position = 'fixed';
-    it.art.style.top = rest + 'px';
-    it.art.style.left = it.artL + 'px';
-    it.art.style.width = it.artW + 'px';
+    it.art.style.top = 'auto';
+    it.art.style.bottom = st.bottom + 'px';
+    it.art.style.left = '0px';
+    it.art.style.width = w + 'px';
+    it.art.style.visibility = 'hidden';
   });
 
   // Each window reaches halfway to its neighbours' beats; the first and last
@@ -2099,11 +2133,22 @@ function stFadeMeasure(st) {
     const up   = prev !== null ? (it.cueAt - prev) / 2 : (next !== null ? (next - it.cueAt) / 2 : vh);
     const down = next !== null ? (next - it.cueAt) / 2 : (prev !== null ? (it.cueAt - prev) / 2 : vh);
     // A photograph given a wait must not merely peak late, it must not have
-    // begun: without this clamp the window still opens halfway back towards the
+    // begun: without a floor the window still opens halfway back towards the
     // previous beat, which for the first two is before the globe has even been
-    // told to move. Clamped, nothing shows until the wait is served.
-    it.a = Math.max(it.cueAt - up, it.anchor + it.cue * vh);
-    it.b = it.cueAt + down;
+    // told to move. The floor is the box itself — the box is what cues the map,
+    // so opening on it is the earliest a waiting photograph may start.
+    //
+    // It applies only where there is a wait. A photograph cued on its own box has
+    // anchor and cueAt at the same point, so flooring it at either collapses the
+    // whole first half of its run and it enters late and crosses at double speed.
+    it.a = it.cue > 0 ? Math.max(it.cueAt - up * st.spread, it.anchor)
+                      : it.cueAt - up * st.spread;
+    it.b = it.cueAt + down * st.spread;
+    // Trimmed back to the ceiling, from the cue outwards, so a run never grows
+    // to fill whatever room the column happens to leave around it.
+    const half = st.maxRun * vh / 2;
+    it.a = Math.max(it.a, it.cueAt - half);
+    it.b = Math.min(it.b, it.cueAt + half);
   });
 
   st.docH = document.documentElement.scrollHeight;
@@ -2132,25 +2177,30 @@ function stFade(scrollTop) {
     const span = it.b - it.a;
     const t = span > 0 ? (eye - it.a) / span : 0;
 
-    let op = 0;
-    if (t > 0 && t < 1) {
-      if (t < st.fadeIn) op = t / st.fadeIn;
-      else if (t < st.fadeIn + st.hold) op = 1;
-      else op = (1 - t) / (1 - st.fadeIn - st.hold);
-      // Smoothed at both ends so the ramps arrive and leave rather than
-      // starting and stopping flat.
-      op = op * op * (3 - 2 * op);
-    }
+    // Off the screen at both ends of its own window, so there is nothing to fade:
+    // the photograph is simply not there yet, or has already gone past. Position
+    // maps straight off the scroll with no easing — the traverse is scrubbed, and
+    // a curve here would read as the picture lagging the wheel.
+    const on = t > 0 && t < 1;
+    const x = on ? Math.round(it.from + t * (it.to - it.from)) : null;
 
-    const q = Math.round(op * 100) / 100;
-    if (q !== it.lastOp) {
-      it.art.style.opacity = q;
-      // A photograph at nothing is still a fixed box sitting over the page, so
-      // it has to be taken out of the way as well as out of sight — otherwise
-      // six of them would be quietly swallowing clicks on every other section.
-      it.art.style.visibility = q > 0 ? 'visible' : 'hidden';
-      it.art.style.pointerEvents = q > 0.5 ? 'auto' : 'none';
-      it.lastOp = q;
+    // Whether it is on the screen at all, and where it is, change on their own
+    // schedules — a photograph is off for most of the section and moving for all
+    // of the rest — so they are tracked apart. Folding them together is what
+    // makes an off photograph indistinguishable from one that has never been
+    // drawn, and leaves all six stacked on the hem until the first traverse.
+    if (on !== it.lastOn) {
+      // A photograph out of its window is still a fixed box sitting over the
+      // page, so it has to be taken out of the way as well as out of sight —
+      // otherwise six of them would be quietly swallowing clicks on every other
+      // section.
+      it.art.style.visibility = on ? 'visible' : 'hidden';
+      it.art.style.pointerEvents = on ? 'auto' : 'none';
+      it.lastOn = on;
+    }
+    if (on && x !== it.lastX) {
+      it.art.style.transform = 'translateX(' + x + 'px)';
+      it.lastX = x;
     }
   }
 }
