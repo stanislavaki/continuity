@@ -2700,6 +2700,23 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
     margin-top: 30vh;
   }
   #sculpture-trip .stop[data-stop="1"] { margin-top: 0; }
+  /* The single column has one track, so every span written for the eight-column
+     desktop grid has to come back to it. Left as they were, the leads and the
+     caption block start at lines 2 and 5 and run four to six tracks wide, which
+     opens implicit columns 2–8 to the right of it. Those tracks are sized to
+     their content and take the whole measure, so the one 1fr track is left with
+     no free space at all: it resolves to 0px, every .stop with it, and the
+     photographs inside them are then pinned at width 0 and never seen. */
+  #sculpture-trip .stop-lead[data-lead-for] { grid-column: 1; }
+  /* Only the column. The clearance around the accounts is already read off the
+     viewport rather than off the grid — the photographs cross a full-width hem,
+     so nothing in either layout can stand beside them and the gap either side
+     has to be bought in time — and the same 100vh/80vh holds here. The spare
+     narrows as the screen does, since the passage grows by wrapping while the
+     clearance is a fixed count of screens: 330/410px at 900, 140/140 at 375,
+     and at 320×700, where 814px of text has to pass a 700px screen, 120px
+     before and 50px after. Thin at the bottom end, but never crossed. */
+  #sculpture-trip .stop-caps { grid-column: 1; }
   #sculpture-trip .map-meta {
     left: 12px;
     right: 12px;
