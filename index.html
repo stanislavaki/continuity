@@ -2498,7 +2498,21 @@ function stFade(scrollTop) {
     return m ? m[1] : null;
   }
 
-  const SELECTOR = '[style*="background-image"], figure > img';  // scoped to #journey by collect()
+  // What the deck holds, scoped to #journey by collect(). Three shapes, because
+  // the journey is laid out three ways: inline background-image plates, framed
+  // photographs, and the sculpting gallery's tiles -- which sit bare in
+  // .sg-canvas rather than in figures, because the scroll gallery writes their
+  // position onto the img itself and a wrapper would have to be moved instead.
+  // That is why J-2 to J-7 were missing while the two bookends either side of
+  // them were there: they are the same run of photographs, only differently
+  // held.
+  //
+  // Kept out, and by shape rather than by name so nothing has to be maintained:
+  // the moving plate at the Rhine-Main stop is a <video>, and footage has no
+  // frame in a deck of stills that anyone chose; the map's sculpture PNG is an
+  // <img> but hangs off an aside, not a figure, and it is a reveal rather than
+  // a picture of the journey. Neither matches any of the three.
+  const SELECTOR = '[style*="background-image"], figure > img, img.sg-tile';
 
   // Every visual image in the journey section, in document order
   function collect() {
