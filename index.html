@@ -743,6 +743,11 @@ function onScroll() {
     const dark = classes.includes('dark-section') || classes.includes('hero') || classes.includes('quote-block') || classes.includes('math') || classes.includes('topo') || classes.includes('math-body-follow') || classes.includes('intro');
     document.body.classList.toggle('dark', dark);
     document.body.classList.toggle('light', !dark);
+    // The two ends of the page, where the chapter rail has nothing to report:
+    // before the first chapter and after the last. Read off the same section
+    // this pass has already found rather than measured again.
+    document.body.classList.toggle('at-ends',
+      classes.includes('hero') || classes.includes('site-footer'));
   }
 
   // Active timeline
@@ -1729,9 +1734,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
     containerId: 'globeMap',
     sectionId: 'sculpture-trip',
     // Opens on the whole globe with Italy dead centre; the first stop then
-    // dives six zoom levels down onto Carrara. `fly` marks that descent so it
-    // arcs rather than snapping — see setActive.
-    overview: { center: [10.04, 44.04], zoom: 1.35, fly: true },
+    // dives six zoom levels down onto Carrara. That descent used to be marked
+    // `fly` so it arced rather than snapping; every leg is arced now — see the
+    // van Wijk curve in makeScrub — so the flag has gone.
+    overview: { center: [10.04, 44.04], zoom: 1.35 },
     // The Frankfurt stop is the sculpture itself, not the city centre: OSM node
     // 7147230422 (Max Bill, 1986, granite, 4.5 m, 80 t) at Taunusanlage 12.
     // Roughly a kilometre from the old placeholder — invisible at zoom 7,
@@ -1757,9 +1763,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // captions float over the map rather than sitting beside it, so there is
       // no column to steer clear of. (The old 0.13 deg offset was framing for
       // zoom 7.6; at this depth the viewport spans about 0.007 deg, so it would
-      // have thrown the marker nine screens off.) `fly` because 5.6 -> 18 is far
-      // too much ground for an ease to cover.
-      { center: [8.667519, 50.113137], zoom: 18, past: 2, flow: -1, glow: 2, fly: true },  // 4 Frankfurt · Taunusanlage 12
+      // have thrown the marker nine screens off.)
+      { center: [8.667519, 50.113137], zoom: 18, past: 2, flow: -1, glow: 2 },  // 4 Frankfurt · Taunusanlage 12
     ],
   };
 
@@ -1807,7 +1812,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       },
     });
 
-    let started = false, inView = false, raf = 0, activeStop = -1;
+    let started = false, inView = false, raf = 0;
     let currentState = { center: cfg.overview.center, zoom: cfg.overview.zoom, past: 0, flow: -1, glow: -1 };
 
     function applyState(st) {
@@ -1819,32 +1824,166 @@ document.querySelectorAll('.facts').forEach((facts) => {
       paintFlow(0);
     }
 
-    // Index 0 (and the initial -1) mean the overview; 1..n are the narrative
-    // stops. Either end can be marked `fly`.
-    const stateAt = (n) => (n >= 1 && n <= cfg.states.length) ? cfg.states[n - 1] : null;
-    const isDeep = (n) => (n <= 0) ? !!cfg.overview.fly : !!(stateAt(n) || {}).fly;
+    // --- scroll-scrubbed camera ------------------------------------------
+    // The camera. Centre and zoom are read off the scroll offset every frame,
+    // which is the whole point: the globe is in precisely the same place at a
+    // given scroll position whether you arrived going down or coming back up,
+    // and there is never an animation in flight to be interrupted, outrun, or --
+    // as happened here -- left parked where the last cue dropped it.
+    const scrub = makeScrub();
+    map.stop();   // nothing may be easing when the first frame writes the camera
 
-    function setActive(i) {
-      if (i === activeStop) return;
-      const prev = activeStop;
-      activeStop = i;
-      const s = stateAt(i);
-      currentState = s
-        ? { center: s.center, zoom: s.zoom, past: s.past, flow: s.flow, glow: s.glow }
-        : { center: cfg.overview.center, zoom: cfg.overview.zoom, past: 0, flow: -1, glow: -1 };
-      if (started) {
-        // Two moves here cross a dozen zoom levels at once: the opening drop from
-        // the globe, and the closing dive onto Taunusanlage. easeTo interpolates
-        // straight through that, which reads as a snap — flyTo arcs out and back
-        // in. Checked at BOTH ends so scrolling back up climbs out the same way
-        // it came down; ordinary stop-to-stop hops keep the plain ease.
-        if (isDeep(i) || isDeep(prev)) {
-          map.flyTo({ center: currentState.center, zoom: currentState.zoom, duration: 3800, curve: 1.3, essential: true });
-        } else {
-          map.easeTo({ center: currentState.center, zoom: currentState.zoom, duration: 1600, essential: true });
+    function makeScrub() {
+      const RHO = 1.3;                     // the `curve` the timed flyTo was given
+      const cosh = (n) => (Math.exp(n) + Math.exp(-n)) / 2;
+      const sinh = (n) => (Math.exp(n) - Math.exp(-n)) / 2;
+      const tanh = (n) => sinh(n) / cosh(n);
+
+      // The web-mercator unit square. Panning is interpolated here rather than
+      // through map.project(), whose output is screen pixels and therefore moves
+      // with the very camera we are trying to compute.
+      const merc = (c) => {
+        const k = Math.sin(c[1] * Math.PI / 180);
+        return [(c[0] + 180) / 360, 0.5 - Math.log((1 + k) / (1 - k)) / (4 * Math.PI)];
+      };
+      const unmerc = (x, y) => [
+        x * 360 - 180,
+        (2 * Math.atan(Math.exp((0.5 - y) * 2 * Math.PI)) - Math.PI / 2) * 180 / Math.PI,
+      ];
+
+      // One leg of the track, as van Wijk & Nuij's (2003) smooth zoom-and-pan --
+      // the same curve flyTo runs on a timer, evaluated at a position we hand it
+      // instead of at a clock. It is parametrised by arc length, so equal scroll
+      // buys equal perceived movement even across the legs that cross a dozen
+      // zoom levels. That is what the old code was buying with `fly`: a straight
+      // lerp of centre and zoom over that range reads as a lurch out and a slam
+      // in, which is exactly what easeTo did to the two deep moves.
+      function leg(a, b, w0) {
+        const rho = RHO, rho2 = rho * rho;
+        const ma = merc(a.center), mb = merc(b.center);
+        const world = 512 * Math.pow(2, a.zoom);          // MapLibre's worldSize
+        const u1 = Math.hypot((mb[0] - ma[0]) * world, (mb[1] - ma[1]) * world);
+        const w1 = w0 / Math.pow(2, b.zoom - a.zoom);
+        const at = (u, scale) => ({
+          center: unmerc(ma[0] + (mb[0] - ma[0]) * u, ma[1] + (mb[1] - ma[1]) * u),
+          zoom: a.zoom + Math.log2(scale),
+        });
+        // Straight up or down with nowhere to travel: no arc to take, so ride the
+        // exponential. This is also the guard that keeps r() off a divide by zero.
+        if (!(u1 > 1e-6)) {
+          if (Math.abs(w1 - w0) < 1e-6) return () => at(0, 1);
+          const k = w1 < w0 ? -1 : 1;
+          const S = Math.abs(Math.log(w1 / w0)) / rho;
+          return (t) => at(0, 1 / Math.exp(k * rho * t * S));
         }
-        applyState(currentState);
+        const r = (i) => {
+          const n = (w1 * w1 - w0 * w0 + (i ? -1 : 1) * rho2 * rho2 * u1 * u1)
+                  / (2 * (i ? w1 : w0) * rho2 * u1);
+          return Math.log(Math.sqrt(n * n + 1) - n);
+        };
+        const r0 = r(0), S = (r(1) - r0) / rho;
+        // Degenerate geometry (the two keyframes coincide, or the arithmetic
+        // overflows): fall back to a plain interpolation rather than emitting NaN
+        // into the camera, which strands the map with no way back.
+        if (!isFinite(S) || Math.abs(S) < 1e-9)
+          return (t) => at(t, Math.pow(2, (b.zoom - a.zoom) * t));
+        return (t) => {
+          const k = t * S;
+          const w = cosh(r0) / cosh(r0 + rho * k);
+          const u = w0 * ((cosh(r0) * tanh(r0 + rho * k) - sinh(r0)) / rho2) / u1;
+          return at(u, 1 / w);
+        };
       }
+
+      // The track: the overview, then one keyframe per narrative stop. Its
+      // anchors are the very boxes the photographs are timed from, so the globe
+      // and the pictures are in step by construction rather than by tuning.
+      const keys = [{ center: cfg.overview.center, zoom: cfg.overview.zoom, past: 0, flow: -1, glow: -1 }]
+        .concat(cfg.states);
+      const stopsEl = section.querySelector('.journey-stops');
+      const boxes = [...section.querySelectorAll('.stop[data-stop], .stop-lead[data-lead-for]')];
+      // Each keyframe owns a span, not a point. Two of the four states are cued by
+      // a pair of boxes -- the lead plate and the stop that follows it -- and the
+      // stretch between a pair is where the camera stands still today: state 3's
+      // pair brackets the four accounts, which is the one place in the section
+      // the reader is reading rather than looking. Interpolating straight from
+      // one state's box to the next would drag the globe across that, so a state
+      // is HELD from its first box to its last and only travels in between.
+      let holds = [], legs = [], base = NaN, vh = -1, vw = -1, idx = -1;
+
+      function measure() {
+        const s = window.scrollY;
+        vh = window.innerHeight; vw = window.innerWidth;
+        // The scroll offset at which a box sits in the middle of the screen -- the
+        // same probe the photographs and the chapter rail are read against.
+        const mid = (el) => { const r = el.getBoundingClientRect(); return r.top + s + r.height / 2 - vh / 2; };
+        // The overview is held through the header and the column's own lead-in;
+        // the descent begins where the photographs do.
+        const stopsTop = stopsEl.getBoundingClientRect().top + s;
+        base = stopsTop;
+        holds = [[stopsTop, stopsTop]];
+        for (let i = 1; i < keys.length; i++) {
+          const own = boxes.filter((el) => +(el.dataset.stop || el.dataset.leadFor) === i);
+          if (!own.length) { const a = holds[i - 1][1] + vh; holds.push([a, a]); continue; }
+          holds.push([mid(own[0]), mid(own[own.length - 1])]);
+        }
+        // Strictly increasing, or a leg has a zero span to divide by.
+        for (let i = 0; i < holds.length; i++) {
+          if (i && holds[i][0] <= holds[i - 1][1]) holds[i][0] = holds[i - 1][1] + 1;
+          if (holds[i][1] < holds[i][0]) holds[i][1] = holds[i][0];
+        }
+        const w0 = Math.max(container.clientWidth, container.clientHeight) || vh;
+        legs = keys.slice(0, -1).map((k, i) => leg(k, keys[i + 1], w0));
+        idx = -1;              // re-apply the route state against the new track
+      }
+
+      function apply(scrollTop) {
+        if (!started) return;
+        // The track is held as absolute document offsets, and this section's
+        // absolute position is not fixed: the fluid grid above it is authored at
+        // a placeholder height and rewritten from its own scroll-dependent
+        // measurements, so #sculpture-trip genuinely sits at a different document
+        // offset on the way down than on the way back up. A track cached against
+        // that drifts, and a drifting track is indistinguishable from the latch
+        // this replaced. So the cheap probe -- where the column actually is right
+        // now -- is taken every frame, and the track is re-read the moment it
+        // moves. One rect per frame, which is what the closing reveal below
+        // already pays for the same reason.
+        if (base !== stopsEl.getBoundingClientRect().top + window.scrollY
+            || vh !== window.innerHeight || vw !== window.innerWidth) measure();
+        const last = holds.length - 1;
+        let cam, want;
+        if (scrollTop <= holds[0][1]) {
+          cam = keys[0]; want = 0;
+        } else if (scrollTop >= holds[last][0]) {
+          // Held on the last keyframe for the closing tail, which is where the
+          // reveal plays over it.
+          cam = keys[last]; want = last;
+        } else {
+          let i = 0;
+          while (i < last && scrollTop >= holds[i + 1][0]) i++;
+          if (scrollTop <= holds[i][1]) {
+            cam = keys[i]; want = i;          // inside this state's own hold
+          } else {
+            const t = (scrollTop - holds[i][1]) / (holds[i + 1][0] - holds[i][1]);
+            cam = legs[i](t);
+            // The route fill, the flowing segment and the glow are step-valued, so
+            // they change hands at the midpoint of a leg -- which is where the old
+            // observer handed over too, it having picked whichever box was nearest
+            // the middle of the screen.
+            want = t < 0.5 ? i : i + 1;
+          }
+        }
+        map.jumpTo({ center: cam.center, zoom: cam.zoom });
+        if (want !== idx) {
+          idx = want;
+          const k = keys[want];
+          currentState = { center: k.center, zoom: k.zoom, past: k.past, flow: k.flow, glow: k.glow };
+          applyState(currentState);
+        }
+      }
+
+      return { apply, invalidate: () => { base = NaN; } };
     }
 
     // Repaint the flowing segment's gradient for time ts. The band is sampled at
@@ -1872,6 +2011,12 @@ document.querySelectorAll('.facts').forEach((facts) => {
     function frame(ts) {
       raf = requestAnimationFrame(frame);
       if (!started) return;
+      // Read here rather than from a scroll listener: the page's scroll handler is
+      // not throttled, and a camera written per event would be written several
+      // times a frame and thrown away. This also needs no listener of its own --
+      // the loop is already running for exactly as long as the section is on
+      // screen, which is exactly as long as the camera matters.
+      scrub.apply(window.scrollY);
       if (currentState.flow >= 0 && !reduceMotion) {
         paintFlow(ts);
       }
@@ -1929,46 +2074,46 @@ document.querySelectorAll('.facts').forEach((facts) => {
       });
 
       started = true;
-      map.jumpTo({ center: currentState.center, zoom: currentState.zoom });
-      applyState(currentState);
+      scrub.apply(window.scrollY);
       if (inView) startAnim();
     });
 
-    // --- scroll wiring (same picking logic as before) ---
-    const stops = [...section.querySelectorAll('.stop[data-stop], .stop-lead[data-lead-for]')];
-    const intersecting = new Set();
-    let hasZoomedIn = false;
-    const stopIO = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) intersecting.add(e.target); else intersecting.delete(e.target); });
-      pickActive();
-    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
-    stops.forEach((s) => stopIO.observe(s));
-
-    function pickActive() {
-      if (intersecting.size === 0) { if (!hasZoomedIn) setActive(0); return; }
-      const vc = window.innerHeight / 2;
-      let bestEl = null, bestDist = Infinity;
-      intersecting.forEach((el) => {
-        const r = el.getBoundingClientRect();
-        const d = Math.abs((r.top + r.bottom) / 2 - vc);
-        if (d < bestDist) { bestDist = d; bestEl = el; }
-      });
-      if (bestEl) {
-        const idx = parseInt(bestEl.dataset.stop || bestEl.dataset.leadFor, 10);
-        if (idx > 0) { hasZoomedIn = true; setActive(idx); }
-      }
-    }
-
+    // --- scroll wiring ---
+    // There is no observer picking a stop any more. The camera is makeScrub's
+    // pure function of the scroll offset, evaluated from the animation loop, so
+    // nothing here decides where the globe is -- this observer only says whether
+    // the section is on screen at all, which is what gates the loop and the
+    // map's own sizing.
+    //
+    // What used to live here was a stop-picker over a band 10% of the viewport
+    // tall. It could not have driven a camera over a column this sparse: the six
+    // boxes put something in that band for only about 3,500px of the section's
+    // ~11,900, so for the other 70% -- the header run-up, the stretch across the
+    // accounts, the whole closing tail -- nothing was steering, and a landed
+    // flyTo simply stayed where it was. On the way back up that reads as the
+    // globe ignoring the scroll, which is the fault this replaces.
     const sectionIO = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
-        if (e.isIntersecting) { inView = true; map.resize(); startAnim(); }
-        else { inView = false; stopAnim(); hasZoomedIn = false; setActive(0); }
+        if (e.isIntersecting) {
+          inView = true;
+          map.resize();
+          // Put the camera where this scroll offset says before the first frame,
+          // so the section is never entered showing where it was last left.
+          scrub.invalidate();
+          scrub.apply(window.scrollY);
+          startAnim();
+        } else {
+          inView = false;
+          stopAnim();
+        }
       });
     }, { threshold: 0 });
     sectionIO.observe(section);
 
-    window.addEventListener('load', pickActive);
-    window.addEventListener('resize', () => { map.resize(); pickActive(); }, { passive: true });
+    window.addEventListener('resize', () => {
+      map.resize();
+      scrub.invalidate();
+    }, { passive: true });
   }
 
   function initJourney() {
@@ -2033,14 +2178,15 @@ function stFadeInit() {
   // the map arrives at its leg rather than a little past it.
   const MAX_RUN = 1.0;
   // How far after its own box a photograph waits before it begins, as a
-  // fraction of the viewport. The box is what cues the globe — the
-  // IntersectionObserver further down watches these same boxes to fly the map —
-  // so a photograph that starts on its box starts on top of the move it is
-  // meant to follow. The first two are the ones that matter: the globe's dive
-  // onto Carrara is a 3800ms flight down a dozen zoom levels, and the pull back
-  // out to the Atlantic is nearly as far. Holding these two back lets each land
-  // before its photograph arrives over it. The rest are cued on their boxes as
-  // before, their map moves being ordinary stop-to-stop eases.
+  // fraction of the viewport. The box is what anchors the globe — the scrubbed
+  // camera up in buildJourneyGlobe takes these same boxes as its keyframes, and
+  // reaches each one exactly as the box passes the middle of the screen — so a
+  // photograph cued on its box arrives on top of the move it is meant to follow
+  // rather than after it. The first two are the ones that matter: the descent
+  // onto Carrara crosses a dozen zoom levels and the pull back out to the
+  // Atlantic nearly as many, and a photograph laid over either mid-move fights
+  // it. Holding these two back lets the ground stop travelling under them. The
+  // rest are cued on their boxes, their legs being ordinary stop-to-stop moves.
   const CUE = { s1: 0.55, s2: 0.55 };
   const items = [];
   stops.querySelectorAll('.stop[data-stop], .stop-lead[data-lead-for]').forEach(box => {

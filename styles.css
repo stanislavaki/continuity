@@ -175,16 +175,21 @@ body.light .cursor { color: #000; }
   bottom: auto; left: auto;
   z-index: 101;
   pointer-events: auto;
-  mix-blend-mode: difference;
-  isolation: isolate;
 }
 .menu-btn svg {
   width: 28px; height: 28px; fill: currentColor;
   transition: transform 150ms ease-in-out;
   transform-origin: 50% 50%;
 }
-body.dark .menu-btn { mix-blend-mode: normal; color: #fff; }
-body .menu-btn.is-open { z-index: 600; mix-blend-mode: normal; color: #fff; }
+/* The icon takes the theme the body is already tracking, rather than blending
+   with what is behind it. `mix-blend-mode: difference` inverted whatever ground
+   it happened to be over, which is legible on flat black and flat white but
+   turns the icon into a colour-shifting smear over the photographs -- and over a
+   mid-grey it inverts to another mid-grey and disappears. This is the same
+   convention .crail already follows, for the same reason. */
+body.dark  .menu-btn { color: #fff; }
+body.light .menu-btn { color: #000; }
+body .menu-btn.is-open { z-index: 600; color: #fff; }
 .menu-btn:not(.is-open):hover svg { transform: scale(1.1); }
 .menu-btn.is-open svg { transform: rotate(135deg); }
 .menu-btn.is-open:hover svg { transform: rotate(135deg) scale(1.1); }
@@ -479,12 +484,6 @@ body.dark  .crail-bar  { background: rgba(255, 255, 255, 0.45); }
 body.dark  .crail-fill { background: #fff; }
 body.light .crail-bar  { background: rgba(0, 0, 0, 0.28); }
 body.light .crail-fill { background: #000; }
-/* Over the flat grounds a bare bar is enough, but the rail also crosses the
-   hero photograph and the journey plates, where a 2px line at 45% would sink
-   into the mid-greys. A halo the colour of the ground it belongs to carries it
-   across those without putting a visible box around it. */
-body.dark  .crail { filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.65)); }
-body.light .crail { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.75)); }
 
 /* ---- The opened card ---- */
 /* No frame around the list. The panel is the whole viewport: it takes the page
@@ -514,6 +513,13 @@ body.light .crail { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.75)); }
   transition: opacity .34s ease, visibility 0s, background-color .45s ease;
 }
 .crail.is-open { opacity: 0; pointer-events: none; transform: translateY(-50%) translateX(-8px); }
+/* Out of the way at both ends of the page. The rail says which of the six
+   chapters you are in and how far through it; on the hero you are not in one
+   yet, and on the footer you are past the last, so on both it is answering a
+   question nobody is asking. body.at-ends is set by the same pass in onScroll()
+   that tracks the light/dark theme, off the section under the viewport's
+   midpoint. */
+body.at-ends .crail { opacity: 0; pointer-events: none; }
 
 /* A thin wash over the blur. Without it the muted titles have to hold their
    own against whatever photograph happens to be underneath. */
