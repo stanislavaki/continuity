@@ -65,6 +65,20 @@
       "title": "",
       "file": "ch5-4.mp3",
       "bytes": 492817
+    },
+    {
+      "id": "granite-1",
+      "anchor": "[data-narr=\"granite-1\"]",
+      "title": "",
+      "file": "granite-1.mp3",
+      "bytes": 477353
+    },
+    {
+      "id": "granite-2",
+      "anchor": "[data-narr=\"granite-2\"]",
+      "title": "",
+      "file": "granite-2.mp3",
+      "bytes": 385820
     }
   ]
 }

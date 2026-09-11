@@ -2097,9 +2097,22 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 976; }
 }
 /* Closed, the film must not cost the passage after it the space it had. */
 .math-body .narr-film + p { margin-top: 1em; }
+/* The same eight columns out of an article body standing on the article grid's
+   columns 3-4 of four: the body is two tracks and a gap wide, so the grid is
+   twice the body plus a gap, and starts one body-width and a gap to its left --
+   the formula .db-zapp-anchor uses. */
+.article-grid > .article-body .narr-film {
+  margin-left: calc(-100% - var(--col-gap));
+  width: calc(200% + var(--col-gap));
+}
+.article-body .narr-film + p { margin-top: 1.2em; }
 @media (max-width: 900px) {
   /* One column, as the Zapp portrait goes: the still takes the full measure. */
   .math-body .narr-film { margin-left: 0; width: 100%; }
+  /* The article grid keeps its four tracks at this width -- its columns are set
+     !important -- with the 40px gap this query gives it, so an article body is
+     still the grid's right half. Break out across the whole grid all the same. */
+  .article-grid > .article-body .narr-film { margin-left: calc(-100% - 40px); width: calc(200% + 40px); }
   .narr-film { grid-template-columns: minmax(0, 1fr); }
   .narr-film-fold--still, .narr-film-fold--reel { grid-column: 1; }
 }
