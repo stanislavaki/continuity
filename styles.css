@@ -868,6 +868,12 @@ section { position: relative; }
      would put it at twice the screen width. It keeps a screen-relative width
      here; its base still sits on the plinth line. */
   .hero-sculpture { --sculpt-w: 106vw; bottom: -2vh; }
+  /* That width runs 3vw past each side of the screen, and on a phone anything
+     past the edge widens the document and zooms the whole page out. The group
+     clips it on x alone: overflow: clip, unlike hidden, does not make the group
+     a scroll container, so the pin still sticks against the viewport, and y
+     stays visible for the release. */
+  .sticky-group { overflow-x: clip; }
 }
 .hero-footer {
   position: absolute;
