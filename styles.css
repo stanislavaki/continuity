@@ -1786,6 +1786,10 @@ body.light .tts-controls { color: #000; }
 @media (prefers-reduced-motion: reduce) {
   .tts-prev, .tts-next, .tts-exit { transition: none; transform: none; }
 }
+/* The one exception to an open film lying over everything: while the read-aloud
+   is running, its transport stays within reach above the film it is playing.
+   Idle, it goes under with the rest. */
+.tts-controls:not(:has(.tts-toggle[data-state="idle"])) { z-index: 970; }
 /* play triangle (idle / paused) */
 .tts-toggle[data-state="idle"] .tts-icon::before,
 .tts-toggle[data-state="paused"] .tts-icon::before {
@@ -1866,6 +1870,242 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
   [data-narr] { transition: none; }
   .tts-reading { animation: none; background-image: none; }
   .tts-reading, .tts-reading * { color: inherit; -webkit-text-fill-color: currentColor; }
+}
+
+/* Films, set between passages. A [data-narr-film] figure lays itself on the
+   page's eight columns and holds two folds: the still, a button showing the
+   film's first frame on columns 3-6, and the reel, the film itself on columns
+   2-7, collapsed to nothing. Opening the figure -- the still pressed, or the
+   read-aloud reaching it -- closes the still and opens the reel, and closing does
+   the reverse. Each fold animates its own single grid row between 0fr and 1fr,
+   because a row can be animated to the height of what it holds where
+   `height: auto` cannot; the clip inside is what gives up its minimum. */
+.narr-film {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+  margin: 0;
+  /* Open, the film lies over everything the page keeps fixed on screen -- the
+     top bar, the read-aloud transport at rest -- and under only the chapter
+     rail and the pointer (1000). It keeps that place until it has finished
+     closing, so nothing pops over it on the way down. */
+  position: relative;
+  z-index: 0;
+  transition: z-index 0s linear .7s;
+}
+.narr-film.is-open { z-index: 960; transition-delay: 0s; }
+/* The chapter rail's bars, and the panel that opens from them, stay over an open
+   film and over the picture flying to or from it. Raised only while a film is
+   out, so the rest of the time the rail still goes under the + menu (500). */
+body:has(.narr-film.is-open) .crail,
+body:has(.narr-film.is-flying) .crail { z-index: 975; }
+body:has(.narr-film.is-open) .crail-panel,
+body:has(.narr-film.is-flying) .crail-panel { z-index: 976; }
+.narr-film-fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .7s cubic-bezier(.22, 1, .36, 1);
+}
+.narr-film-fold--still { grid-row: 1; grid-column: 3 / 7; grid-template-rows: 1fr; }
+/* Open, the film takes six columns, centred, so it never reaches the outer columns
+   where the read-aloud's transport and the chapter rail stand. */
+.narr-film-fold--reel  { grid-row: 2; grid-column: 2 / 8; }
+.narr-film.is-open .narr-film-fold--still { grid-template-rows: 0fr; }
+.narr-film.is-open .narr-film-fold--reel  { grid-template-rows: 1fr; }
+.narr-film-clip { min-height: 0; overflow: hidden; }
+/* The room around each, on an element inside the clip rather than on the clip
+   itself, so that a closed fold measures nothing at all. The still stands 1.2em
+   off the paragraph above, as the Zapp portrait does; the paragraph after it
+   brings its own. */
+.narr-film-pad { padding: 2em 0 1em; }
+.narr-film-pad--still { padding: 1.2em 0 0; }
+
+.narr-film-preview {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: #000;
+  color: #fff;
+  cursor: pointer;   /* the hand, as over the transport and the rail; the page's own cursor steps aside */
+  -webkit-tap-highlight-color: transparent;
+}
+.narr-film-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+/* The read-aloud's play triangle, at its 19 x 24, set on the frame's optical
+   centre: a triangle's weight sits a third of the way in from its base, so the
+   box is drawn a sixth of its width right of true centre. The shadow keeps it
+   legible over the white of the sculpture it lands on. */
+.narr-film-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 19px solid currentColor;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  transform: translate(-33%, -50%);
+  filter: drop-shadow(0 0 8px rgba(0, 0, 0, .55));
+  transition: transform .2s ease;
+}
+.narr-film-preview:hover .narr-film-play { transform: translate(-33%, -50%) scale(1.12); }
+.narr-film-preview:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
+/* While a picture of the film flies between the still and the open frame, the
+   still and the video it stands in for keep out of sight. */
+.narr-film.is-flying .narr-film-preview { opacity: 0; }
+.narr-film-flyer {
+  position: fixed;
+  margin: 0;
+  z-index: 965;          /* over the open film (960), under a running transport (970) */
+  pointer-events: none;
+  transform-origin: 0 0;
+  object-fit: cover;
+  will-change: transform;
+}
+.narr-film-frame { position: relative; }
+/* The film's own pause button, in the middle of its frame, in either mode: the
+   read-aloud's pause bars while the film plays and its play triangle while it
+   waits, cut from the same stock, with the still's shadow to hold them over the
+   picture. The hit area is the transport's 64px. */
+.narr-film-toggle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;   /* the hand, as over the transport; the page's own cursor steps aside */
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(0, 0, 0, .55));
+  transition: opacity .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.narr-film.is-open:not(.is-flying) .narr-film-toggle { opacity: 1; pointer-events: auto; }
+.narr-film-glyph {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 0 auto;
+  transition: transform .2s ease;
+}
+.narr-film-toggle:hover .narr-film-glyph { transform: scale(1.12); }
+.narr-film-toggle:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.narr-film-glyph::before,
+.narr-film-glyph::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  width: var(--tts-bar, 6px);
+  background: currentColor;
+}
+.narr-film-glyph::before { left: 4px; }
+.narr-film-glyph::after  { right: 4px; }
+.narr-film.is-paused .narr-film-glyph::after { content: none; }
+.narr-film.is-paused .narr-film-glyph::before {
+  top: 50%;
+  bottom: auto;
+  left: 4px;
+  width: 0;
+  height: 0;
+  background: none;
+  border-left: 19px solid currentColor;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  transform: translateY(-50%);
+}
+/* The film's collapse button, in the lower right corner of its frame: a corner
+   pointing back in, two arms of the transport's bar stock at the centre glyph's
+   24px. It ends the film as if it had played out. */
+.narr-film-collapse {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;   /* the hand, as over the transport; the page's own cursor steps aside */
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(0, 0, 0, .55));
+  transition: opacity .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.narr-film.is-open:not(.is-flying) .narr-film-collapse { opacity: 1; pointer-events: auto; }
+.narr-film-corner {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 0 auto;
+  transition: transform .2s ease;
+}
+.narr-film-corner::before,
+.narr-film-corner::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: currentColor;
+}
+.narr-film-corner::before { width: 100%; height: var(--tts-bar, 6px); }   /* the top arm */
+.narr-film-corner::after  { width: var(--tts-bar, 6px); height: 100%; }   /* the left arm */
+.narr-film-collapse:hover .narr-film-corner { transform: translate(-2px, -2px); }
+.narr-film-collapse:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.narr-film-video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  /* Centred on screen, the film stops 16px short of the read-aloud's transport row
+     (88px up from the bottom), so it never meets those buttons even where they
+     reach into its columns; on a short screen the box stops growing in height
+     there and the picture letterboxes, on the chapter's own black. */
+  max-height: calc(100vh - 208px);
+  object-fit: contain;
+  background: #000;
+  opacity: 0;
+}
+/* Shown the moment the picture flying in has landed on it, and not before. */
+.narr-film.is-open:not(.is-flying) .narr-film-video { opacity: 1; }
+/* Eight columns, out of the body's four. .math-body stands at
+   calc(50% + col-gap / 2 + 1px) of the container and is as wide as what is left,
+   so the container is twice the body plus a gap and 2px, and its left edge lies
+   one body-width, a gap and 2px to the left of the body's. */
+.math-body .narr-film {
+  margin-left: calc(-100% - var(--col-gap) - 2px);
+  width: calc(200% + var(--col-gap) + 2px);
+}
+/* Closed, the film must not cost the passage after it the space it had. */
+.math-body .narr-film + p { margin-top: 1em; }
+@media (max-width: 900px) {
+  /* One column, as the Zapp portrait goes: the still takes the full measure. */
+  .math-body .narr-film { margin-left: 0; width: 100%; }
+  .narr-film { grid-template-columns: minmax(0, 1fr); }
+  .narr-film-fold--still, .narr-film-fold--reel { grid-column: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .narr-film, .narr-film-fold, .narr-film-play, .narr-film-toggle, .narr-film-glyph,
+  .narr-film-collapse, .narr-film-corner { transition: none; }
 }
 
 /* Responsive */

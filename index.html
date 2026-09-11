@@ -196,7 +196,7 @@
     <div class="container">
       <div class="chapter-head">
         <div class="chapter-num">1</div>
-        <h2 class="chapter-title">Mathematics behind the sculpture</h2>
+        <h2 class="chapter-title" data-narr="ch5-title">Mathematics behind the sculpture</h2>
       </div>
 
       <div class="scroll-video-sticky">
@@ -217,6 +217,34 @@
         <div>
           <p data-narr="ch5-1">Max Bill was consistently inspired by mathematics and logic in art. His approach, which he called &ldquo;verifiable logic,&rdquo; guided him from early experimentation toward a precise method of making&mdash;and explaining&mdash;his work: <strong>&ldquo;You can always understand my work, even if you don&rsquo;t like it.&rdquo;</strong> From the beginning of his career, Bill was fascinated by the Möbius strip. From his first attempts in 1936 to the realization of Continuity in Frankfurt, he produced dozens&mdash;if not hundreds&mdash;of variations on the infinity loop, exploring differences in scale, material, and environment.</p>
           <p data-narr="ch5-2">But how are we to understand the topology of Continuity? Is it a Möbius strip, a variation on an endless loop, or simply an artistic, sculptural interpretation of an infinite motif? In short, how did he do it? Even though Bill left some explanations, our own experiments and consultations with mathematicians did not yield an immediate understanding of how the sculpture was conceived and modeled.</p>
+          <!-- Max Bill, short cut (0:33). A still of its first frame stands between
+               the paragraphs, four columns wide on columns 3-6, centred; pressed, it opens the film
+               six columns wide, centred, and plays it, for anyone reading. The read-aloud opens the
+               same film when the narrator reaches it, and goes on to the next passage once
+               the film has closed. -->
+          <figure class="narr-film" data-narr-film>
+            <div class="narr-film-fold narr-film-fold--still">
+              <div class="narr-film-clip">
+                <div class="narr-film-pad narr-film-pad--still">
+                  <button class="narr-film-preview" type="button" aria-label="Play the film: Max Bill, 0:33">
+                    <img src="./assets/_videos/maxbill-kurzschnitt-2-poster.jpg" alt="" width="1920" height="1080" loading="lazy" decoding="async">
+                    <span class="narr-film-play" aria-hidden="true"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="narr-film-fold narr-film-fold--reel">
+              <div class="narr-film-clip">
+                <div class="narr-film-pad">
+                  <div class="narr-film-frame">
+                    <video class="narr-film-video" src="./assets/_videos/maxbill-kurzschnitt-2.mp4" poster="./assets/_videos/maxbill-kurzschnitt-2-poster.jpg" preload="none" playsinline aria-label="Max Bill, short film"></video>
+                    <button class="narr-film-toggle" type="button" aria-label="Pause the film"><span class="narr-film-glyph" aria-hidden="true"></span></button>
+                    <button class="narr-film-collapse" type="button" aria-label="Collapse the film"><span class="narr-film-corner" aria-hidden="true"></span></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </figure>
         </div>
         <div>
           <p data-narr="ch5-4">The interesting thing to note is that Bill thought he had invented a completely new shape. Even more curious was that he discovered it by twisting a strip of paper, just as Möbius had done many years previously. &ldquo;Not long afterwards, people began to congratulate me on my fresh and original interpretation of the Egyptian symbol for infinity and the Möbius ribbon. I had never heard of either of them. My mathematical knowledge had never gone beyond routine architectural calculations, and I had no great interest in mathematics.&rdquo;</p>
@@ -2996,6 +3024,10 @@ function stFade(scrollTop) {
 // Prefers pre-rendered ElevenLabs narration (assets/audio/manifest.json); if
 // that isn't present (not generated yet, offline, file://), it falls back to
 // the browser's built-in Web Speech voice so the button always works.
+// How loud the narrator speaks, 0-1, for either voice. The clips come out of
+// ElevenLabs at about -20 LUFS and read as too loud at full volume; 0.7 takes
+// about 3 dB off. iOS ignores it -- volume there belongs to the hardware buttons.
+const TTS_VOLUME = 0.7;
 function __initTTS() {
   const btn = document.querySelector('.tts-toggle');
   if (!btn) return;
@@ -3021,46 +3053,382 @@ function __initTTS() {
     }
   }
 
+  const hub = initFilms();
+
   fetch('./assets/audio/manifest.json', { cache: 'no-cache' })
     .then(r => (r.ok ? r.json() : null))
     .then(m => {
       if (m && Array.isArray(m.sections) && m.sections.length) {
-        initAudioEngine(btn, setState, m);
+        initAudioEngine(btn, setState, m, hub);
       } else {
-        initSpeechEngine(btn, setState);
+        initSpeechEngine(btn, setState, hub);
       }
     })
-    .catch(() => initSpeechEngine(btn, setState));
+    .catch(() => initSpeechEngine(btn, setState, hub));
+}
+
+// ---- Films set between passages ----
+// Each [data-narr-film] figure shows a still and holds a film. Both ways of
+// playing one run through here: the read-aloud, which opens the film when the
+// narrator reaches it, and the still, which a reader can press without starting
+// the narration. Returns the hub the engines play films through.
+function initFilms() {
+  // How long a film takes to open and to close, and the curve it takes: those of
+  // .narr-film-fold's transition, which everything moved from here keeps step with.
+  const FILM_MS = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 700;
+  const EASE = 'cubic-bezier(.22, 1, .36, 1)';
+  const easeOut = t => 1 - Math.pow(1 - t, 5);   // the same curve, for the scroll
+
+  const films = [...document.querySelectorAll('[data-narr-film]')]
+    .map(el => ({
+      el,
+      video: el.querySelector('video'),
+      still: el.querySelector('.narr-film-fold--still'),
+      stillPad: el.querySelector('.narr-film-pad--still'),
+      preview: el.querySelector('.narr-film-preview'),
+      reelClip: el.querySelector('.narr-film-fold--reel .narr-film-clip'),
+      toggle: el.querySelector('.narr-film-toggle'),
+      collapse: el.querySelector('.narr-film-collapse'),
+      flight: null,      // the opening or closing flight under way, if any
+      landed: null,      // what to do once the film has flown open
+    }))
+    .filter(f => f.video);
+  films.forEach(f => {
+    // A film's sound is mastered to the clips' loudness, so one volume serves both.
+    f.video.volume = TTS_VOLUME;
+    // The full-size poster, fetched now so it is ready to fly the moment the
+    // still is pressed.
+    if (f.video.poster) { f.poster = new Image(); f.poster.src = f.video.poster; }
+  });
+
+  let watching = null;   // a film opened from its still, outside the read-aloud
+
+  // Over the still and over the film's own button the system hand shows, as it
+  // does over the read-aloud's transport and the + menu button, and the page's own
+  // cursor steps aside. Both used to set `cursor: none`, which hides the system
+  // pointer as well -- so wherever the page's own cursor is not drawn (switched
+  // off, or on a touch screen) nothing was left on screen over them.
+  const pageCursor = [document.getElementById('cursor'), document.getElementById('cursorDot')].filter(Boolean);
+  let steppedAside = false;
+  const stepAside = aside => {
+    steppedAside = aside;
+    pageCursor.forEach(el => el.classList.toggle('hide', aside));
+  };
+
+  // Scroll anchoring would shift the page under a flight, so it is held off for one.
+  const anchoring = on => { document.documentElement.style.overflowAnchor = on ? '' : 'none'; };
+  // Where the picture itself lies inside a box laid out with object-fit: contain.
+  function pictureIn(r) {
+    const w = Math.min(r.width, r.height * 16 / 9), h = w * 9 / 16;
+    return { left: r.left + (r.width - w) / 2, top: r.top + (r.height - h) / 2, width: w, height: h };
+  }
+  function canvasOf(source, w, h) {
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    c.getContext('2d').drawImage(source, 0, 0, w, h);
+    return c;
+  }
+  // The first frame, as the still and the poster both show it -- drawn from an
+  // image already decoded, so the flight never starts on a blank.
+  function posterOf(f) {
+    const img = f.poster && f.poster.complete && f.poster.naturalWidth ? f.poster : f.preview.querySelector('img');
+    return canvasOf(img, img.naturalWidth, img.naturalHeight);
+  }
+  // The frame the film is showing now, for the flight back.
+  function frameOf(f) {
+    const v = f.video;
+    try {
+      if (v.readyState >= 2 && v.videoWidth) {
+        const w = Math.min(1920, v.videoWidth);
+        return canvasOf(v, w, Math.round(w * v.videoHeight / v.videoWidth));
+      }
+    } catch (_) {}
+    return posterOf(f);
+  }
+  function label(f) {
+    if (f.toggle) f.toggle.setAttribute('aria-label', f.el.classList.contains('is-paused') ? 'Play the film' : 'Pause the film');
+  }
+  function markPaused(f) { f.el.classList.add('is-paused'); label(f); }
+
+  // A picture of the film flown between the still and the open frame: fixed and
+  // over everything, so neither fold's clip nor the scroll can cut into it, and
+  // laid out at the large rect and scaled down from it -- never up -- so it stays
+  // sharp. The still and the video it stands in for keep out of sight meanwhile.
+  function fly(f, picture, large, small, opening, done) {
+    picture.className = 'narr-film-flyer';
+    Object.assign(picture.style, { left: large.left + 'px', top: large.top + 'px', width: large.width + 'px', height: large.height + 'px' });
+    document.body.appendChild(picture);
+    const shrunk = `translate(${small.left - large.left}px, ${small.top - large.top}px) scale(${small.width / large.width})`;
+    const move = picture.animate(opening ? [{ transform: shrunk }, { transform: 'none' }] : [{ transform: 'none' }, { transform: shrunk }],
+                                 { duration: FILM_MS, easing: EASE, fill: 'forwards' });
+    // Closing, it fades over its last stretch onto the still coming back beneath.
+    if (!opening) picture.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FILM_MS * .3, delay: FILM_MS * .7, fill: 'forwards' });
+    f.el.classList.add('is-flying');
+    anchoring(false);
+    let raf = 0, final = null;
+    const reveal = opening ? 0 : setTimeout(() => f.el.classList.remove('is-flying'), FILM_MS * .7);
+    const flight = {
+      // The page is scrolled in step with the flight, on the same curve, so the
+      // film lands exactly where the picture does.
+      scroll(from, to) {
+        if (from === to) return;
+        final = to;
+        const t0 = performance.now();
+        const step = now => {
+          const t = Math.min(1, (now - t0) / FILM_MS);
+          window.scrollTo({ top: from + (to - from) * easeOut(t), behavior: 'instant' });
+          if (t < 1) raf = requestAnimationFrame(step);
+        };
+        raf = requestAnimationFrame(step);
+      },
+      end() {
+        if (f.flight !== flight) return;
+        f.flight = null;
+        cancelAnimationFrame(raf);
+        clearTimeout(reveal);
+        picture.remove();
+        anchoring(true);
+        f.el.classList.remove('is-flying');
+      },
+    };
+    f.flight = flight;
+    move.finished.then(() => {
+      if (f.flight !== flight) return;
+      if (final !== null) window.scrollTo({ top: final, behavior: 'instant' });
+      flight.end();
+      if (done) done();
+    }, () => {});
+    return flight;
+  }
+
+  function land(f) {
+    const then = f.landed;
+    f.landed = null;
+    if (then) then();
+  }
+  // The film opens where it stands: the still closes, the reel opens, and a
+  // picture of the first frame scales from the still to the full frame while the
+  // page brings the frame to the middle of the screen. `landed` runs once it is
+  // there -- at once if the film is open already.
+  function open(f, landed) {
+    f.landed = landed || null;
+    if (f.el.classList.contains('is-open')) { if (!f.flight) land(f); return; }
+    if (f.flight) f.flight.end();
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const foldH = f.still ? f.still.getBoundingClientRect().height : 0;
+    const small = f.preview ? f.preview.getBoundingClientRect() : null;
+    // The video is laid out at full size inside the collapsed reel -- only clipped --
+    // so its box already says where it will stand once the still has closed above
+    // it, and the reel's clip says how much the page will grow.
+    const box = f.video.getBoundingClientRect();
+    const grows = (f.reelClip ? f.reelClip.scrollHeight : box.height) - foldH;
+    const from = window.scrollY;
+    const boxTop = from + box.top - foldH;
+    const to = Math.max(0, Math.min(document.documentElement.scrollHeight + grows - vh, boxTop + box.height / 2 - vh / 2));
+    f.el.classList.add('is-open');
+    if (f.still) f.still.inert = true;
+    if (steppedAside) stepAside(false);   // the still has gone from under the pointer
+    if (!FILM_MS || !small || !small.width) {
+      window.scrollTo({ top: to, behavior: 'instant' });
+      land(f);
+      return;
+    }
+    const large = pictureIn({ left: box.left, top: boxTop - to, width: box.width, height: box.height });
+    fly(f, posterOf(f), large, small, true, () => land(f)).scroll(from, to);
+  }
+  // And back: a picture of the frame it is showing scales down onto the still,
+  // fading into it as it lands, while the reel closes and the still opens.
+  // `focus` -- a passage the read-aloud is moving on to -- is brought into view in
+  // step with that flight, from where it will stand once the film has folded
+  // away: measured from where it stands now, with the film still open above it,
+  // it was scrolled to and then carried high off the top as the film closed.
+  // `done` runs once the film has closed. Returns whether the flight is bringing
+  // `focus` into view.
+  function close(f, focus, done) {
+    f.landed = null;
+    const wasOpen = f.el.classList.contains('is-open');
+    const midOpening = wasOpen && !!f.flight;
+    if (f.flight) f.flight.end();
+    const v = f.video;
+    let flying = false;
+    if (wasOpen && !midOpening && FILM_MS && f.still) {
+      const box = v.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      if (box.width && box.bottom > 0 && box.top < vh) {
+        const fold = f.still.getBoundingClientRect();
+        const pad = f.stillPad ? parseFloat(getComputedStyle(f.stillPad).paddingTop) || 0 : 0;
+        const stillH = fold.width * 9 / 16;
+        // How far everything below the figure moves as the reel closes and the still opens.
+        const shift = pad + stillH - (f.reelClip ? f.reelClip.getBoundingClientRect().height : box.height);
+        const from = window.scrollY;
+        let to = from;
+        if (focus) {
+          const r = focus.getBoundingClientRect();
+          const top = r.top + (r.top >= f.el.getBoundingClientRect().bottom - 1 ? shift : 0);
+          // The highlight's own comfortable middle band: only outside it is the page moved.
+          if (top < vh * 0.18 || top + r.height > vh * 0.82) {
+            to = Math.max(0, Math.min(document.documentElement.scrollHeight + shift - vh, from + top + r.height / 2 - vh / 2));
+          }
+        }
+        const small = { left: fold.left, top: fold.top + pad - (to - from), width: fold.width, height: stillH };
+        fly(f, frameOf(f), pictureIn(box), small, false, done).scroll(from, to);
+        flying = true;
+      }
+    }
+    f.el.classList.remove('is-open', 'is-paused');
+    label(f);
+    if (steppedAside) stepAside(false);   // the button has gone from under the pointer
+    if (f.still) f.still.inert = false;
+    v.pause();
+    if (!flying && done) setTimeout(done, FILM_MS);
+    return flying && !!focus;
+  }
+  // Closes every film but `except` that is open or flying open; one already
+  // flying shut is left to land. Returns whether a closing film is bringing
+  // `focus` into view.
+  function closeAll(except, focus) {
+    let focusing = false;
+    films.forEach(f => {
+      if (f !== except && f.el.classList.contains('is-open') && close(f, focus)) focusing = true;
+    });
+    return focusing;
+  }
+
+  const hub = {
+    films,
+    FILM_MS,
+    // Set by the engine that reads: whether a play-through is running, and how
+    // to move it to a film.
+    narrating: () => false,
+    narrateFilm: null,
+    // The film a reader is watching from its still, if any, and the way a
+    // read-aloud started over it takes it on as it stands, without closing it.
+    watching: () => watching,
+    takeOver() { watching = null; },
+    open, close, closeAll, markPaused,
+  };
+
+  // Watching is the film alone: the read-aloud's transport is left exactly as it
+  // was, nothing dims, and nothing is read after it.
+  function watch(f) {
+    watching = f;
+    closeAll(f);
+    const v = f.video;
+    try { v.currentTime = 0; } catch (_) {}
+    // Played and paused at once, while the press is still a press, so that Safari
+    // lets it play with sound once it has flown open. It buffers meanwhile.
+    v.preload = 'auto';
+    const primed = v.play();
+    v.pause();
+    if (primed) primed.catch(() => {});
+    open(f, () => {
+      if (watching !== f) return;
+      v.play().catch((err) => {
+        // Refused rather than interrupted: it waits open, paused, for its button.
+        if (watching === f && !(err && err.name === 'AbortError')) markPaused(f);
+      });
+    });
+  }
+  function unwatch() {
+    if (!watching) return;
+    const f = watching;
+    watching = null;
+    close(f);
+  }
+
+  films.forEach(f => {
+    const v = f.video;
+    // Pressed while the read-aloud runs, the still moves the narration to the
+    // film, and the narrator goes on after it as usual. Pressed while all is
+    // quiet, the film plays by itself.
+    if (f.preview) f.preview.addEventListener('click', () => {
+      if (hub.narrating()) { if (hub.narrateFilm) hub.narrateFilm(f); }
+      else watch(f);
+    });
+    [f.preview, f.toggle, f.collapse].forEach(el => {
+      if (!el) return;
+      el.addEventListener('mouseenter', () => stepAside(true));
+      el.addEventListener('mouseleave', () => stepAside(false));
+    });
+    v.addEventListener('play', () => { f.el.classList.remove('is-paused'); label(f); });
+    v.addEventListener('pause', () => {
+      f.el.classList.toggle('is-paused', f.el.classList.contains('is-open') && !v.ended);
+      label(f);
+    });
+    // The film's own button in the middle of its frame, and a tap anywhere on the
+    // picture, pause and resume it in either mode. In the read-aloud the
+    // transport follows through the film's own events.
+    const flip = () => {
+      if (!f.el.classList.contains('is-open') || f.el.classList.contains('is-flying')) return;
+      if (v.paused) v.play().catch(() => {});
+      else v.pause();
+    };
+    if (f.toggle) f.toggle.addEventListener('click', flip);
+    v.addEventListener('click', flip);
+    // Watched, it closes when it ends, when it fails, or on Esc.
+    v.addEventListener('ended', () => { if (watching === f) unwatch(); });
+    v.addEventListener('error', () => { if (watching === f) unwatch(); });
+    // The collapse button in the frame's lower right corner ends the film early,
+    // as if it had played out: watched, it closes; in the read-aloud the engine
+    // closes it and the narrator reads on.
+    if (f.collapse) f.collapse.addEventListener('click', () => { if (watching === f) unwatch(); });
+  });
+  // In the capture phase, and added before either engine's, so an Esc meant for
+  // a watched film never reaches them.
+  document.addEventListener('keydown', (e) => {
+    if (watching && e.key === 'Escape') { e.stopImmediatePropagation(); unwatch(); }
+  }, true);
+
+  return hub;
 }
 
 // ---- ElevenLabs pre-rendered audio engine ----
-function initAudioEngine(btn, setState, manifest) {
+function initAudioEngine(btn, setState, manifest, hub) {
   const base = './assets/audio/';
-  const sections = manifest.sections;
+  // The playlist: every rendered clip whose passage is still on the page, and
+  // every film the page sets between passages, played in the order they stand
+  // on the page rather than the order the manifest lists them in. The manifest
+  // follows scripts/narration.json, which predates the chapters' rearrangement
+  // -- Mathematics now comes straight after the introduction -- and it knows
+  // nothing of the films. A clip whose passage is no longer on the page is left
+  // out, rather than played over a dimmed page with nothing lit.
+  const clips = manifest.sections
+    .map(s => ({ ...s, el: s.anchor ? document.querySelector(s.anchor) : null }))
+    .filter(s => s.el);
+  if (!clips.length) { initSpeechEngine(btn, setState, hub); return; }
+  const films = hub.films;
+  const sections = clips.concat(films)
+    .sort((a, b) => (a.el.compareDocumentPosition(b.el) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1);
   const audio = new Audio();
   audio.preload = 'auto';
+  audio.volume = TTS_VOLUME;
   let idx = 0;
+  let request = 0;         // counts play() calls, so a stale rejection can be told apart
   let active = false;      // true while a play-through is in progress
   let current = null;      // currently highlighted passage element
+
+  // Whatever is sounding now: the current film, or the narrator.
+  const media = () => (sections[idx] && sections[idx].video) || audio;
 
   function clearHighlight() {
     if (current) { current.classList.remove('tts-reading'); current = null; }
     document.body.classList.remove('tts-reading-active');
   }
-  function highlight(i) {
+  function highlight(i, scroll = true) {
     if (current) current.classList.remove('tts-reading');
     current = null;
-    const sel = sections[i] && sections[i].anchor;
-    const el = sel && document.querySelector(sel);
-    if (!el) return;
-    current = el;
+    const s = sections[i];
+    if (!s) return;
     document.body.classList.add('tts-reading-active');
+    if (s.video) return;   // a film is lit by opening, not by the shimmer
+    const el = s.el;
+    current = el;
     el.classList.add('tts-reading');
     // Ease into view only when it's outside a comfortable middle band, so we
     // don't yank the page on every passage.
     const r = el.getBoundingClientRect();
     const vh = window.innerHeight || document.documentElement.clientHeight;
-    if (r.top < vh * 0.18 || r.bottom > vh * 0.82) {
+    if (scroll && (r.top < vh * 0.18 || r.bottom > vh * 0.82)) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
@@ -3070,43 +3438,118 @@ function initAudioEngine(btn, setState, manifest) {
   // not be mistaken for "stop".
   function playSection(i) {
     idx = i;
-    if (idx >= sections.length) { active = false; idx = 0; clearHighlight(); setState('idle'); return; }
-    audio.src = base + sections[idx].file;
-    highlight(idx);
-    // Only the very first play needs a user gesture; advances rely on sticky
-    // activation and may reject with AbortError, which we ignore.
-    audio.play().catch(() => { if (idx === 0) { active = false; clearHighlight(); setState('idle'); } });
+    if (idx >= sections.length) { active = false; idx = 0; hub.closeAll(); clearHighlight(); setState('idle'); return; }
+    const mine = ++request;
+    const s = sections[idx];
+    // A film closing because the play-through has moved on brings the passage it
+    // moved to into view as it closes, in step with its flight -- so the highlight
+    // must not scroll as well, from a page still folding the film away.
+    const focusing = hub.closeAll(s, s.video ? null : s.el);
+    highlight(idx, !focusing);
+    // Buffer a film while the passage before it is read, so it starts at once.
+    const after = sections[idx + 1];
+    if (after && after.video) after.video.preload = 'auto';
+    if (s.video) {
+      audio.pause();
+      // A film already open -- a reader was watching it from its still when the
+      // read-aloud was started over it -- goes on from where it is. Otherwise it
+      // flies open from its still, and plays once it has landed.
+      if (!s.el.classList.contains('is-open')) { try { s.video.currentTime = 0; } catch (_) {} }
+      hub.open(s, () => {
+        if (mine !== request) return;
+        // Already playing (taken over from a reader) or paused in flight: say so.
+        if (!s.video.paused) { setState('playing'); return; }
+        if (btn.dataset.state === 'paused') { hub.markPaused(s); return; }
+        s.video.play().catch((err) => {
+          if (mine !== request || (err && err.name === 'AbortError')) return;
+          // Refused: Safari on iOS can ask a fresh gesture of each element that
+          // plays with sound, and the narrator's element had the only one. The
+          // film waits open, paused, for its own button or the transport's.
+          hub.markPaused(s);
+          setState('paused');
+        });
+      });
+      return;
+    }
+    audio.src = base + s.file;
+    // Only a refusal of the latest clip ends the play-through -- NotAllowedError,
+    // say, with no gesture to start from. The abort a src swap or a pause causes
+    // is benign, and so is any rejection a newer clip has overtaken. This used
+    // to be judged by idx === 0, which is not where playback starts once it
+    // starts from the reader's place, and which took that benign abort on the
+    // first clip for a refusal.
+    audio.play().catch((err) => {
+      if (mine !== request || (err && err.name === 'AbortError')) return;
+      active = false; clearHighlight(); setState('idle');
+    });
   }
 
-  audio.addEventListener('playing', () => { if (active) setState('playing'); });
-  audio.addEventListener('ended', () => { if (active) playSection(idx + 1); });
-  audio.addEventListener('error', () => { if (active) { active = false; clearHighlight(); setState('idle'); } });
+  const clipIsCurrent = () => active && sections[idx] && !sections[idx].video;
+  audio.addEventListener('playing', () => { if (clipIsCurrent()) setState('playing'); });
+  audio.addEventListener('ended', () => { if (clipIsCurrent()) playSection(idx + 1); });
+  audio.addEventListener('error', () => { if (clipIsCurrent()) { active = false; clearHighlight(); setState('idle'); } });
+
+  films.forEach(f => {
+    const isCurrent = () => active && sections[idx] === f;
+    // When the film is over it closes -- bringing the next passage into view as it
+    // goes -- and only once it has closed does the narrator take that passage up.
+    // A film that will not load is passed over the same way, rather than ending
+    // the play-through.
+    const moveOn = () => {
+      if (!isCurrent()) return;
+      const mine = ++request;
+      const next = sections[idx + 1];
+      hub.close(f, next && !next.video ? next.el : null, () => { if (active && mine === request) playSection(idx + 1); });
+    };
+    f.video.addEventListener('playing', () => { if (isCurrent()) setState('playing'); });
+    // Paused by its own button, or by anything else, the transport follows.
+    f.video.addEventListener('pause', () => {
+      if (isCurrent() && !f.video.ended && f.el.classList.contains('is-open')) setState('paused');
+    });
+    f.video.addEventListener('ended', moveOn);
+    f.video.addEventListener('error', moveOn);
+    // Its collapse button ends it early: it closes, and the narrator reads on,
+    // as when it has played to the end.
+    if (f.collapse) f.collapse.addEventListener('click', moveOn);
+  });
+  // A still pressed during a play-through moves the play-through to its film.
+  hub.narrating = () => active;
+  hub.narrateFilm = (f) => { const i = sections.indexOf(f); if (i >= 0) playSection(i); };
 
   function stop() {
     audio.pause();
     try { audio.currentTime = 0; } catch (_) {}
+    hub.closeAll();
     active = false; idx = 0;
     clearHighlight();
     setState('idle');
   }
 
-  // Start from the passage the reader is currently looking at, not the very top.
+  // Start from the passage the reader is currently looking at, not the very
+  // top. With every passage already behind the reader there is nothing ahead to
+  // pick, so start from the beginning: starting from the last passage carried
+  // the reader back up to it and played that one alone.
   function pickStartIndex() {
     const vh = window.innerHeight || document.documentElement.clientHeight;
     const band = vh * 0.35;
     for (let i = 0; i < sections.length; i++) {
-      const el = document.querySelector(sections[i].anchor);
-      if (!el) continue;
-      if (el.getBoundingClientRect().bottom > band) return i; // first passage not scrolled past
+      if (sections[i].el.getBoundingClientRect().bottom > band) return i; // first passage not scrolled past
     }
-    return sections.length - 1; // scrolled past everything → start at the last
+    return 0; // read past every passage → start from the beginning
   }
 
   btn.addEventListener('click', () => {
     const s = btn.dataset.state || 'idle';
-    if (s === 'idle')         { active = true; playSection(pickStartIndex()); }
-    else if (s === 'playing') { audio.pause(); setState('paused'); }       // keep highlight while paused
-    else if (s === 'paused')  { audio.play().catch(() => {}); }
+    if (s === 'idle') {
+      // Started over a film a reader is watching, the read-aloud takes that
+      // film on as it stands and goes on from it.
+      const watched = hub.watching();
+      hub.takeOver();
+      active = true;
+      playSection(watched ? sections.indexOf(watched) : pickStartIndex());
+    }
+    else if (s === 'playing') { media().pause(); setState('paused'); }       // keep highlight while paused
+    else if (s === 'paused')  { media().play().catch(() => {}); }
   });
 
   // Prev / next paragraph jump (active during playback or pause).
@@ -3129,8 +3572,11 @@ function initAudioEngine(btn, setState, manifest) {
 }
 
 // ---- Browser Web Speech fallback (used when no ElevenLabs audio is present) ----
-function initSpeechEngine(btn, setState) {
+function initSpeechEngine(btn, setState, hub) {
   if (!('speechSynthesis' in window)) { btn.hidden = true; return; }
+  // This voice has no films in its reading, so a still pressed while it speaks
+  // is left alone rather than played over it.
+  if (hub) hub.narrating = () => btn.dataset.state !== 'idle';
   const synth = window.speechSynthesis;
 
   const SKIP_SELECTOR = [
@@ -3211,6 +3657,8 @@ function initSpeechEngine(btn, setState) {
   }
 
   function playAll() {
+    // This voice plays no films: one a reader is watching is closed first.
+    if (hub) { const w = hub.watching(); hub.takeOver(); if (w) hub.close(w); }
     synth.cancel();
     const items = collectReadable();
     if (!items.length) return;
@@ -3219,6 +3667,7 @@ function initSpeechEngine(btn, setState) {
       u.lang = 'en-US';
       if (chosenVoice) u.voice = chosenVoice;
       u.rate = 1;
+      u.volume = TTS_VOLUME;
       u.pitch = it.kind === 'heading' ? 0.95 : 1;
       const isLast = i === items.length - 1;
       const finish = () => { if (isLast) { stopKick(); setState('idle'); } };

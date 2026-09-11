@@ -107,7 +107,7 @@ def estimate(sections):
     total = sum(len(s["text"]) for s in sections)
     print("\nNarration script — character counts (count toward ElevenLabs quota):\n")
     for s in sections:
-        print(f"  {s['id']:<8} {len(s['text']):>5} chars   {s['title']}")
+        print(f"  {s['id']:<8} {len(s['text']):>5} chars   {s.get('title', '')}")
     print(f"  {'TOTAL':<8} {total:>5} chars\n")
     print("Reference: ElevenLabs free tier ~10,000 chars/mo; Creator ~100,000/mo.")
     print("This whole narration is one small generation, re-run only when text changes.\n")

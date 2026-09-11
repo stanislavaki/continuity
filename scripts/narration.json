@@ -122,9 +122,14 @@
       "text": "Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation — often translating abstract mathematical principles into precise visual or sculptural expressions."
     },
     {
+      "id": "ch5-title",
+      "anchor": "[data-narr=\"ch5-title\"]",
+      "text": "Mathematics behind the sculpture."
+    },
+    {
       "id": "ch5-1",
       "anchor": "[data-narr=\"ch5-1\"]",
-      "text": "Max Bill was consistently inspired by mathematics and logic in art. His approach, which he called verifiable logic, guided him from early experimentation toward a precise method of making — and explaining — his work: You can always understand my work, even if you don't like it. From the beginning of his career, Bill was fascinated by the Möbius strip. From his first attempts in 1936 to the realization of Continuity in Frankfurt, he produced dozens — if not hundreds — of variations on the infinity loop, exploring differences in scale, material, and environment."
+      "text": "Max Bill was consistently inspired by mathematics and logic in art. His approach, which he called “verifiable logic,” guided him from early experimentation toward a precise method of making—and explaining—his work: “You can always understand my work, even if you don’t like it.” From the beginning of his career, Bill was fascinated by the Möbius strip. From his first attempts in 1936 to the realization of Continuity in Frankfurt, he produced dozens—if not hundreds—of variations on the infinity loop, exploring differences in scale, material, and environment."
     },
     {
       "id": "ch5-2",
@@ -139,7 +144,7 @@
     {
       "id": "ch5-4",
       "anchor": "[data-narr=\"ch5-4\"]",
-      "text": "The interesting thing to note is that Bill thought he had invented a completely new shape. Even more curious was that he discovered it by twisting a strip of paper, just as Möbius had done many years previously. Not long afterwards, people began to congratulate me on my fresh and original interpretation of the Egyptian symbol for infinity and the Möbius ribbon. I had never heard of either of them. My mathematical knowledge had never gone beyond routine architectural calculations, and I had no great interest in mathematics."
+      "text": "The interesting thing to note is that Bill thought he had invented a completely new shape. Even more curious was that he discovered it by twisting a strip of paper, just as Möbius had done many years previously. “Not long afterwards, people began to congratulate me on my fresh and original interpretation of the Egyptian symbol for infinity and the Möbius ribbon. I had never heard of either of them. My mathematical knowledge had never gone beyond routine architectural calculations, and I had no great interest in mathematics.”"
     },
     {
       "id": "ch5-5",
