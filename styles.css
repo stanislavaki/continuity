@@ -1258,13 +1258,15 @@ section { position: relative; }
   padding: 120px 0;
 }
 .article-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   row-gap: 48px;
   column-gap: var(--col-gap);
   align-items: start;
 }
 .article-grid > .article-image { grid-column: 2 / 4; }
+/* The making chapter's photograph, on page columns 1-6. */
+.article-grid > .making-photo { grid-column: 1 / span 3; }
 .article-grid > .article-body { grid-column: 3 / 5; margin-left: 0; width: 100%; }
 .article-image {
   aspect-ratio: 4/5;
@@ -2117,11 +2119,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 976; }
 .article-body .narr-film + p { margin-top: 1.2em; }
 @media (max-width: 900px) {
   /* One column, as the Zapp portrait goes: the still takes the full measure. */
-  .math-body .narr-film { margin-left: 0; width: 100%; }
-  /* The article grid keeps its four tracks at this width -- its columns are set
-     !important -- with the 40px gap this query gives it, so an article body is
-     still the grid's right half. Break out across the whole grid all the same. */
-  .article-grid > .article-body .narr-film { margin-left: calc(-100% - 40px); width: calc(200% + 40px); }
+  .math-body .narr-film,
+  .article-grid > .article-body .narr-film { margin-left: 0; width: 100%; }
   .narr-film { grid-template-columns: minmax(0, 1fr); }
   .narr-film-fold--still, .narr-film-fold--reel { grid-column: 1; }
 }
@@ -2140,6 +2139,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 976; }
     margin-left: 0;
     width: 100%;
   }
+  /* One track, so everything set on the article grid takes the full measure. */
+  .article-grid > .article-image,
+  .article-grid > .making-photo,
+  .article-grid > .article-body { grid-column: 1 / -1; }
   .img-strip { grid-template-columns: repeat(2, 1fr); }
   .fact-row { grid-template-columns: 1fr 1fr; }
   .fact-row::before { width: 100%; } /* full-width divider on the stacked mobile layout */
@@ -2388,7 +2391,15 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 976; }
   margin: var(--col-gap) 0 0 calc(50% - (100vw - var(--sbw, 0px)) / 2);
 }
 @media (max-width: 900px) {
-  .journey-photos { grid-column: 1 / -1; }
+  .journey-photos,
+  .journey-photos figure:nth-child(1),
+  .journey-photo-six { grid-column: 1 / -1; }
+  /* One column: the photograph and the account that share row 4 take a row
+     each, and everything after them moves down one. */
+  .article-grid > .journey-photo-measure ~ .article-body { grid-row: 5; }
+  .journey-photo-six { grid-row: 6; }
+  .article-grid > .article-body.granite-tail { grid-row: 7; }
+  .journey-photo-bleed { grid-row: 8; }
 }
 
 .journey-stops {
@@ -3365,6 +3376,15 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
 .quote-band--red   { background: #C90101; color: #fff; }
 .quote-band--white { background: #fff;    color: #0018A8; }
 .quote-band--dbblue{ background: #0018A8; color: #fff; }
+/* Below 900px the band is one column, as the attribution script already
+   assumes: the quote takes the full measure and its author sits simply below
+   it, a paragraph's distance under the last line, without travelling. */
+@media (max-width: 900px) {
+  .quote-band > .container { grid-template-columns: minmax(0, 1fr); }
+  .quote-band .quote-text { grid-column: 1; }
+  .quote-credit-col { grid-column: 1; grid-row: 2; align-self: start; }
+  .quote-band .quote-attr { position: static; margin-top: 1.2em; }
+}
 
 /* Chapter 4's body runs as two sections so the Stroobant pull-quote can sit
    between them at full width. Padding stays here rather than inline so the
