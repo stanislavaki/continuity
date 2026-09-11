@@ -1994,7 +1994,16 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 976; }
   transition: opacity .2s ease;
   -webkit-tap-highlight-color: transparent;
 }
-.narr-film.is-open:not(.is-flying) .narr-film-toggle { opacity: 1; pointer-events: auto; }
+/* It keeps out of the picture while the film plays -- there to be pressed, but seen
+   only while the pointer is over the frame, or while it has keyboard focus -- and
+   stays in view while the film is paused, as the play triangle. On a touch screen,
+   with no pointer to hover, a tap on the picture pauses the film. */
+.narr-film.is-open:not(.is-flying) .narr-film-toggle { pointer-events: auto; }
+.narr-film.is-open.is-paused:not(.is-flying) .narr-film-toggle,
+.narr-film.is-open:not(.is-flying) .narr-film-toggle:focus-visible { opacity: 1; }
+@media (hover: hover) {
+  .narr-film.is-open:not(.is-flying) .narr-film-frame:hover .narr-film-toggle { opacity: 1; }
+}
 .narr-film-glyph {
   position: relative;
   display: block;
@@ -3271,12 +3280,13 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 976; }
   color: rgba(0,0,0,.4);
 }
 
-/* Full-bleed video. Sits outside .container, so plain 100% is already the full
-   section width — no 100vw, which counts the scrollbar and overflows. */
-.video-fullbleed {
-  width: 100%;
-  margin-top: 48px;
-}
+/* The making film, across the article grid's full measure -- page columns 1-8 --
+   between two article bodies; the grid's row gap stands it off the text on either
+   side, at any width, with no breakout to work out. */
+.article-grid > .video-measure { grid-column: 1 / -1; }
+/* That section now ends on text rather than on the film, straight into the next
+   chapter, so it closes with the room the Deutsche Bank body closes with. */
+.making-body:has(+ section.chapter) { padding-bottom: 120px; }
 
 /* Pull-quote bands -----------------------------------------------------
    Each quote gets its own full-width section, grounded in the colour the
