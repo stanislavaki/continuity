@@ -501,10 +501,10 @@ body .menu-btn.is-open { z-index: 600; color: #fff; }
    takes its own cuts as its basis (--parts, also from crailMeasure()), so they
    come out of no chapter's share: every part's ink is in exact proportion to
    its length, cut or not. Each part is an item of its own — it swells alone
-   under the pointer, and has its own link in the open list. The swell is --k,
-   the falloff from crailPaint() (0 at rest, 1 under the pointer), taken up to
-   --crail-swell as a scaleX: painted rather than laid out, so widening a part
-   never disturbs the lengths beside it. */
+   under the pointer, and has its own link in the open list, which it lights
+   while it swells. The swell is --k, the falloff from crailPaint() (0 at rest,
+   1 under the pointer), taken up to --crail-swell as a scaleX: painted rather
+   than laid out, so widening a part never disturbs the lengths beside it. */
 .crail-bar {
   display: flex;
   flex-direction: column;
@@ -577,9 +577,6 @@ body.light .crail-fill { background: #000; }
   pointer-events: auto;       /* a click on the blur closes the menu */
   transition: opacity .34s ease, visibility 0s, background-color .45s ease;
 }
-/* Open, the rail holds its place but stops answering the pointer, so it does
-   not swell under a press meant for the blur. */
-.crail.is-open { pointer-events: none; }
 /* Out of the way at both ends of the page. The rail says which of the six
    chapters you are in and how far through it; on the hero you are not in one
    yet, and on the footer you are past the last, so on both it is answering a
@@ -647,7 +644,9 @@ body.light .crail-panel {
    this weight and tracking (the figures are tabular, so 5.2 and 5.3 match) — so
    every title starts on the same x, one lead past the widest number, whether
    its own number shows or not. It shows for the part you are in, and for the
-   others only while the pointer, or the keyboard, is on their link. */
+   others only while they are hovered — the pointer on the link or on its part
+   of the rail, which crailPaint() marks .is-hover — or the keyboard is on the
+   link. */
 .crail-num {
   flex: none;
   width: 1.63em;
@@ -657,14 +656,17 @@ body.light .crail-panel {
 }
 .crail-link.is-active .crail-num,
 .crail-link:hover .crail-num,
+.crail-link.is-hover .crail-num,
 .crail-link:focus-visible .crail-num { opacity: 1; }
 
 body.dark  .crail-link { color: rgba(255, 255, 255, 0.46); }
 body.dark  .crail-link.is-active,
-body.dark  .crail-link:hover { color: #fff; }
+body.dark  .crail-link:hover,
+body.dark  .crail-link.is-hover { color: #fff; }
 body.light .crail-link { color: rgba(0, 0, 0, 0.38); }
 body.light .crail-link.is-active,
-body.light .crail-link:hover { color: #000; }
+body.light .crail-link:hover,
+body.light .crail-link.is-hover { color: #000; }
 
 /* Rows arrive after the blur, one behind the next, so the list reads as
    settling into place instead of appearing whole. */

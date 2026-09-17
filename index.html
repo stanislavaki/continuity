@@ -914,6 +914,8 @@ function crailInit() {
     seg: -1,        // last written active part
     pct: -1,        // last written fill percentage, rounded to whole percent
     pointerY: null, // where the pointer is on the rail, or null when it is away
+    itemHover: null, // the open list's link the pointer is on, or null
+    pointed: -1,    // the part a paint found the pointer on, rail or list
   };
 }
 
@@ -926,19 +928,35 @@ function crailInit() {
 // to its centre: the parts run as long as what they stand for, so a pointer
 // anywhere along one is on it. The swell is a scaleX, painted rather than laid
 // out, so the rects read here never move under it.
+//
+// A part and its title in the open list are one item, hovered together. The
+// pointer can be on the rail, or on a title — and then the swell is centred on
+// that title's part, as if the pointer stood there. Whichever it is, the part
+// it lands on marks its title .is-hover. That is done whether the list is open
+// or not, so a bar pointed at when the rail is pressed keeps its swell, and its
+// title arrives already lit.
 function crailPaint(st) {
   const reach = 24;   // px past a part's ends that the swell still carries
-  for (const g of st.segs) {
+  let y = st.pointerY;
+  if (y === null && st.itemHover !== null) {
+    const r = st.segs[st.itemHover].getBoundingClientRect();
+    y = r.top + r.height / 2;
+  }
+  let pointed = -1, nearest = Infinity;
+  st.segs.forEach((g, n) => {
     let k = 0;
-    if (st.pointerY !== null) {
+    if (y !== null) {
       const r = g.getBoundingClientRect();
-      const d = Math.min(1, Math.max(0, r.top - st.pointerY, st.pointerY - r.bottom) / reach);
-      k = 0.5 * (1 + Math.cos(Math.PI * d));   // 1 on the part, 0 at the edge of reach
+      const dist = Math.max(0, r.top - y, y - r.bottom);
+      if (dist < nearest) { nearest = dist; pointed = n; }
+      k = 0.5 * (1 + Math.cos(Math.PI * Math.min(1, dist / reach)));   // 1 on the part, 0 at the edge of reach
     }
     // How far to swell, 0 to 1. CSS takes it up to --crail-swell, the widest
     // --rail-x keeps clear of the text.
     g.style.setProperty('--k', k.toFixed(3));
-  }
+  });
+  st.pointed = pointed;
+  st.links.forEach((a, n) => a.classList.toggle('is-hover', n === pointed));
 }
 
 // ---- Type to fit -----------------------------------------------------------
@@ -1069,17 +1087,25 @@ function crailSync(scrollTop, docH) {
     rail.classList.toggle('is-open', open);
     rail.setAttribute('aria-expanded', String(open));
     panel.setAttribute('aria-hidden', String(!open));
-    if (open) {
-      // Opening puts pointer-events: none on the rail, so its own pointerleave
-      // will never arrive and the bars would stay frozen mid-swell. Let them go.
-      st.pointerY = null;
-      crailPaint(st);
-      crailFit(st);
-    }
+    // The rail stays live while the list is open, so whatever it is pointed at
+    // keeps its swell and lights its title as the list arrives. Closing lets go
+    // of a title the pointer was on: its link is hidden now and may never hear
+    // the pointer leave.
+    if (!open) st.itemHover = null;
+    crailPaint(st);
+    if (open) crailFit(st);
   }
   const crailClose = () => crailOpen(false);
 
-  rail.addEventListener('click', () => crailOpen(!panel.classList.contains('is-open')));
+  // Closed, a press on the rail opens the list. Open, the rail stands in for the
+  // list beside it: a press goes to the part it is on, as a press on that
+  // title would, and one on no part — from the keyboard — closes the list.
+  rail.addEventListener('click', () => {
+    if (!panel.classList.contains('is-open')) return crailOpen(true);
+    const link = st.pointerY !== null && st.links[st.pointed];
+    if (link) link.click();
+    else crailClose();
+  });
 
   // Dock magnification: track the pointer down the rail, one paint per frame.
   let magFrame = 0;
@@ -1089,6 +1115,16 @@ function crailSync(scrollTop, docH) {
     magFrame = requestAnimationFrame(() => { magFrame = 0; crailPaint(st); });
   });
   rail.addEventListener('pointerleave', () => { st.pointerY = null; crailPaint(st); });
+
+  // And from the other side: a title under the pointer swells its own part.
+  st.links.forEach((a, n) => {
+    a.addEventListener('pointerenter', () => { st.itemHover = n; crailPaint(st); });
+    a.addEventListener('pointerleave', () => {
+      if (st.itemHover !== n) return;
+      st.itemHover = null;
+      crailPaint(st);
+    });
+  });
 
   // Closing on the link's own click would race the smooth scroll the anchor
   // starts, so let the click through and close on the next frame.
