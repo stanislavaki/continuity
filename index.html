@@ -57,16 +57,20 @@
            per bar and a link per part: the journey's bar is cut at its
            sub-chapters, so its row holds three separate items, each linking to
            its own sub-chapter. A link's number shows for the part you are in,
-           and for the others only while the pointer is on them. -->
+           and for the others only while the pointer is on them. Below 901px,
+           where the + button opens this list without the rail, the journey's
+           title stands once over its three sub-chapters, unnumbered, and they
+           drop it — see .crail-chapter. -->
       <div class="crail-row"><a href="#top" class="crail-link" style="--i:0" data-crail-close><span class="crail-num" aria-hidden="true">0</span><span class="crail-txt" data-i18n="nav.intro">Intro</span></a></div>
       <div class="crail-row"><a href="#ch1" class="crail-link" style="--i:1" data-crail-close><span class="crail-num" aria-hidden="true">1</span><span class="crail-txt" data-i18n="nav.math">Mathematics of the sculpture</span></a></div>
       <div class="crail-row"><a href="#ch2" class="crail-link" style="--i:2" data-crail-close><span class="crail-num" aria-hidden="true">2</span><span class="crail-txt">Max Bill</span></a></div>
       <div class="crail-row"><a href="#ch3" class="crail-link" style="--i:3" data-crail-close><span class="crail-num" aria-hidden="true">3</span><span class="crail-txt">Deutsche Bank</span></a></div>
       <div class="crail-row"><a href="#ch4" class="crail-link" style="--i:4" data-crail-close><span class="crail-num" aria-hidden="true">4</span><span class="crail-txt" data-i18n="nav.making">The making</span></a></div>
       <div class="crail-row">
-        <a href="#granite-trip" class="crail-link" style="--i:5" data-crail-close><span class="crail-num" aria-hidden="true">5.1</span><span class="crail-txt"><span data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span>: <span data-i18n="nav.granite-trip">Granite Trip</span></span></a>
-        <a href="#sculpting" class="crail-link" style="--i:6" data-crail-close><span class="crail-num" aria-hidden="true">5.2</span><span class="crail-txt"><span data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span>: <span data-i18n="nav.sculpting">Sculpting</span></span></a>
-        <a href="#sculpture-trip" class="crail-link" style="--i:7" data-crail-close><span class="crail-num" aria-hidden="true">5.3</span><span class="crail-txt"><span data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span>: <span data-i18n="nav.sculpture-trip">Sculpture Trip</span></span></a>
+        <a href="#ch5" class="crail-link crail-chapter" style="--i:5" data-crail-close><span class="crail-num" aria-hidden="true"></span><span class="crail-txt" data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span></a>
+        <a href="#granite-trip" class="crail-link" style="--i:6" data-crail-close><span class="crail-num" aria-hidden="true">5.1</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span>: </span><span data-i18n="nav.granite-trip">Granite Trip</span></span></a>
+        <a href="#sculpting" class="crail-link" style="--i:7" data-crail-close><span class="crail-num" aria-hidden="true">5.2</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span>: </span><span data-i18n="nav.sculpting">Sculpting</span></span></a>
+        <a href="#sculpture-trip" class="crail-link" style="--i:8" data-crail-close><span class="crail-num" aria-hidden="true">5.3</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span>: </span><span data-i18n="nav.sculpture-trip">Sculpture Trip</span></span></a>
       </div>
     </nav>
   </div>
@@ -1011,7 +1015,9 @@ function crailInit() {
     nav: panel.querySelector('.crail-nav'),
     // The open list, built as the rail is: a row per bar, a link per part.
     rows: [...panel.querySelectorAll('.crail-row')],
-    links: [...panel.querySelectorAll('.crail-link')],
+    // The journey's chapter title, shown only without the rail, stands for no
+    // part, so it is left out.
+    links: [...panel.querySelectorAll('.crail-link:not(.crail-chapter)')],
     tops: null,     // chapter start offsets, filled by crailMeasure
     segTops: null,  // part start offsets, likewise
     end: 0,         // where the last chapter stops: the top of the footer

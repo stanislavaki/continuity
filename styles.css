@@ -606,6 +606,11 @@ body.dark  .crail-link:hover { color: #fff; }
 body.light .crail-link { color: rgba(0, 0, 0, 0.38); }
 body.light .crail-link.is-active,
 body.light .crail-link:hover { color: #000; }
+/* The journey's title over its sub-chapters, and the prefix they drop for it:
+   only without the rail -- see the narrow screens below. On the rail each
+   sub-chapter keeps its full title, since each stands level with its own part
+   of the stroke. */
+.crail-chapter { display: none; }
 
 /* Rows arrive after the blur, one behind the next, so the list reads as
    settling into place instead of appearing whole. */
@@ -651,15 +656,20 @@ body:has(.lightbox.is-open) .tts-controls {
   .crail { display: none; }
   .crail-panel {
     align-items: flex-start;
-    padding: 81px var(--gutter) var(--gutter);   /* clear of the + button, 33px down and 48px tall */
+    padding: 81px var(--gutter) 0;   /* clear of the + button, 33px down and 48px tall */
     overflow-y: auto;
   }
+  /* Set on the bottom of the screen, its last line's baseline twice --corner-y
+     up, twice the inset the corner controls it hides keep theirs at: under
+     that baseline are the line's 0.229em of descent and the link's 10px of
+     padding. Taller than the screen, it starts from the top and scrolls. */
   .crail-nav {
     --crail-type: clamp(22px, 2.2vw, 36px);
     top: 0;
     width: 100%;
     height: auto;
-    margin-block: auto;         /* centred while it fits, from the top once it does not */
+    margin-top: auto;
+    margin-bottom: calc(2 * var(--corner-y) - 10px - 0.229 * var(--crail-type));
     gap: 0;
   }
   .crail-row { flex: none; gap: 0; }
@@ -670,6 +680,13 @@ body:has(.lightbox.is-open) .tts-controls {
     white-space: normal;
   }
   .crail-num { opacity: 1; }
+  /* The journey's three sub-chapters under their chapter's title, set once and
+     unnumbered, rather than each opening on it. The title links to the
+     chapter's head, and is inked while you are in any of the three. */
+  .crail-chapter { display: flex; }
+  .crail-pre { display: none; }
+  body.dark  .crail-row:has(.crail-link.is-active) .crail-chapter { color: #fff; }
+  body.light .crail-row:has(.crail-link.is-active) .crail-chapter { color: #000; }
   /* The list has the screen: the read-aloud cluster and the language menu in
      the corner would stand over its first column. Reading goes on. */
   body:has(.crail-panel.is-open) .tts-controls {
