@@ -417,12 +417,15 @@ body .menu-btn.is-open { z-index: 600; color: #fff; }
    + button and its full-screen .menu-overlay above, which are
    left untouched.
 
-   Closed, it is six hairline bars stacked at the left gutter on
-   the vertical centre line: one per chapter, muted for chapters
-   still ahead, inked for chapters already read, and for the
-   chapter you are in a longer bar whose ink fills left to right
-   as you move through it. So the rail carries two readings at
-   once — which chapter, and how far into it.
+   Closed, it is a map of the page: six 4px strokes stacked end
+   to end down the left gutter, centred on the viewport, one per
+   chapter and each as tall as its chapter is long to scroll. The
+   journey's is cut by 1px into its three sub-chapters, to the
+   same scale. Chapters already read are inked, chapters still
+   ahead muted, and the one you are in fills top to bottom as you
+   move through it. So the rail carries three readings at once —
+   how the page is proportioned, which chapter you are in, and how
+   far into it.
 
    Clicked, it opens .crail-panel: the same six entries as large
    type on a floating card that grows out of the rail's own
@@ -432,25 +435,31 @@ body .menu-btn.is-open { z-index: 600; color: #fff; }
    ============================================================ */
 .crail {
   position: fixed;
-  /* One past the gutter: the grid's line is a 1px border drawn inside the first
-     column, so the column itself begins a pixel in. The read-aloud controls and
-     the open menu's marker take the same pixel — see .tts-controls and
-     .crail-panel. */
-  left: calc(var(--gutter) + 1px);
+  /* The strokes sit one past the gutter: the grid's line is a 1px border drawn
+     inside the first column, so the column itself begins a pixel in. The
+     read-aloud controls and the open menu's marker take the same pixel — see
+     .tts-controls and .crail-panel. The box starts 10px short of that, and its
+     padding puts the strokes back on it — see below. */
+  left: calc(var(--gutter) + 1px - 10px);
   top: 50%;
   transform: translateY(-50%);
   z-index: 300;               /* over the page, under .menu-overlay (500) */
+  /* The rail's whole length, strokes and gaps together. The strokes share what
+     the gaps leave in proportion to their chapters — see .crail-bar — so this
+     is the one number that sets the scale of the map. */
+  --crail-h: clamp(160px, 29.33vh, 280px);
+  box-sizing: content-box;
+  height: var(--crail-h);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 21px;
-  /* The bars are 4px tall, so the button itself is nearly unhittable. Padding
-     grows the target out to the right and down without moving the bars off the
-     gutter — the flex box is left-aligned. Kept to 12px on the right: this box
-     is invisible but still swallows clicks, and in the journey it lies over
-     photographs that open the lightbox, so it should not reach further into the
-     column than a comfortable target needs (46px at the active bar's width). */
-  padding: 14px 12px 14px 0;
+  gap: 4px;
+  /* The strokes are 4px wide, so the button itself is nearly unhittable.
+     Padding grows the target without moving them off the gutter: 10px out into
+     the empty margin on the left, 12px on the right. No further than that into
+     the column: this box is invisible but still swallows clicks, and in the
+     journey it lies over photographs that open the lightbox. */
+  padding: 14px 12px 14px 10px;
   background: transparent;
   border: none;
   /* The hand, as over a link. Never `none`: TWEAK_DEFAULTS ships the custom
@@ -460,44 +469,57 @@ body .menu-btn.is-open { z-index: 600; color: #fff; }
   opacity: 1;
   transition: opacity .3s ease, transform .5s cubic-bezier(.22, 1, .36, 1);
 }
-/* Length and thickness are both driven from JS — see crailPaint(), which sets
-   --w (the bar's length in px, resting length plus its share of the swell under
-   the pointer) and --k (the thickness multiplier). Neither affects the layout:
-   width does not move siblings in a column, and thickness is a scaleY, which is
-   painted rather than laid out. That is what keeps the bars' vertical centres
-   fixed while they magnify, so the falloff can be measured once. */
+/* Each stroke's length is data: crailMeasure() sets --len to its chapter's
+   scroll length in px, and flex hands out the height the gaps leave in
+   proportion to those lengths. So the rail stays to scale at any --crail-h, and
+   eases into its new proportions whenever the layout moves the chapters. The
+   swell under the pointer is --k, from crailPaint(): a scaleX, painted rather
+   than laid out, so widening a stroke never disturbs the lengths beside it.
+
+   A stroke is drawn in parts, .crail-seg: one for most chapters, one per
+   sub-chapter where it is cut, 1px apart and each with its own --len. The bar
+   takes its own cuts as its basis (--parts, also from crailMeasure()), so they
+   come out of no chapter's share: every part's ink is in exact proportion to
+   its length, cut or not. */
 .crail-bar {
-  position: relative;
-  display: block;
-  width: calc(var(--w, 18) * 1px);
-  height: 4px;
-  overflow: hidden;
-  transform: scaleY(var(--k, 1));
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 4px;
+  flex: var(--len, 1) 1 calc((var(--parts, 1) - 1) * 1px);
+  transform: scaleX(var(--k, 1));
   transform-origin: left center;
-  transition: width .18s cubic-bezier(.22, 1, .36, 1),
-              transform .18s cubic-bezier(.22, 1, .36, 1),
+  transition: flex-grow .6s cubic-bezier(.22, 1, .36, 1),
+              transform .18s cubic-bezier(.22, 1, .36, 1);
+}
+.crail-seg {
+  position: relative;
+  flex: var(--len, 1) 1 0px;
+  min-height: 4px;            /* a part too short to draw still shows, as a dot */
+  overflow: hidden;
+  transition: flex-grow .6s cubic-bezier(.22, 1, .36, 1),
               background-color .45s ease;
 }
 .crail-fill {
   position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: calc(var(--p, 0) * 100%);
+  left: 0; right: 0; top: 0;
+  height: 0;
   /* Same tracking as .progress-bar: the fill follows the scroll directly
      rather than easing behind it, so it reads as a position, not an animation. */
-  transition: width .08s linear, background-color .45s ease;
+  transition: height .08s linear, background-color .45s ease;
 }
-/* An active chapter at 0% would otherwise show as a bare 34px track with no
-   ink at all, which reads as "not here". Keep a sliver. */
-.crail-bar.is-active .crail-fill { min-width: 5px; }
+/* The part you are in would otherwise show no ink at all at 0%, which reads as
+   "not here". Keep a sliver. */
+.crail-seg.is-active .crail-fill { min-height: 2px; }
 
 /* Theme. Every fixed control on this page flips with the body.dark /
    body.light classes that onScroll() sets from the section under the
    viewport's midpoint -- the rail, the + menu button and the read-aloud
    cluster alike. A 2px bar is what made the case: blended against the
    mid-greys of the granite photographs it disappears entirely. */
-body.dark  .crail-bar  { background: rgba(255, 255, 255, 0.45); }
+body.dark  .crail-seg  { background: rgba(255, 255, 255, 0.45); }
 body.dark  .crail-fill { background: #fff; }
-body.light .crail-bar  { background: rgba(0, 0, 0, 0.28); }
+body.light .crail-seg  { background: rgba(0, 0, 0, 0.28); }
 body.light .crail-fill { background: #000; }
 
 /* ---- The opened card ---- */
@@ -686,7 +708,7 @@ body:has(.lightbox.is-open) .tts-controls {
   .crail, .crail-panel { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .crail, .crail-bar, .crail-fill, .crail-link, .crail-marker, .crail-marker i,
+  .crail, .crail-bar, .crail-seg, .crail-fill, .crail-link, .crail-marker, .crail-marker i,
   /* .crail-panel.is-open restates the whole transition shorthand, so it has to
      be named here too or it outranks this rule and keeps its full fade. */
   .crail-panel, .crail-panel.is-open {
