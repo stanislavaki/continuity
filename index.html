@@ -21,7 +21,7 @@
   <div class="topbar">
     <a href="#top" class="logo"><img src="./assets/logo-short.png" alt="Méridien" class="logo-img"/></a>
   </div>
-  <button class="menu-btn" id="menuBtn" aria-label="Menu">
+  <button class="menu-btn" id="menuBtn" aria-label="Contents" data-i18n-label="nav.contents" aria-expanded="false" aria-controls="crailPanel">
     <svg viewBox="0 0 48 48"><path d="M 0 19.96 L 48 19.96 L 48 27.879 L 0 27.879 L 0 19.96 Z M 20.087 48 L 20.087 0 L 27.993 0 L 27.993 48 L 20.087 48 Z"/></svg>
   </button>
 
@@ -29,31 +29,15 @@
     <span>FRANKFURT</span><span class="dot"></span><span>50°07′N 8°41′E</span>
   </div>
 
-  <!-- Menu overlay -->
-  <div class="menu-overlay" id="menuOverlay">
-    <span class="menu-label">Contents</span>
-    <button class="menu-close" id="menuClose" aria-label="Close">
-      <svg viewBox="0 0 48 48"><path d="M 0 19.96 L 48 19.96 L 48 27.879 L 0 27.879 L 0 19.96 Z M 20.087 48 L 20.087 0 L 27.993 0 L 27.993 48 L 20.087 48 Z"/></svg>
-    </button>
-    <nav class="menu-nav">
-      <a href="#top" data-close><span>Intro</span><span class="num">00</span></a>
-      <a href="#ch1" data-close><span>Mathematics of the sculpture</span><span class="num">01</span></a>
-      <a href="#ch2" data-close><span>Max Bill</span><span class="num">02</span></a>
-      <a href="#ch3" data-close><span>Deutsche Bank</span><span class="num">03</span></a>
-      <a href="#ch4" data-close><span>The making</span><span class="num">04</span></a>
-      <a href="#ch5" data-close><span>Journey from Sardinia to Frankfurt</span><span class="num">05</span></a>
-    </nav>
-  </div>
-
   <!-- Chapter rail — second contents control, on the left gutter at the
        vertical centre. Six strokes end to end, one per chapter, each as long
        as its chapter is to scroll: the one you are in fills as you read
-       through it. Clicking any of them opens .crail-panel below. The + button
-       and its overlay above are unchanged.
+       through it. Clicking any of them opens .crail-panel below; on narrow
+       screens, where the rail is hidden, the + button above opens it.
        Each stroke is drawn in parts, .crail-seg. A bar's first part starts
        with its chapter; any later one starts at its data-crail-from anchor,
        which is how the journey's stroke is cut at its sub-chapters. -->
-  <button class="crail" id="crail" aria-label="Contents" aria-expanded="false" aria-controls="crailPanel">
+  <button class="crail" id="crail" aria-label="Contents" data-i18n-label="nav.contents" aria-expanded="false" aria-controls="crailPanel">
     <span class="crail-bar" aria-hidden="true"><span class="crail-seg"><span class="crail-fill"></span></span></span>
     <span class="crail-bar" aria-hidden="true"><span class="crail-seg"><span class="crail-fill"></span></span></span>
     <span class="crail-bar" aria-hidden="true"><span class="crail-seg"><span class="crail-fill"></span></span></span>
@@ -66,26 +50,34 @@
     </span>
   </button>
 
-  <div class="crail-panel" id="crailPanel" role="dialog" aria-label="Contents" aria-hidden="true">
+  <div class="crail-panel" id="crailPanel" role="dialog" aria-label="Contents" data-i18n-label="nav.contents" aria-hidden="true">
     <nav class="crail-nav">
       <!-- Laid out on the rail's own measure and built as the rail is, so each
            title stands level with its part of the rail — see .crail-nav. A row
            per bar and a link per part: the journey's bar is cut at its
            sub-chapters, so its row holds three separate items, each linking to
            its own sub-chapter. A link's number shows for the part you are in,
-           and for the others only while the pointer is on them. -->
-      <div class="crail-row"><a href="#top" class="crail-link" style="--i:0" data-crail-close><span class="crail-num" aria-hidden="true">0</span><span class="crail-txt">Intro</span></a></div>
-      <div class="crail-row"><a href="#ch1" class="crail-link" style="--i:1" data-crail-close><span class="crail-num" aria-hidden="true">1</span><span class="crail-txt">Mathematics of the sculpture</span></a></div>
+           and for the others only while the pointer is on them. Below 901px,
+           where the + button opens this list without the rail, the journey's
+           title stands once over its three sub-chapters, unnumbered, and they
+           drop it — see .crail-chapter. -->
+      <div class="crail-row"><a href="#top" class="crail-link" style="--i:0" data-crail-close><span class="crail-num" aria-hidden="true">0</span><span class="crail-txt" data-i18n="nav.intro">Intro</span></a></div>
+      <div class="crail-row"><a href="#ch1" class="crail-link" style="--i:1" data-crail-close><span class="crail-num" aria-hidden="true">1</span><span class="crail-txt" data-i18n="nav.math">Mathematics of the sculpture</span></a></div>
       <div class="crail-row"><a href="#ch2" class="crail-link" style="--i:2" data-crail-close><span class="crail-num" aria-hidden="true">2</span><span class="crail-txt">Max Bill</span></a></div>
       <div class="crail-row"><a href="#ch3" class="crail-link" style="--i:3" data-crail-close><span class="crail-num" aria-hidden="true">3</span><span class="crail-txt">Deutsche Bank</span></a></div>
-      <div class="crail-row"><a href="#ch4" class="crail-link" style="--i:4" data-crail-close><span class="crail-num" aria-hidden="true">4</span><span class="crail-txt">The making</span></a></div>
+      <div class="crail-row"><a href="#ch4" class="crail-link" style="--i:4" data-crail-close><span class="crail-num" aria-hidden="true">4</span><span class="crail-txt" data-i18n="nav.making">The making</span></a></div>
       <div class="crail-row">
-        <a href="#granite-trip" class="crail-link" style="--i:5" data-crail-close><span class="crail-num" aria-hidden="true">5.1</span><span class="crail-txt">Journey from Sardinia to Frankfurt: Granite Trip</span></a>
-        <a href="#sculpting" class="crail-link" style="--i:6" data-crail-close><span class="crail-num" aria-hidden="true">5.2</span><span class="crail-txt">Journey from Sardinia to Frankfurt: Sculpting</span></a>
-        <a href="#sculpture-trip" class="crail-link" style="--i:7" data-crail-close><span class="crail-num" aria-hidden="true">5.3</span><span class="crail-txt">Journey from Sardinia to Frankfurt: Sculpture Trip</span></a>
+        <a href="#ch5" class="crail-link crail-chapter" style="--i:5" data-crail-close><span class="crail-num" aria-hidden="true"></span><span class="crail-txt" data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span></a>
+        <a href="#granite-trip" class="crail-link" style="--i:6" data-crail-close><span class="crail-num" aria-hidden="true">5.1</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span>: </span><span data-i18n="nav.granite-trip">Granite Trip</span></span></a>
+        <a href="#sculpting" class="crail-link" style="--i:7" data-crail-close><span class="crail-num" aria-hidden="true">5.2</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span>: </span><span data-i18n="nav.sculpting">Sculpting</span></span></a>
+        <a href="#sculpture-trip" class="crail-link" style="--i:8" data-crail-close><span class="crail-num" aria-hidden="true">5.3</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span>: </span><span data-i18n="nav.sculpture-trip">Sculpture Trip</span></span></a>
       </div>
     </nav>
   </div>
+
+  <!-- The language menu's blur. The menu itself is the first control in
+       .tts-controls, at the end of the body. -->
+  <div class="lang-veil" id="langVeil" aria-hidden="true"></div>
 
   <!-- Journey lightbox -->
   <div class="lightbox" id="lightbox" aria-hidden="true">
@@ -118,7 +110,7 @@
     <!-- HERO -->
     <header class="hero" id="top">
       <div class="hero-bg" id="heroBg"></div>
-      <h1 class="hero-title">toward kontinuität</h1>
+      <h1 class="hero-title"><span class="hero-title-line">toward</span> <span class="hero-title-line">kontinuität</span></h1>
     </header>
 
     <!-- INTRO · facts rail. The sticky sculpture pins across this whole block,
@@ -863,22 +855,139 @@ function onScroll() {
 window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
-// ========== Menu ==========
-const menuBtn = document.getElementById('menuBtn');
-const menuOverlay = document.getElementById('menuOverlay');
-const menuClose = document.getElementById('menuClose');
-function closeMenu() { menuOverlay.classList.remove('is-open'); menuBtn.classList.remove('is-open'); }
-menuBtn.addEventListener('click', () => {
-  const open = menuOverlay.classList.toggle('is-open');
-  menuBtn.classList.toggle('is-open', open);
-});
-menuClose.addEventListener('click', closeMenu);
-document.querySelectorAll('[data-close]').forEach(a => a.addEventListener('click', closeMenu));
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+// ========== Language menu ==========
+// The page is written in English, and the markup's own text is that English.
+// An element with data-i18n takes its text from the chosen language's entry
+// here, one with data-i18n-label its aria-label; a string a language leaves
+// out stays as written, which is why the proper names carry no key.
+const I18N = {
+  de: {
+    'lang.label': 'Sprache',
+    'nav.contents': 'Inhalt',
+    'nav.intro': 'Einführung',
+    'nav.math': 'Mathematik der Skulptur',
+    'nav.making': 'Die Entstehung',
+    'nav.journey': 'Reise von Sardinien nach Frankfurt',
+    'nav.granite-trip': 'Granittransport',
+    'nav.sculpting': 'Bildhauerei',
+    'nav.sculpture-trip': 'Skulpturentransport',
+  },
+  it: {
+    'lang.label': 'Lingua',
+    'nav.contents': 'Indice',
+    'nav.intro': 'Introduzione',
+    'nav.math': 'La matematica della scultura',
+    'nav.making': 'La realizzazione',
+    'nav.journey': 'Viaggio dalla Sardegna a Francoforte',
+    'nav.granite-trip': 'Il trasporto del granito',
+    'nav.sculpting': 'La lavorazione',
+    'nav.sculpture-trip': 'Il trasporto della scultura',
+  },
+  es: {
+    'lang.label': 'Idioma',
+    'nav.contents': 'Índice',
+    'nav.intro': 'Introducción',
+    'nav.math': 'Las matemáticas de la escultura',
+    'nav.making': 'La creación',
+    'nav.journey': 'Viaje de Cerdeña a Fráncfort',
+    'nav.granite-trip': 'El transporte del granito',
+    'nav.sculpting': 'El tallado',
+    'nav.sculpture-trip': 'El transporte de la escultura',
+  },
+};
+
+// The menu's markup sits in .tts-controls at the end of the body, after this
+// script, so it starts once the document is read.
+function __initLang() {
+  const root = document.getElementById('lang');
+  const veil = document.getElementById('langVeil');
+  if (!root || !veil) return;
+  const btn = root.querySelector('.lang-btn');
+  const list = root.querySelector('.lang-list');
+  const opts = [...root.querySelectorAll('.lang-opt')];
+  const codes = opts.map(o => o.lang);
+  const key = 'toward-kontinuitat-lang';
+  // Each string's English, read off the markup before any language replaces it.
+  const texts = [...document.querySelectorAll('[data-i18n]')]
+    .map(el => [el, el.dataset.i18n, el.textContent]);
+  const labels = [...document.querySelectorAll('[data-i18n-label]')]
+    .map(el => [el, el.dataset.i18nLabel, el.getAttribute('aria-label')]);
+  const isOpen = () => root.classList.contains('is-open');
+
+  function apply(code) {
+    const t = I18N[code] || {};
+    texts.forEach(([el, k, en]) => { el.textContent = t[k] ?? en; });
+    labels.forEach(([el, k, en]) => el.setAttribute('aria-label', t[k] ?? en));
+    document.documentElement.lang = code;
+    const cur = opts.find(o => o.lang === code);
+    opts.forEach(o => o.setAttribute('aria-current', String(o === cur)));
+    btn.setAttribute('aria-label', `${t['lang.label'] ?? 'Language'}: ${cur.getAttribute('aria-label')}`);
+  }
+
+  function choose(code) {
+    apply(code);
+    try { localStorage.setItem(key, code); } catch (e) {}
+    // Held in the address as well, so a link passes the language on. English
+    // is the page as written and needs no parameter.
+    const url = new URL(location.href);
+    if (code === codes[0]) url.searchParams.delete('lang');
+    else url.searchParams.set('lang', code);
+    if (url.href !== location.href) history.replaceState(history.state, '', url);
+  }
+
+  function setOpen(open, refocus) {
+    const hadFocus = root.contains(document.activeElement);
+    root.classList.toggle('is-open', open);
+    veil.classList.toggle('is-open', open);
+    btn.setAttribute('aria-expanded', String(open));
+    list.inert = !open;
+    if (open) opts.find(o => o.getAttribute('aria-current') === 'true').focus({ preventScroll: true });
+    else if (refocus && hadFocus) btn.focus({ preventScroll: true });
+  }
+
+  btn.addEventListener('click', () => setOpen(!isOpen()));
+  opts.forEach(o => o.addEventListener('click', () => {
+    choose(o.lang);
+    setOpen(false, true);
+  }));
+  // A press anywhere on the blur closes the menu, as it does the chapter list;
+  // so does focus moving on to anything outside it.
+  document.addEventListener('pointerdown', e => {
+    if (isOpen() && !root.contains(e.target)) setOpen(false);
+  });
+  document.addEventListener('focusin', e => {
+    if (isOpen() && !root.contains(e.target)) setOpen(false);
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && isOpen()) setOpen(false, true);
+  });
+  root.addEventListener('keydown', e => {
+    if (!isOpen() || (e.key !== 'ArrowDown' && e.key !== 'ArrowUp')) return;
+    e.preventDefault();
+    const i = opts.indexOf(document.activeElement);
+    const step = e.key === 'ArrowDown' ? 1 : opts.length - 1;
+    opts[i < 0 ? 0 : (i + step) % opts.length].focus({ preventScroll: true });
+  });
+
+  // The address first, so a shared link wins; then the last visit's choice.
+  let kept = null;
+  try { kept = localStorage.getItem(key); } catch (e) {}
+  const asked = new URLSearchParams(location.search).get('lang');
+  choose([asked, kept].find(c => codes.includes(c)) || codes[0]);
+  // Settle the folds on the chosen language before transitions come on, so a
+  // page that opens in German does not first play English folding away.
+  void root.offsetWidth;
+  root.classList.remove('is-still');
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', __initLang);
+} else {
+  __initLang();
+}
 
 // ========== Chapter rail ==========
-// The six bars on the left gutter, and the card they open. Additive to the +
-// button above, which keeps its own overlay.
+// The six bars on the left gutter, and the list they open -- which the +
+// button opens too, on narrow screens where the rail is hidden.
 //
 // A "chapter" here is the span from one chapter anchor to the next, so the six
 // ranges tile the document end to end with no gaps and no overlaps. That is
@@ -906,7 +1015,9 @@ function crailInit() {
     nav: panel.querySelector('.crail-nav'),
     // The open list, built as the rail is: a row per bar, a link per part.
     rows: [...panel.querySelectorAll('.crail-row')],
-    links: [...panel.querySelectorAll('.crail-link')],
+    // The journey's chapter title, shown only without the rail, stands for no
+    // part, so it is left out.
+    links: [...panel.querySelectorAll('.crail-link:not(.crail-chapter)')],
     tops: null,     // chapter start offsets, filled by crailMeasure
     segTops: null,  // part start offsets, likewise
     end: 0,         // where the last chapter stops: the top of the footer
@@ -1078,6 +1189,7 @@ function crailSync(scrollTop, docH) {
   const st = crailSync.state || (crailSync.state = crailInit());
   if (!st) return;
   const { rail, panel, nav } = st;
+  const menuBtn = document.getElementById('menuBtn');
 
   function crailOpen(open) {
     // Bring the map up to date before the list is set on it: the page can have
@@ -1086,6 +1198,8 @@ function crailSync(scrollTop, docH) {
     panel.classList.toggle('is-open', open);
     rail.classList.toggle('is-open', open);
     rail.setAttribute('aria-expanded', String(open));
+    menuBtn.classList.toggle('is-open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
     panel.setAttribute('aria-hidden', String(!open));
     // The rail stays live while the list is open, so whatever it is pointed at
     // keeps its swell and lights its title as the list arrives. Closing lets go
@@ -1173,13 +1287,13 @@ function crailSync(scrollTop, docH) {
   // list of titles: a press anywhere on the blur closes the menu.
   document.addEventListener('pointerdown', e => {
     if (!panel.classList.contains('is-open')) return;
-    if (nav.contains(e.target) || rail.contains(e.target)) return;
+    if (nav.contains(e.target) || rail.contains(e.target) || menuBtn.contains(e.target)) return;
     crailClose();
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') crailClose(); });
-  // The + overlay takes the whole screen; CSS hides the rail while it is open,
-  // but the card should also give up its state so it does not spring back.
-  menuBtn.addEventListener('click', crailClose);
+  // Where the rail is hidden, the + button opens the list in its place, and
+  // turns to a cross while it is open.
+  menuBtn.addEventListener('click', () => crailOpen(!panel.classList.contains('is-open')));
 
   // Chapter tops and lengths shift with the layout, and the rail's own first
   // paint needs a measured pass — onScroll() re-measures whenever the document
@@ -1408,13 +1522,22 @@ window.addEventListener('message', e => {
 });
 window.parent.postMessage({ type: '__edit_mode_available' }, '*');
 
-// Hero title: scale font-size so text spans 80vw
+// Hero title: scale font-size so text spans 80vw. On a phone it is set a word
+// to a line, and the longer line spans the width between the gutters instead.
 (() => {
   const t = document.querySelector('.hero-title');
   if (!t) return;
+  const phone = window.matchMedia('(max-width: 600px)');
   const fit = () => {
     t.style.fontSize = '100px';
-    const target = window.innerWidth * 0.8;
+    let target = window.innerWidth * 0.8;
+    if (phone.matches) {
+      const probe = document.createElement('div');
+      probe.style.cssText = 'position:absolute;visibility:hidden;width:calc(100vw - 2 * var(--gutter))';
+      document.body.appendChild(probe);
+      target = probe.offsetWidth;
+      probe.remove();
+    }
     const w = t.scrollWidth;
     if (!w) return;
     t.style.fontSize = (100 * target / w) + 'px';
@@ -3736,8 +3859,8 @@ function initSpeechEngine(btn, setState, hub) {
   const synth = window.speechSynthesis;
 
   const SKIP_SELECTOR = [
-    '.cursor', '.cursor-dot', '.progress', '.menu-btn', '.menu-label',
-    '.menu-overlay', '.crail', '.crail-panel', '.tweaks', '.tts-toggle', '.fact-n',
+    '.cursor', '.cursor-dot', '.progress', '.menu-btn', '.lang',
+    '.crail', '.crail-panel', '.tweaks', '.tts-toggle', '.fact-n',
     '.hero-scroll', '.topo-toggle', '.topo-slider', '.lightbox',
     '.tts-skip', '[aria-hidden="true"]', 'script', 'style', 'noscript'
   ].join(',');
@@ -3861,6 +3984,27 @@ if (document.readyState === 'loading') {
 </script>
 <script src="./g-toolset.js" defer></script>
 <div class="tts-controls">
+  <!-- Language menu, first in the read-aloud cluster, so the controls after it
+       move with it: on desktop the play button follows the row out as it
+       opens. Below 901px it takes the bottom-right corner instead, clear of
+       the play button under a finger. Closed, it shows the first two letters
+       of the page's language; opened, the languages unfold, across on desktop
+       and upward in the corner, and the two letters slide into place as the
+       start of their own name —
+       see .lang. Each name is its first two letters and the rest, in two
+       folds. A language is one option here, its code in its lang attribute,
+       and one entry in I18N in the script. The list stays inert while closed:
+       the button over it takes the press, and is-still holds the folds until
+       the script has set them. -->
+  <div class="lang is-still" id="lang">
+    <button class="lang-btn" type="button" aria-expanded="false" aria-controls="langList" aria-label="Language: English"></button>
+    <ul class="lang-list" id="langList" inert>
+      <li><button class="lang-opt" type="button" lang="en" aria-label="English" aria-current="true"><span class="lang-fold"><span>En</span></span><span class="lang-fold"><span class="lang-rest">glish</span></span></button></li>
+      <li><button class="lang-opt" type="button" lang="de" aria-label="Deutsch" aria-current="false"><span class="lang-fold"><span>De</span></span><span class="lang-fold"><span class="lang-rest">utsch</span></span></button></li>
+      <li><button class="lang-opt" type="button" lang="it" aria-label="Italiano" aria-current="false"><span class="lang-fold"><span>It</span></span><span class="lang-fold"><span class="lang-rest">aliano</span></span></button></li>
+      <li><button class="lang-opt" type="button" lang="es" aria-label="Español" aria-current="false"><span class="lang-fold"><span>Es</span></span><span class="lang-fold"><span class="lang-rest">pañol</span></span></button></li>
+    </ul>
+  </div>
   <button class="tts-prev" type="button" aria-label="Previous paragraph">
     <span class="tts-icon" aria-hidden="true"></span>
   </button>
