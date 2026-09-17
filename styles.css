@@ -35,6 +35,16 @@
   --maxw: 1440px;
   --gutter: clamp(20px, 3vw, 48px);
   --col-gap: clamp(12px, 1.875vw, 30px);
+  /* How far the chapter rail's 4px strokes widen under the pointer: 2.775
+     times, to about 11px. Held here rather than in crailPaint() because
+     --rail-x below has to clear it. */
+  --crail-swell: 2.775;
+  /* The left edge the fixed controls in the margin share on desktop: the
+     chapter rail's strokes and the read-aloud play triangle. Out in the margin,
+     so they stand clear of text set flush on the grid's first column -- a
+     pull-quote's author, an article's byline -- rather than over it: a stroke
+     at its widest, under the pointer, still ends 4px short of the gutter. */
+  --rail-x: calc(var(--gutter) - 4px - 4px * var(--crail-swell));
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -418,7 +428,7 @@ body .menu-btn.is-open { z-index: 600; color: #fff; }
    left untouched.
 
    Closed, it is a map of the page: six 4px strokes stacked end
-   to end down the left gutter, centred on the viewport, one per
+   to end down the left gutter, about the viewport's centre, one per
    chapter and each as tall as its chapter is long to scroll. The
    journey's is cut by 1px into its three sub-chapters, to the
    same scale. Chapters already read are inked, chapters still
@@ -427,33 +437,43 @@ body .menu-btn.is-open { z-index: 600; color: #fff; }
    how the page is proportioned, which chapter you are in, and how
    far into it.
 
-   Clicked, it opens .crail-panel: the same six entries as large
-   type on a floating card that grows out of the rail's own
-   anchor. Namespaced `crail-` because `.facts-rail`, `.rail-fact`,
+   Clicked, it opens .crail-panel: the page blurs behind the rail,
+   which stays in view, and each chapter's title stands in large
+   type level with its own stroke. Namespaced `crail-` because `.facts-rail`, `.rail-fact`,
    `.rail-key` and `.rail-val` are already taken by the facts rail
    in the intro.
    ============================================================ */
+/* The rail's measure, shared with the list it opens, which is laid out on it —
+   see .crail-nav. --crail-h is the rail's whole length, strokes and gaps
+   together, held to 60% of the viewport on a short window. The strokes share
+   what the gaps leave in proportion to their chapters — see .crail-bar — so it
+   is the one number that sets the scale of the map. --crail-gap stands between
+   chapters, --crail-cut between the parts of a stroke that is cut.
+   --crail-lift raises the rail, and the list with it, off the geometric centre
+   to the optical one: set dead centre it reads low, so it splits the height it
+   leaves free 45 above to 55 below. */
+.crail, .crail-panel {
+  --crail-h: min(400px, 60vh);
+  --crail-gap: 8px;
+  --crail-cut: 1px;
+  --crail-lift: calc((100vh - var(--crail-h)) * 0.05);
+}
 .crail {
   position: fixed;
-  /* The strokes sit one past the gutter: the grid's line is a 1px border drawn
-     inside the first column, so the column itself begins a pixel in. The
-     read-aloud controls and the open menu's marker take the same pixel — see
-     .tts-controls and .crail-panel. The box starts 10px short of that, and its
-     padding puts the strokes back on it — see below. */
-  left: calc(var(--gutter) + 1px - 10px);
-  top: 50%;
+  /* The strokes stand on --rail-x, in the margin just clear of the first
+     column, and the read-aloud play triangle takes the same x — see
+     .tts-controls. The box starts 10px short of that, and its padding puts the
+     strokes back on it — see below. */
+  left: calc(var(--rail-x) - 10px);
+  top: calc(50% - var(--crail-lift));
   transform: translateY(-50%);
-  z-index: 300;               /* over the page, under .menu-overlay (500) */
-  /* The rail's whole length, strokes and gaps together. The strokes share what
-     the gaps leave in proportion to their chapters — see .crail-bar — so this
-     is the one number that sets the scale of the map. */
-  --crail-h: clamp(160px, 29.33vh, 280px);
+  z-index: 421;               /* over the page and the list it opens (420), under .menu-overlay (500) */
   box-sizing: content-box;
   height: var(--crail-h);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
+  gap: var(--crail-gap);
   /* The strokes are 4px wide, so the button itself is nearly unhittable.
      Padding grows the target without moving them off the gutter: 10px out into
      the empty margin on the left, 12px on the right. No further than that into
@@ -471,33 +491,35 @@ body .menu-btn.is-open { z-index: 600; color: #fff; }
 }
 /* Each stroke's length is data: crailMeasure() sets --len to its chapter's
    scroll length in px, and flex hands out the height the gaps leave in
-   proportion to those lengths. So the rail stays to scale at any --crail-h, and
-   eases into its new proportions whenever the layout moves the chapters. The
-   swell under the pointer is --k, from crailPaint(): a scaleX, painted rather
-   than laid out, so widening a stroke never disturbs the lengths beside it.
+   proportion to those lengths. So the rail stays to scale at any --crail-h.
+   New proportions, when the layout moves the chapters, are taken at once
+   rather than eased: the open list's rows are laid out on the same figures, and
+   a bar still easing would stand off its title while it ran.
 
    A stroke is drawn in parts, .crail-seg: one for most chapters, one per
    sub-chapter where it is cut, 1px apart and each with its own --len. The bar
    takes its own cuts as its basis (--parts, also from crailMeasure()), so they
    come out of no chapter's share: every part's ink is in exact proportion to
-   its length, cut or not. */
+   its length, cut or not. Each part is an item of its own — it swells alone
+   under the pointer, and has its own link in the open list. The swell is --k,
+   the falloff from crailPaint() (0 at rest, 1 under the pointer), taken up to
+   --crail-swell as a scaleX: painted rather than laid out, so widening a part
+   never disturbs the lengths beside it. */
 .crail-bar {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: var(--crail-cut);
   width: 4px;
-  flex: var(--len, 1) 1 calc((var(--parts, 1) - 1) * 1px);
-  transform: scaleX(var(--k, 1));
-  transform-origin: left center;
-  transition: flex-grow .6s cubic-bezier(.22, 1, .36, 1),
-              transform .18s cubic-bezier(.22, 1, .36, 1);
+  flex: var(--len, 1) 1 calc((var(--parts, 1) - 1) * var(--crail-cut));
 }
 .crail-seg {
   position: relative;
   flex: var(--len, 1) 1 0px;
   min-height: 4px;            /* a part too short to draw still shows, as a dot */
   overflow: hidden;
-  transition: flex-grow .6s cubic-bezier(.22, 1, .36, 1),
+  transform: scaleX(calc(1 + var(--k, 0) * (var(--crail-swell) - 1)));
+  transform-origin: left center;
+  transition: transform .18s cubic-bezier(.22, 1, .36, 1),
               background-color .45s ease;
 }
 .crail-fill {
@@ -522,19 +544,25 @@ body.dark  .crail-fill { background: #fff; }
 body.light .crail-seg  { background: rgba(0, 0, 0, 0.28); }
 body.light .crail-fill { background: #000; }
 
-/* ---- The opened card ---- */
+/* ---- The opened list ---- */
 /* No frame around the list. The panel is the whole viewport: it takes the page
-   out of focus behind itself and the titles sit straight on that blur, on the
-   same gutter and centre line the bars occupy. */
+   out of focus behind itself, and the titles sit straight on that blur, each
+   level with its own bar. The rail stays in view over the panel — it is what
+   the titles are set against. */
 .crail-panel {
   position: fixed;
   inset: 0;
-  z-index: 420;               /* over the page, under .menu-overlay (500) */
+  z-index: 420;               /* over the page, under the rail (421) and .menu-overlay (500) */
+  /* The lead between a number and its title. Twice it stands between the
+     stroke and the number. */
+  --crail-lead: clamp(11px, 1.1vw, 18px);
   display: flex;
   align-items: center;
   justify-content: flex-start;
   padding: var(--gutter);
-  padding-left: calc(var(--gutter) + 1px);   /* keeps the marker on the bars */
+  /* The list starts clear of the strokes, and moves with them: past --rail-x,
+     the 4px stroke and two leads. */
+  padding-left: calc(var(--rail-x) + 4px + var(--crail-lead) * 2);
   backdrop-filter: blur(22px);
   opacity: 0;
   visibility: hidden;
@@ -549,7 +577,9 @@ body.light .crail-fill { background: #000; }
   pointer-events: auto;       /* a click on the blur closes the menu */
   transition: opacity .34s ease, visibility 0s, background-color .45s ease;
 }
-.crail.is-open { opacity: 0; pointer-events: none; transform: translateY(-50%) translateX(-8px); }
+/* Open, the rail holds its place but stops answering the pointer, so it does
+   not swell under a press meant for the blur. */
+.crail.is-open { pointer-events: none; }
 /* Out of the way at both ends of the page. The rail says which of the six
    chapters you are in and how far through it; on the hero you are not in one
    yet, and on the footer you are past the last, so on both it is answering a
@@ -567,96 +597,67 @@ body.light .crail-panel {
   background: rgba(255, 255, 255, 0.62);
 }
 
+/* The list is laid out on the rail's own measure, and built as the rail is: as
+   tall as the rail and centred on the same line, a row per bar with the same
+   gaps, and in each row a link per part of the bar, cut the same 1px apart.
+   Rows and links take their shares exactly as bars and parts do —
+   crailMeasure() sets the same --len and --parts on each pair. So every link's
+   box spans its part of the stroke, and the title centred in it stands level
+   with the middle of that part; the titles keep the chapters' proportions
+   rather than an even rhythm. Nothing here scrolls or wraps: the rail is never
+   taller than the viewport, and a title too long for the measure runs on to the
+   right rather than onto a second line that would lift it off its part. */
 .crail-nav {
-  position: relative;         /* the travelling marker is placed against this */
-  /* Declared once here so the marker can be cut from the same measure as the
-     titles instead of being kept in step by hand. */
-  --crail-type: clamp(22px, 2.2vw, 36px);
+  /* The type ramp, held under the spacing of the two nearest rows — see
+     crailFit(). */
+  --crail-type: min(clamp(22px, 2.2vw, 36px), var(--crail-fit, 36px));
+  position: relative;
+  top: calc(var(--crail-lift) * -1);   /* raised with the rail — see .crail */
   display: flex;
   flex-direction: column;
+  gap: var(--crail-gap);
   width: min(clamp(420px, 48vw, 760px), 100%);
-  max-height: 100%;
-  /* overflow-y: auto is here so a list taller than the viewport can still be
-     reached, but CSS will not let one axis scroll while the other stays
-     visible — overflow-x resolves to auto alongside it, and that clipped the
-     corner off the marker when it turned. A square standing on its corner
-     reaches (sqrt2 - 1) / 2 of its width past its own box on every side, so the
-     scroll box is padded by a little more than that and pulled back by an equal
-     negative margin. Content-box sizing keeps the measure of the titles exactly
-     as it was, and .crail-marker takes the same figure as its `left` — an
-     absolutely positioned child is placed against the padding box, so without
-     that it would simply move out with the padding and be clipped again. */
-  --crail-swing: calc(var(--crail-type) * 0.19);
-  box-sizing: content-box;
-  padding: var(--crail-swing);
-  margin: calc(var(--crail-swing) * -1);
-  overflow-y: auto;
+  height: var(--crail-h);
+}
+.crail-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--crail-cut);
+  flex: var(--len, 1) 1 calc((var(--parts, 1) - 1) * var(--crail-cut));
+  min-height: 0;
 }
 .crail-link {
-  display: grid;
-  /* One fixed column for the contents glyph so every label starts on the
-     same x whether or not its row is carrying the mark. */
-  grid-template-columns: clamp(26px, 2.2vw, 38px) 1fr;
+  display: flex;
+  /* A title taller than its link's box overflows it evenly above and below, so
+     it stays centred on its part of the stroke. */
   align-items: center;
-  gap: clamp(11px, 1.1vw, 18px);
-  padding: clamp(7px, 1vh, 14px) 0;
+  gap: var(--crail-lead);
+  flex: var(--len, 1) 1 0px;
+  min-height: 0;              /* or no link could be shorter than its title */
   font-family: var(--sans);
   font-weight: 700;
   font-size: var(--crail-type);
   letter-spacing: -0.03em;
   line-height: 1.15;
+  white-space: nowrap;
   cursor: pointer;              /* the hand, as on the rail */
-  transition: color .25s ease, opacity .25s ease;
 }
-.crail-txt {
-  /* The first column is the marker's lane and holds no child of its own, so the
-     title has to be placed into the second one explicitly — grid would
-     otherwise auto-place it into the narrow lane and wrap every word. */
-  grid-column: 2;
-  /* Titles are never cut. The card is sized so the longest of them —
-     "Journey from Sardinia to Frankfurt" — sits on one line at the desktop
-     end of the type ramp, and below that it wraps rather than truncating. */
-  min-width: 0;
-  overflow-wrap: break-word;
+/* The number, in a lane between the stroke and the title exactly as wide as the
+   widest of them — a sub-chapter's 5.1, which measures 1.627em in Struve at
+   this weight and tracking (the figures are tabular, so 5.2 and 5.3 match) — so
+   every title starts on the same x, one lead past the widest number, whether
+   its own number shows or not. It shows for the part you are in, and for the
+   others only while the pointer, or the keyboard, is on their link. */
+.crail-num {
+  flex: none;
+  width: 1.63em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  transition: opacity .25s ease;
 }
-/* One marker for the whole list rather than a mark per row. It rests on the
-   chapter you are in and rides to whichever row the pointer is over, through
-   the column the titles are indented past — so nothing in the list shifts as
-   it moves. Its two transforms are split across two elements on purpose: the
-   outer one carries the travel, the inner one the spin, so they can run at
-   different lengths. */
-.crail-marker {
-  position: absolute;
-  left: var(--crail-swing);   /* cancels the scroll box's padding — see .crail-nav */
-  top: 0;
-  /* Cap height, so the square reads as another capital in the line rather than
-     as a bullet beside it. 0.704 is Struve's own cap-height ratio, measured off
-     the rendered face at this weight. */
-  width: calc(var(--crail-type) * 0.704);
-  height: calc(var(--crail-type) * 0.704);
-  pointer-events: none;
-  transform: translateY(calc(var(--y, 0) * 1px));
-  transition: transform .42s cubic-bezier(.22, 1, .36, 1);
-}
-.crail-marker i {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: currentColor;
-  /* The same length and easing as the travel above, so the corner turns over
-     exactly as the marker moves and the two read as one gesture. */
-  transition: transform .42s cubic-bezier(.22, 1, .36, 1);
-}
-/* Square only where you actually are. The moment the marker leaves the chapter
-   you are in it turns onto its corner and stays a rhombus for as long as it is
-   pointing somewhere else — squaring up again only when it comes back. */
-.crail-marker.is-rhomb i { transform: rotate(45deg); }
-
-/* Full ink, the same as the row it is marking — which is white on the dark
-   half of the site and black on the light half, where a white square would
-   have nothing to sit against. */
-body.dark  .crail-marker { color: #fff; }
-body.light .crail-marker { color: #000; }
+.crail-link.is-active .crail-num,
+.crail-link:hover .crail-num,
+.crail-link:focus-visible .crail-num { opacity: 1; }
 
 body.dark  .crail-link { color: rgba(255, 255, 255, 0.46); }
 body.dark  .crail-link.is-active,
@@ -665,7 +666,7 @@ body.light .crail-link { color: rgba(0, 0, 0, 0.38); }
 body.light .crail-link.is-active,
 body.light .crail-link:hover { color: #000; }
 
-/* Rows arrive after the card, one behind the next, so the list reads as
+/* Rows arrive after the blur, one behind the next, so the list reads as
    settling into place instead of appearing whole. */
 .crail-link {
   opacity: 0;
@@ -708,7 +709,7 @@ body:has(.lightbox.is-open) .tts-controls {
   .crail, .crail-panel { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .crail, .crail-bar, .crail-seg, .crail-fill, .crail-link, .crail-marker, .crail-marker i,
+  .crail, .crail-bar, .crail-seg, .crail-fill, .crail-link, .crail-num,
   /* .crail-panel.is-open restates the whole transition shorthand, so it has to
      be named here too or it outranks this rule and keeps its full fade. */
   .crail-panel, .crail-panel.is-open {
@@ -1464,8 +1465,7 @@ section { position: relative; }
   /* Column five of the eight, exactly: four pitches in is half the measure plus
      half a gap, so this is the grid's own line rather than the 12px that used
      to stand in for it (the gap is 27 at full width, not 24). The extra pixel
-     clears the line itself, which is drawn as a border inside the column — the
-     same pixel the rail, the read-aloud controls and the menu's marker take. */
+     clears the line itself, which is drawn as a border inside the column. */
   margin-left: calc(50% + var(--col-gap) / 2 + 1px);
   width: calc(50% - var(--col-gap) / 2 - 1px);
   max-width: none;
@@ -1641,13 +1641,19 @@ section { position: relative; }
 .tts-exit   { grid-area: 1 / 1; }
 body.dark  .tts-controls { color: #fff; }
 body.light .tts-controls { color: #000; }
-/* Line the play triangle up with the left edge of the chapter rail's bars. The
-   64px button centres a 24px icon and the triangle is inset another 4px inside
-   that, so the button's own box has to start 24px left of the gutter for the
-   triangle's edge to land on it. Only where the rail exists: below 901px it is
-   hidden and these controls keep their own inset. */
+/* Line the play triangle up with the left edge of the chapter rail's bars, on
+   --rail-x, and stand it the same distance up from the bottom, so it sits in
+   the corner on equal insets. The 64px button centres a 24px icon and the
+   triangle is inset another 4px inside that, so the button's own box has to
+   start 24px left of that x for the triangle's edge to land on it; the
+   triangle fills the icon's height, so its foot is 20px above the button's.
+   Only where the rail exists: below 901px it is hidden and these controls
+   keep their own inset. */
 @media (min-width: 901px) {
-  .tts-controls { left: calc(var(--gutter) - 24px + 1px); }
+  .tts-controls {
+    left: calc(var(--rail-x) - 24px);
+    bottom: calc(var(--rail-x) - 20px);
+  }
 }
 .tts-toggle {
   display: inline-flex;
@@ -1925,12 +1931,13 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
 }
 .narr-film.is-open { z-index: 960; transition-delay: 0s; }
 /* The chapter rail's bars, and the panel that opens from them, stay over an open
-   film and over the picture flying to or from it. Raised only while a film is
-   out, so the rest of the time the rail still goes under the + menu (500). */
+   film and over the picture flying to or from it -- the bars over their panel,
+   as everywhere. Raised only while a film is out, so the rest of the time the
+   rail still goes under the + menu (500). */
 body:has(.narr-film.is-open) .crail,
-body:has(.narr-film.is-flying) .crail { z-index: 975; }
+body:has(.narr-film.is-flying) .crail { z-index: 976; }
 body:has(.narr-film.is-open) .crail-panel,
-body:has(.narr-film.is-flying) .crail-panel { z-index: 976; }
+body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .narr-film-fold {
   display: grid;
   grid-template-rows: 0fr;
