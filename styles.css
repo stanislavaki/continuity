@@ -3652,6 +3652,24 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
 @media (max-width: 600px) {
   .quote-band { padding: calc(177px / 2.5) 0; }
 }
+/* Below 901px the + button and the language menu stand fixed on the right
+   gutter, top and bottom, and running text scrolled under them. So the text
+   column stops 48px short of the gutter, where the + button's box begins: 10px
+   clear of its cross and further clear of the language menu's letters.
+   Pictures, films and maps keep the full width between the gutters, and the
+   centred chapter and journey titles keep their full measure to centre on. */
+@media (max-width: 900px) {
+  .intro-opening-text,
+  .article-body p,
+  .math-body p,
+  .stop-cap,
+  #sculpture-trip .stop-cap,    /* which zeroes its padding at an id's weight */
+  .quote-band .quote-text,
+  .quote-band .quote-attr,
+  .sg-endnote {
+    padding-right: 48px;
+  }
+}
 
 /* Chapter 4's body runs as two sections so the Stroobant pull-quote can sit
    between them at full width. Padding stays here rather than inline so the
