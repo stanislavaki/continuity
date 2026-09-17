@@ -71,24 +71,8 @@
     </nav>
   </div>
 
-  <!-- Language menu, in the bottom-left corner with the read-aloud play button
-       after it, which the row carries out as it opens. Closed, it shows the
-       first two letters of the page's language; opened, the languages unfold
-       into a row on that same line, and the two letters slide into place as
-       the start of their own name — see .lang. Each name is its first
-       two letters and the rest, in two folds. A language is one option here,
-       its code in its lang attribute, and one entry in I18N in the script. The
-       list stays inert while closed: the button over it takes the press, and
-       is-still holds the folds until the script has set them. -->
-  <div class="lang is-still" id="lang">
-    <button class="lang-btn" type="button" aria-expanded="false" aria-controls="langList" aria-label="Language: English"></button>
-    <ul class="lang-list" id="langList" inert>
-      <li><button class="lang-opt" type="button" lang="en" aria-label="English" aria-current="true"><span class="lang-fold"><span>En</span></span><span class="lang-fold"><span class="lang-rest">glish</span></span></button></li>
-      <li><button class="lang-opt" type="button" lang="de" aria-label="Deutsch" aria-current="false"><span class="lang-fold"><span>De</span></span><span class="lang-fold"><span class="lang-rest">utsch</span></span></button></li>
-      <li><button class="lang-opt" type="button" lang="it" aria-label="Italiano" aria-current="false"><span class="lang-fold"><span>It</span></span><span class="lang-fold"><span class="lang-rest">aliano</span></span></button></li>
-      <li><button class="lang-opt" type="button" lang="es" aria-label="Español" aria-current="false"><span class="lang-fold"><span>Es</span></span><span class="lang-fold"><span class="lang-rest">pañol</span></span></button></li>
-    </ul>
-  </div>
+  <!-- The language menu's blur. The menu itself is the first control in
+       .tts-controls, at the end of the body. -->
   <div class="lang-veil" id="langVeil" aria-hidden="true"></div>
 
   <!-- Journey lightbox -->
@@ -908,7 +892,9 @@ const I18N = {
   },
 };
 
-(() => {
+// The menu's markup sits in .tts-controls at the end of the body, after this
+// script, so it starts once the document is read.
+function __initLang() {
   const root = document.getElementById('lang');
   const veil = document.getElementById('langVeil');
   if (!root || !veil) return;
@@ -923,21 +909,6 @@ const I18N = {
   const labels = [...document.querySelectorAll('[data-i18n-label]')]
     .map(el => [el, el.dataset.i18nLabel, el.getAttribute('aria-label')]);
   const isOpen = () => root.classList.contains('is-open');
-
-  // The read-aloud play button rides at the end of the row -- see .tts-controls.
-  // Its place is the row's width, handed over whenever it changes, through the
-  // folds' animation too: a ResizeObserver reports after layout and before
-  // paint, so the button moves in the same frame as the names. Set on the
-  // transport alone, so a frame's change restyles nothing else. Its markup
-  // comes after this script, so the watch starts once the document is read.
-  const follow = () => {
-    const transport = document.querySelector('.tts-controls');
-    if (transport) new ResizeObserver(([entry]) => {
-      transport.style.setProperty('--lang-w', entry.contentRect.width + 'px');
-    }).observe(list);
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', follow);
-  else follow();
 
   function apply(code) {
     const t = I18N[code] || {};
@@ -1003,11 +974,16 @@ const I18N = {
   // page that opens in German does not first play English folding away.
   void root.offsetWidth;
   root.classList.remove('is-still');
-})();
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', __initLang);
+} else {
+  __initLang();
+}
 
 // ========== Chapter rail ==========
-// The six bars on the left gutter, and the card they open. Additive to the +
-// button above, which keeps its own overlay.
+// The six bars on the left gutter, and the list they open -- which the +
+// button opens too, on narrow screens where the rail is hidden.
 //
 // A "chapter" here is the span from one chapter anchor to the next, so the six
 // ranges tile the document end to end with no gaps and no overlaps. That is
@@ -3966,6 +3942,27 @@ if (document.readyState === 'loading') {
 </script>
 <script src="./g-toolset.js" defer></script>
 <div class="tts-controls">
+  <!-- Language menu, first in the read-aloud cluster, so the controls after it
+       move with it: on desktop the play button follows the row out as it
+       opens. Below 901px it takes the bottom-right corner instead, clear of
+       the play button under a finger. Closed, it shows the first two letters
+       of the page's language; opened, the languages unfold, across on desktop
+       and upward in the corner, and the two letters slide into place as the
+       start of their own name —
+       see .lang. Each name is its first two letters and the rest, in two
+       folds. A language is one option here, its code in its lang attribute,
+       and one entry in I18N in the script. The list stays inert while closed:
+       the button over it takes the press, and is-still holds the folds until
+       the script has set them. -->
+  <div class="lang is-still" id="lang">
+    <button class="lang-btn" type="button" aria-expanded="false" aria-controls="langList" aria-label="Language: English"></button>
+    <ul class="lang-list" id="langList" inert>
+      <li><button class="lang-opt" type="button" lang="en" aria-label="English" aria-current="true"><span class="lang-fold"><span>En</span></span><span class="lang-fold"><span class="lang-rest">glish</span></span></button></li>
+      <li><button class="lang-opt" type="button" lang="de" aria-label="Deutsch" aria-current="false"><span class="lang-fold"><span>De</span></span><span class="lang-fold"><span class="lang-rest">utsch</span></span></button></li>
+      <li><button class="lang-opt" type="button" lang="it" aria-label="Italiano" aria-current="false"><span class="lang-fold"><span>It</span></span><span class="lang-fold"><span class="lang-rest">aliano</span></span></button></li>
+      <li><button class="lang-opt" type="button" lang="es" aria-label="Español" aria-current="false"><span class="lang-fold"><span>Es</span></span><span class="lang-fold"><span class="lang-rest">pañol</span></span></button></li>
+    </ul>
+  </div>
   <button class="tts-prev" type="button" aria-label="Previous paragraph">
     <span class="tts-icon" aria-hidden="true"></span>
   </button>

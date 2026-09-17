@@ -45,20 +45,19 @@
      pull-quote's author, an article's byline -- rather than over it: a stroke
      at its widest, under the pointer, still ends 4px short of the gutter. */
   --rail-x: calc(var(--gutter) - 4px - 4px * var(--crail-swell));
-  /* The bottom-left corner, where the language menu's two letters stand with
-     the read-aloud play button beside them: the letters' left edge and their
-     baseline, on equal insets. The gutter here; --rail-x on desktop, where the
-     rail is out. */
+  /* The bottom-left corner, on equal insets: where the language menu's two
+     letters stand with the read-aloud play button beside them -- their left
+     edge and baseline -- and, on a phone, where the play triangle stands with
+     the menu over it -- its left edge and foot. The gutter here; --rail-x on
+     desktop, where the rail is out. */
   --corner-x: var(--gutter);
   --corner-y: var(--gutter);
-  /* The language menu's type, held at the root because the play button is
-     placed off it as well -- see .lang and .tts-controls. .crail-nav's ramp,
-     held down where the open row, with the play button carried out after it,
-     would not fit between the gutters: the four names, their gaps and the gap
-     before the triangle come to 16.63em in Struve at this weight and tracking,
-     and the triangle is 19px, so a phone takes the type a few points under
-     22px. Adding a language means measuring this again. */
-  --lang-type: min(clamp(22px, 2.2vw, 36px), (100vw - 2 * var(--gutter) - 19px) / 16.63);
+  /* The language menu's type, .crail-nav's ramp, held at the root because the
+     read-aloud cluster is spaced off it as well -- see .lang and .tts-controls.
+     Open, the row with the play button after it comes to 16.87em and 19px in
+     Struve at this weight and tracking, 390px at the ramp's floor, which is why
+     a phone opens the menu upward instead. */
+  --lang-type: clamp(22px, 2.2vw, 36px);
 }
 @media (min-width: 901px) {
   :root { --corner-x: var(--rail-x); --corner-y: var(--rail-x); }
@@ -693,18 +692,18 @@ body:has(.lightbox.is-open) .tts-controls {
 }
 
 /* ============================================================
-   LANGUAGE MENU — the bottom-left corner, with the read-aloud play
-   button beside it.
+   LANGUAGE MENU — the bottom-left corner, the first control of the
+   read-aloud cluster, placed with it -- see .tts-controls.
 
    Closed, it shows the first two letters of the page's language.
    Opened, the page blurs behind it as it does behind the chapter
-   list, and the languages unfold into a row on that same line,
-   each by its own name, carrying the play button out at the end
-   of it -- see .tts-controls. The two
-   letters never leave the screen: they are carried into place, as
-   the start of their own name, while the rest of the row opens
-   round them. Closing runs it back. The type, weight and tones are
-   the chapter list's.
+   list, and the languages unfold, each by its own name: across, on
+   the same line, carrying the play button out at the end of the
+   row; below 901px, from the bottom-right corner, upward, a name to
+   a line. The two letters never
+   leave the screen: they are carried into place, as the start of
+   their own name, while the rest opens round them. Closing runs it
+   back. The type, weight and tones are the chapter list's.
 
    Each name is two folds, its first two letters and the rest. A
    fold is a one-column grid easing between 0fr and 1fr, as
@@ -714,16 +713,12 @@ body:has(.lightbox.is-open) .tts-controls {
    the rest is what moves them.
    ============================================================ */
 .lang {
-  position: fixed;
-  /* The letters' baseline on --corner-y. The 48px row centres a 1.15em line
-     whose baseline is 0.229em above its foot, which puts the row's centre, and
-     the capitals' with it, 0.35em over the baseline. */
-  left: var(--corner-x);
-  bottom: calc(var(--corner-y) + 0.35em - var(--lang-row) / 2);
-  /* One over the read-aloud transport (950, 970 while it reads), so the two go
-     under an open film together and come over it together, and where the play
-     button's padded box runs under the letters the letters take the press. */
-  z-index: 951;
+  /* Positioned, so it paints over the play button, and where the button's
+     padded box runs under the letters the letters take the press. The 48px row
+     centres a 1.15em line whose baseline is 0.229em above its foot, which puts
+     the row's centre, and the capitals' with it, 0.35em over the baseline. */
+  position: relative;
+  justify-self: start;
   --lang-row: 48px;
   --lang-gap: 0.5em;
   font-family: var(--sans);
@@ -733,7 +728,6 @@ body:has(.lightbox.is-open) .tts-controls {
   line-height: 1.15;
   pointer-events: none;       /* only the buttons take a press */
 }
-body:has(.tts-toggle:not([data-state="idle"])) .lang { z-index: 971; }
 body.dark  .lang { color: #fff; }
 body.light .lang { color: #000; }
 
@@ -746,7 +740,7 @@ body.light .lang { color: #000; }
   top: 0;
   bottom: 0;
   left: -16px;
-  right: -0.3em;
+  right: -0.42em;
   padding: 0;
   background: transparent;
   border: none;
@@ -823,7 +817,7 @@ body.light .lang-opt:focus-visible { color: #000; }
 .lang-veil {
   position: fixed;
   inset: 0;
-  z-index: 949;               /* under the menu and the transport beside it */
+  z-index: 949;               /* under the read-aloud cluster the menu is part of (950) */
   backdrop-filter: blur(22px);
   opacity: 0;
   visibility: hidden;
@@ -849,7 +843,7 @@ body:has(.lightbox.is-open) .lang-veil {
   pointer-events: none;
 }
 @media (prefers-reduced-motion: reduce) {
-  .lang-fold, .lang.is-open .lang-fold,
+  .lang-fold, .lang.is-open .lang-fold, .lang-list li,
   .lang-veil, .lang-veil.is-open {
     transition-duration: 1ms;
     transition-delay: 0s;
@@ -1754,18 +1748,20 @@ section { position: relative; }
    over a mid-grey. Same convention as .menu-btn and .crail. */
 .tts-controls {
   position: fixed;
-  /* After the language menu, wherever its row has got to -- see the note under
+  /* The language menu's letters first, on --corner-x (the list draws them back
+     by their bearing), and their baseline on --corner-y -- see the note under
      the colours. */
-  left: calc(var(--corner-x) + var(--lang-w, 1.25 * var(--lang-type)) + 0.532 * var(--lang-type) - 24px);
+  left: var(--corner-x);
   bottom: calc(var(--corner-y) + 0.35 * var(--lang-type) - 32px);
   z-index: 950;
-  /* Two rows, with the play button in the corner of both: the exit opens above
-     it and the paragraph jumps open to its right, so the one control that is
-     always there never moves and stays on the gutter it was aligned to. A grid
-     rather than a row because the exit has to sit on the toggle's own column,
-     and because anchoring at `bottom` means the second row grows upward. */
+  /* Two rows. The second is the language menu, the play button and the
+     paragraph jumps, which open to its right; the exit opens above the play
+     button. A grid rather than a row because the exit has to sit on the
+     toggle's own column, and because anchoring at `bottom` means the second
+     row grows upward. The menu's column is as wide as the menu, so everything
+     after it is carried out as the names unfold and back as they fold. */
   display: inline-grid;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: auto auto auto auto;
   align-items: center;
   justify-items: center;
   gap: 0;
@@ -1776,23 +1772,30 @@ section { position: relative; }
      because that is the form a CSS triangle's borders take. */
   --tts-tri-w: 19px;
   --tts-tri-h: 12px;
+  /* The one gap the cluster keeps between marks: after the language menu's
+     letters, from the pause bars to the paragraph jumps, and from the exit's
+     cross down to the pause bars. Measured ink to ink, and set in the menu's
+     type, so the three stay equal as it scales. */
+  --tts-gap: calc(0.84 * var(--lang-type));
 }
-.tts-toggle { grid-area: 2 / 1; }
-.tts-prev   { grid-area: 2 / 2; }
-.tts-next   { grid-area: 2 / 3; }
-.tts-exit   { grid-area: 1 / 1; }
+.lang       { grid-area: 2 / 1; }
+.tts-toggle { grid-area: 2 / 2; }
+.tts-prev   { grid-area: 2 / 3; }
+.tts-next   { grid-area: 2 / 4; }
+.tts-exit   { grid-area: 1 / 2; }
 body.dark  .tts-controls { color: #fff; }
 body.light .tts-controls { color: #000; }
-/* The play triangle rides at the end of the language menu, which holds the
-   bottom-left corner: centred on its capitals, 0.35em over the baseline the
-   letters keep on --corner-y, and 0.6em past its right edge, a fifth more
-   than the gap between the names. That edge is --corner-x, less the 0.068em
-   the letters are drawn back by, plus --lang-w, the width of the row, which
-   the script hands over as it changes -- so the button follows the names out
-   as the menu unfolds and back as it folds, and sits as close after It as
-   after De. The 64px button centres a 24px icon and the triangle is inset
-   another 4px inside that, so the button's box starts 24px short of the
-   triangle's edge, and its centre is 32px up. */
+/* The play triangle rides at the end of the language menu: centred on its
+   capitals, 0.35em over the baseline, and --tts-gap past the letters, so it
+   sits as close after It as after De. The 64px button centres a 24px icon and
+   the triangle is inset another 4px inside that, so the button's box starts
+   24px short of the triangle's edge -- which the menu's margin gives back --
+   and its centre is 32px up. Once reading, the 12px column gap comes out of
+   the margin too, so the button holds still as the jumps open. */
+.lang { margin-right: calc(var(--tts-gap) - 24px); }
+.tts-controls.is-audio:not(:has(.tts-toggle[data-state="idle"])) .lang {
+  margin-right: calc(var(--tts-gap) - 24px - 12px);
+}
 .tts-toggle {
   display: inline-flex;
   align-items: center;
@@ -1821,12 +1824,15 @@ body.light .tts-controls { color: #000; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  /* Both drawn 10px back towards the play button. Shifted rather than closed up
-     with the column gap, because the gap sets the space between these two as
-     well and only the space before them was wanted -- and because moving them
-     in the layout would drag the grid's tracks with them. */
+  /* Both drawn back towards the play button until the chevrons stand --tts-gap
+     clear of the pause bars: the 24px of the play button's column past the
+     bars, the 12px column gap and the chevrons' 3px inset in their button come
+     out of it. Shifted rather than closed up with the column gap, because the
+     gap sets the space between these two as well and only the space before
+     them was wanted -- and because moving them in the layout would drag the
+     grid's tracks with them. */
   position: relative;
-  left: -10px;
+  left: calc(var(--tts-gap) - 24px - 12px - 3px);
   width: 0;
   height: 64px;
   padding: 0;
@@ -1909,8 +1915,8 @@ body.light .tts-controls { color: #000; }
 .tts-exit:hover .tts-icon { transform: scale(1.12); }
 /* Set apart only once they are out. Carried on the open state rather than on
    the grid itself so the collapsed tracks do not reserve gaps between three
-   buttons of which only one is showing -- and so the play button, which owns
-   the first column, cannot be pushed off the gutter it is aligned to. */
+   buttons of which only one is showing -- and so the play button cannot be
+   pushed along by a gap nobody can see. */
 .tts-controls.is-audio:not(:has(.tts-toggle[data-state="idle"])) {
   column-gap: 12px;
 }
@@ -1945,11 +1951,13 @@ body.light .tts-controls { color: #000; }
               transform .24s cubic-bezier(.22, 1, .36, 1),
               opacity .18s ease-out;
   transition-delay: .08s;   /* last of the three to arrive */
-  /* Sits just clear of the transport's row -- close enough to read as this
-     cluster's way out rather than as a fourth, separate control, but not so
-     close that it crowds the play button now the cross is drawn at full
-     weight. */
-  margin-bottom: -2px;
+  /* Drawn down over the transport's row until the cross stands --tts-gap above
+     the pause bars: the 20px the 64px row leaves above its icon, the bars' 1px
+     inset and the room under the cross come out of it. The cross is centred in
+     this 56px button, so that room is 28px less its half-height, and it is two
+     bars crossed on the diagonal, so its half-height is the arm and the bar
+     together over 2 root 2. */
+  margin-bottom: calc(var(--tts-gap) - 20px - 1px - 28px + (var(--tts-x-len) + var(--tts-bar)) * 0.35355);
 }
 .tts-controls.is-audio:not(:has(.tts-toggle[data-state="idle"])) .tts-exit {
   height: 56px;
@@ -1992,15 +2000,74 @@ body.light .tts-controls { color: #000; }
   0%, 100% { opacity: 1; }
   50%      { opacity: .4; }
 }
-@media (max-width: 600px) {
-  /* The 56px button, centred 28px up. Its triangle is still 24px in: the button
-     sits centred in the 64px column the exit sets. */
+@media (max-width: 900px) {
+  /* Below 901px, where the rail is hidden and a finger is the likelier pointer,
+     the language menu and the play button are too close to tell apart under
+     it. So they take a corner each. The play button holds the bottom-left, its
+     triangle's edge on --corner-x and its foot on --corner-y, the jumps opening
+     to its right and the exit above it; the menu's column is empty here, so
+     the grid goes back to three. The 64px button's triangle is 24px in and its
+     foot 20px up. */
   .tts-controls {
-    bottom: calc(var(--corner-y) + 0.35 * var(--lang-type) - 28px);
+    left: calc(var(--corner-x) - 24px);
+    bottom: calc(var(--corner-y) - 20px);
+    grid-template-columns: auto auto auto;
+  }
+  .tts-toggle { grid-area: 2 / 1; }
+  .tts-prev   { grid-area: 2 / 2; }
+  .tts-next   { grid-area: 2 / 3; }
+  .tts-exit   { grid-area: 1 / 1; }
+
+  /* The menu holds the bottom-right: its letters' right edge on the gutter and
+     their baseline on --corner-y, level with the triangle's foot across the
+     page. Fixed, it leaves the cluster's grid, but it stays in the cluster, so
+     it stands down and comes back with it. The 48px row puts the baseline 24px
+     less 0.346em over its foot. Its button reaches out into the gutter. */
+  .lang,
+  .tts-controls.is-audio:not(:has(.tts-toggle[data-state="idle"])) .lang {
+    position: fixed;
+    left: auto;
+    right: var(--gutter);
+    bottom: calc(var(--corner-y) - 24px + 0.346em);
+    width: max-content;
+    margin: 0;
+  }
+  .lang-btn { left: -16px; right: -16px; }
+
+  /* Upward, a name to a line, and flush right: four across are not sure to fit
+     a phone. Each line is a third fold, a one-row grid easing between 0fr and
+     1fr. Closed, every line is shut but the current language's, and the menu
+     stands on its foot, so the lines unfolding under the current one carry its
+     letters up into place, and the rest of its name, unfolding against the
+     gutter, carries them left. */
+  .lang-list {
+    flex-direction: column;
+    align-items: flex-end;
+    margin-left: 0;
+  }
+  .lang-list li {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .55s cubic-bezier(.22, 1, .36, 1);
+  }
+  .lang-list li:has(> .lang-opt[aria-current="true"]),
+  .lang.is-open .lang-list li { grid-template-rows: 1fr; }
+  .lang-opt { min-height: 0; overflow-y: clip; justify-content: flex-end; }
+  .lang-fold { min-height: var(--lang-row); align-items: center; }
+  .lang-list li:not(:last-child) .lang-rest::after { content: none; }
+  .lang.is-still .lang-list li { transition: none; }
+}
+@media (max-width: 600px) {
+  /* The 56px button, centred in the 64px column the exit sets: its triangle is
+     still 24px in, and its foot 16px up. */
+  .tts-controls {
+    bottom: calc(var(--corner-y) - 16px);
     gap: 0;
   }
   .tts-toggle { width: 56px; height: 56px; }
   .tts-prev, .tts-next { height: 56px; }
+  /* The 56px row leaves 16px above its icon. */
+  .tts-exit { margin-bottom: calc(var(--tts-gap) - 16px - 1px - 28px + (var(--tts-x-len) + var(--tts-bar)) * 0.35355); }
 }
 
 /* Read-aloud passage highlight — synced with the narration audio.
