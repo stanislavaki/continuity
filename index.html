@@ -473,9 +473,10 @@
           <div class="sub-head-text">
             <h3 class="sub-title">Granite Trip</h3>
             <p class="sub-route"><span>Quarry Scarraciana</span><span>Porto di Santa Teresa Gallura</span><span>Porto Marina di Carrara</span></p>
-            <p class="sub-dates">October 1983&nbsp;— February 1984</p>
           </div>
         </header>
+
+        <p class="sub-dates">October 1983&nbsp;— February 1984</p>
 
         <div class="article-grid">
           <!-- Lead paragraphs, above the opening image. -->
@@ -556,9 +557,10 @@
           <div class="sub-head-text">
             <h3 class="sub-title">Sculpting</h3>
             <p class="sub-route"><span>Marina di Carrara</span></p>
-            <p class="sub-dates">February 1984&nbsp;— June 1986</p>
           </div>
         </header>
+
+        <p class="sub-dates">February 1984&nbsp;— June 1986</p>
 
         <!-- Intro sits in the right half, on the same article grid as the
              body text elsewhere. The numbered list below keeps its own
@@ -607,9 +609,10 @@
           <div class="sub-num">5.3</div>
           <div class="sub-head-text">
             <h3 class="sub-title">Sculpture Trip</h3>
-            <p class="sub-dates">August&nbsp;— September 1986</p>
           </div>
         </header>
+
+        <p class="sub-dates">August&nbsp;— September 1986</p>
 
         <div class="journey-grid">
           <aside class="journey-map-wrap is-zoomed">
@@ -625,6 +628,22 @@
             <article class="stop" data-stop="1">
               <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8441.jpeg" alt=""></figure>
             </article>
+
+            <!-- The four accounts read as one passage rather than a caption
+                 apiece: the photographs are pinned and fade through in
+                 sequence, so there is nothing for a caption to sit beside.
+                 They pass directly after the first photograph — the loading in
+                 Carrara — which is where the reader has just been told what
+                 they are looking at and has the whole passage still ahead of
+                 them. Source order follows the column, so this sits here and
+                 not at the end. -->
+            <div class="stop-caps">
+            <p class="stop-cap" data-cap-for="1">Between 4 and 8 August 1986, the finished <strong>Continuity</strong> was mounted into a sturdy steel transport frame in Carrara and loaded onto the cargo ship <strong>MV Kupari</strong>.</p>
+            <p class="stop-cap" data-cap-for="2">The Kupari sailed via the <strong>Strait of Gibraltar</strong>, west of Portugal, across the <strong>Bay of Biscay</strong> and through the <strong>English Channel</strong> to the North Sea&nbsp;— a 2,800 km open-water passage taking just over two weeks.</p>
+            <p class="stop-cap" data-cap-for="3">After unloading in <strong>Rotterdam</strong>, the sculpture was transferred to a river barge and pushed up the <strong>Rhine</strong> and <strong>Main</strong> rivers toward the German interior.</p>
+            <p class="stop-cap" data-cap-for="4">In Frankfurt, a <strong>Colonia crane</strong> moved from the Osthafen to Taunusanlage 12 lifted the 80-tonne sculpture above the trees and into place beside the Deutsche Bank towers the following morning.</p>
+            </div>
+
 
             <article class="stop" data-stop="2">
               <figure class="has-video">
@@ -642,17 +661,6 @@
               <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8449.jpeg" alt=""></figure>
             </article>
 
-            <!-- The four accounts read as one passage now rather than as a
-                 caption apiece: the photographs above them are pinned and fade
-                 through in sequence, so there is nothing for a caption to sit
-                 beside. This block keeps the paragraphs separate and scrolls
-                 normally through the middle of the sequence. -->
-            <div class="stop-caps">
-            <p class="stop-cap" data-cap-for="1">Between 4 and 8 August 1986, the finished <strong>Continuity</strong> was mounted into a sturdy steel transport frame in Carrara and loaded onto the cargo ship <strong>MV Kupari</strong>.</p>
-            <p class="stop-cap" data-cap-for="2">The Kupari sailed via the <strong>Strait of Gibraltar</strong>, west of Portugal, across the <strong>Bay of Biscay</strong> and through the <strong>English Channel</strong> to the North Sea&nbsp;— a 2,800 km open-water passage taking just over two weeks.</p>
-            <p class="stop-cap" data-cap-for="3">After unloading in <strong>Rotterdam</strong>, the sculpture was transferred to a river barge and pushed up the <strong>Rhine</strong> and <strong>Main</strong> rivers toward the German interior.</p>
-            <p class="stop-cap" data-cap-for="4">In Frankfurt, a <strong>Colonia crane</strong> moved from the Osthafen to Taunusanlage 12 lifted the 80-tonne sculpture above the trees and into place beside the Deutsche Bank towers the following morning.</p>
-            </div>
           </div>
         </div>
       </div>
@@ -2047,9 +2055,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
       [[9.19, 41.24], [9.45, 41.80], [9.65, 42.40], [9.85, 43.10], [10.00, 43.60], [10.04, 44.04]],
     ],
     states: [
-      { center: [9.12, 41.10], zoom: 9.2,  past: 0, flow: -1, glow: 0 },  // 1 quarry
-      { center: [9.18, 41.30], zoom: 8.6,  past: 0, flow: 0,  glow: 1 },  // 2 crossing → port
-      { center: [9.7,  42.65], zoom: 6.6,  past: 1, flow: 1,  glow: 2 },  // 3 sea crossing → Carrara
+      { center: [9.12, 41.10], zoom: 9.2,  prog: 0, glow: 0 },  // 1 quarry
+      { center: [9.18, 41.30], zoom: 8.6,  prog: 0, glow: 1 },  // 2 crossing → port
+      { center: [9.7,  42.65], zoom: 6.6,  prog: 1, glow: 2 },  // 3 sea crossing → Carrara
     ],
   };
 
@@ -2106,32 +2114,59 @@ document.querySelectorAll('.facts').forEach((facts) => {
       { text: 'Rhine-Main',        at: 'top'    },
       { text: 'Frankfurt am Main', at: 'left'   },
     ],
+    // One segment per leg between two named places, so the route turns over a
+    // leg at a time rather than an ocean at a time. Each begins on the stop the
+    // one before ended on, which is what keeps the drawn line continuous.
     segments: [
-      [ // Carrara → Rotterdam (Med · Gibraltar · Atlantic · Channel · North Sea)
+      [ // 0 Carrara → Gibraltar (the Med)
         [10.04, 44.04], [10.00, 43.30], [9.50, 42.20], [9.20, 41.30], [8.20, 40.20],
-        [5.50, 38.80], [0.00, 37.00], [-5.40, 35.97], [-7.20, 36.30], [-9.40, 37.00],
-        [-9.60, 38.80], [-9.50, 41.00], [-9.30, 42.90], [-7.20, 45.00], [-5.80, 47.50],
-        [-3.00, 49.40], [-1.00, 50.10], [1.50, 50.95], [3.20, 51.55], [4.10, 51.98], [4.48, 51.92],
+        [5.50, 38.80], [0.00, 37.00], [-5.40, 35.97],
       ],
-      [ // Rotterdam → Frankfurt (Rhine · Main)
+      [ // 1 Gibraltar → Portugal (out of the Strait, up to Cabo da Roca)
+        [-5.40, 35.97], [-7.20, 36.30], [-9.40, 37.00], [-9.60, 38.80],
+      ],
+      [ // 2 Portugal → Bay of Biscay (the Portuguese coast, then Finisterre)
+        [-9.60, 38.80], [-9.50, 41.00], [-9.30, 42.90], [-7.20, 45.00], [-6.50, 46.26],
+      ],
+      [ // 3 Bay of Biscay → English Channel
+        [-6.50, 46.26], [-5.80, 47.50], [-3.00, 49.40], [-1.00, 50.10],
+      ],
+      [ // 4 English Channel → Rotterdam (the Channel and the North Sea)
+        [-1.00, 50.10], [1.50, 50.95], [3.20, 51.55], [4.10, 51.98], [4.48, 51.92],
+      ],
+      [ // 5 Rotterdam → Rhine-Main (down the Rhine to the confluence)
         [4.48, 51.92], [5.30, 51.60], [6.10, 51.30], [6.95, 50.95], [7.00, 50.70],
-        [7.60, 50.36], [7.90, 49.98], [8.335, 50.005], [8.50, 50.09], [8.667519, 50.113137],
+        [7.60, 50.36], [7.90, 49.98], [8.335, 50.005],
+      ],
+      [ // 6 Rhine-Main → Frankfurt (up the Main)
+        [8.335, 50.005], [8.50, 50.09], [8.667519, 50.113137],
       ],
     ],
+    // `prog` is how far along the route the ship is at this keyframe, counted in
+    // segments, and it is interpolated across a leg rather than snapped at its
+    // midpoint. That is the whole point: a segment turns from the unvisited blue
+    // to the visited purple while the camera still has it on screen, one leg at
+    // a time, instead of a whole ocean changing hands off-screen mid-move.
     states: [
-      { center: [10.0, 43.9], zoom: 6.6, past: 0, flow: -1, glow: 0 },  // 1 Carrara
-      { center: [-3, 45],     zoom: 3.5, past: 0, flow: 0,  glow: -1 }, // 2 Atlantic (wide)
+      { center: [10.0, 43.9], zoom: 6.6, prog: 0, glow: 0 },   // 1 Carrara — the Med still ahead
+      // The pull-back from Carrara is back-loaded — the Strait is still off the
+      // bottom of the screen at half way — so only the first leg turns over on
+      // this move, and it turns as the wide view lands.
+      { center: [-3, 45],     zoom: 3.5, prog: 1, glow: -1 },  // 2 Atlantic — the Med behind
       // 3 Rotterdam → Rhine. Far enough in that Frankfurt stands off Rhine-Main
       // as its own mark with its own name — below about zoom 6 the two are a
       // single smudge and only the one gets named — and far enough east that
       // both stay left of the accounts.
-      { center: WIDE ? [9.59, 50.7] : [6.0, 50.7], zoom: WIDE ? 6.0 : 5.6, past: 1, flow: 1, glow: -1 },
+      { center: WIDE ? [9.59, 50.7] : [6.0, 50.7], zoom: WIDE ? 6.0 : 5.6, prog: 6, glow: -1 },
       // Lands on the sculpture at street level, centred exactly on it — the
       // captions float over the map rather than sitting beside it, so there is
       // no column to steer clear of. (The old 0.13 deg offset was framing for
       // zoom 7.6; at this depth the viewport spans about 0.007 deg, so it would
       // have thrown the marker nine screens off.)
-      { center: [8.667519, 50.113137], zoom: 18, past: 2, flow: -1, glow: 7 },  // 4 Frankfurt · Taunusanlage 12
+      // Deliberately past the end: `prog` is clamped to the segment count, so
+      // overshooting lands the last leg half way down the dive, while the Main
+      // is still on screen, rather than at street level where nothing of it is.
+      { center: [8.667519, 50.113137], zoom: 18, prog: 8, glow: 7 },  // 4 Frankfurt · Taunusanlage 12
     ],
   };
 
@@ -2183,16 +2218,36 @@ document.querySelectorAll('.facts').forEach((facts) => {
     let started = false, inView = false, raf = 0;
     let updateLabels = () => {};
     let glowIndex = -1;        // which stop is pulsing; its name stands further off
-    let currentState = { center: cfg.overview.center, zoom: cfg.overview.zoom, past: 0, flow: -1, glow: -1 };
+    let currentState = { center: cfg.overview.center, zoom: cfg.overview.zoom, glow: -1 };
 
-    function applyState(st) {
-      if (!started) return;
-      map.setFilter('route-done', ['<', ['get', 'seg'], st.past]);
-      map.setFilter('stop-glow', ['all', ['==', ['get', 'i'], st.glow], ['!', ['get', 'region']]]);
-      map.setFilter('route-flow', ['==', ['get', 'seg'], st.flow]);
+    // How much of the route is behind the ship, in whole segments: everything
+    // below it is the visited purple, the one at it is the unvisited blue, and
+    // everything after it is not drawn yet. Read off the scrubbed `prog` every
+    // frame, so it is written only on the frames where a leg actually changes
+    // hands — and it changes hands in view, which is the point of cutting the
+    // route at the stops in the first place.
+    let doneSegs = -1;
+    function applyRoute(prog) {
+      const n = Math.max(0, Math.min(cfg.segments.length, Math.floor(prog)));
+      if (n === doneSegs || !map.getLayer('route-done')) return;
+      doneSegs = n;
+      // The whole passage is on the map the entire time — that is what makes a
+      // leg changing hands read as a change rather than as something appearing.
+      // Behind the ship it is the visited purple, at and ahead of it the
+      // unvisited blue. Past the last leg the second filter matches nothing,
+      // which leaves the route wholly purple once the sculpture is standing.
+      map.setFilter('route-done', ['<', ['get', 'seg'], n]);
+      map.setFilter('route-ahead', ['>=', ['get', 'seg'], n]);
+    }
+
+    // The glow stays step-valued — it belongs to a keyframe, not to a position
+    // along the water.
+    function applyGlow(glow) {
+      if (!map.getLayer('stop-glow')) return;
+      map.setFilter('stop-glow', ['all', ['==', ['get', 'i'], glow], ['!', ['get', 'region']]]);
       // The glowing mark is twice the size, so the name beside it has to stand
       // further off than it does beside a plain one.
-      glowIndex = st.glow;
+      glowIndex = glow;
       updateLabels();
     }
 
@@ -2270,7 +2325,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // The track: the overview, then one keyframe per narrative stop. Its
       // anchors are the very boxes the photographs are timed from, so the globe
       // and the pictures are in step by construction rather than by tuning.
-      const keys = [{ center: cfg.overview.center, zoom: cfg.overview.zoom, past: 0, flow: -1, glow: -1 }]
+      const keys = [{ center: cfg.overview.center, zoom: cfg.overview.zoom, prog: 0, glow: -1 }]
         .concat(cfg.states);
       const stopsEl = section.querySelector('.journey-stops');
       const boxes = [...section.querySelectorAll('.stop[data-stop], .stop-lead[data-lead-for]')];
@@ -2324,34 +2379,37 @@ document.querySelectorAll('.facts').forEach((facts) => {
         if (base !== stopsEl.getBoundingClientRect().top + window.scrollY
             || vh !== window.innerHeight || vw !== window.innerWidth) measure();
         const last = holds.length - 1;
-        let cam, want;
+        let cam, want, prog;
         if (scrollTop <= holds[0][1]) {
-          cam = keys[0]; want = 0;
+          cam = keys[0]; want = 0; prog = keys[0].prog;
         } else if (scrollTop >= holds[last][0]) {
           // Held on the last keyframe for the closing tail, which is where the
           // reveal plays over it.
-          cam = keys[last]; want = last;
+          cam = keys[last]; want = last; prog = keys[last].prog;
         } else {
           let i = 0;
           while (i < last && scrollTop >= holds[i + 1][0]) i++;
           if (scrollTop <= holds[i][1]) {
-            cam = keys[i]; want = i;          // inside this state's own hold
+            cam = keys[i]; want = i; prog = keys[i].prog;   // inside this state's own hold
           } else {
             const t = (scrollTop - holds[i][1]) / (holds[i + 1][0] - holds[i][1]);
             cam = legs[i](t);
-            // The route fill, the flowing segment and the glow are step-valued, so
-            // they change hands at the midpoint of a leg -- which is where the old
-            // observer handed over too, it having picked whichever box was nearest
-            // the middle of the screen.
+            // The glow is step-valued, so it changes hands at the midpoint of a
+            // leg -- which is where the old observer handed over too, it having
+            // picked whichever box was nearest the middle of the screen.
             want = t < 0.5 ? i : i + 1;
+            // The route is not. It rides the leg, so the legs behind the ship
+            // fill in one at a time while the camera is travelling over them.
+            prog = keys[i].prog + (keys[i + 1].prog - keys[i].prog) * t;
           }
         }
         map.jumpTo({ center: cam.center, zoom: cam.zoom });
+        applyRoute(prog);
         if (want !== idx) {
           idx = want;
           const k = keys[want];
-          currentState = { center: k.center, zoom: k.zoom, past: k.past, flow: k.flow, glow: k.glow };
-          applyState(currentState);
+          currentState = { center: k.center, zoom: k.zoom, glow: k.glow };
+          applyGlow(k.glow);
         }
       }
 
@@ -2466,7 +2524,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // Their rectangles are collected each pass and seeded into the kept list,
       // so a name gives way to them exactly as it gives way to another name.
       const OBSTACLES = '#' + cfg.sectionId + ' .journey-stops figure, '
-                      + '#' + cfg.sectionId + ' .stop-cap';
+                      + '#' + cfg.sectionId + ' .stop-cap, '
+                      // The dates ride the top of the screen over this map for
+                      // the whole sub-chapter, so a name has to clear them too.
+                      + '#' + cfg.sectionId + ' > .sub-dates';
       function obstacles(rect) {
         const out = [];
         document.querySelectorAll(OBSTACLES).forEach(node => {
@@ -2541,7 +2602,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
         paint: { 'line-color': VISITED, 'line-width': 3, 'line-opacity': 0.95 },
       });
       map.addLayer({
-        id: 'route-flow', type: 'line', source: 'route', filter: ['==', ['get', 'seg'], -1],
+        id: 'route-ahead', type: 'line', source: 'route', filter: ['>=', ['get', 'seg'], 0],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
         paint: { 'line-color': LINK, 'line-width': 3, 'line-opacity': 0.95 },
       });
@@ -2571,6 +2632,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       map.on('move', () => updateLabels());
 
       started = true;
+      doneSegs = -1;                 // the new style carries no filters yet
       scrub.apply(window.scrollY);
       updateLabels();
       if (inView) startAnim();

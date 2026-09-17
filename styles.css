@@ -2975,13 +2975,38 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
      takes the arrows as punctuation. */
   opacity: .4;
 }
-/* No margin of its own: the route above owns the gap, so there is one number to
-   change rather than two that collapse into each other. */
-.sub-dates { margin: 0; }
-/* Except in 5.3, where there is no route above to own it any more — the globe
-   carries those eight names now. One unit of the same air the route used, so
-   the dates sit under the title at the spacing the other two heads keep. */
-#sculpture-trip .sub-dates { margin-top: 64px; }
+/* The dates are no longer part of the head. They sit directly in the
+   sub-chapter, which is what lets them stick: a sticky box is held by its
+   parent's box, and the parent has to be the thing it is meant to ride —
+   the whole sub-chapter, not the few lines of the head.
+
+   So each one rides the top of the screen from the moment its sub-chapter's
+   head has gone up past it until the sub-chapter itself ends, naming the span
+   of time you are looking at for exactly as long as you are looking at it.
+
+   pointer-events: none because for 5.3 it rides over a full-bleed map, and
+   nothing that is only a label should take a press away from what is under it.
+   The z-index clears that map (0) and the photographs riding over it (1). */
+.journey-sub > .sub-dates {
+  position: sticky;
+  /* Held to the very top with the air carried as padding rather than as an
+     offset: an offset would leave a 24px slot above the line for whatever is
+     scrolling under it to show through. */
+  top: 0;
+  z-index: 5;
+  padding: 24px 0 12px;
+  margin: 0 0 68px;
+  text-align: center;
+  pointer-events: none;
+}
+/* 5.1 and 5.2 run photographs and body copy up the screen underneath, so their
+   dates carry their own ground — the section's own, so the band is invisible
+   except where it is doing the work of keeping the line readable.
+   5.3 is deliberately left without one: there the line rides a satellite plate
+   held well back, which it reads against cleanly, and a band would sit on that
+   plate as a dark rectangle. */
+#granite-trip > .sub-dates { background: #050505; }
+#sculpting    > .sub-dates { background: #fff; }
 
 /* Per-stop diary list */
 .stop-diary {
@@ -3397,9 +3422,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 #sculpture-trip .stop-lead[data-lead-for="4"] { grid-column: 2 / span 6; grid-row: 8; margin: calc(50vh - 180px) 0 0; pointer-events: auto; }
 #sculpture-trip .stop[data-stop="4"] { grid-column: 1 / span 3; grid-row: 10; margin-top: 25vh; }
 
-/* The four accounts as one passage, in the right half, scrolling normally
-   through the middle of the sequence — row 6 sits between the third and fourth
-   photographs, which is the middle of the six.
+/* The four accounts as one passage, in the right half, and early: row 2 puts
+   them directly after the first photograph, the loading in Carrara, with the
+   whole passage still ahead of the reader rather than most of it behind them.
 
    The margins are the clearance. The photographs cross the bottom of the screen
    on a hem that runs the full width, so there is no column the text can hold to
@@ -3410,14 +3435,14 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    viewport because that is what the clearance is made of: a photograph needs a
    screen's width to cross, and the block needs a screen's height to pass.
 
-   They are uneven because the boxes either side are: the lead plate above is
-   tall and sits right on the accounts, while the stop below carries a margin of
-   its own, so the top has further to push to buy the same clearance. Measured at
-   1111×889 this leaves about 190px spare at each end. */
+   They are uneven because the boxes either side are: the first photograph above
+   carries no margin of its own and sits right on the accounts, while the stop
+   below already waits 75vh for the globe's pull-back to the Atlantic, so the top
+   has much further to push to buy the same clearance. */
 #sculpture-trip .stop-caps {
   grid-column: 5 / span 4;
-  grid-row: 6;
-  margin: 100vh 0 80vh;
+  grid-row: 2;
+  margin: 100vh 0 30vh;
   align-self: center;
   pointer-events: auto;
   display: flex;
