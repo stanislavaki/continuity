@@ -187,9 +187,17 @@ body.light .cursor { color: #000; }
   top: 46px;
   left: 50%;
   transform: translateX(-50%);
+  white-space: nowrap;        /* set from the centre, it only has half the width to wrap in */
   color: #fff;
   z-index: 99;
   pointer-events: none;
+}
+/* On a phone the top line has the logo on the left and the + button on the
+   right, and the coordinates would run under both. They drop below the logo,
+   centred 160px down, where the other Méridien sites set them --
+   measured off charging-bull.beta-mrdn.world at 375px. */
+@media (max-width: 600px) {
+  .coord { top: calc(160px - 11px); }   /* half its 22px line */
 }
 .coord .dot {
   width: 10px; height: 10px; border-radius: 50%;
@@ -948,6 +956,11 @@ section { position: relative; }
   text-shadow: 0 4px 60px rgba(0,0,0,0.35);
 }
 .hero-title em { font-style: normal; font-family: var(--serif); font-weight: 400;  }
+/* On a phone, a word to a line, so the title can be set as large as the longer
+   word allows -- see the fit in the script. */
+@media (max-width: 600px) {
+  .hero-title-line { display: block; }
+}
 /* Opening paragraph. It used to sit over the hero photograph; it now opens the
    black section instead, riding up the right-hand columns ahead of the facts.
    Unlike the facts it is NOT lifted above the sculpture: it stays in normal
@@ -3606,6 +3619,11 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   .quote-band .quote-text { grid-column: 1; }
   .quote-credit-col { grid-column: 1; grid-row: 2; align-self: start; }
   .quote-band .quote-attr { position: static; margin-top: 1.2em; }
+}
+/* A phone's screen is short for 177px of flat colour above and below the
+   quote, so the band closes up to 2.5 times less. */
+@media (max-width: 600px) {
+  .quote-band { padding: calc(177px / 2.5) 0; }
 }
 
 /* Chapter 4's body runs as two sections so the Stroobant pull-quote can sit

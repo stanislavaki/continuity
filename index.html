@@ -138,7 +138,7 @@
     <!-- HERO -->
     <header class="hero" id="top">
       <div class="hero-bg" id="heroBg"></div>
-      <h1 class="hero-title">toward kontinuität</h1>
+      <h1 class="hero-title"><span class="hero-title-line">toward</span> <span class="hero-title-line">kontinuität</span></h1>
     </header>
 
     <!-- INTRO · facts rail. The sticky sculpture pins across this whole block,
@@ -1530,13 +1530,22 @@ window.addEventListener('message', e => {
 });
 window.parent.postMessage({ type: '__edit_mode_available' }, '*');
 
-// Hero title: scale font-size so text spans 80vw
+// Hero title: scale font-size so text spans 80vw. On a phone it is set a word
+// to a line, and the longer line spans the width between the gutters instead.
 (() => {
   const t = document.querySelector('.hero-title');
   if (!t) return;
+  const phone = window.matchMedia('(max-width: 600px)');
   const fit = () => {
     t.style.fontSize = '100px';
-    const target = window.innerWidth * 0.8;
+    let target = window.innerWidth * 0.8;
+    if (phone.matches) {
+      const probe = document.createElement('div');
+      probe.style.cssText = 'position:absolute;visibility:hidden;width:calc(100vw - 2 * var(--gutter))';
+      document.body.appendChild(probe);
+      target = probe.offsetWidth;
+      probe.remove();
+    }
     const w = t.scrollWidth;
     if (!w) return;
     t.style.fontSize = (100 * target / w) + 'px';
