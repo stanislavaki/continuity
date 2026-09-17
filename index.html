@@ -1049,17 +1049,22 @@ function crailInit() {
 function crailPaint(st) {
   const reach = 24;   // px past a part's ends that the swell still carries
   let y = st.pointerY;
-  if (y === null && st.itemHover !== null) {
-    const r = st.segs[st.itemHover].getBoundingClientRect();
-    y = r.top + r.height / 2;
-  }
+  // On a title, the item is that title's, taken as it is rather than found
+  // again on the rail: below 901px the + button opens the list with the rail
+  // not drawn, every part's rect is empty, and the nearest part would always
+  // come out as the first.
   let pointed = -1, nearest = Infinity;
+  if (y === null && st.itemHover !== null) {
+    pointed = st.itemHover;
+    const r = st.segs[st.itemHover].getBoundingClientRect();
+    if (r.height) y = r.top + r.height / 2;
+  }
   st.segs.forEach((g, n) => {
     let k = 0;
     if (y !== null) {
       const r = g.getBoundingClientRect();
       const dist = Math.max(0, r.top - y, y - r.bottom);
-      if (dist < nearest) { nearest = dist; pointed = n; }
+      if (st.pointerY !== null && dist < nearest) { nearest = dist; pointed = n; }
       k = 0.5 * (1 + Math.cos(Math.PI * Math.min(1, dist / reach)));   // 1 on the part, 0 at the edge of reach
     }
     // How far to swell, 0 to 1. CSS takes it up to --crail-swell, the widest
