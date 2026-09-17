@@ -21,7 +21,7 @@
   <div class="topbar">
     <a href="#top" class="logo"><img src="./assets/logo-short.png" alt="Méridien" class="logo-img"/></a>
   </div>
-  <button class="menu-btn" id="menuBtn" aria-label="Menu">
+  <button class="menu-btn" id="menuBtn" aria-label="Contents" data-i18n-label="nav.contents" aria-expanded="false" aria-controls="crailPanel">
     <svg viewBox="0 0 48 48"><path d="M 0 19.96 L 48 19.96 L 48 27.879 L 0 27.879 L 0 19.96 Z M 20.087 48 L 20.087 0 L 27.993 0 L 27.993 48 L 20.087 48 Z"/></svg>
   </button>
 
@@ -29,27 +29,11 @@
     <span>FRANKFURT</span><span class="dot"></span><span>50°07′N 8°41′E</span>
   </div>
 
-  <!-- Menu overlay -->
-  <div class="menu-overlay" id="menuOverlay">
-    <span class="menu-label" data-i18n="nav.contents">Contents</span>
-    <button class="menu-close" id="menuClose" aria-label="Close">
-      <svg viewBox="0 0 48 48"><path d="M 0 19.96 L 48 19.96 L 48 27.879 L 0 27.879 L 0 19.96 Z M 20.087 48 L 20.087 0 L 27.993 0 L 27.993 48 L 20.087 48 Z"/></svg>
-    </button>
-    <nav class="menu-nav">
-      <a href="#top" data-close><span data-i18n="nav.intro">Intro</span><span class="num">00</span></a>
-      <a href="#ch1" data-close><span data-i18n="nav.math">Mathematics of the sculpture</span><span class="num">01</span></a>
-      <a href="#ch2" data-close><span>Max Bill</span><span class="num">02</span></a>
-      <a href="#ch3" data-close><span>Deutsche Bank</span><span class="num">03</span></a>
-      <a href="#ch4" data-close><span data-i18n="nav.making">The making</span><span class="num">04</span></a>
-      <a href="#ch5" data-close><span data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span><span class="num">05</span></a>
-    </nav>
-  </div>
-
   <!-- Chapter rail — second contents control, on the left gutter at the
        vertical centre. Six strokes end to end, one per chapter, each as long
        as its chapter is to scroll: the one you are in fills as you read
-       through it. Clicking any of them opens .crail-panel below. The + button
-       and its overlay above are unchanged.
+       through it. Clicking any of them opens .crail-panel below; on narrow
+       screens, where the rail is hidden, the + button above opens it.
        Each stroke is drawn in parts, .crail-seg. A bar's first part starts
        with its chapter; any later one starts at its data-crail-from anchor,
        which is how the journey's stroke is cut at its sub-chapters. -->
@@ -883,19 +867,6 @@ function onScroll() {
 window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
-// ========== Menu ==========
-const menuBtn = document.getElementById('menuBtn');
-const menuOverlay = document.getElementById('menuOverlay');
-const menuClose = document.getElementById('menuClose');
-function closeMenu() { menuOverlay.classList.remove('is-open'); menuBtn.classList.remove('is-open'); }
-menuBtn.addEventListener('click', () => {
-  const open = menuOverlay.classList.toggle('is-open');
-  menuBtn.classList.toggle('is-open', open);
-});
-menuClose.addEventListener('click', closeMenu);
-document.querySelectorAll('[data-close]').forEach(a => a.addEventListener('click', closeMenu));
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
-
 // ========== Language menu ==========
 // The page is written in English, and the markup's own text is that English.
 // An element with data-i18n takes its text from the chosen language's entry
@@ -1218,6 +1189,7 @@ function crailSync(scrollTop, docH) {
   const st = crailSync.state || (crailSync.state = crailInit());
   if (!st) return;
   const { rail, panel, nav } = st;
+  const menuBtn = document.getElementById('menuBtn');
 
   function crailOpen(open) {
     // Bring the map up to date before the list is set on it: the page can have
@@ -1226,6 +1198,8 @@ function crailSync(scrollTop, docH) {
     panel.classList.toggle('is-open', open);
     rail.classList.toggle('is-open', open);
     rail.setAttribute('aria-expanded', String(open));
+    menuBtn.classList.toggle('is-open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
     panel.setAttribute('aria-hidden', String(!open));
     if (open) {
       // Opening puts pointer-events: none on the rail, so its own pointerleave
@@ -1295,13 +1269,13 @@ function crailSync(scrollTop, docH) {
   // list of titles: a press anywhere on the blur closes the menu.
   document.addEventListener('pointerdown', e => {
     if (!panel.classList.contains('is-open')) return;
-    if (nav.contains(e.target) || rail.contains(e.target)) return;
+    if (nav.contains(e.target) || rail.contains(e.target) || menuBtn.contains(e.target)) return;
     crailClose();
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') crailClose(); });
-  // The + overlay takes the whole screen; CSS hides the rail while it is open,
-  // but the card should also give up its state so it does not spring back.
-  menuBtn.addEventListener('click', crailClose);
+  // Where the rail is hidden, the + button opens the list in its place, and
+  // turns to a cross while it is open.
+  menuBtn.addEventListener('click', () => crailOpen(!panel.classList.contains('is-open')));
 
   // Chapter tops and lengths shift with the layout, and the rail's own first
   // paint needs a measured pass — onScroll() re-measures whenever the document
@@ -3867,8 +3841,8 @@ function initSpeechEngine(btn, setState, hub) {
   const synth = window.speechSynthesis;
 
   const SKIP_SELECTOR = [
-    '.cursor', '.cursor-dot', '.progress', '.menu-btn', '.menu-label',
-    '.menu-overlay', '.crail', '.crail-panel', '.tweaks', '.tts-toggle', '.fact-n',
+    '.cursor', '.cursor-dot', '.progress', '.menu-btn', '.lang',
+    '.crail', '.crail-panel', '.tweaks', '.tts-toggle', '.fact-n',
     '.hero-scroll', '.topo-toggle', '.topo-slider', '.lightbox',
     '.tts-skip', '[aria-hidden="true"]', 'script', 'style', 'noscript'
   ].join(',');

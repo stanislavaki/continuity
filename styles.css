@@ -129,9 +129,6 @@ img, svg { display: block; max-width: 100%; }
   transform: translate(-50%, -50%);
 }
 .cursor.is-hover { width: 64px; height: 64px; border-radius: 50%; transform: translate(-50%, -50%) rotate(0); }
-body:has(.menu-overlay.is-open) .cursor,
-body:has(.menu-overlay.is-open) .cursor-dot { mix-blend-mode: normal; }
-body:has(.menu-overlay.is-open) .cursor { color: #fff; }
 .cursor.hide, .cursor-dot.hide { opacity: 0; }
 .cursor.is-text { width: 2px; height: 22px; border: none; background: currentColor; transform: translate(-50%, -50%) rotate(0); }
 html { background: var(--black); }
@@ -158,7 +155,6 @@ body.light .cursor { color: #000; }
   pointer-events: none;
 }
 .topbar > * { pointer-events: auto; }
-.topbar:has(.menu-btn.is-open) { z-index: 600; }
 .logo {
   font-family: var(--sans);
   font-weight: 900;
@@ -239,15 +235,17 @@ body.light .cursor { color: #000; }
    convention .crail already follows, for the same reason. */
 body.dark  .menu-btn { color: #fff; }
 body.light .menu-btn { color: #000; }
-body .menu-btn.is-open { z-index: 600; color: #fff; }
+.menu-btn.is-open { z-index: 600; }   /* over the contents list it opens (420) */
 .menu-btn:not(.is-open):hover svg { transform: scale(1.1); }
 .menu-btn.is-open svg { transform: rotate(135deg); }
 .menu-btn.is-open:hover svg { transform: rotate(135deg) scale(1.1); }
-/* The chapter rail is the navigation now. The + button is the only way into
-   .menu-overlay, so hiding it puts that whole menu out of reach — and out of the
-   tab order — while leaving its markup, styles and handlers untouched. Remove
-   this one rule to bring it back. */
+/* The chapter rail is the navigation on desktop. Where it is hidden, below
+   901px, the + button opens the rail's list in its place -- see .crail-panel --
+   and turns to a cross while the list is open. */
 .menu-btn { display: none; }
+@media (max-width: 900px) {
+  .menu-btn { display: grid; }
+}
 
 #ch1 { overflow: visible; }
 /* The 1's own left side bearing, which is what puts its ink on the column line
@@ -367,90 +365,9 @@ body .menu-btn.is-open { z-index: 600; color: #fff; }
   transition: width .08s linear;
 }
 
-/* Menu overlay */
-.menu-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(5,5,5,0.96);
-  backdrop-filter: blur(10px);
-  z-index: 500;
-  display: grid;
-  place-items: center;
-  padding: clamp(72px, 11vh, 120px) var(--gutter) clamp(40px, 7vh, 60px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .4s ease;
-  overflow-y: auto;
-}
-.menu-overlay.is-open { opacity: 1; pointer-events: auto; }
-.menu-label {
-  position: fixed;
-  top: 33px;
-  left: var(--gutter, 24px);
-  height: 48px;
-  display: flex;
-  align-items: center;
-  font-family: var(--mono);
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  color: #fff;
-  opacity: 0.7;
-  z-index: 600;
-}
-.menu-nav {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-.menu-nav a {
-  color: rgba(255,255,255,0.5);
-  font-family: var(--sans);
-  font-weight: 700;
-  font-size: clamp(18px, min(3.8vw, 5vh), 44px);
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-  padding: clamp(7px, 1.2vh, 14px) 0;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  transition: color .2s ease, padding-left .3s ease;
-}
-.menu-nav a:hover { color: #fff; }
-.menu-nav a .num {
-  font-family: var(--mono);
-  font-size: 14px;
-  font-weight: 400;
-  opacity: 0.7;
-  letter-spacing: 0.1em;
-}
-.menu-footer {
-  margin-top: 60px;
-  display: flex;
-  justify-content: space-between;
-  color: rgba(255,255,255,0.5);
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  width: 100%;
-  max-width: 1100px;
-}
-.menu-close {
-  display: none;
-  position: absolute;
-  top: 24px; right: var(--gutter);
-  background: transparent; border: none; color: #fff;
-  width: 48px; height: 48px; cursor: none;
-}
-.menu-close svg { width: 28px; height: 28px; fill: currentColor; transform: rotate(45deg); }
-
 /* ============================================================
-   CHAPTER RAIL — the second contents control, additive to the
-   + button and its full-screen .menu-overlay above, which are
-   left untouched.
+   CHAPTER RAIL — the page's contents. Below 901px the rail is
+   hidden and the + button opens its list instead.
 
    Closed, it is a map of the page: six 4px strokes stacked end
    to end down the left gutter, about the viewport's centre, one per
@@ -492,7 +409,7 @@ body .menu-btn.is-open { z-index: 600; color: #fff; }
   left: calc(var(--rail-x) - 10px);
   top: calc(50% - var(--crail-lift));
   transform: translateY(-50%);
-  z-index: 421;               /* over the page and the list it opens (420), under .menu-overlay (500) */
+  z-index: 421;               /* over the page and the list it opens (420) */
   box-sizing: content-box;
   height: var(--crail-h);
   display: flex;
@@ -577,7 +494,7 @@ body.light .crail-fill { background: #000; }
 .crail-panel {
   position: fixed;
   inset: 0;
-  z-index: 420;               /* over the page, under the rail (421) and .menu-overlay (500) */
+  z-index: 420;               /* over the page, under the rail (421) and the + button (600) */
   /* The lead between a number and its title. Twice it stands between the
      stroke and the number. */
   --crail-lead: clamp(11px, 1.1vw, 18px);
@@ -709,15 +626,13 @@ body.light .crail-link:hover { color: #000; }
                     calc(90ms + var(--i) * 34ms);
 }
 
-/* The + overlay and the journey lightbox both own the whole screen when
-   open, and .lb-prev sits on exactly this gutter and centre line. Stand down
-   for both. The read-aloud transport goes with them: it holds the bottom-left
+/* The journey lightbox owns the whole screen when open, and .lb-prev sits on
+   exactly this gutter and centre line. Stand down for it. The read-aloud
+   transport goes too: it holds the bottom-left
    gutter at a z-index above the lightbox, so it was the one thing still
    showing through the deck. Reading is not stopped, only its controls are put
    away -- the voice carries on under the pictures, and the transport is back
    the moment the deck closes. */
-body:has(.menu-overlay.is-open) .crail,
-body:has(.menu-overlay.is-open) .crail-panel,
 body:has(.lightbox.is-open) .crail,
 body:has(.lightbox.is-open) .crail-panel,
 body:has(.lightbox.is-open) .tts-controls {
@@ -729,9 +644,40 @@ body:has(.lightbox.is-open) .tts-controls {
 .tts-controls { transition: opacity .3s ease, visibility .3s ease; }
 
 @media (max-width: 900px) {
-  /* Not enough width to sit a card on the gutter without covering the
-     column it is meant to navigate. The + button remains the nav here. */
-  .crail, .crail-panel { display: none; }
+  /* Not enough width to sit the rail on the gutter without covering the column
+     it is meant to navigate. Its list is still the page's contents, opened by
+     the + button instead: the same titles, numbers and current part, set as a
+     plain column, since there is no rail to lay it out on. Every number shows,
+     there being no pointer to bring one up. */
+  .crail { display: none; }
+  .crail-panel {
+    align-items: flex-start;
+    padding: 81px var(--gutter) var(--gutter);   /* clear of the + button, 33px down and 48px tall */
+    overflow-y: auto;
+  }
+  .crail-nav {
+    --crail-type: clamp(22px, 2.2vw, 36px);
+    top: 0;
+    width: 100%;
+    height: auto;
+    margin-block: auto;         /* centred while it fits, from the top once it does not */
+    gap: 0;
+  }
+  .crail-row { flex: none; gap: 0; }
+  .crail-link {
+    flex: none;
+    align-items: baseline;
+    padding: 10px 0;            /* a line and its padding make a 45px target */
+    white-space: normal;
+  }
+  .crail-num { opacity: 1; }
+  /* The list has the screen: the read-aloud cluster and the language menu in
+     the corner would stand over its first column. Reading goes on. */
+  body:has(.crail-panel.is-open) .tts-controls {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .crail, .crail-bar, .crail-seg, .crail-fill, .crail-link, .crail-num,
@@ -895,10 +841,7 @@ body.light .lang-opt:focus-visible { color: #000; }
 body.dark  .lang-veil { background: rgba(5, 5, 5, 0.55); }
 body.light .lang-veil { background: rgba(255, 255, 255, 0.62); }
 
-/* Stands down with the rail under the + overlay and the lightbox, which own the
-   whole screen. */
-body:has(.menu-overlay.is-open) .lang,
-body:has(.menu-overlay.is-open) .lang-veil,
+/* Stands down with the rail under the lightbox, which owns the whole screen. */
 body:has(.lightbox.is-open) .lang,
 body:has(.lightbox.is-open) .lang-veil {
   opacity: 0;
