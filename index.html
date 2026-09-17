@@ -607,7 +607,6 @@
           <div class="sub-num">5.3</div>
           <div class="sub-head-text">
             <h3 class="sub-title">Sculpture Trip</h3>
-            <p class="sub-route"><span>Port of Carrara</span><span>Gibraltar</span><span>Portugal</span><span>Bay of Biscay</span><span>English Channel</span><span>Rotterdam</span><span>Rhine-Main</span><span>Frankfurt am Main</span></p>
             <p class="sub-dates">August&nbsp;— September 1986</p>
           </div>
         </header>
@@ -2030,7 +2029,13 @@ document.querySelectorAll('.facts').forEach((facts) => {
   const ESRI_IMAGERY =
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   const ESRI_ATTRIB = 'Imagery © Esri, Maxar, Earthstar Geographics';
-  const ROUTE = '#FFFFFF';   // path and stop marks alike — the map is monochrome
+  // The route reads as a link: the leg being travelled is a browser's unvisited
+  // blue, the legs behind it the visited purple. These are the two defaults
+  // themselves (Chrome and Firefox both ship them), not an approximation, so
+  // the reference is the thing itself. The stop marks stay white — they are the
+  // places, not the passage.
+  const LINK    = '#0000EE';   // the leg under way
+  const VISITED = '#551A8B';   // the legs behind it
 
   const GRANITE = {
     containerId: 'graniteGlobe',
@@ -2048,6 +2053,14 @@ document.querySelectorAll('.facts').forEach((facts) => {
     ],
   };
 
+  // On the wide layout the four accounts sit in the right half of the screen,
+  // over the map — the column starts at about 51% of it. A state whose subject
+  // is a mark rather than a whole ocean has to keep that mark clear of them, so
+  // the camera is pushed east and the route rides the left half. The narrow
+  // layout puts the map on its own plate with the text below, so there is no
+  // column to dodge there and the framing stays as it was.
+  const WIDE = window.matchMedia('(min-width: 901px)').matches;
+
   const SCULPTURE = {
     containerId: 'globeMap',
     sectionId: 'sculpture-trip',
@@ -2060,7 +2073,39 @@ document.querySelectorAll('.facts').forEach((facts) => {
     // 7147230422 (Max Bill, 1986, granite, 4.5 m, 80 t) at Taunusanlage 12.
     // Roughly a kilometre from the old placeholder — invisible at zoom 7,
     // but the final state now lands at street level, where it would show.
-    stops: [ [10.04, 44.04], [4.48, 51.92], [8.667519, 50.113137] ],
+    // Every place the route list in the head names, in that order. Each one
+    // sits ON the path below rather than near it: five are vertices the path
+    // already had (the passage was drawn through the Strait, past Cabo da Roca
+    // and up the Channel long before anything marked them), Biscay is the
+    // midpoint of the leg that crosses it, and Rhine-Main is the confluence
+    // itself — which is why the Rhine leg now bends through Mainz-Kostheim.
+    stops: [
+      [ 10.040000, 44.040000 ],   // 0 Port of Carrara
+      [ -5.400000, 35.970000 ],   // 1 Gibraltar — the Strait
+      [ -9.600000, 38.800000 ],   // 2 Portugal — west of Cabo da Roca
+      [ -6.500000, 46.260000 ],   // 3 Bay of Biscay
+      [ -1.000000, 50.100000 ],   // 4 English Channel
+      [  4.480000, 51.920000 ],   // 5 Rotterdam
+      [  8.335000, 50.005000 ],   // 6 Rhine-Main — where the Main meets the Rhine
+      [  8.667519, 50.113137 ],   // 7 Frankfurt am Main — the sculpture itself
+    ],
+    // `at` is the side of the mark the name hangs off, so no label lies over
+    // the route: at sea they sit on the open-water side, ashore they clear
+    // the river. Order is priority order only in the sense that the culling
+    // below sorts by distance to the centre of the frame, not by this list.
+    labels: [
+      { text: 'Port of Carrara',   at: 'left'   },
+      { text: 'Gibraltar',         at: 'top'    },
+      // `region` is a stretch of the passage rather than a place the ship tied
+      // up: named on the globe, but not marked, because there is no one point
+      // on the water the name belongs to.
+      { text: 'Portugal',          at: 'right',  region: true },
+      { text: 'Bay of Biscay',     at: 'right',  region: true },
+      { text: 'English Channel',   at: 'top',    region: true },
+      { text: 'Rotterdam',         at: 'bottom' },
+      { text: 'Rhine-Main',        at: 'top'    },
+      { text: 'Frankfurt am Main', at: 'left'   },
+    ],
     segments: [
       [ // Carrara → Rotterdam (Med · Gibraltar · Atlantic · Channel · North Sea)
         [10.04, 44.04], [10.00, 43.30], [9.50, 42.20], [9.20, 41.30], [8.20, 40.20],
@@ -2070,38 +2115,37 @@ document.querySelectorAll('.facts').forEach((facts) => {
       ],
       [ // Rotterdam → Frankfurt (Rhine · Main)
         [4.48, 51.92], [5.30, 51.60], [6.10, 51.30], [6.95, 50.95], [7.00, 50.70],
-        [7.60, 50.45], [8.20, 50.10], [8.667519, 50.113137],
+        [7.60, 50.36], [7.90, 49.98], [8.335, 50.005], [8.50, 50.09], [8.667519, 50.113137],
       ],
     ],
     states: [
       { center: [10.0, 43.9], zoom: 6.6, past: 0, flow: -1, glow: 0 },  // 1 Carrara
       { center: [-3, 45],     zoom: 3.5, past: 0, flow: 0,  glow: -1 }, // 2 Atlantic (wide)
-      { center: [6.0, 50.7],  zoom: 5.6, past: 1, flow: 1,  glow: -1 }, // 3 Rotterdam → Rhine
+      // 3 Rotterdam → Rhine. Far enough in that Frankfurt stands off Rhine-Main
+      // as its own mark with its own name — below about zoom 6 the two are a
+      // single smudge and only the one gets named — and far enough east that
+      // both stay left of the accounts.
+      { center: WIDE ? [9.59, 50.7] : [6.0, 50.7], zoom: WIDE ? 6.0 : 5.6, past: 1, flow: 1, glow: -1 },
       // Lands on the sculpture at street level, centred exactly on it — the
       // captions float over the map rather than sitting beside it, so there is
       // no column to steer clear of. (The old 0.13 deg offset was framing for
       // zoom 7.6; at this depth the viewport spans about 0.007 deg, so it would
       // have thrown the marker nine screens off.)
-      { center: [8.667519, 50.113137], zoom: 18, past: 2, flow: -1, glow: 2 },  // 4 Frankfurt · Taunusanlage 12
+      { center: [8.667519, 50.113137], zoom: 18, past: 2, flow: -1, glow: 7 },  // 4 Frankfurt · Taunusanlage 12
     ],
   };
-
-  // The "currently flowing" segment is a solid line carrying a bright band that
-  // sweeps along it — a skeleton-loader shimmer. Drawn with line-gradient over
-  // line-progress, which is why the route source below sets lineMetrics.
-  //
-  // FLOW_MS   one sweep, end to end
-  // FLOW_W    the band's half-width, as a fraction of the segment
-  // FLOW_N    how finely the gradient is sampled (see paintFlow)
-  const FLOW_MS = 2600, FLOW_W = 0.18, FLOW_N = 20, FLOW_DIM = 0.28, FLOW_LIT = 1;
 
   const routeFC = (segs) => ({
     type: 'FeatureCollection',
     features: segs.map((coords, i) => ({ type: 'Feature', properties: { seg: i }, geometry: { type: 'LineString', coordinates: coords } })),
   });
-  const stopsFC = (pts) => ({
+  const stopsFC = (pts, labels) => ({
     type: 'FeatureCollection',
-    features: pts.map((c, i) => ({ type: 'Feature', properties: { i }, geometry: { type: 'Point', coordinates: c } })),
+    features: pts.map((c, i) => ({
+      type: 'Feature',
+      properties: { i, region: !!(labels && labels[i] && labels[i].region) },
+      geometry: { type: 'Point', coordinates: c },
+    })),
   });
 
   function buildJourneyGlobe(cfg) {
@@ -2124,22 +2168,32 @@ document.querySelectorAll('.facts').forEach((facts) => {
           sat: { type: 'raster', tiles: [ESRI_IMAGERY], tileSize: 256, maxzoom: 19, attribution: ESRI_ATTRIB },
         },
         layers: [
-          { id: 'space', type: 'background', paint: { 'background-color': '#05070d' } },
-          { id: 'sat', type: 'raster', source: 'sat', paint: { 'raster-fade-duration': 0 } },
+          // Transparent, not near-black: with the canvas no longer held at .4
+          // this layer would otherwise cover the wrap's radial gradient, which
+          // is what the space around the globe has always actually been.
+          { id: 'space', type: 'background', paint: { 'background-color': 'rgba(0,0,0,0)' } },
+          // The shading that used to sit on the canvas lives here now, so it
+          // falls on the satellite imagery alone. The route and the stop marks
+          // draw over it at the full white they are given.
+          { id: 'sat', type: 'raster', source: 'sat', paint: { 'raster-fade-duration': 0, 'raster-opacity': 0.24 } },
         ],
       },
     });
 
     let started = false, inView = false, raf = 0;
+    let updateLabels = () => {};
+    let glowIndex = -1;        // which stop is pulsing; its name stands further off
     let currentState = { center: cfg.overview.center, zoom: cfg.overview.zoom, past: 0, flow: -1, glow: -1 };
 
     function applyState(st) {
       if (!started) return;
       map.setFilter('route-done', ['<', ['get', 'seg'], st.past]);
-      map.setFilter('stop-glow', ['==', ['get', 'i'], st.glow]);
+      map.setFilter('stop-glow', ['all', ['==', ['get', 'i'], st.glow], ['!', ['get', 'region']]]);
       map.setFilter('route-flow', ['==', ['get', 'seg'], st.flow]);
-      // Static first paint; frame() then sweeps it unless reduced-motion.
-      paintFlow(0);
+      // The glowing mark is twice the size, so the name beside it has to stand
+      // further off than it does beside a plain one.
+      glowIndex = st.glow;
+      updateLabels();
     }
 
     // --- scroll-scrubbed camera ------------------------------------------
@@ -2304,28 +2358,6 @@ document.querySelectorAll('.facts').forEach((facts) => {
       return { apply, invalidate: () => { base = NaN; } };
     }
 
-    // Repaint the flowing segment's gradient for time ts. The band is sampled at
-    // FLOW_N fixed positions rather than expressed as a few stops slid along the
-    // line: fixed positions are strictly increasing by construction, so the stop
-    // list never needs clamping fixups as the band runs off either end.
-    function paintFlow(ts) {
-      if (!map.getLayer('route-flow')) return;
-      // The head travels from just off one end to just off the other, so the
-      // band enters and leaves instead of popping in mid-line.
-      const t = reduceMotion ? 0.5 : ((ts % FLOW_MS) / FLOW_MS);
-      const head = t * (1 + 2 * FLOW_W) - FLOW_W;
-      const stops = [];
-      for (let i = 0; i < FLOW_N; i++) {
-        const pos = i / (FLOW_N - 1);
-        let k = Math.max(0, 1 - Math.abs(pos - head) / FLOW_W);
-        k = k * k * (3 - 2 * k);            // smoothstep, so the band has no hard edge
-        const a = FLOW_DIM + (FLOW_LIT - FLOW_DIM) * k;
-        stops.push(pos, 'rgba(255,255,255,' + a.toFixed(3) + ')');
-      }
-      map.setPaintProperty('route-flow', 'line-gradient',
-        ['interpolate', ['linear'], ['line-progress'], ...stops]);
-    }
-
     function frame(ts) {
       raf = requestAnimationFrame(frame);
       if (!started) return;
@@ -2335,15 +2367,161 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // the loop is already running for exactly as long as the section is on
       // screen, which is exactly as long as the camera matters.
       scrub.apply(window.scrollY);
-      if (currentState.flow >= 0 && !reduceMotion) {
-        paintFlow(ts);
-      }
       if (currentState.glow >= 0 && !reduceMotion) {
         map.setPaintProperty('stop-glow', 'circle-radius', 16 + Math.sin(ts / 280) * 3);
       }
     }
     function startAnim() { if (!raf) raf = requestAnimationFrame(frame); }
     function stopAnim() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+
+    // --- stop names -------------------------------------------------------
+    // The marks are identical white dots, so on their own they say only "a
+    // place was here". These write the names against them, in their own layer
+    // over the canvas rather than as a symbol layer: the style carries no
+    // glyphs, and DOM text gets the page's own body face for free — the very
+    // setting the route list in the head used to carry these names in.
+    //
+    // Two things have to be decided every frame, because this camera travels
+    // from the whole globe down to street level: which names are even on the
+    // near side of the world, and which of those would collide. Nearest the
+    // centre of the frame wins a collision — the camera is looking there, so
+    // that is the name being asked for.
+    function makeLabels() {
+      const specs = cfg.labels || [];
+      if (!specs.length) return () => {};
+
+      const layer = document.createElement('div');
+      layer.className = 'map-stop-labels';
+      map.getCanvasContainer().appendChild(layer);
+
+      const items = specs.map((spec, i) => {
+        const at = cfg.stops[i];
+        if (!spec || !at) return null;
+        const el = document.createElement('span');
+        el.className = 'map-stop-label';
+        el.textContent = spec.text;
+        layer.appendChild(el);
+        return { el, i: i, at: spec.at, region: !!spec.region, lngLat: at, w: 0, h: 0 };
+      }).filter(Boolean);
+
+      // A name stands clear of whatever it names. A region has no mark at all
+      // and only has to miss the 3px route line; a stop's mark is 8px in the
+      // radius; the active one pulses out to 19 (16 ± 3, see frame()). AIR on
+      // top of that is the air itself, so nothing ever comes close to touching.
+      const AIR = 12;
+      const gapFor = (it) => (it.region ? 3 : (it.i === glowIndex ? 19 : 8)) + AIR;
+      const PAD = 12;            // and this much between two names
+      // Two marks closer together than this — centre to centre — are one place
+      // said twice, whatever the text around them does. 8px of radius each and
+      // a little air between, so the pair reads as two marks before either is
+      // named. It is a distance, not a box: 30px apart on the diagonal is as
+      // separate as 30px apart in a straight line.
+      const NEAR = 30;
+      const FADE_IN = 2.2, FADE_FULL = 3.2;   // nothing at the opening globe,
+                                              // full once the camera is inside it
+      let sized = false;
+      // Measured in one pass and cached: reading offsetWidth per label per
+      // frame would reflow the document on every step of the scroll.
+      const measure = () => {
+        items.forEach(it => { it.w = it.el.offsetWidth; it.h = it.el.offsetHeight; });
+        sized = items.every(it => it.w > 0);
+      };
+      const invalidate = () => { sized = false; };
+      window.addEventListener('resize', invalidate);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(invalidate);
+
+      // Where the name hangs off its mark. The config names the side it wants;
+      // one that would run off the plate takes the opposite side instead.
+      const boxAt = (it, side, x, y) => {
+        const g = gapFor(it);
+        let l, t;
+        if (side === 'left')        { l = x + g;          t = y - it.h / 2; }
+        else if (side === 'right')  { l = x - g - it.w;   t = y - it.h / 2; }
+        else if (side === 'top')    { l = x - it.w / 2;   t = y + g; }
+        else                        { l = x - it.w / 2;   t = y - g - it.h; }
+        return { l, t, r: l + it.w, b: t + it.h };
+      };
+      const FLIP = { left: 'right', right: 'left', top: 'bottom', bottom: 'top' };
+      const inside = (r, w, h) => r.l >= 2 && r.t >= 2 && r.r <= w - 2 && r.b <= h - 2;
+      const clashes = (r, it, kept) => kept.some(q =>
+        (r.l < q.r + PAD && r.r > q.l - PAD && r.t < q.b + PAD && r.b > q.t - PAD) ||
+        // Rhine-Main and Frankfurt are thirty kilometres apart, which is a dozen
+        // pixels on the wide view. This holds whichever side is tried, so it is
+        // the zoom that decides when the pair is worth naming twice.
+        (q.x !== undefined && Math.hypot(it.x - q.x, it.y - q.y) < NEAR));
+      // The side the config asks for, then the opposite side. A name gives way
+      // to the edge of the plate, to a photograph and to another name alike,
+      // and goes unwritten only when neither side of its mark is clear.
+      function fit(it, w, h, kept) {
+        const sides = [it.at, FLIP[it.at] || 'bottom'];
+        for (let i = 0; i < sides.length; i++) {
+          const r = boxAt(it, sides[i], it.x, it.y);
+          if (inside(r, w, h) && !clashes(r, it, kept)) return r;
+        }
+        return null;
+      }
+
+      // The pinned photographs and the four accounts ride over this map, and a
+      // name half-swallowed by a photograph reads worse than no name at all.
+      // Their rectangles are collected each pass and seeded into the kept list,
+      // so a name gives way to them exactly as it gives way to another name.
+      const OBSTACLES = '#' + cfg.sectionId + ' .journey-stops figure, '
+                      + '#' + cfg.sectionId + ' .stop-cap';
+      function obstacles(rect) {
+        const out = [];
+        document.querySelectorAll(OBSTACLES).forEach(node => {
+          const cs = getComputedStyle(node);
+          if (cs.visibility === 'hidden' || +cs.opacity < 0.05) return;
+          const b = node.getBoundingClientRect();
+          if (!b.width || !b.height) return;
+          const q = { l: b.left - rect.left, t: b.top - rect.top,
+                      r: b.right - rect.left, b: b.bottom - rect.top };
+          if (q.r < 0 || q.b < 0 || q.l > rect.width || q.t > rect.height) return;
+          out.push(q);
+        });
+        return out;
+      }
+
+      return function update() {
+        const k = Math.max(0, Math.min(1, (map.getZoom() - FADE_IN) / (FADE_FULL - FADE_IN)));
+        if (k <= 0) { items.forEach(it => { it.el.style.opacity = '0'; }); return; }
+        if (!sized) measure();
+
+        const el = map.getContainer();
+        const w = el.clientWidth, h = el.clientHeight;
+        const cx = w / 2, cy = h / 2;
+
+        const live = [];
+        items.forEach(it => {
+          let hidden = false;
+          try {
+            hidden = map.transform.isLocationOccluded(
+              new maplibregl.LngLat(it.lngLat[0], it.lngLat[1]));
+          } catch (e) {}
+          const p = map.project(it.lngLat);
+          // A margin either side: a mark just past the edge can still have its
+          // name reach back into the frame.
+          if (hidden || p.x < -240 || p.x > w + 240 || p.y < -120 || p.y > h + 120) {
+            it.el.style.opacity = '0';
+            return;
+          }
+          it.x = p.x; it.y = p.y;
+          it.d = (p.x - cx) * (p.x - cx) + (p.y - cy) * (p.y - cy);
+          live.push(it);
+        });
+
+        live.sort((a, b) => a.d - b.d);
+        const kept = obstacles(el.getBoundingClientRect());
+        live.forEach(it => {
+          const r = fit(it, w, h, kept);
+          if (!r) { it.el.style.opacity = '0'; return; }
+          r.x = it.x; r.y = it.y;
+          kept.push(r);
+          it.el.style.transform = 'translate(' + Math.round(r.l) + 'px,' + Math.round(r.t) + 'px)';
+          it.el.style.opacity = String(k);
+        });
+      };
+    }
 
     map.on('style.load', () => {
       try { map.setProjection({ type: 'globe' }); } catch (e) {}
@@ -2354,28 +2532,26 @@ document.querySelectorAll('.facts').forEach((facts) => {
         });
       } catch (e) {}
 
-      // lineMetrics is what makes ['line-progress'] available to the flow layer's
-      // gradient; route-done shares the source and ignores it.
-      map.addSource('route', { type: 'geojson', lineMetrics: true, data: routeFC(cfg.segments) });
+      // Both legs are flat colour now, so nothing reads ['line-progress'] and the
+      // source no longer has to carry line metrics.
+      map.addSource('route', { type: 'geojson', data: routeFC(cfg.segments) });
       map.addLayer({
         id: 'route-done', type: 'line', source: 'route', filter: ['<', ['get', 'seg'], -1],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': ROUTE, 'line-width': 3, 'line-opacity': 0.95 },
+        paint: { 'line-color': VISITED, 'line-width': 3, 'line-opacity': 0.95 },
       });
       map.addLayer({
         id: 'route-flow', type: 'line', source: 'route', filter: ['==', ['get', 'seg'], -1],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        // line-gradient supersedes line-color, so the alpha ramp carries the
-        // whole look. paintFlow overwrites this on the first applyState.
-        paint: { 'line-width': 3, 'line-gradient':
-          ['interpolate', ['linear'], ['line-progress'], 0, 'rgba(255,255,255,0.28)', 1, 'rgba(255,255,255,0.28)'] },
+        paint: { 'line-color': LINK, 'line-width': 3, 'line-opacity': 0.95 },
       });
 
-      map.addSource('stops', { type: 'geojson', data: stopsFC(cfg.stops) });
+      map.addSource('stops', { type: 'geojson', data: stopsFC(cfg.stops, cfg.labels) });
       // Flat and hard-edged: solid white, no ring at all. Nothing translucent,
       // nothing blurred, and no outline to soften the mark against the plate.
       map.addLayer({
         id: 'stop-dot', type: 'circle', source: 'stops',
+        filter: ['!', ['get', 'region']],
         paint: {
           'circle-radius': 8, 'circle-color': '#ffffff',
           'circle-stroke-width': 0,
@@ -2391,8 +2567,12 @@ document.querySelectorAll('.facts').forEach((facts) => {
         },
       });
 
+      updateLabels = makeLabels();
+      map.on('move', () => updateLabels());
+
       started = true;
       scrub.apply(window.scrollY);
+      updateLabels();
       if (inView) startAnim();
     });
 

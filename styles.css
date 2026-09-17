@@ -2508,6 +2508,53 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 .journey-map .maplibregl-ctrl-attrib a { color: rgba(255,255,255,.7); }
 .journey-map .maplibregl-ctrl-attrib-button { filter: invert(1); opacity: .6; }
+
+/* Stop names — the eight places the route list in the head names, written
+   against their marks on the globe. Set as DOM text over the canvas rather
+   than as a MapLibre symbol layer: the style carries no glyph source, and
+   this way the names take the page's own body face — the very setting the
+   route list in the head used to carry these same eight names in.
+
+   Placement and culling are the script's business — it writes `transform`
+   and `opacity` every frame. Everything here is the look alone, and the
+   layer is laid out (not display:none) so the script can measure a label's
+   width once and cache it. */
+.journey-map .map-stop-labels {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+.journey-map .map-stop-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  /* The same setting as .sub-route, which lists these eight names in the head
+     above — same face, weight, size, leading and tracking, clamp included. The
+     names on the globe and the names in the route are one thing said twice, so
+     they are not going to be said in two different voices: this is the page's
+     body voice, not a mono caption's, for the reason .sub-route gives. */
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(20px, 1.7vw, 26px);
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  /* Flat white, nothing behind it and nothing blurred under it, matching the
+     marks it names. The satellite imagery is held well back beneath it (see
+     raster-opacity in the journey globes script), which is what keeps plain
+     white legible without a plate or a shadow. */
+  color: #fff;
+  opacity: 0;
+  /* Opacity only. The transform is rewritten every frame as the camera moves,
+     so a transition on it would drag the name behind its mark. */
+  transition: opacity .35s ease;
+  will-change: transform, opacity;
+}
+@media (prefers-reduced-motion: reduce) {
+  .journey-map .map-stop-label { transition: none; }
+}
 .g-stop { transition: r .35s ease, fill .35s ease; }
 .g-stop.is-glowing {
   filter: drop-shadow(0 0 6px rgba(255,213,0,0.95)) drop-shadow(0 0 12px rgba(255,213,0,0.5));
@@ -2931,6 +2978,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* No margin of its own: the route above owns the gap, so there is one number to
    change rather than two that collapse into each other. */
 .sub-dates { margin: 0; }
+/* Except in 5.3, where there is no route above to own it any more — the globe
+   carries those eight names now. One unit of the same air the route used, so
+   the dates sit under the title at the spacing the other two heads keep. */
+#sculpture-trip .sub-dates { margin-top: 64px; }
 
 /* Per-stop diary list */
 .stop-diary {
@@ -3219,13 +3270,15 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   z-index: 1;
 }
 #sculpture-trip .journey-map .map-bg { display: none; }
-/* Shade the map back so the text and the pinned photographs riding over it stay
-   dominant. Only the canvas dims — the attribution below keeps its full
-   contrast — and the wrap's near-black gradient behind is what the missing
-   share reads as. */
-#sculpture-trip .journey-map .maplibregl-canvas { opacity: .4; }
-/* Driven by the closing reveal, and multiplied by the shading above: the whole
-   satellite view (attribution included) dissolves as the photograph takes over. */
+/* The shading that kept the text and the pinned photographs dominant used to
+   sit here, on the canvas. It took the route and the stop marks down with the
+   imagery, which is why a white mark read as grey beside its own white name.
+   It is a raster-opacity on the satellite layer now (see the style in the
+   journey globes script), so it falls on the imagery alone and MapLibre's own
+   drawing keeps the white it is given. The attribution was never dimmed. */
+/* Driven by the closing reveal, and multiplied by the raster's own shading:
+   the whole satellite view (attribution included) dissolves as the photograph
+   takes over. */
 #sculpture-trip .journey-map { opacity: var(--map-fade, 1); }
 
 /* Closing reveal — the Walk-around scene, pinned to the map's centre point,
