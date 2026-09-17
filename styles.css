@@ -40,11 +40,28 @@
      --rail-x below has to clear it. */
   --crail-swell: 2.775;
   /* The left edge the fixed controls in the margin share on desktop: the
-     chapter rail's strokes and the read-aloud play triangle. Out in the margin,
+     chapter rail's strokes and the language menu's letters. Out in the margin,
      so they stand clear of text set flush on the grid's first column -- a
      pull-quote's author, an article's byline -- rather than over it: a stroke
      at its widest, under the pointer, still ends 4px short of the gutter. */
   --rail-x: calc(var(--gutter) - 4px - 4px * var(--crail-swell));
+  /* The bottom-left corner, where the language menu's two letters stand with
+     the read-aloud play button beside them: the letters' left edge and their
+     baseline, on equal insets. The gutter here; --rail-x on desktop, where the
+     rail is out. */
+  --corner-x: var(--gutter);
+  --corner-y: var(--gutter);
+  /* The language menu's type, held at the root because the play button is
+     placed off it as well -- see .lang and .tts-controls. .crail-nav's ramp,
+     held down where the open row, with the play button carried out after it,
+     would not fit between the gutters: the four names, their gaps and the gap
+     before the triangle come to 16.63em in Struve at this weight and tracking,
+     and the triangle is 19px, so a phone takes the type a few points under
+     22px. Adding a language means measuring this again. */
+  --lang-type: min(clamp(22px, 2.2vw, 36px), (100vw - 2 * var(--gutter) - 19px) / 16.63);
+}
+@media (min-width: 901px) {
+  :root { --corner-x: var(--rail-x); --corner-y: var(--rail-x); }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -461,9 +478,9 @@ body .menu-btn.is-open { z-index: 600; color: #fff; }
 .crail {
   position: fixed;
   /* The strokes stand on --rail-x, in the margin just clear of the first
-     column, and the read-aloud play triangle takes the same x — see
-     .tts-controls. The box starts 10px short of that, and its padding puts the
-     strokes back on it — see below. */
+     column, and the language menu's letters take the same x in the corner
+     below — see .lang. The box starts 10px short of that, and its padding puts
+     the strokes back on it — see below. */
   left: calc(var(--rail-x) - 10px);
   top: calc(50% - var(--crail-lift));
   transform: translateY(-50%);
@@ -719,6 +736,173 @@ body:has(.lightbox.is-open) .tts-controls {
      would otherwise hold the blur on screen for 340ms after it has gone. */
   .crail-panel, .crail-panel.is-open { transition-delay: 0s; }
   .crail-panel.is-open .crail-link { transition-delay: 0ms; }
+}
+
+/* ============================================================
+   LANGUAGE MENU — the bottom-left corner, with the read-aloud play
+   button beside it.
+
+   Closed, it shows the first two letters of the page's language.
+   Opened, the page blurs behind it as it does behind the chapter
+   list, and the languages unfold into a row on that same line,
+   each by its own name, carrying the play button out at the end
+   of it -- see .tts-controls. The two
+   letters never leave the screen: they are carried into place, as
+   the start of their own name, while the rest of the row opens
+   round them. Closing runs it back. The type, weight and tones are
+   the chapter list's.
+
+   Each name is two folds, its first two letters and the rest. A
+   fold is a one-column grid easing between 0fr and 1fr, as
+   .narr-film-fold does its rows, so a shut fold takes no width at
+   all. Closed, every fold is shut but the current language's
+   first, which is why those letters stand in the corner; opening
+   the rest is what moves them.
+   ============================================================ */
+.lang {
+  position: fixed;
+  /* The letters' baseline on --corner-y. The 48px row centres a 1.15em line
+     whose baseline is 0.229em above its foot, which puts the row's centre, and
+     the capitals' with it, 0.35em over the baseline. */
+  left: var(--corner-x);
+  bottom: calc(var(--corner-y) + 0.35em - var(--lang-row) / 2);
+  /* One over the read-aloud transport (950, 970 while it reads), so the two go
+     under an open film together and come over it together, and where the play
+     button's padded box runs under the letters the letters take the press. */
+  z-index: 951;
+  --lang-row: 48px;
+  --lang-gap: 0.5em;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: var(--lang-type);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  pointer-events: none;       /* only the buttons take a press */
+}
+body:has(.tts-toggle:not([data-state="idle"])) .lang { z-index: 971; }
+body.dark  .lang { color: #fff; }
+body.light .lang { color: #000; }
+
+/* The closed control. It lies over the two letters and a little round them,
+   since the list under it is inert until it opens, and stands aside once the
+   list is live. Out to the right only half the gap before the play button, so
+   the button keeps the rest of it. */
+.lang-btn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -16px;
+  right: -0.3em;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+.lang.is-open .lang-btn { pointer-events: none; }
+
+.lang-list {
+  display: flex;
+  list-style: none;
+  /* Drawn back by the bearing Struve sets before an E or a D at this weight, so
+     the stem stands on --corner-x as the rail's strokes do. An I's is half as
+     much, too little to matter. */
+  margin-left: -0.068em;
+}
+.lang-opt {
+  display: flex;
+  align-items: center;
+  min-height: var(--lang-row);
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font: inherit;
+  letter-spacing: inherit;    /* not part of `font`, and buttons reset it */
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  transition: color .25s ease;
+}
+/* Under the pointer, the closed letters ease back to 80%. */
+.lang-btn:hover + .lang-list .lang-opt[aria-current="true"] .lang-fold:first-child { opacity: .8; }
+body.dark  .lang-opt { color: rgba(255, 255, 255, 0.46); }
+body.dark  .lang-opt[aria-current="true"],
+body.dark  .lang-opt:hover,
+body.dark  .lang-opt:focus-visible { color: #fff; }
+body.light .lang-opt { color: rgba(0, 0, 0, 0.38); }
+body.light .lang-opt[aria-current="true"],
+body.light .lang-opt:hover,
+body.light .lang-opt:focus-visible { color: #000; }
+
+.lang-fold {
+  display: grid;
+  grid-template-columns: 0fr;
+  opacity: 0;
+  transition: grid-template-columns .55s cubic-bezier(.22, 1, .36, 1),
+              opacity .25s ease;
+}
+.lang-fold > span {
+  min-width: 0;
+  overflow-x: clip;           /* across only, so accents and descenders stay whole */
+}
+/* The space before the next name folds with the rest of this one, so a shut
+   name leaves no gap behind it. */
+.lang-list li:not(:last-child) .lang-rest::after {
+  content: "";
+  display: inline-block;
+  width: var(--lang-gap);
+}
+.lang-opt[aria-current="true"] .lang-fold:first-child,
+.lang.is-open .lang-fold {
+  grid-template-columns: 1fr;
+  opacity: 1;
+}
+/* Opening, the letters come up behind the unfolding rather than ahead of it. */
+.lang.is-open .lang-fold { transition-delay: 0s, .12s; }
+.lang.is-still .lang-fold { transition: none; }
+
+/* The chapter list's blur and wash, behind the corner. */
+.lang-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 949;               /* under the menu and the transport beside it */
+  backdrop-filter: blur(22px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .34s ease,
+              visibility 0s linear .34s,
+              background-color .45s ease;
+}
+.lang-veil.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;       /* a press on the blur closes the menu */
+  transition: opacity .34s ease, visibility 0s, background-color .45s ease;
+}
+body.dark  .lang-veil { background: rgba(5, 5, 5, 0.55); }
+body.light .lang-veil { background: rgba(255, 255, 255, 0.62); }
+
+/* Stands down with the rail under the + overlay and the lightbox, which own the
+   whole screen. */
+body:has(.menu-overlay.is-open) .lang,
+body:has(.menu-overlay.is-open) .lang-veil,
+body:has(.lightbox.is-open) .lang,
+body:has(.lightbox.is-open) .lang-veil {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lang-fold, .lang.is-open .lang-fold,
+  .lang-veil, .lang-veil.is-open {
+    transition-duration: 1ms;
+    transition-delay: 0s;
+  }
 }
 
 /* ============ SECTIONS ============ */
@@ -1614,8 +1798,10 @@ section { position: relative; }
    over a mid-grey. Same convention as .menu-btn and .crail. */
 .tts-controls {
   position: fixed;
-  left: 24px;
-  bottom: 24px;
+  /* After the language menu, wherever its row has got to -- see the note under
+     the colours. */
+  left: calc(var(--corner-x) + var(--lang-w, 1.25 * var(--lang-type)) + 0.532 * var(--lang-type) - 24px);
+  bottom: calc(var(--corner-y) + 0.35 * var(--lang-type) - 32px);
   z-index: 950;
   /* Two rows, with the play button in the corner of both: the exit opens above
      it and the paragraph jumps open to its right, so the one control that is
@@ -1641,20 +1827,16 @@ section { position: relative; }
 .tts-exit   { grid-area: 1 / 1; }
 body.dark  .tts-controls { color: #fff; }
 body.light .tts-controls { color: #000; }
-/* Line the play triangle up with the left edge of the chapter rail's bars, on
-   --rail-x, and stand it the same distance up from the bottom, so it sits in
-   the corner on equal insets. The 64px button centres a 24px icon and the
-   triangle is inset another 4px inside that, so the button's own box has to
-   start 24px left of that x for the triangle's edge to land on it; the
-   triangle fills the icon's height, so its foot is 20px above the button's.
-   Only where the rail exists: below 901px it is hidden and these controls
-   keep their own inset. */
-@media (min-width: 901px) {
-  .tts-controls {
-    left: calc(var(--rail-x) - 24px);
-    bottom: calc(var(--rail-x) - 20px);
-  }
-}
+/* The play triangle rides at the end of the language menu, which holds the
+   bottom-left corner: centred on its capitals, 0.35em over the baseline the
+   letters keep on --corner-y, and 0.6em past its right edge, a fifth more
+   than the gap between the names. That edge is --corner-x, less the 0.068em
+   the letters are drawn back by, plus --lang-w, the width of the row, which
+   the script hands over as it changes -- so the button follows the names out
+   as the menu unfolds and back as it folds, and sits as close after It as
+   after De. The 64px button centres a 24px icon and the triangle is inset
+   another 4px inside that, so the button's box starts 24px short of the
+   triangle's edge, and its centre is 32px up. */
 .tts-toggle {
   display: inline-flex;
   align-items: center;
@@ -1855,7 +2037,12 @@ body.light .tts-controls { color: #000; }
   50%      { opacity: .4; }
 }
 @media (max-width: 600px) {
-  .tts-controls { left: 16px; bottom: 16px; gap: 0; }
+  /* The 56px button, centred 28px up. Its triangle is still 24px in: the button
+     sits centred in the 64px column the exit sets. */
+  .tts-controls {
+    bottom: calc(var(--corner-y) + 0.35 * var(--lang-type) - 28px);
+    gap: 0;
+  }
   .tts-toggle { width: 56px; height: 56px; }
   .tts-prev, .tts-next { height: 56px; }
 }
