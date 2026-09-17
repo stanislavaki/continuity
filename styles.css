@@ -2642,6 +2642,24 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .journey-photo-measure img,
 .journey-photo-bleed img { display: block; width: 100%; height: auto; }
 
+/* The place names under the photographs. They are set as 5.2's gallery notes
+   are — the type spec below is shared rather than repeated, so a caption reads
+   the same wherever in the journey it appears. Only the air above it belongs
+   here, since these sit in the page flow and those are placed absolutely. */
+.journey-cap { margin: 12px 0 0; }
+.journey-cap h5:last-child { margin-bottom: 0; }
+/* The closing figure's name sits above it instead. That figure has escaped the
+   container to run edge to edge, so the line has to be brought back onto the
+   measure the other captions sit on — .container's own recipe, applied inside
+   the box that stepped out of it. It starts at column 1, where the measure
+   does. */
+.journey-cap--above { margin: 0 0 12px; }
+.journey-photo-bleed .journey-cap--above {
+  max-width: var(--maxw);
+  margin: 0 auto 12px;
+  padding: 0 var(--gutter);
+}
+
 /* Lead paragraphs sit above the opening image, in the same right-hand column
    the rest of the account uses. Rows are explicit: the photo column and the
    body would otherwise not share one. */
@@ -2649,12 +2667,39 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   grid-row: 1;
   margin-bottom: 60px;
 }
-/* Opening figure: the full 8-column measure, inside the container gutters. */
+/* Opening figure: the full 8-column measure, inside the container gutters.
+   Laid out on those eight page columns itself, so what sits inside it can be
+   placed against them — the photograph takes all eight, its name starts at
+   column 5, set against the middle of the picture rather than under its
+   left-hand corner. */
 .journey-photo-measure {
   grid-column: 1 / -1;
   grid-row: 2;
   margin: 0 0 var(--col-gap);
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--col-gap);
 }
+.journey-photo-measure img { grid-column: 1 / -1; }
+/* This one caption sets its mark beside the name rather than over it, and each
+   of the two takes a column of its own: the name begins column 5, where the
+   other captions in this sub-chapter begin, and the mark stands in column 4 on
+   the name's side of it, so the pair reads as one thing with the column gap
+   between them rather than a dot adrift in the measure.
+   The caption takes the figure's own tracks through subgrid rather than
+   guessing at the offset — it is the same eight columns either way. */
+.journey-photo-measure .journey-cap {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: center;
+}
+.journey-photo-measure .journey-cap::before {
+  grid-column: 4;
+  justify-self: end;
+  margin: 0;
+}
+.journey-photo-measure .journey-cap h5 { grid-column: 5 / -1; }
 /* Two photographs side by side across the full measure, four page columns
    each. Sits in its own row between the opening image and the text row. */
 .journey-photo-pair {
@@ -2676,13 +2721,20 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .journey-photos { grid-row: 4; }
 .article-grid > .journey-photo-measure ~ .article-body { grid-row: 4; }
 /* Six page columns, flush to column 1. .article-grid tracks are two page
-   columns wide, so 1/4 spans page columns 1-6. */
+   columns wide, so 1/4 spans page columns 1-6. Those six are laid out inside
+   it as the opening figure lays out its eight, and for the same reason: the
+   name starts on page column 5, which lands exactly where the opening
+   figure's does, the two figures sharing a left edge. */
 .journey-photo-six {
   grid-column: 1 / 4;
   grid-row: 5;
   margin: var(--col-gap) 0 0;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  column-gap: var(--col-gap);
 }
-.journey-photo-six img { display: block; width: 100%; height: auto; }
+.journey-photo-six img { display: block; width: 100%; height: auto; grid-column: 1 / -1; }
+.journey-photo-six .journey-cap { grid-column: 5 / -1; }
 /* Account resumes below that image rather than alongside it. Scoped through
    .article-grid to outrank the `.journey-photo-measure ~ .article-body` rule
    above, which also matches this block and would pin it back to row 4. */
@@ -2709,6 +2761,15 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
      each, and everything after them moves down one. */
   .article-grid > .journey-photo-measure ~ .article-body { grid-row: 5; }
   .journey-photo-six { grid-row: 6; }
+  .journey-photo-six .journey-cap { grid-column: 1 / -1; }
+  /* Six and eight columns no longer mean what those placements assume, so the
+     opening caption gives up its tracks and runs as a plain row, the mark back
+     against the name with the air it carries when stacked. */
+  .journey-photo-measure .journey-cap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
   .article-grid > .article-body.granite-tail { grid-row: 7; }
   .journey-photo-bleed { grid-row: 8; }
 }
@@ -2888,7 +2949,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   display: block;
   border-top: 1px solid rgba(255,255,255,.18);
   padding-top: 12px;
-  margin-bottom: 80px;
+  /* The only gap between the head and the dates under it. It used to be 80
+     here on top of 64 below the route and the 24 the dates carry — 168 all
+     told; a quarter of that is 42, and 24 of those belong to the sticky line,
+     which keeps them whatever this is set to. */
+  margin-bottom: 18px;
 }
 /* The three small lines of the head -- number, route, dates -- are set as body
    copy, not as labels: the same face, weight, size, leading and tracking the
@@ -2941,10 +3006,12 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   color: #fff;
   margin: 0;
 }
-/* The air either side of the route is carried here as padding rather than as
-   margins on the three lines, so it cannot collapse against them and the block
-   sits the same distance under the title as it does above the dates. */
-.sub-route { margin: 0; padding: 64px 0; }
+/* The air under the title is carried here as padding rather than as a margin
+   on the first line, so it cannot collapse against it. Nothing is carried
+   below: the whole distance from the last place down to the dates is
+   .sub-head's margin, so it is set in one place rather than accumulated from
+   three. */
+.sub-route { margin: 0; padding: 64px 0 0; }
 /* The route reads as a descent rather than a line: one place to a row, with the
    arrow turned to match. The arrows are drawn between the rows rather than
    written into the sentence, so a route is only its places and the punctuation
@@ -2954,6 +3021,40 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+/* Every place in the journey opens on the same mark — a dot in the section's
+   ink, beating slowly so it reads as a position being held rather than as a
+   bullet. One rule serves 5.2's route, which names its place in the head, and
+   5.1's captions, which name theirs under the photographs. currentColor for
+   the reason the arrows below give: the mark has to sit on the journey's
+   near-black and on 5.2's ochre alike. */
+.sub-route::before,
+.journey-cap::before {
+  content: '';
+  display: block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: currentColor;
+  /* Closer to the name under it than the arrows are to the names they join:
+     the dot belongs to the first place rather than sitting between things. */
+  margin: 0 auto 14px;
+  animation: route-pulse 2.4s ease-in-out infinite;
+}
+/* The route is centred and its mark centres with it; the captions are ranged
+   left, so theirs sits on the same edge the name starts from. */
+.journey-cap::before { margin: 0 0 14px; }
+/* The mark on its own, with nothing expanding out of it: it draws in and
+   swells back, and that is the whole of it. Scale rather than width, so the
+   name under it never shifts, and the dot keeps the section's flat ink at
+   every point in the cycle instead of fading through it. */
+@keyframes route-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(.6); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sub-route::before,
+  .journey-cap::before { animation: none; }
 }
 /* The drawn arrow, at its own 44x56. Carried as a mask filled with currentColor
    rather than as an <img> or a background: the file is a black fill, and these
@@ -2999,14 +3100,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   text-align: center;
   pointer-events: none;
 }
-/* 5.1 and 5.2 run photographs and body copy up the screen underneath, so their
-   dates carry their own ground — the section's own, so the band is invisible
-   except where it is doing the work of keeping the line readable.
-   5.3 is deliberately left without one: there the line rides a satellite plate
-   held well back, which it reads against cleanly, and a band would sit on that
-   plate as a dark rectangle. */
-#granite-trip > .sub-dates { background: #050505; }
-#sculpting    > .sub-dates { background: #fff; }
+/* No sub-chapter puts a ground under its date. A band is only invisible while
+   nothing is passing beneath it, and something always is: in 5.1 it cut a hard
+   black edge across the photographs, in 5.2 an ochre one, and in 5.3 it would
+   sit on the satellite plate as a rectangle. The line rides what it rides. */
 
 /* Per-stop diary list */
 .stop-diary {
@@ -3101,13 +3198,17 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* Typography now comes from .article-body, so it matches the body text
    everywhere else. The trailing space belongs below the block, not between
    its paragraphs — those keep the shared .article-body rhythm. */
-/* Sculpting · the white room ---------------------------------------------
+/* Sculpting · the ochre room ---------------------------------------------
    The ground is a pseudo-element rather than a background on the block
    itself, so the sub-chapter keeps the container's measure and stays on the
-   page grid while the white runs to both edges. `isolation` gives it a
+   page grid while the colour runs to both edges. `isolation` gives it a
    stacking context, so the negative z-index lands behind this sub-chapter's
-   own content but still on top of .journey's black. */
-/* The white starts straight off the granite trip's closing bleed image — no
+   own content but still on top of .journey's black.
+
+   The ground is Bill's own ochre, the amber of the painted triangle. The ink
+   stays the .light-section black: on this amber that is still ~9.7:1, where
+   white would be 2.2:1. */
+/* The room starts straight off the granite trip's closing bleed image — no
    black gap between the two sub-chapters, since the room's own padding is
    what opens the space. */
 .journey-sub:has(+ #sculpting) { margin-bottom: 0; }
@@ -3126,7 +3227,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   /* Same scrollbar-aware full-bleed measure as .journey-photo-bleed. */
   left: calc(50% - (100vw - var(--sbw, 0px)) / 2);
   width: calc(100vw - var(--sbw, 0px));
-  background: #fff;
+  background: #E8A317;
 }
 /* .sub-title is set in white for the dark journey; here it follows the ink. */
 #sculpting .sub-title { color: inherit; }
@@ -3220,13 +3321,15 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   opacity: 1;
   transition: opacity .35s ease;
 }
-.sg-note h5 {
+.sg-note h5,
+.journey-cap h5 {
   font-size: 18px;
   font-weight: 600;
   margin: 0 0 6px;
   letter-spacing: -0.01em;
 }
-.sg-note p {
+.sg-note p,
+.journey-cap p {
   font-size: 15px;
   line-height: 1.45;
   margin: 0;
@@ -3574,7 +3677,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .journey-facts { grid-template-columns: 1fr; gap: 24px; padding: 24px 0; margin-bottom: 60px; }
   .journey-facts > div:nth-child(n) { grid-column: 1 / -1; }
   .journey-sub { margin-bottom: 80px; }
-  .sub-head { grid-template-columns: 1fr; gap: 8px; margin-bottom: 48px; }
+  /* 64 + 48 + 24 was 136 here; a quarter is 34, less the dates' own 24. */
+  .sub-head { grid-template-columns: 1fr; gap: 8px; margin-bottom: 10px; }
   /* Back to the single column with the head. Left at 2 / 3 the number would
      open implicit tracks beside a one-track grid and drag the head off the
      measure; the container query keeps sizing it against the head's own width,
