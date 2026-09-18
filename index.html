@@ -4296,15 +4296,16 @@ if (document.readyState === 'loading') {
   // Geometry, in the viewBox's own units. The plot is 1340 wide because that is
   // the container's measure at the page's 1440 maximum, so at full width one
   // unit is one pixel and the type inside the SVG matches the type outside it.
-  const W = 1340, H = 1014;
+  const W = 1340, H = 712;
   const X1 = W;                // the field's right edge: the eighth column's
-  const BASE = 920;            // the columns' foot
-  // One mark to the next, up a column, and the mark itself: a square rather
-  // than a dot, and both at twice what they were. The gap between two marks
-  // stays the same share of the pitch, so a column is the figure it always was,
-  // drawn twice the size -- 101 marks in 1931, the tallest, now come to 889.
-  const PITCH = 8.8;
-  const SIDE = 6.8;
+  const BASE = 616;            // the columns' foot
+  // One mark to the next, up a column, and the mark itself. The whole height of
+  // the figure comes out of these two: 1931 holds 101 works, so the field is
+  // 101 pitches tall and everything else is set below it. A 5 square on a 5.8
+  // pitch leaves 0.8 between marks -- half the air the 6.8 square had, and a
+  // third off the tallest column, which falls from 889 units to 586.
+  const PITCH = 5.8;
+  const SIDE = 5;
   const BORN = 1908;           // Max Bill, 1908-1994
   const NODE_Y0 = 72, NODE_DY = 76;
 
