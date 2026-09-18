@@ -4020,7 +4020,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   gap: 1.5em;
   align-items: baseline;
 }
-.bill-graph-read i { font-style: normal; opacity: 0.55; }
+/* The quiet half of the readout: the encoding at rest, and the span of years
+   behind a label. Set below the age row under the plot -- these are the two
+   things in the figure that are there to be found rather than read. */
+.bill-graph-read i { font-style: normal; opacity: 0.35; }
 .bill-graph-read b { font-weight: inherit; }
 
 /* ---- the plot's own parts, all inside the one SVG ---- */
@@ -4039,6 +4042,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   letter-spacing: -0.005em;
   fill: #fff;
 }
+/* The age row stands back from the decade above it -- same setting, less ink,
+   so the two are read in order rather than at once. */
+.bg-age { fill-opacity: 0.6; }
 /* One thread to a domain-year: the fan says, per practice, which years it was
    alive in. It is drawn only while that practice's own label is under the
    pointer -- at rest the field of dots stands on its own, and the fan is the
