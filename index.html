@@ -4383,7 +4383,11 @@ if (document.readyState === 'loading') {
     // Decade guides, and under the field's foot the year they mark with Bill's
     // own age beneath it -- the second row turns the timeline into a life, so a
     // column can be read as a point in it rather than only as a date.
-    let guides = '<text class="bg-age" x="' + X0.toFixed(1) + '" y="' + (BASE + 80) + '">age</text>';
+    // Each of the two rows under the field is named at its own left edge, in its
+    // own strength -- the decade at full, the age standing back with the figures
+    // it labels.
+    let guides = '<text class="bg-axis" x="' + X0.toFixed(1) + '" y="' + (BASE + 46) + '">year</text>' +
+                 '<text class="bg-age" x="' + X0.toFixed(1) + '" y="' + (BASE + 80) + '">age</text>';
     for (let y = Math.ceil(y0 / 10) * 10; y <= y1; y += 10) {
       const gx = (X0 + (y - y0) * step).toFixed(1);
       guides += '<line class="bg-guide" x1="' + gx + '" y1="24" x2="' + gx + '" y2="' + (BASE + 14) + '"/>' +
