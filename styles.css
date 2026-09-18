@@ -4028,7 +4028,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 
 /* ---- the plot's own parts, all inside the one SVG ---- */
 .bg-guide { stroke: #fff; stroke-opacity: 0.14; stroke-width: 1; }
-.bg-base  { stroke: #fff; stroke-opacity: 0.3;  stroke-width: 1; }
 /* The two rows under the field -- the decade, and Bill's age in it -- set in
    the figure's one voice with everything else: the same face, weight, size and
    tracking as the readout below them and the count above the plot. The size
@@ -4068,6 +4067,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bg-node rect { pointer-events: all; }
 .bg-node { cursor: none; }
 .bg-hit { fill: none; stroke: #fff; stroke-width: 1.5; opacity: 0; transition: opacity 0.15s ease; }
+/* One dot to a work -- drawn square, and squared off at the corners too. */
+.bg-dots rect { shape-rendering: crispEdges; }
 .bg-hit.on { opacity: 1; }
 
 /* Focus: one domain lit, the rest held back far enough to read through. */
