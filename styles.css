@@ -3963,11 +3963,27 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    measure rather than shrink to fit the figure inside it. */
 .bill-reveal > .container { width: 100%; }
 .bill-graph { margin: 0; width: 100%; }
+/* Head, measuring rule and foot all sit on the page's eight columns, the same
+   grid the figure between them is drawn on: the count and the labels under it
+   on columns one and two, the span and the readout on three to eight, over the
+   years they belong to. */
+.bill-graph-head,
+.bill-graph-grid,
+.bill-graph-foot {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+}
 .bill-graph-head { margin-bottom: 44px; }
-/* The head is one line, and it is set as the article columns are -- body copy
-   rather than a mono caption, so the figure is announced in the page's own
-   voice, the way the journey's sub-heads are. */
-.bill-graph-kicker {
+/* Eight empty cells the plot measures its own columns off. It takes no room and
+   is never drawn; it exists so the SVG can ask the page where the columns fall
+   rather than recompute --col-gap and --gutter for itself. */
+.bill-graph-grid { height: 0; visibility: hidden; pointer-events: none; }
+/* The head is set as the article columns are -- body copy rather than a mono
+   caption, so the figure is announced in the page's own voice, the way the
+   journey's sub-heads are. */
+.bill-graph-count,
+.bill-graph-span {
   font-family: var(--sans);
   font-weight: 500;
   font-size: clamp(20px, 1.7vw, 26px);
@@ -3975,26 +3991,28 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   letter-spacing: -0.005em;
   margin: 0;
 }
+.bill-graph-count { grid-column: 1 / 3; }
+.bill-graph-span { grid-column: 3 / -1; }
 .bill-graph-plot svg { width: 100%; height: auto; display: block; }
 
 /* The foot holds the readout -- the work under the pointer -- at a fixed
    height, so naming one cannot shift the figure above it. */
 .bill-graph-foot {
-  /* Set to the field's own left edge rather than the container's, so the line
-     starts where the years start -- and so it never runs under the language
-     menu and the play button, which stand fixed in this same bottom corner.
-     The figure is 1340 units wide and the field opens at 330 of them. */
-  padding-left: 24.63%;
   margin-top: 28px;
   min-height: 1.5em;
   font-family: var(--mono);
   font-size: 12px;
   letter-spacing: 0;
+}
+/* On the field's own columns, so the line starts where the years start -- and
+   so it never runs under the language menu and the play button, which stand
+   fixed in this same bottom corner. */
+.bill-graph-read {
+  grid-column: 3 / -1;
   display: flex;
   gap: 1.5em;
   align-items: baseline;
 }
-.bill-graph-read { display: flex; gap: 1.5em; align-items: baseline; }
 .bill-graph-read i { font-style: normal; opacity: 0.55; }
 .bill-graph-read b { font-weight: 400; }
 
@@ -4020,19 +4038,25 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    only thing on the page. */
 .bg-threads { fill: none; stroke-width: 0.7; stroke-opacity: 0.11; transition: stroke-opacity 0.4s ease; }
 .bg-dots { transition: opacity 0.4s ease; }
-.bg-node circle { transition: r 0.3s ease; }
 /* Label and count share one style: the node is a two-line mark, not a caption
    with a figure under it. Both sit flush on the plot's x=0, which is the
    container's left edge -- the page's first column, the line the head above
-   the figure starts on. */
+   the figure starts on. Neither sets a fill: the colour comes down from the
+   group, so the label itself is the key and no swatch is needed beside it. */
 .bg-node-label,
 .bg-node-count {
   font-family: var(--sans);
   font-weight: 700;
   font-size: 24px;
   letter-spacing: -0.02em;
-  fill: #fff;
 }
+/* The node proper. It is drawn only while its label is under the pointer, at
+   the point its own threads converge on. */
+.bg-node-dot { opacity: 0; transition: opacity 0.3s ease; }
+.bg-node:hover .bg-node-dot { opacity: 1; }
+/* A transparent fill is hit-tested, but say so outright rather than rely on it:
+   this rect is the whole of the label block's target. */
+.bg-node rect { pointer-events: all; }
 .bg-node { cursor: none; }
 .bg-hit { fill: none; stroke: #fff; stroke-width: 1.5; opacity: 0; transition: opacity 0.15s ease; }
 .bg-hit.on { opacity: 1; }
@@ -4043,7 +4067,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bill-graph[data-focus] .bg-threads.lit { stroke-opacity: 0.5; }
 .bill-graph[data-focus] .bg-node.dim .bg-node-label,
 .bill-graph[data-focus] .bg-node.dim .bg-node-count { fill-opacity: 0.25; }
-.bill-graph[data-focus] .bg-node.dim circle { opacity: 0.25; }
 
 /* The field arrives as a wipe across the years rather than a fade, so the
    figure is read left to right the first time as well. The mask rect's width

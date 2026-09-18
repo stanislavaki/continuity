@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=90" />
+<link rel="stylesheet" href="styles.css?v=91" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -304,8 +304,13 @@
     <div class="container">
       <figure class="bill-graph reveal" id="billGraph">
         <div class="bill-graph-head">
-          <p class="bill-graph-kicker">941 works &middot; 1925&mdash;1996</p>
+          <p class="bill-graph-count">941 works</p>
+          <p class="bill-graph-span">1925&mdash;1996</p>
         </div>
+        <!-- Eight empty cells on the page's own grid, laid across the figure's
+             measure. The plot measures its columns off them, so the SVG sits on
+             the same grid as the text above and below it at any width. -->
+        <div class="bill-graph-grid" id="billGraphGrid" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="bill-graph-plot" id="billGraphPlot"></div>
         <figcaption class="bill-graph-foot">
           <span class="bill-graph-read" id="billGraphRead"></span>
@@ -4266,9 +4271,15 @@ if (document.readyState === 'loading') {
 
 // ========== Bill · what he made, and when ==========
 // The graph in #billReveal. One dot to a catalogued work: across for the year
-// Bill began it, stacked up that year's column, coloured by domain. Six nodes
-// stand down the left, one to a domain, and a thread runs from each node into
-// every year that domain was at work.
+// Bill began it, stacked up that year's column, coloured by domain. Six labels
+// stand down the left, one to a domain and set in its colour, and a thread runs
+// from each into every year that domain was at work.
+//
+// The whole figure is laid on the page's own eight columns: the labels take
+// columns one and two, the field takes three to eight. The column positions are
+// measured off .bill-graph-grid rather than worked out from --col-gap and
+// --gutter, which both scale with the viewport and would otherwise have to be
+// kept in step here by hand; the figure redraws when the measure changes.
 //
 // The data is assets/bill-works.json, built by scripts/build_bill_works.py out
 // of two catalogues that were kept from overlapping -- the art data set for the
@@ -4278,31 +4289,42 @@ if (document.readyState === 'loading') {
   const fig = document.getElementById('billGraph');
   const plot = document.getElementById('billGraphPlot');
   const read = document.getElementById('billGraphRead');
-  if (!fig || !plot) return;
+  const rule = document.getElementById('billGraphGrid');
+  if (!fig || !plot || !rule) return;
 
-  // Geometry, in the viewBox's own units. The plot is 1340 wide because that
-  // is the container's measure at the page's 1440 maximum, so at full width one
+  // Geometry, in the viewBox's own units. The plot is 1340 wide because that is
+  // the container's measure at the page's 1440 maximum, so at full width one
   // unit is one pixel and the type inside the SVG matches the type outside it.
   const W = 1340, H = 566;
-  const BORN = 1908;           // Max Bill, 1908-1994
-  // The six nodes: label and count are set flush on the page's first column,
-  // at x=0, which is the container's own left edge -- the same line the head
-  // above the figure starts on. The dot stands clear of the longest label
-  // (drawings & objects, 223 units at this size) so that every thread leaves
-  // from the same x and the fan opens from one place.
-  const NODE_X = 248;
-  const X0 = 330, X1 = W;      // the field, left and right
+  const X1 = W;                // the field's right edge: the eighth column's
   const BASE = 486;            // the columns' foot
   const PITCH = 4.4;           // one dot to the next, up a column
   const R = 1.7;
+  const BORN = 1908;           // Max Bill, 1908-1994
   const NODE_Y0 = 72, NODE_DY = 76;
 
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
                             .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-  function draw(data) {
+  // Where the page's eight columns fall, in the plot's own units.
+  function columns() {
+    const box = plot.getBoundingClientRect();
+    const k = W / box.width;
+    return [...rule.children].map(cell => {
+      const r = cell.getBoundingClientRect();
+      return { x: (r.left - box.left) * k, w: r.width * k };
+    });
+  }
+
+  let data = null;
+  let held = null;             // a label under the pointer outranks the field
+
+  function render() {
     const domains = data.domains;
     const works = data.works;                  // [year, domain, label]
+    const grid = columns();
+    const NODE_X = grid[1].x + grid[1].w;      // the foot of column two
+    const X0 = grid[2].x;                      // the field opens on column three
     const y0 = works[0][0];
     const y1 = works[works.length - 1][0];
     const span = y1 - y0 + 1;
@@ -4324,7 +4346,7 @@ if (document.readyState === 'loading') {
     const threads = domains.map(() => []);     // per domain: one path per year
     cols.forEach((col, year) => {
       const x = colX(year).toFixed(1);
-      let firstOf = new Map();                 // domain -> its lowest dot's y
+      const firstOf = new Map();               // domain -> its lowest dot's y
       col.forEach((w, i) => {
         const cy = BASE - (i + 0.5) * PITCH;
         dots[w[1]].push('<circle cx="' + x + '" cy="' + cy.toFixed(1) + '" r="' + R + '"/>');
@@ -4333,8 +4355,8 @@ if (document.readyState === 'loading') {
       firstOf.forEach((cy, d) => {
         // A flat S from the node to the foot of that domain's run of dots:
         // both ends leave horizontally, so the fan opens rather than kinks.
-        const sx = NODE_X + 8, sy = nodeY(d), ex = +x, dx = ex - sx;
-        threads[d].push('<path d="M' + sx + ',' + sy +
+        const sx = NODE_X, sy = nodeY(d), ex = +x, dx = ex - sx;
+        threads[d].push('<path d="M' + sx.toFixed(1) + ',' + sy +
           'C' + (sx + dx * 0.55).toFixed(1) + ',' + sy + ' ' +
           (ex - dx * 0.35).toFixed(1) + ',' + cy.toFixed(1) + ' ' +
           ex + ',' + cy.toFixed(1) + '"/>');
@@ -4344,7 +4366,7 @@ if (document.readyState === 'loading') {
     // Decade guides, and under the field's foot the year they mark with Bill's
     // own age beneath it -- the second row turns the timeline into a life, so a
     // column can be read as a point in it rather than only as a date.
-    let guides = '<text class="bg-age" x="' + X0 + '" y="' + (BASE + 54) + '">age</text>';
+    let guides = '<text class="bg-age" x="' + X0.toFixed(1) + '" y="' + (BASE + 54) + '">age</text>';
     for (let y = Math.ceil(y0 / 10) * 10; y <= y1; y += 10) {
       const gx = (X0 + (y - y0) * step).toFixed(1);
       guides += '<line class="bg-guide" x1="' + gx + '" y1="24" x2="' + gx + '" y2="' + (BASE + 14) + '"/>' +
@@ -4353,7 +4375,7 @@ if (document.readyState === 'loading') {
     }
 
     let field = '<g mask="url(#bgWipe)">' + guides +
-      '<line class="bg-base" x1="' + X0 + '" y1="' + (BASE + 14) + '" x2="' + X1 + '" y2="' + (BASE + 14) + '"/>';
+      '<line class="bg-base" x1="' + X0.toFixed(1) + '" y1="' + (BASE + 14) + '" x2="' + X1 + '" y2="' + (BASE + 14) + '"/>';
     domains.forEach((d, i) => {
       field += '<g class="bg-threads" data-dom="' + i + '" stroke="' + d.color + '">' +
                threads[i].join('') + '</g>';
@@ -4364,28 +4386,28 @@ if (document.readyState === 'loading') {
     });
     field += '<circle class="bg-hit" id="bgHit" r="5"/></g>';
 
-    // The six nodes. Label and count are set in the one voice -- the same face,
-    // weight and size -- so a node reads as a single two-line mark rather than
-    // as a caption with a figure under it. The transparent rect is what the
-    // pointer actually finds: the two lines alone leave gaps between them.
+    // The six labels, flush on the first column and set in the domain's own
+    // colour -- the colour key is the label rather than a swatch beside it.
+    // The node itself is drawn only while the label is under the pointer, at
+    // the foot of column two, where its threads converge. The transparent rect
+    // is what the pointer actually finds: the two lines alone leave gaps.
     let nodes = '';
     domains.forEach((d, i) => {
       const y = nodeY(i);
-      nodes += '<g class="bg-node" data-dom="' + i + '">' +
-        '<rect x="0" y="' + (y - 34) + '" width="' + (NODE_X + 12) + '" height="68" fill="transparent"/>' +
+      nodes += '<g class="bg-node" data-dom="' + i + '" fill="' + d.color + '">' +
+        '<rect x="0" y="' + (y - 34) + '" width="' + (NODE_X + 12).toFixed(1) + '" height="68" fill="transparent"/>' +
         '<text class="bg-node-label" x="0" y="' + (y - 8) + '">' + esc(d.label) + '</text>' +
         '<text class="bg-node-count" x="0" y="' + (y + 22) + '">' + d.n + '</text>' +
-        '<circle cx="' + NODE_X + '" cy="' + y + '" r="4" fill="' + d.color + '"/></g>';
+        '<circle class="bg-node-dot" cx="' + NODE_X.toFixed(1) + '" cy="' + y + '" r="4"/></g>';
     });
 
-    const total = works.length;
     plot.innerHTML =
       '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' +
-      esc(total + ' works by Max Bill, ' + y0 + ' to ' + y1 + ', one dot each, by year and domain: ' +
+      esc(works.length + ' works by Max Bill, ' + y0 + ' to ' + y1 + ', one dot each, by year and domain: ' +
           domains.map(d => d.n + ' ' + d.label).join(', ')) + '">' +
       // The mask opens across the whole plot, not just the field: the threads
-      // leave the nodes at x=204, so a mask that began at the field's left edge
-      // would cut the first stretch off every one of them.
+      // leave the nodes at the foot of column two, so a mask that began at the
+      // field's own left edge would cut the first stretch off every one.
       '<defs><mask id="bgWipe" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">' +
       '<rect class="bg-wipe-rect" x="0" y="0" height="' + H + '" fill="#fff"/></mask></defs>' +
       field + nodes + '</svg>';
@@ -4431,7 +4453,7 @@ if (document.readyState === 'loading') {
       return (i < 0 || i >= col.length) ? null : { work: col[i], x: colX(year), y: BASE - (i + 0.5) * PITCH };
     }
 
-    let held = null;             // a node under the pointer outranks the field
+    held = null;
     svg.addEventListener('pointermove', ev => {
       if (held !== null) return;
       const h = at(ev);
@@ -4464,10 +4486,20 @@ if (document.readyState === 'loading') {
     }
 
     // Read the mask rect back before lighting it, so the browser has actually
-    // computed the zero width the wipe starts from.
+    // computed the zero width the wipe starts from. On a redraw the figure is
+    // already lit, so the new rect is born at full width and nothing animates.
     plot.querySelector('.bg-wipe-rect').getBoundingClientRect();
     requestAnimationFrame(() => fig.classList.add('bg-lit'));
   }
+
+  // The eight columns are read from the page, so a change of measure moves them
+  // and the figure has to be laid out again.
+  let resizing;
+  window.addEventListener('resize', () => {
+    if (!data) return;
+    clearTimeout(resizing);
+    resizing = setTimeout(render, 160);
+  });
 
   // Fetched rather than written into the page: 58 kB of catalogue that only the
   // one section needs, pulled in as the section comes up.
@@ -4478,7 +4510,7 @@ if (document.readyState === 'loading') {
     io.disconnect();
     fetch('./assets/bill-works.json')
       .then(r => r.json())
-      .then(draw)
+      .then(d => { data = d; render(); })
       .catch(() => { plot.innerHTML = ''; });
   }, { rootMargin: '600px 0px' });
   io.observe(fig);
