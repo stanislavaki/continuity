@@ -3960,26 +3960,16 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bill-reveal > .container { width: 100%; }
 .bill-graph { margin: 0; width: 100%; }
 .bill-graph-head { margin-bottom: 44px; }
-/* The kicker takes .chapter-label's voice, the line under it the article
-   columns' -- body copy rather than a caption, so the figure is introduced in
-   the page's own voice, as the journey's sub-heads are. */
+/* The head is one line, and it is set as the article columns are -- body copy
+   rather than a mono caption, so the figure is announced in the page's own
+   voice, the way the journey's sub-heads are. */
 .bill-graph-kicker {
-  display: block;
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  opacity: 0.55;
-  margin-bottom: 16px;
-}
-.bill-graph-title {
   font-family: var(--sans);
   font-weight: 500;
   font-size: clamp(20px, 1.7vw, 26px);
   line-height: 1.35;
   letter-spacing: -0.005em;
   margin: 0;
-  max-width: 30em;
 }
 .bill-graph-plot svg { width: 100%; height: auto; display: block; }
 
@@ -4012,6 +4002,14 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   font-size: 12px;
   fill: #fff;
   fill-opacity: 0.55;
+}
+/* Bill's own age, set under the year in the same mono a step quieter, so the
+   decade reads first and the life reads second. */
+.bg-age {
+  font-family: var(--mono);
+  font-size: 11px;
+  fill: #fff;
+  fill-opacity: 0.3;
 }
 /* One thread to a domain-year: the fan on the left says, per practice, which
    years it was alive in. At rest it is texture; under the pointer it is the

@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=86" />
+<link rel="stylesheet" href="styles.css?v=89" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -304,8 +304,7 @@
     <div class="container">
       <figure class="bill-graph reveal" id="billGraph">
         <div class="bill-graph-head">
-          <span class="bill-graph-kicker">941 works &middot; 1925&mdash;1996</span>
-          <p class="bill-graph-title">Bill kept six practices running at once. The graph counts them: one dot to a catalogued work, across for the year he began it, stacked up the year&rsquo;s column.</p>
+          <p class="bill-graph-kicker">941 works &middot; 1925&mdash;1996</p>
         </div>
         <div class="bill-graph-plot" id="billGraphPlot"></div>
         <figcaption class="bill-graph-foot">
@@ -4280,7 +4279,8 @@ if (document.readyState === 'loading') {
   // Geometry, in the viewBox's own units. The plot is 1340 wide because that
   // is the container's measure at the page's 1440 maximum, so at full width one
   // unit is one pixel and the type inside the SVG matches the type outside it.
-  const W = 1340, H = 548;
+  const W = 1340, H = 566;
+  const BORN = 1908;           // Max Bill, 1908-1994
   const NODE_X = 196;          // where the six nodes stand
   const X0 = 330, X1 = W;      // the field, left and right
   const BASE = 486;            // the columns' foot
@@ -4332,12 +4332,15 @@ if (document.readyState === 'loading') {
       });
     });
 
-    // Decade guides, and the year they mark, set under the field's foot.
-    let guides = '';
+    // Decade guides, and under the field's foot the year they mark with Bill's
+    // own age beneath it -- the second row turns the timeline into a life, so a
+    // column can be read as a point in it rather than only as a date.
+    let guides = '<text class="bg-age" x="' + X0 + '" y="' + (BASE + 54) + '">age</text>';
     for (let y = Math.ceil(y0 / 10) * 10; y <= y1; y += 10) {
       const gx = (X0 + (y - y0) * step).toFixed(1);
       guides += '<line class="bg-guide" x1="' + gx + '" y1="24" x2="' + gx + '" y2="' + (BASE + 14) + '"/>' +
-                '<text class="bg-axis" x="' + (+gx + 8) + '" y="' + (BASE + 34) + '">' + y + '</text>';
+                '<text class="bg-axis" x="' + (+gx + 8) + '" y="' + (BASE + 34) + '">' + y + '</text>' +
+                '<text class="bg-age" x="' + (+gx + 8) + '" y="' + (BASE + 54) + '">' + (y - BORN) + '</text>';
     }
 
     let field = '<g mask="url(#bgWipe)">' + guides +
@@ -4369,8 +4372,11 @@ if (document.readyState === 'loading') {
       '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' +
       esc(total + ' works by Max Bill, ' + y0 + ' to ' + y1 + ', one dot each, by year and domain: ' +
           domains.map(d => d.n + ' ' + d.label).join(', ')) + '">' +
+      // The mask opens across the whole plot, not just the field: the threads
+      // leave the nodes at x=204, so a mask that began at the field's left edge
+      // would cut the first stretch off every one of them.
       '<defs><mask id="bgWipe" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">' +
-      '<rect class="bg-wipe-rect" x="' + X0 + '" y="0" height="' + H + '" fill="#fff"/></mask></defs>' +
+      '<rect class="bg-wipe-rect" x="0" y="0" height="' + H + '" fill="#fff"/></mask></defs>' +
       field + nodes + '</svg>';
 
     const svg = plot.querySelector('svg');
