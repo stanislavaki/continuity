@@ -2648,16 +2648,28 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    here, since these sit in the page flow and those are placed absolutely. */
 .journey-cap { margin: 12px 0 0; }
 .journey-cap h5:last-child { margin-bottom: 0; }
-/* The closing figure's name sits above it instead. That figure has escaped the
-   container to run edge to edge, so the line has to be brought back onto the
-   measure the other captions sit on — .container's own recipe, applied inside
-   the box that stepped out of it. It starts at column 1, where the measure
-   does. */
-.journey-cap--above { margin: 0 0 12px; }
-.journey-photo-bleed .journey-cap--above {
+/* The closing figure's line sits inside the picture, in the sky above the tow
+   — clear of the barge and the tug, and clear of the play control that sits
+   fixed in the bottom-left corner. Anchored as a share of the figure's height
+   rather than in pixels, so it keeps that level as the picture scales.
+   That figure has escaped the container to run edge to edge, so the line has
+   to be brought back onto the measure the other captions sit on — .container's
+   own recipe, applied inside the box that stepped out of it. It starts at
+   column 1, where the measure does.
+   Black rather than the section's white: the photograph is a scan of a printed
+   spread and the sky behind the line is near-paper, which white would be lost
+   on entirely. The one caption in 5.1 that is not on the near-black takes the
+   ink that ground asks for. */
+.journey-photo-bleed { position: relative; }
+.journey-cap--over {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 25%;
   max-width: var(--maxw);
-  margin: 0 auto 12px;
+  margin: 0 auto;
   padding: 0 var(--gutter);
+  color: var(--ink);
 }
 
 /* Lead paragraphs sit above the opening image, in the same right-hand column
@@ -3039,22 +3051,86 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   /* Closer to the name under it than the arrows are to the names they join:
      the dot belongs to the first place rather than sitting between things. */
   margin: 0 auto 14px;
-  animation: route-pulse 2.4s ease-in-out infinite;
+}
+/* Only the route moves, and here it is worked rather than beaten. 5.2 is the
+   one place on the journey where the stone is cut, so its mark is the one that
+   changes shape: a circle drawn out into a squared block, then into a solid
+   with three corners, then back, every edge left soft because granite taken
+   down by diamond chain comes away in curves, not facets.
+   Seven seconds a cycle — slow enough to read as work being done, quick
+   enough that a form comes and goes while the head is still on screen.
+   The captions in 5.1 name places the stone only passed through, so theirs
+   stand still, at the size this one opens on. */
+.sub-route::before {
+  /* The pin stop below opens a hole in the mark by trading background for
+     border. Both are declared here at their solid-shape value so the keyframes
+     have something to interpolate from, and border-box keeps the mark 30px
+     across whatever the border does — a border that grew the box would push
+     the name under it down. */
+  box-sizing: border-box;
+  border: 0 solid currentColor;
+  background-color: currentColor;
+  animation: route-hew 7s ease-in-out infinite;
 }
 /* The route is centred and its mark centres with it; the captions are ranged
    left, so theirs sits on the same edge the name starts from. */
 .journey-cap::before { margin: 0 0 14px; }
-/* The mark on its own, with nothing expanding out of it: it draws in and
-   swells back, and that is the whole of it. Scale rather than width, so the
-   name under it never shifts, and the dot keeps the section's flat ink at
-   every point in the cycle instead of fading through it. */
-@keyframes route-pulse {
-  0%, 100% { transform: scale(1); }
-  50%      { transform: scale(.6); }
+/* Except the closing one, which names the crossing between two places rather
+   than a place the stone stopped at, and so has no position to hold. Set here,
+   after the mark itself, because the two selectors weigh the same and the last
+   one written is the one that counts. */
+.journey-cap--over::before { display: none; }
+/* The mark being cut. border-radius in its eight-value form — four horizontal
+   radii before the slash, four vertical after — so each corner is an ellipse
+   of its own and the outline can go irregular while staying curved throughout;
+   there is no step in the cycle where a hard corner appears.
+   The stops, in order: circle, a block squared off on all four sides, a form
+   drawn down to three soft corners, the map pin, a lopsided mass, a block
+   again. The pin is the one stop that is a sign rather than a shape — the mark
+   for a place, which is what this dot has stood for all along — so it is held
+   for a beat at the middle of the cycle while the others pass through, and it
+   is the one corner allowed to come near a point. Its hole is cut by trading
+   the fill for a border of the same ink; on the way in and out of it the fill
+   shrinks to a core and opens, which is how the sculpture was made — most of
+   the work happened inside the block. Each is
+   taken as far from its neighbours as the shape allows — the block's radii
+   down near a tenth, the round corners up near three-quarters — so the cut
+   reads at 30px rather than dissolving into a general wobble. Scale and
+   rotation carry the rest: the mass is visibly wider than tall at one stop and
+   taller than wide at the next, the way a block turns under the chain.
+   Transform rather than width, so nothing the shape does moves the name below
+   it. The one rule the corners keep: adjacent radii are held under 100% of
+   the edge they share, since past that the browser scales every radius down
+   to fit and hands back a tamer outline than the one written here. */
+@keyframes route-hew {
+  0%, 100% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
+             transform: rotate(0deg) scale(1, 1);
+             border-width: 0; background-color: currentColor; }
+  /* Squared off: radii down near a tenth, corners still turned. */
+  14%      { border-radius: 14% 12% 15% 13% / 13% 15% 12% 14%;
+             transform: rotate(-11deg) scale(1.09, .91);
+             border-width: 0; background-color: currentColor; }
+  /* Three corners: bottom right drawn in tight, the others left full. */
+  30%      { border-radius: 54% 44% 10% 44% / 52% 48% 10% 46%;
+             transform: rotate(13deg) scale(.91, 1.10);
+             border-width: 0; background-color: currentColor; }
+  /* The pin. Three corners round and the fourth run out to a point, turned
+     45 degrees so that point hangs straight down; 6% rather than 0 keeps the
+     tip from going razor-sharp. Held from here to 58%. */
+  44%, 58% { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
+             transform: rotate(-45deg) scale(1, 1);
+             border-width: 9px; background-color: transparent; }
+  /* Irregular — the mass mid-cut, no two corners alike. */
+  72%      { border-radius: 72% 26% 24% 74% / 36% 72% 26% 62%;
+             transform: rotate(-9deg) scale(1.10, .90);
+             border-width: 0; background-color: currentColor; }
+  /* Coming back towards the block, and squarer on the other diagonal. */
+  86%      { border-radius: 22% 18% 62% 34% / 32% 58% 22% 42%;
+             transform: rotate(7deg) scale(.92, 1.06);
+             border-width: 0; background-color: currentColor; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sub-route::before,
-  .journey-cap::before { animation: none; }
+  .sub-route::before { animation: none; }
 }
 /* The drawn arrow, at its own 44x56. Carried as a mask filled with currentColor
    rather than as an <img> or a background: the file is a black fill, and these
