@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=81" />
+<link rel="stylesheet" href="styles.css?v=86" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -294,9 +294,25 @@
     </div>
   </section>
 
-  <!-- Bill · graph placeholder -->
-  <section class="bill-reveal light-section" id="billReveal">
-    <span class="bill-reveal-placeholder">Graph on concrete art</span>
+  <!-- Bill · what he made, and when -------------------------------------
+       941 catalogued works, one dot to a work: across for the year it was
+       begun, stacked up its column, coloured by the domain it belongs to.
+       The plot is drawn by billGraph() at the foot of the script, from
+       assets/bill-works.json -- built by scripts/build_bill_works.py out of
+       the art data set and Fleischmann's catalogue of the typographic work. -->
+  <section class="bill-reveal dark-section" id="billReveal">
+    <div class="container">
+      <figure class="bill-graph reveal" id="billGraph">
+        <div class="bill-graph-head">
+          <span class="bill-graph-kicker">941 works &middot; 1925&mdash;1996</span>
+          <p class="bill-graph-title">Bill kept six practices running at once. The graph counts them: one dot to a catalogued work, across for the year he began it, stacked up the year&rsquo;s column.</p>
+        </div>
+        <div class="bill-graph-plot" id="billGraphPlot"></div>
+        <figcaption class="bill-graph-foot">
+          <span class="bill-graph-read" id="billGraphRead"></span>
+        </figcaption>
+      </figure>
+    </div>
   </section>
 
   <!-- Bill and Concrete Art -->
@@ -4244,6 +4260,215 @@ if (document.readyState === 'loading') {
 } else {
   __initTTS();
 }
+
+// ========== Bill · what he made, and when ==========
+// The graph in #billReveal. One dot to a catalogued work: across for the year
+// Bill began it, stacked up that year's column, coloured by domain. Six nodes
+// stand down the left, one to a domain, and a thread runs from each node into
+// every year that domain was at work.
+//
+// The data is assets/bill-works.json, built by scripts/build_bill_works.py out
+// of two catalogues that were kept from overlapping -- the art data set for the
+// paintings, sculptures, drawings, books and objects, and Fleischmann's
+// catalogue for the 570 pieces of typographic work.
+(function billGraph() {
+  const fig = document.getElementById('billGraph');
+  const plot = document.getElementById('billGraphPlot');
+  const read = document.getElementById('billGraphRead');
+  if (!fig || !plot) return;
+
+  // Geometry, in the viewBox's own units. The plot is 1340 wide because that
+  // is the container's measure at the page's 1440 maximum, so at full width one
+  // unit is one pixel and the type inside the SVG matches the type outside it.
+  const W = 1340, H = 548;
+  const NODE_X = 196;          // where the six nodes stand
+  const X0 = 330, X1 = W;      // the field, left and right
+  const BASE = 486;            // the columns' foot
+  const PITCH = 4.4;           // one dot to the next, up a column
+  const R = 1.7;
+  const NODE_Y0 = 80, NODE_DY = 72;
+
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  function draw(data) {
+    const domains = data.domains;
+    const works = data.works;                  // [year, domain, label]
+    const y0 = works[0][0];
+    const y1 = works[works.length - 1][0];
+    const span = y1 - y0 + 1;
+    const step = (X1 - X0) / span;
+    const colX = y => X0 + (y - y0 + 0.5) * step;
+    const nodeY = i => NODE_Y0 + i * NODE_DY;
+
+    // Stack each year's works into a column. The data arrives sorted by year
+    // and then by domain, so a column is already in the order it stacks in and
+    // each domain sits in one unbroken run of dots.
+    const cols = new Map();
+    works.forEach(w => {
+      let col = cols.get(w[0]);
+      if (!col) cols.set(w[0], col = []);
+      col.push(w);
+    });
+
+    const dots = domains.map(() => []);        // per domain: circle markup
+    const threads = domains.map(() => []);     // per domain: one path per year
+    cols.forEach((col, year) => {
+      const x = colX(year).toFixed(1);
+      let firstOf = new Map();                 // domain -> its lowest dot's y
+      col.forEach((w, i) => {
+        const cy = BASE - (i + 0.5) * PITCH;
+        dots[w[1]].push('<circle cx="' + x + '" cy="' + cy.toFixed(1) + '" r="' + R + '"/>');
+        if (!firstOf.has(w[1])) firstOf.set(w[1], cy);
+      });
+      firstOf.forEach((cy, d) => {
+        // A flat S from the node to the foot of that domain's run of dots:
+        // both ends leave horizontally, so the fan opens rather than kinks.
+        const sx = NODE_X + 8, sy = nodeY(d), ex = +x, dx = ex - sx;
+        threads[d].push('<path d="M' + sx + ',' + sy +
+          'C' + (sx + dx * 0.55).toFixed(1) + ',' + sy + ' ' +
+          (ex - dx * 0.35).toFixed(1) + ',' + cy.toFixed(1) + ' ' +
+          ex + ',' + cy.toFixed(1) + '"/>');
+      });
+    });
+
+    // Decade guides, and the year they mark, set under the field's foot.
+    let guides = '';
+    for (let y = Math.ceil(y0 / 10) * 10; y <= y1; y += 10) {
+      const gx = (X0 + (y - y0) * step).toFixed(1);
+      guides += '<line class="bg-guide" x1="' + gx + '" y1="24" x2="' + gx + '" y2="' + (BASE + 14) + '"/>' +
+                '<text class="bg-axis" x="' + (+gx + 8) + '" y="' + (BASE + 34) + '">' + y + '</text>';
+    }
+
+    let field = '<g mask="url(#bgWipe)">' + guides +
+      '<line class="bg-base" x1="' + X0 + '" y1="' + (BASE + 14) + '" x2="' + X1 + '" y2="' + (BASE + 14) + '"/>';
+    domains.forEach((d, i) => {
+      field += '<g class="bg-threads" data-dom="' + i + '" stroke="' + d.color + '">' +
+               threads[i].join('') + '</g>';
+    });
+    domains.forEach((d, i) => {
+      field += '<g class="bg-dots" data-dom="' + i + '" fill="' + d.color + '">' +
+               dots[i].join('') + '</g>';
+    });
+    field += '<circle class="bg-hit" id="bgHit" r="5"/></g>';
+
+    // The six nodes: the label in the small mono the page uses for keys, the
+    // count in the big figure it uses for values -- .rail-key over .rail-val.
+    let nodes = '';
+    domains.forEach((d, i) => {
+      const y = nodeY(i);
+      nodes += '<g class="bg-node" data-dom="' + i + '">' +
+        '<rect x="0" y="' + (y - 26) + '" width="' + (NODE_X + 10) + '" height="52" fill="transparent"/>' +
+        '<text class="bg-node-label" x="' + (NODE_X - 18) + '" y="' + (y - 10) + '" text-anchor="end">' + esc(d.label) + '</text>' +
+        '<text class="bg-node-count" x="' + (NODE_X - 18) + '" y="' + (y + 14) + '" text-anchor="end">' + d.n + '</text>' +
+        '<circle cx="' + NODE_X + '" cy="' + y + '" r="4" fill="' + d.color + '"/></g>';
+    });
+
+    const total = works.length;
+    plot.innerHTML =
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' +
+      esc(total + ' works by Max Bill, ' + y0 + ' to ' + y1 + ', one dot each, by year and domain: ' +
+          domains.map(d => d.n + ' ' + d.label).join(', ')) + '">' +
+      '<defs><mask id="bgWipe" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">' +
+      '<rect class="bg-wipe-rect" x="' + X0 + '" y="0" height="' + H + '" fill="#fff"/></mask></defs>' +
+      field + nodes + '</svg>';
+
+    const svg = plot.querySelector('svg');
+    const hit = plot.querySelector('#bgHit');
+    const groups = plot.querySelectorAll('.bg-dots, .bg-threads, .bg-node');
+
+    // Focus: hold one domain and let the rest fall back.
+    function focus(d) {
+      if (d === null) { delete fig.dataset.focus; } else { fig.dataset.focus = d; }
+      groups.forEach(g => {
+        const mine = d !== null && +g.dataset.dom === d;
+        g.classList.toggle('dim', d !== null && !mine);
+        g.classList.toggle('lit', mine);
+      });
+    }
+
+    // At rest the readout carries the one thing the plot cannot say for itself:
+    // how tall a column is. Naming the tallest gives the vertical its scale.
+    const tallest = [...cols.values()].reduce((a, c) => c.length > a.length ? c : a);
+    const REST = '<i>one dot, one work \u2014 the tallest column is ' +
+                 tallest[0][0] + ', with ' + tallest.length + ' pieces</i>';
+    read.innerHTML = REST;
+
+    function say(work) {
+      if (!work) { read.innerHTML = REST; return; }
+      read.innerHTML = '<b>' + work[0] + '</b><span>' + esc(work[2]) + '</span>' +
+                       '<i>' + esc(domains[work[1]].label) + '</i>';
+    }
+
+    // Hit-testing is done on the column arithmetic rather than on the circles
+    // themselves: the dots are 3.4 units across and the page hides the system
+    // cursor, so asking the browser which one is under the pointer would mostly
+    // answer none. Reading the year off x and the height off y always answers.
+    function at(ev) {
+      const r = svg.getBoundingClientRect();
+      const k = W / r.width;
+      const ux = (ev.clientX - r.left) * k;
+      const uy = (ev.clientY - r.top) * k;
+      if (ux < X0 || uy > BASE) return null;
+      const year = y0 + Math.floor((ux - X0) / step);
+      const col = cols.get(year);
+      if (!col) return null;
+      const i = Math.floor((BASE - uy) / PITCH);
+      return (i < 0 || i >= col.length) ? null : { work: col[i], x: colX(year), y: BASE - (i + 0.5) * PITCH };
+    }
+
+    let held = null;             // a node under the pointer outranks the field
+    svg.addEventListener('pointermove', ev => {
+      if (held !== null) return;
+      const h = at(ev);
+      if (!h) { hit.classList.remove('on'); say(null); focus(null); return; }
+      hit.setAttribute('cx', h.x.toFixed(1));
+      hit.setAttribute('cy', h.y.toFixed(1));
+      hit.setAttribute('stroke', domains[h.work[1]].color);
+      hit.classList.add('on');
+      say(h.work);
+      focus(h.work[1]);
+    });
+    svg.addEventListener('pointerleave', () => {
+      if (held !== null) return;
+      hit.classList.remove('on'); say(null); focus(null);
+    });
+
+    plot.querySelectorAll('.bg-node').forEach(node => {
+      const d = +node.dataset.dom;
+      node.addEventListener('pointerenter', () => {
+        held = d; hit.classList.remove('on'); focus(d);
+        read.innerHTML = '<b>' + domains[d].n + '</b><span>' + esc(domains[d].label) +
+          '</span><i>' + esc(yearsOf(d)) + '</i>';
+      });
+      node.addEventListener('pointerleave', () => { held = null; focus(null); say(null); });
+    });
+
+    function yearsOf(d) {
+      const ys = works.filter(w => w[1] === d).map(w => w[0]);
+      return ys[0] + '—' + ys[ys.length - 1];
+    }
+
+    // Read the mask rect back before lighting it, so the browser has actually
+    // computed the zero width the wipe starts from.
+    plot.querySelector('.bg-wipe-rect').getBoundingClientRect();
+    requestAnimationFrame(() => fig.classList.add('bg-lit'));
+  }
+
+  // Fetched rather than written into the page: 58 kB of catalogue that only the
+  // one section needs, pulled in as the section comes up.
+  let asked = false;
+  const io = new IntersectionObserver(entries => {
+    if (!entries.some(e => e.isIntersecting) || asked) return;
+    asked = true;
+    io.disconnect();
+    fetch('./assets/bill-works.json')
+      .then(r => r.json())
+      .then(draw)
+      .catch(() => { plot.innerHTML = ''; });
+  }, { rootMargin: '600px 0px' });
+  io.observe(fig);
+})();
 </script>
 <script src="./g-toolset.js" defer></script>
 <div class="tts-controls">

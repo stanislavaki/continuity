@@ -3931,24 +3931,127 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .journey-meta strong { font-size: 18px; }
 }
 
-/* Bill cursor-reveal section */
+/* Bill · what he made, and when -------------------------------------------
+   A dot to a catalogued work: across for the year it was begun, stacked up
+   that year's column, coloured by domain. Six nodes stand down the left, one
+   to a domain, and a thread runs from each node into every year that domain
+   was at work -- kept faint until the domain is under the pointer, which is
+   when a single practice's rhythm is worth following.
+
+   Black, like the quote bands: the section already stood as its own panel in
+   the middle of a light run, and the plot's six signal colours only separate
+   on a dark ground.
+
+   The plot is one SVG on a viewBox, so it scales with the column and carries
+   no breakpoint of its own. The figure is drawn for the desktop measure. */
 .bill-reveal {
-  background: #D9D9D9;
-  color: #000;
-  height: 100vh;
+  background: var(--black);
+  color: #fff;
+  min-height: 100vh;
   width: 100%;
-  padding: 0;
+  padding: 100px 0;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.bill-reveal-placeholder {
+/* The panel centres its contents, so the container has to be told to take the
+   measure rather than shrink to fit the figure inside it. */
+.bill-reveal > .container { width: 100%; }
+.bill-graph { margin: 0; width: 100%; }
+.bill-graph-head { margin-bottom: 44px; }
+/* The kicker takes .chapter-label's voice, the line under it the article
+   columns' -- body copy rather than a caption, so the figure is introduced in
+   the page's own voice, as the journey's sub-heads are. */
+.bill-graph-kicker {
+  display: block;
   font-family: var(--mono);
-  font-size: 18px;
-  letter-spacing: .2em;
+  font-size: 12px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(0,0,0,.4);
+  opacity: 0.55;
+  margin-bottom: 16px;
+}
+.bill-graph-title {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(20px, 1.7vw, 26px);
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  margin: 0;
+  max-width: 30em;
+}
+.bill-graph-plot svg { width: 100%; height: auto; display: block; }
+
+/* The foot holds the readout -- the work under the pointer -- at a fixed
+   height, so naming one cannot shift the figure above it. */
+.bill-graph-foot {
+  /* Set to the field's own left edge rather than the container's, so the line
+     starts where the years start -- and so it never runs under the language
+     menu and the play button, which stand fixed in this same bottom corner.
+     The figure is 1340 units wide and the field opens at 330 of them. */
+  padding-left: 24.63%;
+  margin-top: 28px;
+  min-height: 1.5em;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0;
+  display: flex;
+  gap: 1.5em;
+  align-items: baseline;
+}
+.bill-graph-read { display: flex; gap: 1.5em; align-items: baseline; }
+.bill-graph-read i { font-style: normal; opacity: 0.55; }
+.bill-graph-read b { font-weight: 400; }
+
+/* ---- the plot's own parts, all inside the one SVG ---- */
+.bg-guide { stroke: #fff; stroke-opacity: 0.14; stroke-width: 1; }
+.bg-base  { stroke: #fff; stroke-opacity: 0.3;  stroke-width: 1; }
+.bg-axis {
+  font-family: var(--mono);
+  font-size: 12px;
+  fill: #fff;
+  fill-opacity: 0.55;
+}
+/* One thread to a domain-year: the fan on the left says, per practice, which
+   years it was alive in. At rest it is texture; under the pointer it is the
+   only thing on the page. */
+.bg-threads { fill: none; stroke-width: 0.7; stroke-opacity: 0.11; transition: stroke-opacity 0.4s ease; }
+.bg-dots { transition: opacity 0.4s ease; }
+.bg-node circle { transition: r 0.3s ease; }
+.bg-node-label { font-family: var(--mono); font-size: 12px; fill: #fff; fill-opacity: 0.55; }
+.bg-node-count {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  fill: #fff;
+}
+.bg-node { cursor: none; }
+.bg-hit { fill: none; stroke: #fff; stroke-width: 1.5; opacity: 0; transition: opacity 0.15s ease; }
+.bg-hit.on { opacity: 1; }
+
+/* Focus: one domain lit, the rest held back far enough to read through. */
+.bill-graph[data-focus] .bg-dots.dim { opacity: 0.1; }
+.bill-graph[data-focus] .bg-threads.dim { stroke-opacity: 0.03; }
+.bill-graph[data-focus] .bg-threads.lit { stroke-opacity: 0.5; }
+.bill-graph[data-focus] .bg-node.dim .bg-node-label,
+.bill-graph[data-focus] .bg-node.dim .bg-node-count { fill-opacity: 0.25; }
+.bill-graph[data-focus] .bg-node.dim circle { opacity: 0.25; }
+
+/* The field arrives as a wipe across the years rather than a fade, so the
+   figure is read left to right the first time as well. The mask rect's width
+   is a CSS property on an SVG geometry attribute, which is what lets a
+   transition carry it.
+   The wipe is hung on its own class rather than on .reveal's .in: the scroll
+   handler re-adds .in on every scroll tick, which on a page that is still
+   settling lands in the same task as the plot being built -- so the rect would
+   go from 0 to full without the browser ever computing the 0, and there would
+   be nothing to transition. billGraph() sets .bg-lit once, after a flush. */
+.bg-wipe-rect { width: 0; transition: width 1.8s cubic-bezier(0.22, 0.61, 0.36, 1) 0.15s; }
+.bill-graph.bg-lit .bg-wipe-rect { width: 1340px; }
+@media (prefers-reduced-motion: reduce) {
+  .bg-wipe-rect { width: 1340px; transition: none; }
 }
 
 /* The making film, across the article grid's full measure -- page columns 1-8 --
