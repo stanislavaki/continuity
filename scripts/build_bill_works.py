@@ -36,18 +36,24 @@ TYPO_DEFAULT = os.path.expanduser('~/Downloads/works_extracted_v5 (1).xlsx')
 # Order matters: it is the order the dots stack in, bottom first, and the order
 # the six labels stand in down the left of the graph.
 #
-# The colours are the page's own quote-band backgrounds -- see
-# .quote-band--white/green/red/dbblue in styles.css -- with sculpture on the
-# red. The bands run out at four, so the two smallest clusters take
-# --signal-yellow and --grey-60 from :root. The largest takes the white: it is
-# the mass that carries the field, and white is what reads on this ground.
+# Sculpture takes the white -- it is the work this page is about, and white is
+# what carries furthest on the panel's near-black. Three of the others are the
+# page's own quote-band backgrounds, .quote-band--white/green/red in styles.css,
+# with typography on the red the sculpture left. Product design keeps
+# --signal-yellow from :root; books & prints and drawings & objects are given
+# outright.
+#
+# The fourth quote band, the Deutsche Bank blue #0018A8, is not here: on this
+# ground it comes to 1.65:1 and reads as a stain rather than a colour. It was
+# drawn to carry white type on top of it, not to be type itself. Every colour
+# below clears 3:1.
 DOMAINS = [
-    ('typography', 'typography & print', '#FFFFFF'),
+    ('typography', 'typography & print', '#C90101'),
     ('painting',   'painting',           '#00934C'),
-    ('sculpture',  'sculpture',          '#C90101'),
-    ('books',      'books & prints',     '#0018A8'),
+    ('sculpture',  'sculpture',          '#FFFFFF'),
+    ('books',      'books & prints',     '#FE8C01'),
     ('product',    'product design',     '#FFD500'),
-    ('drawing',    'drawings & objects', '#999999'),
+    ('drawing',    'drawings & objects', '#F922CA'),
 ]
 IDX = {k: i for i, (k, _, _) in enumerate(DOMAINS)}
 
