@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=92" />
+<link rel="stylesheet" href="styles.css?v=93" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -4272,8 +4272,9 @@ if (document.readyState === 'loading') {
 // ========== Bill · what he made, and when ==========
 // The graph in #billReveal. One dot to a catalogued work: across for the year
 // Bill began it, stacked up that year's column, coloured by domain. Six labels
-// stand down the left, one to a domain and set in its colour, and a thread runs
-// from each into every year that domain was at work.
+// stand down the left, one to a domain and set in its colour, and while one is
+// under the pointer a thread runs from the field's left edge into every year
+// that domain was at work.
 //
 // The whole figure is laid on the page's own eight columns: the labels take
 // columns one and two, the field takes three to eight. The column positions are
@@ -4323,7 +4324,7 @@ if (document.readyState === 'loading') {
     const domains = data.domains;
     const works = data.works;                  // [year, domain, label]
     const grid = columns();
-    const NODE_X = grid[1].x + grid[1].w;      // the foot of column two
+    const KEY_W = grid[1].x + grid[1].w;       // the labels' block, columns one and two
     const X0 = grid[2].x;                      // the field opens on column three
     const y0 = works[0][0];
     const y1 = works[works.length - 1][0];
@@ -4353,9 +4354,11 @@ if (document.readyState === 'loading') {
         if (!firstOf.has(w[1])) firstOf.set(w[1], cy);
       });
       firstOf.forEach((cy, d) => {
-        // A flat S from the node to the foot of that domain's run of dots:
-        // both ends leave horizontally, so the fan opens rather than kinks.
-        const sx = NODE_X, sy = nodeY(d), ex = +x, dx = ex - sx;
+        // A flat S from the field's own left edge to the foot of that domain's
+        // run of dots: both ends leave horizontally, so the fan opens rather
+        // than kinks. Every thread starts on column three, where the years
+        // start, so the fan is gathered on the line the field opens on.
+        const sx = X0, sy = nodeY(d), ex = +x, dx = ex - sx;
         threads[d].push('<path d="M' + sx.toFixed(1) + ',' + sy +
           'C' + (sx + dx * 0.55).toFixed(1) + ',' + sy + ' ' +
           (ex - dx * 0.35).toFixed(1) + ',' + cy.toFixed(1) + ' ' +
@@ -4388,17 +4391,15 @@ if (document.readyState === 'loading') {
 
     // The six labels, flush on the first column and set in the domain's own
     // colour -- the colour key is the label rather than a swatch beside it.
-    // The node itself is drawn only while the label is under the pointer, at
-    // the foot of column two, where its threads converge. The transparent rect
-    // is what the pointer actually finds: the two lines alone leave gaps.
+    // The transparent rect is what the pointer actually finds, and it takes the
+    // labels' whole block: the two lines alone leave gaps between them.
     let nodes = '';
     domains.forEach((d, i) => {
       const y = nodeY(i);
       nodes += '<g class="bg-node" data-dom="' + i + '" fill="' + d.color + '">' +
-        '<rect x="0" y="' + (y - 34) + '" width="' + (NODE_X + 12).toFixed(1) + '" height="68" fill="transparent"/>' +
+        '<rect x="0" y="' + (y - 34) + '" width="' + KEY_W.toFixed(1) + '" height="68" fill="transparent"/>' +
         '<text class="bg-node-label" x="0" y="' + (y - 8) + '">' + esc(d.label) + '</text>' +
-        '<text class="bg-node-count" x="0" y="' + (y + 22) + '">' + d.n + '</text>' +
-        '<circle class="bg-node-dot" cx="' + NODE_X.toFixed(1) + '" cy="' + y + '" r="4"/></g>';
+        '<text class="bg-node-count" x="0" y="' + (y + 22) + '">' + d.n + '</text></g>';
     });
 
     plot.innerHTML =

@@ -4051,10 +4051,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   font-size: 24px;
   letter-spacing: -0.02em;
 }
-/* The node proper. It is drawn only while its label is under the pointer, at
-   the point its own threads converge on. */
-.bg-node-dot { opacity: 0; transition: opacity 0.3s ease; }
-.bg-node:hover .bg-node-dot { opacity: 1; }
 /* A transparent fill is hit-tested, but say so outright rather than rely on it:
    this rect is the whole of the label block's target. */
 .bg-node rect { pointer-events: all; }
