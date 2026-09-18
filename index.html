@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=99" />
+<link rel="stylesheet" href="styles.css?v=102" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -83,6 +83,12 @@
   <div class="lightbox" id="lightbox" aria-hidden="true">
     <div class="lb-stage" id="lbStage">
       <img id="lbImg" alt=""/>
+      <!-- The deck is a deck of stills but for one plate: the open-water
+           passage, which is the only leg of the journey nobody photographed
+           and the only one that is footage. It gets its own element rather
+           than being faked into the <img>, and the two are swapped for each
+           other as the deck is paged — see show() in the lightbox script. -->
+      <video id="lbVideo" muted loop playsinline preload="metadata"></video>
     </div>
     <!-- The route arrow the sub-chapter heads are punctuated with, turned onto
          its side. Masked from the --arrow-down token rather than drawn again,
@@ -661,18 +667,31 @@
           </aside>
 
           <div class="journey-stops">
-            <article class="stop" data-stop="1">
-              <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8441.jpeg" alt=""></figure>
-            </article>
+            <!-- These boxes used to carry the photographs across the bottom of
+                 the screen, one traverse each. The photographs are on the map
+                 itself now — one preview standing where each white stop mark
+                 stood, opening into the deck on a click (see the stop previews
+                 block in the journey globes script). The boxes stay, and stay
+                 empty, because they were never only frames: they are the
+                 sequence's clock. Where each sits in this column is what tells
+                 the camera when to leave one stop for the next, and the four
+                 accounts are paced against those same moves.
+
+                 What each box has lost is its content, and with it the height
+                 the photograph inside used to give it. That height is written
+                 as an aspect ratio on the box instead — the ratio the picture
+                 had at that grid span, so every box is exactly as tall as it
+                 was — which also takes the last of the measuring out of the
+                 script: there is nothing left to read back and pin. -->
+            <article class="stop" data-stop="1"></article>
 
             <!-- The four accounts read as one passage rather than a caption
-                 apiece: the photographs are pinned and fade through in
-                 sequence, so there is nothing for a caption to sit beside.
-                 They pass directly after the first photograph — the loading in
-                 Carrara — which is where the reader has just been told what
-                 they are looking at and has the whole passage still ahead of
-                 them. Source order follows the column, so this sits here and
-                 not at the end. -->
+                 apiece: the stops are marks on a globe now, so there is nothing
+                 in the column for a caption to sit beside. They pass directly
+                 after the first stop — the loading in Carrara — which is where
+                 the reader has just been told what they are looking at and has
+                 the whole passage still ahead of them. Source order follows the
+                 column, so this sits here and not at the end. -->
             <div class="stop-caps">
             <p class="stop-cap" data-cap-for="1">Between 4 and 8 August 1986, the finished <strong>Continuity</strong> was mounted into a sturdy steel transport frame in Carrara and loaded onto the cargo ship <strong>MV Kupari</strong>.</p>
             <p class="stop-cap" data-cap-for="2">The Kupari sailed via the <strong>Strait of Gibraltar</strong>, west of Portugal, across the <strong>Bay of Biscay</strong> and through the <strong>English Channel</strong> to the North Sea&nbsp;— a 2,800 km open-water passage taking just over two weeks.</p>
@@ -681,21 +700,13 @@
             </div>
 
 
-            <article class="stop" data-stop="2">
-              <figure class="has-video">
-                <video src="./assets/_journey/3%20sculpture%20trip/6749362-hd_1920_1080_24fps.mp4" autoplay muted loop playsinline preload="metadata"></video>
-              </figure>
-            </article>
+            <article class="stop" data-stop="2"></article>
 
-            <figure class="stop-lead" data-lead-for="3"><img src="./assets/_journey/3%20sculpture%20trip/IMG_8446.jpeg" alt=""></figure>
-            <article class="stop" data-stop="3">
-              <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8443.jpeg" alt=""></figure>
-            </article>
+            <figure class="stop-lead" data-lead-for="3"></figure>
+            <article class="stop" data-stop="3"></article>
 
-            <figure class="stop-lead" data-lead-for="4"><img src="./assets/_journey/3%20sculpture%20trip/IMG_8447.jpeg" alt=""></figure>
-            <article class="stop" data-stop="4">
-              <figure><img src="./assets/_journey/3%20sculpture%20trip/IMG_8449.jpeg" alt=""></figure>
-            </article>
+            <figure class="stop-lead" data-lead-for="4"></figure>
+            <article class="stop" data-stop="4"></article>
 
           </div>
         </div>
@@ -836,9 +847,6 @@ function onScroll() {
   // down but hoists, and it keeps its state on itself, so the synchronous
   // onScroll() call below cannot hit a binding that is still in its dead zone.
   crailSync(s, h + window.innerHeight);
-  // Sculpture Trip's pinned photographs, on the same terms — see the block near
-  // the closing reveal. Also hoisted, also keeps its state on itself.
-  stFade(s);
   // Parallax hero
   if (heroBg) heroBg.style.transform = `translateY(${s * 0.25}px) scale(${1.02 + s/20000})`;
 
@@ -2154,6 +2162,53 @@ document.querySelectorAll('.facts').forEach((facts) => {
       { text: 'Rhine-Main',        at: 'top'    },
       { text: 'Frankfurt am Main', at: 'left'   },
     ],
+    // One picture per mark, standing where the mark stood. The white dots said
+    // only "a place was here"; the names beside them said which place. Neither
+    // said what happened there, and that was the one thing the section had the
+    // pictures for — so the pictures are the marks now, and a click opens the
+    // one being pointed at full size in the deck.
+    //
+    // Indexed against `stops`, so a null is a stop that carries no preview.
+    // The three regions have none because they have no mark either: a stretch
+    // of water is not a place a photograph was taken. Frankfurt has none here
+    // because it has a better one — the Walk-around scene already opens on its
+    // coordinate and grows to fill the screen, which is the section's last
+    // beat. It is seeded at this same PREVIEW size (see the closing reveal), so
+    // what enlarges is the preview itself rather than something new arriving.
+    photos: [
+      { src: './assets/_journey/3%20sculpture%20trip/IMG_8441.jpeg',
+        alt: 'Continuity mounted into its steel transport frame in the Carrara yard' },
+      // The only moving plate, and the only leg with nothing else to show: two
+      // weeks of open water between the Strait and the North Sea that no one
+      // aboard photographed. Muted and looping, like the plate it replaces.
+      { src: './assets/_journey/3%20sculpture%20trip/6749362-hd_1920_1080_24fps.mp4',
+        video: true, alt: 'Open water' },
+      null,                                   // 2 Portugal — a region
+      null,                                   // 3 Bay of Biscay — a region
+      null,                                   // 4 English Channel — a region
+      { src: './assets/_journey/3%20sculpture%20trip/IMG_8446.jpeg',
+        alt: 'The crate lifted out of the sea freighter in Rotterdam' },
+      { src: './assets/_journey/3%20sculpture%20trip/IMG_8443.jpeg',
+        alt: 'Continuity on the heavy transporter at the quay, the Kupari alongside' },
+      // Frankfurt, the destination, and the only mark with no photograph of the
+      // transport to stand on it — the crate arrives here, but what the reader
+      // has come to see is the sculpture standing. So it gets the Walk-around
+      // scene, which is the same image the closing reveal opens with, cut to
+      // the same 16:9 pill: the tile and the reveal are one picture in two
+      // states, and when the reveal comes up it takes over from the tile at
+      // exactly its size and shape. Nothing appears, nothing is swapped — the
+      // preview on the last mark simply starts growing, and goes on growing
+      // until it has closed the section.
+      { src: './assets/hero-sculpture.png', reveal: true,
+        alt: 'Continuity standing at Taunusanlage 12, Frankfurt' },
+    ],
+    // Which stop the closing reveal stands on, and the element it is. The name
+    // placer needs both: the reveal is Frankfurt's preview once it opens, but
+    // it is not in the photos layer, so its size has to be looked up where the
+    // reveal writes it. Without this the name is measured off the tile the
+    // reveal has already outgrown and ends up under the picture.
+    revealFor: 7,
+    revealId: 'mapReveal',
     // One segment per leg between two named places, so the route turns over a
     // leg at a time rather than an ocean at a time. Each begins on the stop the
     // one before ended on, which is what keeps the drawn line continuous.
@@ -2188,7 +2243,20 @@ document.querySelectorAll('.facts').forEach((facts) => {
     // to the visited purple while the camera still has it on screen, one leg at
     // a time, instead of a whole ocean changing hands off-screen mid-move.
     states: [
-      { center: [10.0, 43.9], zoom: 6.6, prog: 0, glow: 0 },   // 1 Carrara — the Med still ahead
+      // Pushed east so Carrara rides the left third of the screen, for the same
+      // reason state 3 below is pushed east: on the wide layout the four
+      // accounts occupy the right half and they scroll up through this frame
+      // while the camera is parked on it. A mark centred here is a mark the
+      // paragraphs walk straight over — and the preview standing on it is a
+      // photograph, which does not give way to text the way its own name does.
+      // At zoom 6.6 a wide screen spans something under nine degrees, so under
+      // two of them is the fifth of a screen that moves Carrara out from under
+      // the column and leaves its name room to be written beside it — far
+      // enough to clear the text, not so far that the mark ends up in the
+      // gutter with the chapter rail.
+      // The narrow layout puts the accounts on their own ground below the map,
+      // so there is nothing there to dodge and the framing stays as it was.
+      { center: WIDE ? [11.90, 43.9] : [10.0, 43.9], zoom: 6.6, prog: 0, glow: 0 },   // 1 Carrara — the Med still ahead
       // The pull-back from Carrara is back-loaded — the Strait is still off the
       // bottom of the screen at half way — so only the first leg turns over on
       // this move, and it turns as the wide view lands.
@@ -2214,11 +2282,15 @@ document.querySelectorAll('.facts').forEach((facts) => {
     type: 'FeatureCollection',
     features: segs.map((coords, i) => ({ type: 'Feature', properties: { seg: i }, geometry: { type: 'LineString', coordinates: coords } })),
   });
-  const stopsFC = (pts, labels) => ({
+  const stopsFC = (pts, labels, photos) => ({
     type: 'FeatureCollection',
     features: pts.map((c, i) => ({
       type: 'Feature',
-      properties: { i, region: !!(labels && labels[i] && labels[i].region) },
+      properties: { i,
+                    region: !!(labels && labels[i] && labels[i].region),
+                    // Whether a preview stands here, which is what decides
+                    // whether the dot under it is drawn at all.
+                    photo: !!(photos && photos[i]) },
       geometry: { type: 'Point', coordinates: c },
     })),
   });
@@ -2257,7 +2329,26 @@ document.querySelectorAll('.facts').forEach((facts) => {
 
     let started = false, inView = false, raf = 0;
     let updateLabels = () => {};
+    let stopPhotos = null;    // the previews standing on the marks, if this map has any
     let glowIndex = -1;        // which stop is pulsing; its name stands further off
+
+    // Nothing is drawn on the opening globe. At the overview the whole passage
+    // is a scribble a thumbnail wide laid over a hemisphere, and the marks on it
+    // are specks sitting on nothing the reader can make out — it reads as
+    // clutter over the earth rather than as a route across it, and it gives the
+    // ending away before the chapter has started. So the route, the marks, the
+    // names and the previews all come up together over one window, as the
+    // camera drops into the globe and the ground beneath them becomes ground.
+    //
+    // Expressed as a zoom interpolation on the layers themselves wherever it
+    // can be, so it costs a paint property rather than a value written per
+    // frame. The two DOM layers read the same numbers and do the same fade by
+    // hand, there being no style expression to hang it on.
+    //
+    // It never comes into play on the Granite Trip, which opens at zoom 5 and
+    // only goes deeper: that map is inside its island from the first frame.
+    const FADE_IN = 2.2, FADE_FULL = 3.2;
+    const zoomFade = (full) => ['interpolate', ['linear'], ['zoom'], FADE_IN, 0, FADE_FULL, full];
     let currentState = { center: cfg.overview.center, zoom: cfg.overview.zoom, glow: -1 };
 
     // How much of the route is behind the ship, in whole segments: everything
@@ -2267,17 +2358,53 @@ document.querySelectorAll('.facts').forEach((facts) => {
     // hands — and it changes hands in view, which is the point of cutting the
     // route at the stops in the first place.
     let doneSegs = -1;
+    // How far along the leg under way the drawing has got, so the gradient is
+    // only rewritten when it has actually moved.
+    let liveT = -1;
+    // The leg under way, drawn as far along itself as the ship has got. A
+    // gradient rather than a cut geometry: the leg stays one feature and the
+    // colour simply runs out partway along it, so the line grows with the scroll
+    // instead of being rebuilt per frame. Transparent past the ship is what
+    // makes the water ahead empty.
+    //
+    // The two stops are a hair apart rather than at one value because
+    // interpolation stops have to be strictly ascending, and clamped off both
+    // ends for the same reason — at t exactly 0 or 1 the pair would collide with
+    // the fixed stops either side of them.
+    const CLEAR = 'rgba(0,0,0,0)';
+    function legGradient(t) {
+      const e = Math.max(0.0005, Math.min(0.998, t));
+      return ['interpolate', ['linear'], ['line-progress'],
+              0, LINK, e, LINK, e + 0.001, CLEAR, 1, CLEAR];
+    }
+
     function applyRoute(prog) {
-      const n = Math.max(0, Math.min(cfg.segments.length, Math.floor(prog)));
-      if (n === doneSegs || !map.getLayer('route-done')) return;
-      doneSegs = n;
-      // The whole passage is on the map the entire time — that is what makes a
-      // leg changing hands read as a change rather than as something appearing.
-      // Behind the ship it is the visited purple, at and ahead of it the
-      // unvisited blue. Past the last leg the second filter matches nothing,
-      // which leaves the route wholly purple once the sculpture is standing.
-      map.setFilter('route-done', ['<', ['get', 'seg'], n]);
-      map.setFilter('route-ahead', ['>=', ['get', 'seg'], n]);
+      if (!map.getLayer('route-done')) return;
+      const total = cfg.segments.length;
+      const n = Math.max(0, Math.min(total, Math.floor(prog)));
+      // How far along the leg under way the ship is. `prog` is counted in
+      // segments and interpolated across each one, so the fraction is the leg's
+      // own progress and needs no further arithmetic.
+      const t = Math.max(0, Math.min(1, prog - n));
+      if (n !== doneSegs) {
+        doneSegs = n;
+        // Everything behind the ship, whole and purple. Past the last leg this
+        // matches the entire route, which is what leaves it wholly purple once
+        // the sculpture is standing.
+        map.setFilter('route-done', ['<', ['get', 'seg'], n]);
+        // Exactly one leg is ever under way, and none is once the journey is
+        // over — there is no segment numbered `total`, so the filter empties
+        // itself.
+        map.setFilter('route-live', ['==', ['get', 'seg'], n]);
+      }
+      // Rewritten per frame while a leg is being crossed, but only once it has
+      // actually moved: the camera is evaluated every frame and most of them
+      // land on the same fraction, and a paint property set to the value it
+      // already holds is still a style recalculation.
+      if (n < total && Math.abs(t - liveT) > 0.002) {
+        liveT = t;
+        map.setPaintProperty('route-live', 'line-gradient', legGradient(t));
+      }
     }
 
     // The glow stays step-valued — it belongs to a keyframe, not to a position
@@ -2472,6 +2599,169 @@ document.querySelectorAll('.facts').forEach((facts) => {
     function startAnim() { if (!raf) raf = requestAnimationFrame(frame); }
     function stopAnim() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
 
+    // --- stop previews ----------------------------------------------------
+    // The marks used to be white dots and the photographs used to be somewhere
+    // else — pinned to the bottom of the screen, crossing it right to left as
+    // you scrolled, one per stop. That put the picture and the place it was
+    // taken at opposite ends of the screen and left the reader to pair them up
+    // from the timing alone. These put them in the same spot: the picture IS
+    // the mark, standing on the coordinate, and a click opens it full size in
+    // the deck the rest of the journey's photographs are already in.
+    //
+    // They ride in a DOM layer over the canvas rather than as a symbol layer,
+    // for the same reason the names do — the style carries no sprite, and an
+    // <img> in the page is one the browser loads, scales and caches itself.
+    //
+    // Nothing here is laid out by the map. Each tile is parked at the layer's
+    // origin and moved by a transform alone, so a camera move writes one
+    // matrix per tile and never a layout.
+    function makeStopPhotos() {
+      const specs = cfg.photos || [];
+      if (!specs.length) return null;
+
+      const layer = document.createElement('div');
+      layer.className = 'map-stop-photos';
+      map.getCanvasContainer().appendChild(layer);
+
+      const items = specs.map((spec, i) => {
+        const at = cfg.stops[i];
+        if (!spec || !at) return null;
+        // A button, not a div: this is the one thing on the map you can press,
+        // and it should say so to a keyboard and a screen reader as well as to
+        // a cursor.
+        const el = document.createElement('button');
+        el.type = 'button';
+        el.className = 'map-stop-photo' + (spec.reveal ? ' is-reveal' : '');
+        el.setAttribute('aria-label', spec.alt || 'Open this photograph');
+        const media = document.createElement(spec.video ? 'video' : 'img');
+        media.src = spec.src;
+        if (spec.video) {
+          // Set as properties as well as attributes: Safari reads the
+          // attribute for autoplay eligibility, everything else the property.
+          media.muted = true; media.loop = true; media.autoplay = true;
+          media.playsInline = true; media.preload = 'metadata';
+          media.setAttribute('muted', ''); media.setAttribute('loop', '');
+          media.setAttribute('playsinline', ''); media.setAttribute('autoplay', '');
+        } else {
+          media.alt = '';
+          media.decoding = 'async';
+        }
+        el.appendChild(media);
+        // The deck collects and indexes itself at open time, so all this has to
+        // hand over is which plate was pressed. The hook is published by the
+        // lightbox further down; this layer is built later, on style.load, so
+        // it is always there by now.
+        el.addEventListener('click', () => {
+          if (window.journeyDeck) window.journeyDeck.openFor(media);
+        });
+        layer.appendChild(el);
+        return { el, media, i, lngLat: at, reveal: !!spec.reveal,
+                 on: false, x: 0, y: 0, w: 0, h: 0 };
+      }).filter(Boolean);
+      if (!items.length) { layer.remove(); return null; }
+
+      const byIndex = {};
+      items.forEach(it => { byIndex[it.i] = it; });
+
+      // A tile's height depends on its own picture's proportions, and those are
+      // not known until it has loaded. Read once it is, and again if the layout
+      // changes underneath it -- never per frame, which would reflow the
+      // document on every step of the scroll.
+      let sized = false;
+      const measure = () => {
+        items.forEach(it => { it.w = it.el.offsetWidth; it.h = it.el.offsetHeight; });
+        sized = items.every(it => it.w > 0 && it.h > 0);
+      };
+      const invalidate = () => { sized = false; };
+      items.forEach(it => {
+        it.media.addEventListener('load', invalidate);
+        it.media.addEventListener('loadedmetadata', invalidate);
+      });
+      window.addEventListener('resize', invalidate);
+
+      // Frankfurt's tile and the closing reveal are the same picture, and only
+      // one of them is ever on screen: the tile holds the mark until the reveal
+      // opens on it, then stands down and lets the reveal do the growing. Read
+      // off the custom property the reveal writes, which is a number on an
+      // inline style and costs no layout.
+      const revealEl = cfg.revealId ? document.getElementById(cfg.revealId) : null;
+      const revealOn = () => (revealEl
+        ? (parseFloat(revealEl.style.getPropertyValue('--reveal-on')) || 0) : 0);
+
+      function update() {
+        const k = Math.max(0, Math.min(1, (map.getZoom() - FADE_IN) / (FADE_FULL - FADE_IN)));
+        if (!sized) measure();
+        const el = map.getContainer();
+        const w = el.clientWidth, h = el.clientHeight;
+        const handedOver = revealOn() > 0.02;
+
+        const hide = (it) => {
+          if (it.on) { it.el.style.opacity = '0'; it.el.style.pointerEvents = 'none'; it.on = false; }
+        };
+
+        // Which tiles are even on the near side of the world and inside the
+        // frame. Collected first because the next question — which of them
+        // would cover each other — can only be asked of the whole set.
+        const live = [];
+        items.forEach(it => {
+          let hidden = k <= 0 || (it.reveal && handedOver);
+          if (!hidden) {
+            try {
+              hidden = map.transform.isLocationOccluded(
+                new maplibregl.LngLat(it.lngLat[0], it.lngLat[1]));
+            } catch (e) {}
+          }
+          const p = map.project(it.lngLat);
+          // Half a tile of margin either side, so one leaving the frame goes
+          // out by its own edge rather than vanishing on its centre.
+          if (hidden || p.x < -60 || p.x > w + 60 || p.y < -60 || p.y > h + 60) { hide(it); return; }
+          it.x = p.x; it.y = p.y;
+          live.push(it);
+        });
+
+        // Rhine-Main and Frankfurt are thirty kilometres apart, which above about
+        // zoom 6 is less than a tile: left alone the later one simply sits on
+        // top of the earlier and the reader sees one picture where there are
+        // two. So a tile gives way to a tile — but not on the rule the names
+        // use. A name gives way to whichever is nearest the middle of the frame,
+        // the camera being pointed at what it is pointed at; these are a
+        // sequence, and the rule that suits a sequence is that the earlier stop
+        // holds the ground. The ship has been there and the reader has been
+        // shown it; the later one is still ahead of them both.
+        //
+        // Which settles the two collisions this route actually has, and settles
+        // them the right way round. Rotterdam holds the northern cluster while
+        // the camera is out over the Atlantic. Rhine-Main holds it once the
+        // camera is down on the river. And Frankfurt, being last, gives way
+        // every time until it is the only mark left on screen — so the
+        // destination is never handed to the reader early, and its picture waits
+        // for the end, where the reveal grows out of it.
+        //
+        // Boxes, not centres: two panoramas side by side are clear of each other
+        // at a distance that would have two tall tiles overlapping.
+        const kept = [];
+        live.sort((a, b) => a.i - b.i);
+        live.forEach(it => {
+          const hw = (it.w || 70) / 2, hh = (it.h || 70) / 2;
+          const clash = kept.some(q =>
+            Math.abs(q.x - it.x) < hw + q.hw && Math.abs(q.y - it.y) < hh + q.hh);
+          if (clash) { hide(it); return; }
+          kept.push({ x: it.x, y: it.y, hw, hh });
+          // Positioned on the mark, then pulled back by half its own size. The
+          // second translate is in percentages of the tile, so the centring
+          // needs no measurement and is right the moment the picture decodes.
+          it.el.style.transform = 'translate(' + Math.round(it.x) + 'px,' + Math.round(it.y) + 'px) translate(-50%,-50%)';
+          it.el.style.opacity = String(k);
+          // A tile faded out is still a button sitting over the map, so it is
+          // taken out of the way as well as out of sight.
+          it.el.style.pointerEvents = k > 0.6 ? 'auto' : 'none';
+          it.on = true;
+        });
+      }
+
+      return { update, items, byIndex, invalidate };
+    }
+
     // --- stop names -------------------------------------------------------
     // The marks are identical white dots, so on their own they say only "a
     // place was here". These write the names against them, in their own layer
@@ -2507,7 +2797,33 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // radius; the active one pulses out to 19 (16 ± 3, see frame()). AIR on
       // top of that is the air itself, so nothing ever comes close to touching.
       const AIR = 12;
-      const gapFor = (it) => (it.region ? 3 : (it.i === glowIndex ? 19 : 8)) + AIR;
+      // Most marks that have a name now have a photograph standing on them
+      // instead of a dot, and a tile is a great deal bigger than 8px in every
+      // direction — and bigger across than it is down, or the other way about,
+      // depending on the picture. So the clearance is read off the tile, and
+      // off the side of it the name is actually being hung: half its width
+      // going sideways, half its height going up or down. Measured, not
+      // assumed, because the tile is 70px wide and whatever its own
+      // proportions make of that.
+      const revealEl = cfg.revealId ? document.getElementById(cfg.revealId) : null;
+      const gapFor = (it, side) => {
+        const ph = stopPhotos && stopPhotos.byIndex[it.i];
+        if (ph && ph.on && ph.w && ph.h) {
+          return ((side === 'left' || side === 'right') ? ph.w / 2 : ph.h / 2) + AIR;
+        }
+        // Frankfurt, once its own preview has opened on it. Its size is read
+        // off the two custom properties the reveal writes rather than out of
+        // the DOM: they are plain numbers on an inline style, so this costs
+        // nothing, where a getBoundingClientRect here would be a layout per
+        // frame. The scene is 16:9, which is what turns its width into the
+        // height the name has to clear going up or down.
+        if (revealEl && it.i === cfg.revealFor
+            && (parseFloat(revealEl.style.getPropertyValue('--reveal-on')) || 0) > 0.05) {
+          const rw = parseFloat(revealEl.style.getPropertyValue('--reveal-w')) || 0;
+          if (rw) return ((side === 'left' || side === 'right') ? rw / 2 : rw * 9 / 32) + AIR;
+        }
+        return (it.region ? 3 : (it.i === glowIndex ? 19 : 8)) + AIR;
+      };
       const PAD = 12;            // and this much between two names
       // Two marks closer together than this — centre to centre — are one place
       // said twice, whatever the text around them does. 8px of radius each and
@@ -2515,8 +2831,6 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // named. It is a distance, not a box: 30px apart on the diagonal is as
       // separate as 30px apart in a straight line.
       const NEAR = 30;
-      const FADE_IN = 2.2, FADE_FULL = 3.2;   // nothing at the opening globe,
-                                              // full once the camera is inside it
       let sized = false;
       // Measured in one pass and cached: reading offsetWidth per label per
       // frame would reflow the document on every step of the scroll.
@@ -2531,7 +2845,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // Where the name hangs off its mark. The config names the side it wants;
       // one that would run off the plate takes the opposite side instead.
       const boxAt = (it, side, x, y) => {
-        const g = gapFor(it);
+        const g = gapFor(it, side);
         let l, t;
         if (side === 'left')        { l = x + g;          t = y - it.h / 2; }
         else if (side === 'right')  { l = x - g - it.w;   t = y - it.h / 2; }
@@ -2559,12 +2873,17 @@ document.querySelectorAll('.facts').forEach((facts) => {
         return null;
       }
 
-      // The pinned photographs and the four accounts ride over this map, and a
-      // name half-swallowed by a photograph reads worse than no name at all.
-      // Their rectangles are collected each pass and seeded into the kept list,
-      // so a name gives way to them exactly as it gives way to another name.
-      const OBSTACLES = '#' + cfg.sectionId + ' .journey-stops figure, '
-                      + '#' + cfg.sectionId + ' .stop-cap, '
+      // The four accounts ride over this map, and a name half-swallowed by a
+      // line of prose reads worse than no name at all. Their rectangles are
+      // collected each pass and seeded into the kept list, so a name gives way
+      // to them exactly as it gives way to another name.
+      //
+      // The pinned photographs used to be collected here too. They are the
+      // marks themselves now and no longer cross the screen, so the only thing
+      // in the column left to dodge is the text — the tiles are handled by
+      // photoRects below, off the numbers the layer has just written rather
+      // than off the DOM.
+      const OBSTACLES = '#' + cfg.sectionId + ' .stop-cap, '
                       // The dates ride the top of the screen over this map for
                       // the whole sub-chapter, so a name has to clear them too.
                       + '#' + cfg.sectionId + ' > .sub-dates';
@@ -2583,6 +2902,26 @@ document.querySelectorAll('.facts').forEach((facts) => {
         return out;
       }
 
+      // The previews standing on the marks, added the same way: a name gives
+      // way to a photograph exactly as it gives way to another name. Taken from
+      // the layer's own numbers rather than from the DOM — they were just
+      // written this frame, and reading them back would be a reflow per tile.
+      //
+      // A tile is never an obstacle to its own name. gapFor has already stood
+      // that name off the tile's edge, and letting the tile block it as well
+      // would leave the mark with a picture and no caption.
+      function photoRects() {
+        if (!stopPhotos) return [];
+        const out = [];
+        stopPhotos.items.forEach(ph => {
+          if (!ph.on || !ph.w || !ph.h) return;
+          out.push({ i: ph.i,
+                     l: ph.x - ph.w / 2, t: ph.y - ph.h / 2,
+                     r: ph.x + ph.w / 2, b: ph.y + ph.h / 2 });
+        });
+        return out;
+      }
+
       return function update() {
         const k = Math.max(0, Math.min(1, (map.getZoom() - FADE_IN) / (FADE_FULL - FADE_IN)));
         if (k <= 0) { items.forEach(it => { it.el.style.opacity = '0'; }); return; }
@@ -2595,8 +2934,20 @@ document.querySelectorAll('.facts').forEach((facts) => {
         const live = [];
         items.forEach(it => {
           let hidden = false;
+          // A name goes with its mark. Where the mark is a preview, the preview
+          // may have stood down this frame for covering one nearer the middle
+          // of the frame — and since a stop carrying a preview has no dot drawn
+          // under it either, there would be nothing left for the name to point
+          // at. Left written it does worse than float: Rhine-Main and Frankfurt
+          // are thirty kilometres apart, so the abandoned name comes to rest
+          // against its neighbour's picture and reads as its caption.
+          //
+          // Regions are untouched by this. They have no mark by design, and a
+          // name over open water is what names that stretch of it.
+          const ph = stopPhotos && stopPhotos.byIndex[it.i];
+          if (ph && !ph.on) hidden = true;
           try {
-            hidden = map.transform.isLocationOccluded(
+            hidden = hidden || map.transform.isLocationOccluded(
               new maplibregl.LngLat(it.lngLat[0], it.lngLat[1]));
           } catch (e) {}
           const p = map.project(it.lngLat);
@@ -2613,8 +2964,12 @@ document.querySelectorAll('.facts').forEach((facts) => {
 
         live.sort((a, b) => a.d - b.d);
         const kept = obstacles(el.getBoundingClientRect());
+        const tiles = photoRects();
         live.forEach(it => {
-          const r = fit(it, w, h, kept);
+          // Every tile but this name's own, re-seeded per name so the skip is
+          // per-name rather than per-frame.
+          const mine = kept.concat(tiles.filter(q => q.i !== it.i));
+          const r = fit(it, w, h, mine);
           if (!r) { it.el.style.opacity = '0'; return; }
           r.x = it.x; r.y = it.y;
           kept.push(r);
@@ -2633,47 +2988,74 @@ document.querySelectorAll('.facts').forEach((facts) => {
         });
       } catch (e) {}
 
-      // Both legs are flat colour now, so nothing reads ['line-progress'] and the
-      // source no longer has to carry line metrics.
-      map.addSource('route', { type: 'geojson', data: routeFC(cfg.segments) });
+      // The whole passage used to be drawn the entire time — the legs behind the
+      // ship in the visited purple, everything ahead of it in blue — so the
+      // reader was handed the finished route before the journey had started and
+      // a leg changing hands was the only thing left to watch. It draws itself
+      // now instead: nothing exists ahead of the ship, the leg under way grows
+      // along its own line as the camera travels it, and it sets to purple
+      // behind. What the map shows at any moment is exactly how far the
+      // sculpture has got.
+      //
+      // Growing the live leg is what needs the line metrics back: the drawing
+      // runs out along one feature by ['line-progress'], rather than the leg
+      // appearing whole the moment it is entered.
+      map.addSource('route', { type: 'geojson', lineMetrics: true, data: routeFC(cfg.segments) });
       map.addLayer({
         id: 'route-done', type: 'line', source: 'route', filter: ['<', ['get', 'seg'], -1],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': VISITED, 'line-width': 3, 'line-opacity': 0.95 },
+        paint: { 'line-color': VISITED, 'line-width': 3, 'line-opacity': zoomFade(0.95) },
       });
       map.addLayer({
-        id: 'route-ahead', type: 'line', source: 'route', filter: ['>=', ['get', 'seg'], 0],
+        id: 'route-live', type: 'line', source: 'route', filter: ['==', ['get', 'seg'], -1],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': LINK, 'line-width': 3, 'line-opacity': 0.95 },
+        // No line-color: the gradient is the colour, and applyRoute rewrites it
+        // as the ship moves along the leg.
+        paint: { 'line-gradient': legGradient(0), 'line-width': 3, 'line-opacity': zoomFade(0.95) },
       });
 
-      map.addSource('stops', { type: 'geojson', data: stopsFC(cfg.stops, cfg.labels) });
+      map.addSource('stops', { type: 'geojson', data: stopsFC(cfg.stops, cfg.labels, cfg.photos) });
       // Flat and hard-edged: solid white, no ring at all. Nothing translucent,
       // nothing blurred, and no outline to soften the mark against the plate.
+      //
+      // `photo` is set on the stops a preview stands on, and those are left
+      // undrawn: the picture is the mark there, and a white disc behind it
+      // would only be a rim sticking out from under one corner. What is still
+      // drawn this way is every stop with no picture of its own — which here is
+      // Frankfurt alone, the destination, whose own preview is the reveal that
+      // opens on it at the very end.
       map.addLayer({
         id: 'stop-dot', type: 'circle', source: 'stops',
-        filter: ['!', ['get', 'region']],
+        filter: ['all', ['!', ['get', 'region']], ['!', ['get', 'photo']]],
         paint: {
           'circle-radius': 8, 'circle-color': '#ffffff',
+          'circle-opacity': zoomFade(1),
           'circle-stroke-width': 0,
         },
       });
       // The active stop is the same mark at twice the size — scale alone marks
       // it, so no second colour and no outline competes with the white route.
       map.addLayer({
-        id: 'stop-glow', type: 'circle', source: 'stops', filter: ['==', ['get', 'i'], -1],
+        id: 'stop-glow', type: 'circle', source: 'stops',
+        filter: ['all', ['==', ['get', 'i'], -1], ['!', ['get', 'photo']]],
         paint: {
           'circle-radius': 16, 'circle-color': '#ffffff',
+          'circle-opacity': zoomFade(1),
           'circle-stroke-width': 0,
         },
       });
 
+      // Built before the names, and updated before them every frame: a name's
+      // placement is read against where the tiles actually are, so the tiles
+      // have to have been put there first.
+      stopPhotos = makeStopPhotos();
       updateLabels = makeLabels();
-      map.on('move', () => updateLabels());
+      map.on('move', () => { if (stopPhotos) stopPhotos.update(); updateLabels(); });
 
       started = true;
       doneSegs = -1;                 // the new style carries no filters yet
       scrub.apply(window.scrollY);
+      if (stopPhotos) stopPhotos.update();
       updateLabels();
       if (inView) startAnim();
     });
@@ -2713,6 +3095,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     window.addEventListener('resize', () => {
       map.resize();
       scrub.invalidate();
+      if (stopPhotos) stopPhotos.invalidate();
     }, { passive: true });
   }
 
@@ -2725,242 +3108,17 @@ document.querySelectorAll('.facts').forEach((facts) => {
   else initJourney();
 })();
 
-// ========== Sculpture Trip · pinned photographs ==========
-// The photographs no longer travel with the page. Each one fades up, holds
-// still in the viewport while it is being looked at, and fades away again
-// before the next arrives — so the sequence reads as a series of held frames
-// over the globe rather than as a column of pictures going by.
+// ========== Sculpture Trip · the photographs' old traverse ==========
+// Nothing here any more, and the absence is the change. The photographs used to
+// be pinned to the bottom of the viewport and scrubbed across it, right to left,
+// one traverse per stop: a procession passing the globe. They stand on the globe
+// now — one preview on each mark, at the coordinate the picture was taken at —
+// so there is no traverse left to drive, no fixed plate to hold still against
+// the scroll, and no measuring pass to give the boxes back the height their
+// photographs took with them when they left the flow. The boxes carry that
+// height themselves now, as an aspect ratio in the stylesheet.
 //
-// They are held by position: fixed, not by a transform that cancels the scroll.
-// That distinction is the whole point. A scroll-cancelling transform has to be
-// rewritten on every scroll event, and scroll events are dispatched on the main
-// thread while the page itself scrolls on the compositor — so the correction
-// always lands a frame or so behind the ground it is correcting against, and the
-// photograph visibly lags and catches up. Fixed elements are simply not moved by
-// scrolling at all, so there is nothing to keep in step and nothing to fall
-// behind. No ancestor here carries a transform, filter or containment, so fixed
-// resolves against the viewport as intended.
-//
-// The cost is that a fixed photograph leaves the flow, and its box would
-// collapse — and those boxes are the sequence's clock, since where each sits in
-// the column decides when its photograph appears. So each box is given its own
-// measured height to hold open. Nothing else about the grid changes: the columns
-// and spans are exactly as they were, and the .stop article itself is never
-// touched, so the sticky globe and the IntersectionObserver that drives its
-// active stop still see the layout they were written against.
-//
-// A scroll event therefore writes opacity and nothing else.
-function stFadeInit() {
-  const stops = document.querySelector('#sculpture-trip .journey-stops');
-  if (!stops) return null;
-  // Each photograph's window reaches halfway to its neighbours, so the windows
-  // tile the section without overlapping however the rows are spaced. That window
-  // is now the length of one traverse: over it the photograph crosses the screen
-  // once, right to left.
-  // The photographs no longer come to rest anywhere. They ride a single line
-  // across the bottom of the screen, entering from the right and leaving at the
-  // left, so the whole sequence reads as one procession passing the globe rather
-  // than as six plates being shown in turn. BOTTOM is the hem they sit on.
-  const BOTTOM = 200;
-  // How far each traverse reaches past its own tiled window. At 1 the windows
-  // tile exactly and the screen is only ever crossed by one photograph; above 1
-  // consecutive ones overlap, so a departing photograph is still leaving as the
-  // next arrives.
-  const SPREAD = 1;
-  // The longest a single crossing may take, as a fraction of the viewport, taken
-  // symmetrically either side of the cue. Without a ceiling the windows tile the
-  // section edge to edge — every photograph's run reaches halfway to its
-  // neighbours, so widening the column to make room for something else just
-  // stretches the two photographs around it and the screen is never clear. The
-  // ceiling is what lets a gap in the column stay a gap, which is how the
-  // accounts get a stretch of scroll with no photograph crossing them. It also
-  // squares each run on its own cue, so a photograph is mid-screen exactly as
-  // the map arrives at its leg rather than a little past it.
-  const MAX_RUN = 1.0;
-  // How far after its own box a photograph waits before it begins, as a
-  // fraction of the viewport. The box is what anchors the globe — the scrubbed
-  // camera up in buildJourneyGlobe takes these same boxes as its keyframes, and
-  // reaches each one exactly as the box passes the middle of the screen — so a
-  // photograph cued on its box arrives on top of the move it is meant to follow
-  // rather than after it. The first two are the ones that matter: the descent
-  // onto Carrara crosses a dozen zoom levels and the pull back out to the
-  // Atlantic nearly as many, and a photograph laid over either mid-move fights
-  // it. Holding these two back lets the ground stop travelling under them. The
-  // rest are cued on their boxes, their legs being ordinary stop-to-stop moves.
-  const CUE = { s1: 0.55, s2: 0.55 };
-  const items = [];
-  stops.querySelectorAll('.stop[data-stop], .stop-lead[data-lead-for]').forEach(box => {
-    // The pinned child, never the box: .stop carries a backing panel behind its
-    // photograph, so the figure is what has to be held for the two to stay
-    // together, while .stop-lead is itself the figure and hands the job on to
-    // its image.
-    const art = box.matches('.stop-lead') ? box.querySelector('img') : box.querySelector('figure');
-    if (!art) return;
-    const key = box.dataset.stop ? 's' + box.dataset.stop : 'l' + box.dataset.leadFor;
-    items.push({ box, art,
-                 cue: CUE[key] !== undefined ? CUE[key] : 0,
-                 top: 0, h: 0, anchor: 0, cueAt: 0, a: -1, b: -1,
-                 lastX: null, lastOn: null });
-  });
-  if (!items.length) return null;
-  return { items, bottom: BOTTOM, spread: SPREAD, maxRun: MAX_RUN,
-           docH: -1, vh: -1, w: -1,
-           reduced: window.matchMedia('(prefers-reduced-motion: reduce)') };
-}
-
-// Reads every photograph's natural geometry, then pins them all to it. The three
-// passes are not fussiness: releasing one photograph back into the flow moves
-// everything below it, so nothing may be measured until all of them are
-// released, and nothing may be pinned until all of them are measured.
-function stFadeMeasure(st) {
-  // Pass one — let them all fall back into the flow.
-  st.items.forEach(it => {
-    it.art.style.position = '';
-    it.art.style.top = '';
-    it.art.style.bottom = '';
-    it.art.style.left = '';
-    it.art.style.width = '';
-    it.art.style.transform = '';
-    it.art.style.visibility = '';
-    it.box.style.height = '';
-    it.lastX = null;
-    it.lastOn = null;
-  });
-
-  // Pass two — read. The box gives the document position that times the
-  // sequence; the photograph inside gives the frame to pin.
-  const s = window.scrollY;
-  st.items.forEach(it => {
-    const b = it.box.getBoundingClientRect();
-    const a = it.art.getBoundingClientRect();
-    it.top = b.top + s;
-    it.h = b.height;
-    it.anchor = it.top + it.h / 2;
-    // Where this photograph's own beat sits, which is its box plus whatever
-    // wait it has been given. The box still cues the map from where it is.
-    it.cueAt = it.anchor + it.cue * window.innerHeight;
-    it.artL = a.left;
-    it.artW = a.width;
-    it.artH = a.height;
-  });
-  st.items.sort((p, q) => p.cueAt - q.cueAt);
-
-  // Pass three — hold the boxes open at the height they just had, and stand the
-  // photographs on the hem at the bottom of the screen. Only the left edge is
-  // left to the scroll: each is parked at left 0 and moved by a translate, so a
-  // scroll writes a transform the compositor can take and never a layout.
-  const vh = window.innerHeight;
-  const vw = document.documentElement.clientWidth;
-  st.items.forEach(it => {
-    it.box.style.height = it.h + 'px';
-    // The grid's width is only a starting point now that the photographs are off
-    // the grid: a tall one is brought down until it clears the hem and the top of
-    // the screen both, keeping its own proportions.
-    const room = vh - st.bottom - vh * 0.06;
-    const w = it.artH > room ? it.artW * room / it.artH : it.artW;
-    it.travelW = w;
-    // The run: in from just past the right edge, out to just past the left.
-    it.from = vw;
-    it.to = -w;
-    it.art.style.position = 'fixed';
-    it.art.style.top = 'auto';
-    it.art.style.bottom = st.bottom + 'px';
-    it.art.style.left = '0px';
-    it.art.style.width = w + 'px';
-    it.art.style.visibility = 'hidden';
-  });
-
-  // Each window reaches halfway to its neighbours' beats; the first and last
-  // borrow their one gap for the missing side, so the opening photograph is
-  // already fading up as the section arrives rather than snapping on.
-  st.items.forEach((it, i) => {
-    const prev = i > 0 ? st.items[i - 1].cueAt : null;
-    const next = i < st.items.length - 1 ? st.items[i + 1].cueAt : null;
-    const up   = prev !== null ? (it.cueAt - prev) / 2 : (next !== null ? (next - it.cueAt) / 2 : vh);
-    const down = next !== null ? (next - it.cueAt) / 2 : (prev !== null ? (it.cueAt - prev) / 2 : vh);
-    // A photograph given a wait must not merely peak late, it must not have
-    // begun: without a floor the window still opens halfway back towards the
-    // previous beat, which for the first two is before the globe has even been
-    // told to move. The floor is the box itself — the box is what cues the map,
-    // so opening on it is the earliest a waiting photograph may start.
-    //
-    // It applies only where there is a wait. A photograph cued on its own box has
-    // anchor and cueAt at the same point, so flooring it at either collapses the
-    // whole first half of its run and it enters late and crosses at double speed.
-    it.a = it.cue > 0 ? Math.max(it.cueAt - up * st.spread, it.anchor)
-                      : it.cueAt - up * st.spread;
-    it.b = it.cueAt + down * st.spread;
-    // Trimmed back to the ceiling, from the cue outwards, so a run never grows
-    // to fill whatever room the column happens to leave around it.
-    const half = st.maxRun * vh / 2;
-    it.a = Math.max(it.a, it.cueAt - half);
-    it.b = Math.min(it.b, it.cueAt + half);
-  });
-
-  st.docH = document.documentElement.scrollHeight;
-  st.vh = vh;
-  st.w = window.innerWidth;
-}
-
-function stFade(scrollTop) {
-  const st = stFade.state || (stFade.state = stFadeInit());
-  if (!st) return;
-  if (st.reduced.matches) return;
-
-  const vh = window.innerHeight;
-  // The journey grid and the maps settle after load and shift everything below
-  // them, so re-measure whenever the page's height or the viewport changes
-  // rather than trusting one pass at startup.
-  if (st.docH !== document.documentElement.scrollHeight || st.vh !== vh || st.w !== window.innerWidth) {
-    stFadeMeasure(st);
-  }
-
-  // The eye's line: a photograph's window is read against the middle of the
-  // screen, the same probe the chapter rail and the body theme use.
-  const eye = scrollTop + vh / 2;
-
-  for (const it of st.items) {
-    const span = it.b - it.a;
-    const t = span > 0 ? (eye - it.a) / span : 0;
-
-    // Off the screen at both ends of its own window, so there is nothing to fade:
-    // the photograph is simply not there yet, or has already gone past. Position
-    // maps straight off the scroll with no easing — the traverse is scrubbed, and
-    // a curve here would read as the picture lagging the wheel.
-    const on = t > 0 && t < 1;
-    const x = on ? Math.round(it.from + t * (it.to - it.from)) : null;
-
-    // Whether it is on the screen at all, and where it is, change on their own
-    // schedules — a photograph is off for most of the section and moving for all
-    // of the rest — so they are tracked apart. Folding them together is what
-    // makes an off photograph indistinguishable from one that has never been
-    // drawn, and leaves all six stacked on the hem until the first traverse.
-    if (on !== it.lastOn) {
-      // A photograph out of its window is still a fixed box sitting over the
-      // page, so it has to be taken out of the way as well as out of sight —
-      // otherwise six of them would be quietly swallowing clicks on every other
-      // section.
-      it.art.style.visibility = on ? 'visible' : 'hidden';
-      it.art.style.pointerEvents = on ? 'auto' : 'none';
-      it.lastOn = on;
-    }
-    if (on && x !== it.lastX) {
-      it.art.style.transform = 'translateX(' + x + 'px)';
-      it.lastX = x;
-    }
-  }
-}
-
-(() => {
-  const st = stFade.state || (stFade.state = stFadeInit());
-  if (!st) return;
-  const remeasure = () => { st.docH = -1; stFade(window.scrollY); };
-  window.addEventListener('resize', remeasure);
-  window.addEventListener('load', remeasure);
-  // The photographs decide the section's rhythm, so they must not be left at
-  // whatever the stylesheet's resting state was until the first scroll.
-  stFade(window.scrollY);
-})();
+// See makeStopPhotos in the journey globes script above for where they went.
 
 // ========== Sculpture Trip · closing reveal ==========
 // The satellite camera gets to the sculpture's doorstep but never to the
@@ -2982,7 +3140,15 @@ function stFade(scrollTop) {
   const cap    = document.getElementById('mapRevealCap');
   if (!wrap || !stops || !mapEl || !reveal || !cap) return;
 
-  const SEED_PX = 10;                                    // the speck on the marker
+  // The size every other stop's preview is cut to. This one is Frankfurt's —
+  // the destination, the only mark on the route with no photograph of the
+  // transport to stand on it, and the one place the page has something better:
+  // the Walk-around scene, sitting on the sculpture's own coordinate, which is
+  // where the camera has just landed. So it opens as a preview the same size as
+  // its four neighbours rather than as a 10px speck, and what grows to fill the
+  // screen and close the section is that preview itself rather than something
+  // new arriving over it.
+  const SEED_PX = 70;
   const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
   const seg = (v, a, b) => clamp((v - a) / (b - a));     // a sub-beat of the window
 
@@ -2995,8 +3161,8 @@ function stFade(scrollTop) {
     const span = vh * 1.8;
     const p = clamp((window.scrollY - (unpinAt - span)) / span);
 
-    // Beat 1 — the speck fades up and sits still long enough to be read as a
-    // point on the map.
+    // Beat 1 — the preview fades up and sits still long enough to be read as
+    // the mark on Frankfurt, which is what it is.
     reveal.style.setProperty('--reveal-on', seg(p, 0, 0.10).toFixed(3));
 
     // Beat 2 — it rushes forward as the satellite view goes. Growth is
@@ -3078,15 +3244,18 @@ function stFade(scrollTop) {
   const lb = document.getElementById('lightbox');
   if (!journey || !lb) return;
   const lbImg = document.getElementById('lbImg');
+  const lbVideo = document.getElementById('lbVideo');
   const lbCounter = document.getElementById('lbCounter');
   const lbClose = document.getElementById('lbClose');
   const lbPrev = document.getElementById('lbPrev');
   const lbNext = document.getElementById('lbNext');
   const lbStage = document.getElementById('lbStage');
 
-  // Resolve a usable URL from either a background-image inline style or an <img>
+  // Resolve a usable URL from a background-image inline style, an <img>, or a
+  // <video>. The last two answer the same two properties, so they are the same
+  // case; only the element they end up drawn into differs.
   function urlFromEl(el) {
-    if (el.tagName === 'IMG') return el.currentSrc || el.src || null;
+    if (el.tagName === 'IMG' || el.tagName === 'VIDEO') return el.currentSrc || el.src || null;
     const s = el.getAttribute('style') || '';
     const m = s.match(/url\(['"]?([^'")]+)['"]?\)/);
     return m ? m[1] : null;
@@ -3101,12 +3270,18 @@ function stFade(scrollTop) {
   // them were there: they are the same run of photographs, only differently
   // held.
   //
+  // A fourth shape since the Sculpture Trip's photographs moved onto the globe:
+  // they are the previews standing on the map's own marks, and they sit bare
+  // inside a button rather than in a figure, because the button is what makes a
+  // mark pressable. Its <video> is taken as well as its <img> — the open-water
+  // passage is the one leg of the journey that is footage rather than a
+  // photograph, and it is as much a plate of this deck as the rest.
+  //
   // Kept out, and by shape rather than by name so nothing has to be maintained:
-  // the moving plate at the Rhine-Main stop is a <video>, and footage has no
-  // frame in a deck of stills that anyone chose; the map's sculpture PNG is an
-  // <img> but hangs off an aside, not a figure, and it is a reveal rather than
-  // a picture of the journey. Neither matches any of the three.
-  const SELECTOR = '[style*="background-image"], figure > img, img.sg-tile';
+  // the map's sculpture PNG is an <img> but hangs off an aside, not a figure,
+  // and it is the closing reveal rather than a picture of the journey.
+  const SELECTOR = '[style*="background-image"], figure > img, img.sg-tile, '
+                 + '.map-stop-photo > img, .map-stop-photo > video';
 
   // Every visual image in the journey section, in document order
   function collect() {
@@ -3127,7 +3302,26 @@ function stFade(scrollTop) {
 
   function show() {
     if (!images.length) return;
-    lbImg.src = images[current].url;
+    const it = images[current];
+    // One plate is on screen at a time and the other is emptied, not merely
+    // hidden: a <video> left with its source keeps decoding behind a display:
+    // none, and paging past the passage would leave it running for the rest of
+    // the deck.
+    if (it.el.tagName === 'VIDEO') {
+      lbImg.style.display = 'none';
+      lbImg.removeAttribute('src');
+      lbVideo.style.display = '';
+      if (lbVideo.getAttribute('src') !== it.url) lbVideo.src = it.url;
+      const p = lbVideo.play();
+      if (p && p.catch) p.catch(() => {});
+    } else {
+      lbVideo.style.display = 'none';
+      lbVideo.pause();
+      lbVideo.removeAttribute('src');
+      lbVideo.load();
+      lbImg.style.display = '';
+      lbImg.src = it.url;
+    }
     lbCounter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(images.length).padStart(2, '0')}`;
   }
   function open(idx) {
@@ -3140,6 +3334,10 @@ function stFade(scrollTop) {
   function close() {
     lb.classList.remove('is-open');
     document.body.style.overflow = '';
+    // Same reason as in show(): nothing keeps playing behind a closed deck.
+    lbVideo.pause();
+    lbVideo.removeAttribute('src');
+    lbVideo.load();
   }
   function next() { if (!images.length) return; current = (current + 1) % images.length; show(); }
   function prev() { if (!images.length) return; current = (current - 1 + images.length) % images.length; show(); }
@@ -3156,6 +3354,17 @@ function stFade(scrollTop) {
       if (idx >= 0) open(idx);
     });
   });
+
+  // The map's previews are built later, on the globe's style.load, so they are
+  // not there to be wired when this runs. They do not need to be: the deck
+  // collects and indexes itself at open time, so all they need is a way in.
+  window.journeyDeck = {
+    openFor(el) {
+      const all = collect();
+      const idx = all.findIndex(it => it.el === el);
+      if (idx >= 0) open(idx);
+    },
+  };
 
   lbClose.addEventListener('click', close);
   lbPrev.addEventListener('click', prev);

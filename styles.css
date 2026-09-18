@@ -2563,6 +2563,95 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 @media (prefers-reduced-motion: reduce) {
   .journey-map .map-stop-label { transition: none; }
 }
+
+/* Stop previews — the photographs, standing on the coordinates they were taken
+   at. They used to cross the bottom of the screen on their own hem while the
+   marks stayed abstract white dots; putting them on the marks makes the picture
+   and the place one thing instead of two the reader has to pair up by timing.
+   Above the names, which are theirs to stand beside. */
+.journey-map .map-stop-photos {
+  position: absolute;
+  inset: 0;
+  /* Not hidden: a tile straddling the edge should be cut by it, not dropped,
+     and the layer's own update takes them off-screen well before that matters. */
+  overflow: hidden;
+  /* The layer is scenery; only the tiles themselves are pressable. */
+  pointer-events: none;
+  z-index: 3;
+}
+.journey-map .map-stop-photo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* The one size the whole set is cut to. Height is whatever each picture's own
+     proportions make of it, so a panorama stays a panorama and nothing is
+     cropped to a common box. */
+  width: var(--preview-w, 70px);
+  height: auto;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  display: block;
+  /* The hand, as over the transport and the rail; the page's own cursor steps
+     aside. */
+  cursor: pointer;
+  opacity: 0;
+  /* Opacity only, for the same reason the names carry none on the transform:
+     it is rewritten every frame as the camera moves, and a transition there
+     would drag the tile behind its own coordinate. */
+  transition: opacity .35s ease;
+  will-change: transform, opacity;
+  -webkit-tap-highlight-color: transparent;
+}
+/* The picture and nothing round it. A white edge was the first thing tried —
+   it carried over the flat white the dots were drawn in — but at 70px a 2px
+   rule is a twenty-eighth of the tile, and it framed each photograph like a
+   print in a mount rather than letting it sit on the map as the mark itself.
+   The shadow does the whole job on its own: it lifts the tile off the satellite
+   imagery, which is all the separation a picture needs, and leaves the edge to
+   the picture. */
+.journey-map .map-stop-photo > img,
+.journey-map .map-stop-photo > video {
+  display: block;
+  width: 100%;
+  height: auto;
+  background-color: #0a1426;
+  box-shadow: 0 2px 12px rgba(0,0,0,.6);
+  transition: transform .25s ease;
+}
+/* Frankfurt's is the closing reveal at rest — the same picture the reveal grows
+   from, standing on the same mark — and it carries no styling of its own. It
+   was cut to the reveal's pill at first, on the reasoning that the handover
+   should be seamless; but a rounded plate among five square ones reads as a
+   different kind of thing, an emblem rather than a photograph, which is exactly
+   what the last mark on the route should not be. So it is a photograph like its
+   four neighbours, and the pill is left to the reveal, where a shape that size
+   can carry it. The picture is natively 16:9, so it needs no crop to sit at the
+   same proportion as the passage's footage. */
+/* Says it is pressable, in the one move that does not disturb its coordinate:
+   the tile grows about its own centre, which is the mark. */
+.journey-map .map-stop-photo:hover > img,
+.journey-map .map-stop-photo:hover > video,
+.journey-map .map-stop-photo:focus-visible > img,
+.journey-map .map-stop-photo:focus-visible > video {
+  transform: scale(1.14);
+}
+.journey-map .map-stop-photo:focus-visible {
+  outline: none;
+}
+.journey-map .map-stop-photo:focus-visible > img,
+.journey-map .map-stop-photo:focus-visible > video {
+  outline: 2px solid var(--accent, #fff);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .journey-map .map-stop-photo { transition: none; }
+  .journey-map .map-stop-photo > img,
+  .journey-map .map-stop-photo > video { transition: none; }
+  .journey-map .map-stop-photo:hover > img,
+  .journey-map .map-stop-photo:hover > video { transform: none; }
+}
 .g-stop { transition: r .35s ease, fill .35s ease; }
 .g-stop.is-glowing {
   filter: drop-shadow(0 0 6px rgba(255,213,0,0.95)) drop-shadow(0 0 12px rgba(255,213,0,0.5));
@@ -3585,6 +3674,12 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 
 /* Sculpture Trip · full-bleed sticky map with photos overlaid on an 8-col grid */
+/* The one size every preview on this map is cut to — the four photographs
+   standing on the stops, and the Walk-around scene that opens on Frankfurt and
+   grows out of it to close the section. Held as a token so the closing reveal
+   starts at exactly the size its neighbours sit at, rather than at a number
+   that merely looks similar. */
+#sculpture-trip { --preview-w: 70px; }
 #sculpture-trip .journey-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -3628,11 +3723,15 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 #sculpture-trip .journey-map { opacity: var(--map-fade, 1); }
 
 /* Closing reveal — the Walk-around scene, pinned to the map's centre point,
-   which is the sculpture's real coordinate. It opens as a 10px speck (the
-   object at map scale) and grows while the satellite view dissolves beneath
-   it. This is the only way to actually show the thing: Esri has no imagery
-   over Taunusanlage past z19, where 4.5 m of granite is a few pixels in the
-   towers' shadow.
+   which is the sculpture's real coordinate, and which is where the camera has
+   come to rest by the time this plays. It is Frankfurt's preview: the last
+   mark on the route, opening at --preview-w like the four photographs standing
+   on the stops behind it, then growing to fill the screen while the satellite
+   view dissolves beneath it. Growing the preview rather than cutting to
+   something else is the point — the section ends on the mark it has been
+   travelling toward. It is also the only way to actually show the thing: Esri
+   has no imagery over Taunusanlage past z19, where 4.5 m of granite is a few
+   pixels in the towers' shadow.
    It carries the walk stage's own shape — 16:9, cover, fully rounded — so the
    card reads as that chapter arriving, and so the turn sweeps as a blob rather
    than throwing rectangular corners around.
@@ -3643,7 +3742,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   position: absolute;
   left: 50%;
   top: 50%;
-  width: var(--reveal-w, 10px);
+  width: var(--reveal-w, var(--preview-w, 70px));
   height: auto;
   aspect-ratio: 16 / 9;
   object-fit: cover;
@@ -3653,8 +3752,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   opacity: var(--reveal-on, 0);
   /* Same shadow the hero gives it, expressed against its own width so it stays
      in proportion all the way down to the speck. */
-  filter: drop-shadow(0 calc(var(--reveal-w, 10px) * .06)
-                        calc(var(--reveal-w, 10px) * .12) rgba(0,0,0,.45));
+  filter: drop-shadow(0 calc(var(--reveal-w, 70px) * .06)
+                        calc(var(--reveal-w, 70px) * .12) rgba(0,0,0,.45));
   z-index: 2;
   pointer-events: none;
 }
@@ -3724,24 +3823,35 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   align-self: start;
   pointer-events: auto;
 }
-/* Columns and sizes are exactly as they were. What has changed is that these
-   boxes no longer carry the photographs on screen — they are the sequence's
-   clock. Each one's place in the column decides when its photograph fades up,
-   how long it holds and when it goes; the photograph itself is held still in
-   the viewport by a translate on the figure inside (see the Sculpture Trip
-   fade block in the script). The margins are therefore pacing, not layout. */
-#sculpture-trip .stop[data-stop="1"] { grid-column: 1 / span 5; grid-row: 1; margin-top: 0; }
+/* Columns, spans and margins are exactly as they were, and these boxes are
+   empty. They carry no photographs — the photographs stand on the map's own
+   marks now — and they are not laid out for anyone to look at. They are the
+   sequence's clock: the camera up in the journey globes script takes these very
+   boxes as its keyframes and reaches each state as the box passes the middle of
+   the screen, and the four accounts are spaced against those same moves. So the
+   margins here are pacing, not layout, and an empty box is still doing its job.
+
+   What each box has lost with its picture is the height the picture gave it.
+   Each is handed that height back as an aspect ratio against its own span — the
+   proportion the photograph had at that width, so every box is as tall as it
+   ever was, the section keeps its length, and every beat lands where it did.
+   Ratios rather than pixels because the spans are fluid: this holds at any
+   viewport, where a measured height would only be true at one. */
+#sculpture-trip .stop[data-stop="1"] { grid-column: 1 / span 5; grid-row: 1; margin-top: 0; aspect-ratio: 4 / 3; }
 /* Wider than the rest of the run, and deliberately. The globe takes its two
    biggest moves at the top of this section — the dive from the whole earth down
-   onto Carrara, then the pull back out to the Atlantic — and the first two
-   photographs are held back until each of those has landed (the cue offsets in
-   stFadeInit). The extra margin here is the room that wait needs. */
-#sculpture-trip .stop[data-stop="2"] { grid-column: 1 / span 3; grid-row: 3; margin-top: 75vh; }
-#sculpture-trip .stop-lead[data-lead-for="3"] { grid-column: 1 / span 4; grid-row: 5; margin: 125vh 0 0; pointer-events: auto; }
-#sculpture-trip .stop-lead img { display: block; width: 100%; height: auto; }
-#sculpture-trip .stop[data-stop="3"] { grid-column: 2 / span 3; grid-row: 7; margin-top: 25vh; }
-#sculpture-trip .stop-lead[data-lead-for="4"] { grid-column: 2 / span 6; grid-row: 8; margin: calc(50vh - 180px) 0 0; pointer-events: auto; }
-#sculpture-trip .stop[data-stop="4"] { grid-column: 1 / span 3; grid-row: 10; margin-top: 25vh; }
+   onto Carrara, then the pull back out to the Atlantic — and this margin is the
+   room those moves need to land in before the next stop is called. */
+#sculpture-trip .stop[data-stop="2"] { grid-column: 1 / span 3; grid-row: 3; margin-top: 75vh; aspect-ratio: 16 / 9; }
+#sculpture-trip .stop-lead[data-lead-for="3"] { grid-column: 1 / span 4; grid-row: 5; margin: 125vh 0 0; aspect-ratio: 4 / 3; }
+#sculpture-trip .stop[data-stop="3"] { grid-column: 2 / span 3; grid-row: 7; margin-top: 25vh; aspect-ratio: 4 / 3; }
+#sculpture-trip .stop-lead[data-lead-for="4"] { grid-column: 2 / span 6; grid-row: 8; margin: calc(50vh - 180px) 0 0; aspect-ratio: 4 / 3; }
+#sculpture-trip .stop[data-stop="4"] { grid-column: 1 / span 3; grid-row: 10; margin-top: 25vh; aspect-ratio: 49 / 50; }
+/* Empty boxes are not click targets, and they cover most of the column: left
+   pressable they would quietly swallow every click meant for the map under
+   them — which is now the one thing in this sub-chapter you can press. */
+#sculpture-trip .stop,
+#sculpture-trip .stop-lead { pointer-events: none; }
 
 /* The four accounts as one passage, in the right half, and early: row 2 puts
    them directly after the first photograph, the loading in Carrara, with the
@@ -3771,33 +3881,12 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   gap: 1.2em;
 }
 
-/* The photographs are carried across the bottom of the screen by the script,
-   which holds them with position: fixed and writes nothing but a translate as
-   you scroll. Everything here is the resting state it starts from — in the flow,
-   untransformed — so the section reads exactly as it did before if the script
-   never runs. */
-#sculpture-trip .stop figure,
-#sculpture-trip .stop-lead img {
-  will-change: transform;
-}
-@media (prefers-reduced-motion: reduce) {
-  /* Nothing is pinned and nothing fades: the photographs simply scroll. The
-     script checks the same query and stands down before it touches anything. */
-  #sculpture-trip .stop figure,
-  #sculpture-trip .stop-lead img {
-    position: static !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    width: auto !important;
-    transform: none !important;
-    will-change: auto;
-  }
-  #sculpture-trip .stop,
-  #sculpture-trip .stop-lead { height: auto !important; }
-}
-#sculpture-trip .stop figure {
-  background: rgba(0,0,0,.35);
-}
+/* The rules that pinned these photographs to the bottom of the screen and slid
+   them across it stood here, along with the reduced-motion set that put them
+   back in the flow. Both are gone with the traverse: the photographs are on the
+   map, where they neither move with the scroll nor need to be talked out of it,
+   and the boxes hold their own height from the ratios above whether any script
+   runs or not. */
 #sculpture-trip .stop-cap {
   pointer-events: auto;
   margin: 0;
@@ -4262,7 +4351,12 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
 }
-.lb-stage img {
+/* The stage holds a still or the one piece of footage, never both — show() in
+   the lightbox script hides whichever is not being looked at. They are sized
+   identically so paging between them does not change the frame the deck is
+   read in. */
+.lb-stage img,
+.lb-stage video {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
