@@ -529,6 +529,10 @@ body.light .crail-fill { background: #000; }
    that tracks the light/dark theme, off the section under the viewport's
    midpoint. */
 body.at-ends .crail { opacity: 0; pointer-events: none; }
+/* And over the works graph, which sets its own six labels flush on the first
+   column with the rail's strokes standing in the margin right beside them.
+   body.at-graph is set by the same pass in onScroll() that sets at-ends. */
+body.at-graph .crail { opacity: 0; pointer-events: none; }
 
 /* A thin wash over the blur. Without it the muted titles have to hold their
    own against whatever photograph happens to be underneath. */
@@ -4017,7 +4021,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bg-threads { fill: none; stroke-width: 0.7; stroke-opacity: 0.11; transition: stroke-opacity 0.4s ease; }
 .bg-dots { transition: opacity 0.4s ease; }
 .bg-node circle { transition: r 0.3s ease; }
-.bg-node-label { font-family: var(--mono); font-size: 12px; fill: #fff; fill-opacity: 0.55; }
+/* Label and count share one style: the node is a two-line mark, not a caption
+   with a figure under it. Both sit flush on the plot's x=0, which is the
+   container's left edge -- the page's first column, the line the head above
+   the figure starts on. */
+.bg-node-label,
 .bg-node-count {
   font-family: var(--sans);
   font-weight: 700;

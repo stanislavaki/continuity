@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=89" />
+<link rel="stylesheet" href="styles.css?v=90" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -860,6 +860,10 @@ function onScroll() {
     // this pass has already found rather than measured again.
     document.body.classList.toggle('at-ends',
       classes.includes('hero') || classes.includes('site-footer'));
+    // The graph sets its own labels flush on the first column, and the rail's
+    // strokes stand in the margin immediately to their left -- two stacks of
+    // marks arguing over the same edge. The rail steps out for the section.
+    document.body.classList.toggle('at-graph', cur.id === 'billReveal');
   }
 
   // Active timeline
@@ -4281,12 +4285,17 @@ if (document.readyState === 'loading') {
   // unit is one pixel and the type inside the SVG matches the type outside it.
   const W = 1340, H = 566;
   const BORN = 1908;           // Max Bill, 1908-1994
-  const NODE_X = 196;          // where the six nodes stand
+  // The six nodes: label and count are set flush on the page's first column,
+  // at x=0, which is the container's own left edge -- the same line the head
+  // above the figure starts on. The dot stands clear of the longest label
+  // (drawings & objects, 223 units at this size) so that every thread leaves
+  // from the same x and the fan opens from one place.
+  const NODE_X = 248;
   const X0 = 330, X1 = W;      // the field, left and right
   const BASE = 486;            // the columns' foot
   const PITCH = 4.4;           // one dot to the next, up a column
   const R = 1.7;
-  const NODE_Y0 = 80, NODE_DY = 72;
+  const NODE_Y0 = 72, NODE_DY = 76;
 
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
                             .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -4355,15 +4364,17 @@ if (document.readyState === 'loading') {
     });
     field += '<circle class="bg-hit" id="bgHit" r="5"/></g>';
 
-    // The six nodes: the label in the small mono the page uses for keys, the
-    // count in the big figure it uses for values -- .rail-key over .rail-val.
+    // The six nodes. Label and count are set in the one voice -- the same face,
+    // weight and size -- so a node reads as a single two-line mark rather than
+    // as a caption with a figure under it. The transparent rect is what the
+    // pointer actually finds: the two lines alone leave gaps between them.
     let nodes = '';
     domains.forEach((d, i) => {
       const y = nodeY(i);
       nodes += '<g class="bg-node" data-dom="' + i + '">' +
-        '<rect x="0" y="' + (y - 26) + '" width="' + (NODE_X + 10) + '" height="52" fill="transparent"/>' +
-        '<text class="bg-node-label" x="' + (NODE_X - 18) + '" y="' + (y - 10) + '" text-anchor="end">' + esc(d.label) + '</text>' +
-        '<text class="bg-node-count" x="' + (NODE_X - 18) + '" y="' + (y + 14) + '" text-anchor="end">' + d.n + '</text>' +
+        '<rect x="0" y="' + (y - 34) + '" width="' + (NODE_X + 12) + '" height="68" fill="transparent"/>' +
+        '<text class="bg-node-label" x="0" y="' + (y - 8) + '">' + esc(d.label) + '</text>' +
+        '<text class="bg-node-count" x="0" y="' + (y + 22) + '">' + d.n + '</text>' +
         '<circle cx="' + NODE_X + '" cy="' + y + '" r="4" fill="' + d.color + '"/></g>';
     });
 
@@ -4393,11 +4404,8 @@ if (document.readyState === 'loading') {
       });
     }
 
-    // At rest the readout carries the one thing the plot cannot say for itself:
-    // how tall a column is. Naming the tallest gives the vertical its scale.
-    const tallest = [...cols.values()].reduce((a, c) => c.length > a.length ? c : a);
-    const REST = '<i>one dot, one work \u2014 the tallest column is ' +
-                 tallest[0][0] + ', with ' + tallest.length + ' pieces</i>';
+    // At rest the readout states the encoding and nothing else.
+    const REST = '<i>one dot = one work</i>';
     read.innerHTML = REST;
 
     function say(work) {
