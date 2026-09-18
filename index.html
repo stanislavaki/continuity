@@ -4406,15 +4406,19 @@ if (document.readyState === 'loading') {
 
     // The six labels, flush on the first column and set in the domain's own
     // colour -- the colour key is the label rather than a swatch beside it.
+    // Name and count run on one line, three spaces apart, which is why the text
+    // preserves its whitespace: the gap is set in the string rather than
+    // measured out, so it stays three spaces of whatever the line is set in.
     // The transparent rect is what the pointer actually finds, and it takes the
-    // labels' whole block: the two lines alone leave gaps between them.
+    // labels' whole block rather than the line alone.
     let nodes = '';
     domains.forEach((d, i) => {
       const y = nodeY(i);
       nodes += '<g class="bg-node" data-dom="' + i + '" fill="' + d.color + '">' +
         '<rect x="0" y="' + (y - 34) + '" width="' + KEY_W.toFixed(1) + '" height="68" fill="transparent"/>' +
-        '<text class="bg-node-label" x="0" y="' + (y - 8) + '">' + esc(d.label) + '</text>' +
-        '<text class="bg-node-count" x="0" y="' + (y + 22) + '">' + d.n + '</text></g>';
+        '<text x="0" y="' + (y + 8) + '" xml:space="preserve">' +
+        '<tspan class="bg-node-label">' + esc(d.label) + '</tspan>' +
+        '<tspan class="bg-node-count">   ' + d.n + '</tspan></text></g>';
     });
 
     plot.innerHTML =
