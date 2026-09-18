@@ -53,7 +53,7 @@ DOMAINS = [
     ('sculpture',  'sculpture',          '#FFFFFF'),
     ('books',      'books & prints',     '#FE8C01'),
     ('product',    'product design',     '#FFD500'),
-    ('drawing',    'drawings & objects', '#F922CA'),
+    ('drawing',    'drawings & objects', '#25DDDB'),
 ]
 IDX = {k: i for i, (k, _, _) in enumerate(DOMAINS)}
 
