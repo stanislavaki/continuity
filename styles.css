@@ -79,6 +79,10 @@
      one path is defined once; it is used as a mask, so the fill in the file is
      irrelevant and the colour comes from whatever currentColor is where it is
      drawn. */
+  /* The place mark, drawn: a pin with its centre cut out, 70.75 wide by 90
+     tall in its own units. Carried the way --arrow-down is, as a black fill
+     to be masked, so it takes the section's ink rather than its own. */
+  --pin: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='71' height='90' viewBox='9.625 0 70.75 90'%3E%3Cpath d='M 45 0 C 25.463 0 9.625 15.838 9.625 35.375 c 0 8.722 3.171 16.693 8.404 22.861 L 45 90 l 26.97 -31.765 c 5.233 -6.167 8.404 -14.139 8.404 -22.861 C 80.375 15.838 64.537 0 45 0 z M 45 48.705 c -8.035 0 -14.548 -6.513 -14.548 -14.548 c 0 -8.035 6.513 -14.548 14.548 -14.548 s 14.548 6.513 14.548 14.548 C 59.548 42.192 53.035 48.705 45 48.705 z' fill='%23000'/%3E%3C/svg%3E");
   --arrow-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='56' viewBox='0 0 44 56'%3E%3Cpath d='M24.0001 47.3071L40.3851 30.9221L43.2135 33.7505L22.0003 54.9637L0.787109 33.7505L3.61554 30.9221L20.0005 47.3071V-0.25H24.0001V47.3071Z' fill='%23000'/%3E%3C/svg%3E");
   /* The bar the pause, the cross and the lightbox's own cross are all struck
      with. A 45-degree arm of this height is this thick measured across itself,
@@ -2648,10 +2652,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    here, since these sit in the page flow and those are placed absolutely. */
 .journey-cap { margin: 12px 0 0; }
 .journey-cap h5:last-child { margin-bottom: 0; }
-/* The closing figure's line sits inside the picture, in the sky above the tow
-   — clear of the barge and the tug, and clear of the play control that sits
-   fixed in the bottom-left corner. Anchored as a share of the figure's height
-   rather than in pixels, so it keeps that level as the picture scales.
+/* The closing figure's line sits inside the picture, in the sky, just under
+   its top edge — where a running head would sit if this page had one, and as
+   far from the tow as the frame allows. Anchored as a share of the figure's
+   height rather than in pixels, so it keeps that level as the picture scales.
    That figure has escaped the container to run edge to edge, so the line has
    to be brought back onto the measure the other captions sit on — .container's
    own recipe, applied inside the box that stepped out of it. It starts at
@@ -2665,7 +2669,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   position: absolute;
   left: 0;
   right: 0;
-  top: 25%;
+  top: 5%;
   max-width: var(--maxw);
   margin: 0 auto;
   padding: 0 var(--gutter);
@@ -2710,6 +2714,13 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   grid-column: 4;
   justify-self: end;
   margin: 0;
+  /* This is the one caption whose mark stands beside the name rather than over
+     it, so the pin is turned a quarter to point across the gap at the name it
+     marks instead of down at the column rule. Negative, the way .lb-next turns
+     its arrow: the point hangs down, so a positive quarter swings it away from
+     the name rather than towards it. The turn is visual only — the box stays
+     24 wide, so the name's column edge does not move. */
+  transform: rotate(-90deg);
 }
 .journey-photo-measure .journey-cap h5 { grid-column: 5 / -1; }
 /* Two photographs side by side across the full measure, four page columns
@@ -3062,19 +3073,75 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    The captions in 5.1 name places the stone only passed through, so theirs
    stand still, at the size this one opens on. */
 .sub-route::before {
-  /* The pin stop below opens a hole in the mark by trading background for
-     border. Both are declared here at their solid-shape value so the keyframes
-     have something to interpolate from, and border-box keeps the mark 30px
-     across whatever the border does — a border that grew the box would push
-     the name under it down. */
-  box-sizing: border-box;
-  border: 0 solid currentColor;
-  background-color: currentColor;
-  animation: route-hew 7s ease-in-out infinite;
+  /* The channel the pin stop cuts through the mark. It is a mask rather than a
+     second element or a border: a mask is applied in the mark's own coordinate
+     space, before the transform, so the hole turns with the shape instead of
+     having to be animated to chase it, and what shows through is the ground
+     itself rather than a disc painted to match it.
+     The void is not a circle. A circle read as drilled — a regular thing
+     entering an irregular one — so it is three overlapping ellipses instead,
+     unioned: a body and two lobes that each carry their own size and offset.
+     What comes out is lumpy and off-balance at every moment, and its edge is
+     soft the whole way round, which is what the outside of the mark is doing
+     too. Every lobe's size and offset is a multiple of the void's own radius,
+     so when that radius is nothing the whole void is nothing, and the stops
+     either side of the pin need say nothing about the lobes at all.
+     What the keyframes animate is the lengths and numbers below, not the
+     gradients: mask-image is a discrete property, so keyframes written against
+     it snap from one stop to the next and the void arrives fully formed rather
+     than being cut. Registered through @property, these interpolate, and the
+     gradients are rebuilt from them each frame. Lengths are px rather than
+     percentages, because a percentage radius is measured against the distance
+     to the farthest corner and would swell as the void travels off the edge —
+     the opposite of what a cut does.
+     At rest: radius nothing, parked 8px clear of the right-hand edge. */
+  --hx: 38px;
+  --hy: 14px;
+  --hr: 0px;
+  --ha: 1.16;
+  --l1x: .48;  --l1y: -.46; --l1f: .74;
+  --l2x: -.42; --l2y: .48;  --l2f: .62;
+  mask-image:
+    radial-gradient(ellipse calc(var(--hr) * var(--ha)) calc(var(--hr) / var(--ha))
+                    at var(--hx) var(--hy),
+                    transparent 0 94%, #000 100%),
+    radial-gradient(ellipse calc(var(--hr) * var(--l1f) * 1.15) calc(var(--hr) * var(--l1f) * .85)
+                    at calc(var(--hx) + var(--hr) * var(--l1x))
+                       calc(var(--hy) + var(--hr) * var(--l1y)),
+                    transparent 0 94%, #000 100%),
+    radial-gradient(ellipse calc(var(--hr) * var(--l2f) * 1.15) calc(var(--hr) * var(--l2f) * .85)
+                    at calc(var(--hx) + var(--hr) * var(--l2x))
+                       calc(var(--hy) + var(--hr) * var(--l2y)),
+                    transparent 0 94%, #000 100%);
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  /* Each layer is ink with one void in it; intersect multiplies the alphas, so
+     the mark is cut wherever ANY of the three is empty — the union of the
+     three, which is the lumpy shape, not their overlap. */
+  mask-composite: intersect;
+  /* Two clocks. The shape and the cut keep the eleven-second cycle; the lobes
+     wander on four point three, which is not a divisor of it, so the void
+     never comes back to the same outline at the same point in the cut. */
+  animation: route-hew 11s ease-in-out infinite,
+             route-swell 4.3s ease-in-out infinite;
 }
 /* The route is centred and its mark centres with it; the captions are ranged
-   left, so theirs sits on the same edge the name starts from. */
-.journey-cap::before { margin: 0 0 14px; }
+   left, so theirs sits on the same edge the name starts from.
+   And in 5.1 the mark is the drawn pin rather than a dot. 5.2's mark keeps the
+   dot, because it is the one that gets worked — it becomes the pin in the
+   middle of its cycle and has to start from something that is not one. Here
+   the place is simply named, so the sign is simply given.
+   The box is 24x30, the drawing's own proportion at the dot's height. The
+   shared rule's 50% radius has to go: border-radius clips what a mask lets
+   through, and at 50% it would take the point off. */
+.journey-cap::before {
+  margin: 0 0 14px;
+  width: 24px;
+  height: 30px;
+  border-radius: 0;
+  -webkit-mask: var(--pin) no-repeat center / contain;
+  mask: var(--pin) no-repeat center / contain;
+}
 /* Except the closing one, which names the crossing between two places rather
    than a place the stone stopped at, and so has no position to hold. Set here,
    after the mark itself, because the two selectors weigh the same and the last
@@ -3086,14 +3153,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    there is no step in the cycle where a hard corner appears.
    The stops, in order: circle, a block squared off on all four sides, a form
    drawn down to three soft corners, the map pin, a lopsided mass, a block
-   again. The pin is the one stop that is a sign rather than a shape — the mark
-   for a place, which is what this dot has stood for all along — so it is held
-   for a beat at the middle of the cycle while the others pass through, and it
-   is the one corner allowed to come near a point. Its hole is cut by trading
-   the fill for a border of the same ink; on the way in and out of it the fill
-   shrinks to a core and opens, which is how the sculpture was made — most of
-   the work happened inside the block. Each is
-   taken as far from its neighbours as the shape allows — the block's radii
+   again. Each is taken as far from its neighbours as the shape allows — the block's radii
    down near a tenth, the round corners up near three-quarters — so the cut
    reads at 30px rather than dissolving into a general wobble. Scale and
    rotation carry the rest: the mass is visibly wider than tall at one stop and
@@ -3101,33 +3161,111 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    Transform rather than width, so nothing the shape does moves the name below
    it. The one rule the corners keep: adjacent radii are held under 100% of
    the edge they share, since past that the browser scales every radius down
-   to fit and hands back a tamer outline than the one written here. */
+   to fit and hands back a tamer outline than the one written here.
+
+   The pin is the one stop that is a sign rather than a shape — the mark for a
+   place, which is what this dot has stood for all along — so it is the one
+   corner allowed to come near a point, and it is held for the whole middle of
+   the cycle, 32% to 76%, while its hole is cut. That is nearly five seconds of
+   the eleven, which is why the cycle is eleven and not seven: the cutting is
+   the part worth watching, and it cannot be read at speed.
+   The hole is cut the way the sculpture was. It does not fade in at the
+   centre; it starts as a notch bitten into the edge, is driven inward, opens
+   out to full size in the head of the pin, is held there, and fills back in.
+   Then the same again reversed — it opens from inside at full size, with no
+   channel cut to reach it, and travels out through the other side. Most of the
+   work on the granite happened inside the block, reached by long channels
+   opened from the outside; the mark is made and unmade the same way. */
+/* Unregistered custom properties are strings as far as animation is concerned
+   and would step between keyframes. Declared with a type, they interpolate.
+   Where the void is, and how big: */
+@property --hx  { syntax: '<length>'; inherits: false; initial-value: 38px; }
+@property --hy  { syntax: '<length>'; inherits: false; initial-value: 14px; }
+@property --hr  { syntax: '<length>'; inherits: false; initial-value: 0px; }
+/* And what shape it is: the body's aspect, then each lobe's offset from the
+   body and its size, all as multiples of --hr. */
+@property --ha  { syntax: '<number>'; inherits: false; initial-value: 1.16; }
+@property --l1x { syntax: '<number>'; inherits: false; initial-value: .48; }
+@property --l1y { syntax: '<number>'; inherits: false; initial-value: -.46; }
+@property --l1f { syntax: '<number>'; inherits: false; initial-value: .74; }
+@property --l2x { syntax: '<number>'; inherits: false; initial-value: -.42; }
+@property --l2y { syntax: '<number>'; inherits: false; initial-value: .48; }
+@property --l2f { syntax: '<number>'; inherits: false; initial-value: .62; }
 @keyframes route-hew {
+  /* --- the shape, worked. No void here, so the lobes are left unsaid. --- */
   0%, 100% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
              transform: rotate(0deg) scale(1, 1);
-             border-width: 0; background-color: currentColor; }
+             --hx: 38px; --hy: 14px; --hr: 0px; }
   /* Squared off: radii down near a tenth, corners still turned. */
-  14%      { border-radius: 14% 12% 15% 13% / 13% 15% 12% 14%;
-             transform: rotate(-11deg) scale(1.09, .91);
-             border-width: 0; background-color: currentColor; }
+  10%      { border-radius: 14% 12% 15% 13% / 13% 15% 12% 14%;
+             transform: rotate(-11deg) scale(1.09, .91); }
   /* Three corners: bottom right drawn in tight, the others left full. */
-  30%      { border-radius: 54% 44% 10% 44% / 52% 48% 10% 46%;
-             transform: rotate(13deg) scale(.91, 1.10);
-             border-width: 0; background-color: currentColor; }
-  /* The pin. Three corners round and the fourth run out to a point, turned
-     45 degrees so that point hangs straight down; 6% rather than 0 keeps the
-     tip from going razor-sharp. Held from here to 58%. */
-  44%, 58% { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
+  22%      { border-radius: 54% 44% 10% 44% / 52% 48% 10% 46%;
+             transform: rotate(13deg) scale(.91, 1.10); }
+
+  /* --- the pin, held while the void is cut --- */
+  /* It arrives whole. The cut is still outside the stone. */
+  32%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
              transform: rotate(-45deg) scale(1, 1);
-             border-width: 9px; background-color: transparent; }
+             --hx: 38px; --hy: 14px; --hr: 0px; }
+  /* Bitten into the edge. The void straddles the outline, so what reads is
+     not a hole but a piece taken out of the side. */
+  39%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
+             transform: rotate(-45deg) scale(1, 1);
+             --hx: 27px; --hy: 14px; --hr: 4.6px; }
+  /* Driven inward, opening as it goes. */
+  46%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
+             transform: rotate(-45deg) scale(1, 1);
+             --hx: 20px; --hy: 13.6px; --hr: 5.4px; }
+  /* Open in the head of the pin — twelve or so across on a mark of thirty,
+     the proportion the sign is drawn with, though never twice the same shape. */
+  53%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
+             transform: rotate(-45deg) scale(1, 1);
+             --hx: 16.5px; --hy: 13.5px; --hr: 6.2px; }
+  /* Held. The one stretch in the cycle when the mark is a sign, not a mass. */
+  58%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
+             transform: rotate(-45deg) scale(1, 1);
+             --hx: 16.5px; --hy: 13.5px; --hr: 6.2px; }
+  /* Filled back in where it stands, rather than retreating the way it came. */
+  63%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
+             transform: rotate(-45deg) scale(1, 1);
+             --hx: 16.5px; --hy: 13.5px; --hr: 0px; }
+  /* And again, reversed: it opens from inside at full size, with no channel
+     cut to reach it. */
+  68%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
+             transform: rotate(-45deg) scale(1, 1);
+             --hx: 16.5px; --hy: 13.5px; --hr: 6.2px; }
+  /* Then works its way out through the other side, a bite in that edge on
+     the way. */
+  73%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
+             transform: rotate(-45deg) scale(1, 1);
+             --hx: 2px; --hy: 17px; --hr: 4.6px; }
+  /* Clear of the stone, which is whole again. */
+  78%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
+             transform: rotate(-45deg) scale(1, 1);
+             --hx: -8px; --hy: 17px; --hr: 0px; }
+
+  /* --- the shape again --- */
   /* Irregular — the mass mid-cut, no two corners alike. */
-  72%      { border-radius: 72% 26% 24% 74% / 36% 72% 26% 62%;
-             transform: rotate(-9deg) scale(1.10, .90);
-             border-width: 0; background-color: currentColor; }
+  85%      { border-radius: 72% 26% 24% 74% / 36% 72% 26% 62%;
+             transform: rotate(-9deg) scale(1.10, .90); }
   /* Coming back towards the block, and squarer on the other diagonal. */
-  86%      { border-radius: 22% 18% 62% 34% / 32% 58% 22% 42%;
-             transform: rotate(7deg) scale(.92, 1.06);
-             border-width: 0; background-color: currentColor; }
+  93%      { border-radius: 22% 18% 62% 34% / 32% 58% 22% 42%;
+             transform: rotate(7deg) scale(.92, 1.06); }
+}
+
+/* The lobes wandering, on their own short clock. Nothing here knows where in
+   the cut it is — it only keeps the void off-balance, and because 4.3 does not
+   divide 11 it is never off-balance the same way twice running. */
+@keyframes route-swell {
+  0%, 100% { --ha: 1.16; --l1x: .48;  --l1y: -.46; --l1f: .74;
+                         --l2x: -.42; --l2y: .48;  --l2f: .62; }
+  25%      { --ha: .88;  --l1x: -.50; --l1y: -.38; --l1f: .80;
+                         --l2x: .52;  --l2y: .42;  --l2f: .68; }
+  50%      { --ha: 1.22; --l1x: .44;  --l1y: .52;  --l1f: .66;
+                         --l2x: -.48; --l2y: -.44; --l2f: .76; }
+  75%      { --ha: .92;  --l1x: -.46; --l1y: .40;  --l1f: .78;
+                         --l2x: .40;  --l2y: -.52; --l2f: .64; }
 }
 @media (prefers-reduced-motion: reduce) {
   .sub-route::before { animation: none; }
