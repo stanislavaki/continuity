@@ -4432,9 +4432,11 @@ if (document.readyState === 'loading') {
     read.innerHTML = REST;
 
     // The year and the piece, and nothing else: the domain is already named down
-    // the left, in its own colour, and lit while the dot is under the pointer.
+    // the left, so the line says which one it belongs to by taking its colour
+    // rather than by repeating its name.
     function say(work) {
-      if (!work) { read.innerHTML = REST; return; }
+      if (!work) { read.innerHTML = REST; read.style.color = ''; return; }
+      read.style.color = domains[work[1]].color;
       read.innerHTML = '<b>' + work[0] + '</b><span>' + esc(work[2]) + '</span>';
     }
 
@@ -4479,6 +4481,7 @@ if (document.readyState === 'loading') {
         // drawn for a label under the pointer and not for a dot out in the field.
         held = d; fig.dataset.node = d;
         hit.classList.remove('on'); focus(d);
+        read.style.color = domains[d].color;
         read.innerHTML = '<b>' + domains[d].n + '</b><span>' + esc(domains[d].label) +
           '</span><i>' + esc(yearsOf(d)) + '</i>';
       });
