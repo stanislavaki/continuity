@@ -4026,19 +4026,18 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* ---- the plot's own parts, all inside the one SVG ---- */
 .bg-guide { stroke: #fff; stroke-opacity: 0.14; stroke-width: 1; }
 .bg-base  { stroke: #fff; stroke-opacity: 0.3;  stroke-width: 1; }
-.bg-axis {
-  font-family: var(--mono);
-  font-size: 12px;
-  fill: #fff;
-  fill-opacity: 0.55;
-}
-/* Bill's own age, set under the year in the same mono a step quieter, so the
-   decade reads first and the life reads second. */
+/* The two rows under the field -- the decade, and Bill's age in it -- set in
+   the figure's one voice with everything else: the same face, weight, size and
+   tracking as the readout below them and the count above the plot. The size
+   arrives as --bg-type, measured off the readout by billGraph() and converted
+   into the plot's own units, so the two stay matched as the figure scales. */
+.bg-axis,
 .bg-age {
-  font-family: var(--mono);
-  font-size: 11px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--bg-type, 24px);
+  letter-spacing: -0.005em;
   fill: #fff;
-  fill-opacity: 0.3;
 }
 /* One thread to a domain-year: the fan says, per practice, which years it was
    alive in. It is drawn only while that practice's own label is under the

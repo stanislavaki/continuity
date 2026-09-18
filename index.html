@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=94" />
+<link rel="stylesheet" href="styles.css?v=95" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -4296,7 +4296,7 @@ if (document.readyState === 'loading') {
   // Geometry, in the viewBox's own units. The plot is 1340 wide because that is
   // the container's measure at the page's 1440 maximum, so at full width one
   // unit is one pixel and the type inside the SVG matches the type outside it.
-  const W = 1340, H = 566;
+  const W = 1340, H = 580;
   const X1 = W;                // the field's right edge: the eighth column's
   const BASE = 486;            // the columns' foot
   const PITCH = 4.4;           // one dot to the next, up a column
@@ -4319,6 +4319,14 @@ if (document.readyState === 'loading') {
 
   let data = null;
   let held = null;             // a label under the pointer outranks the field
+
+  // The type inside the SVG is set in the plot's own units, which scale with
+  // the figure -- so to keep the axis at the size the readout is set at, the
+  // readout's rendered size is measured and converted, the way the columns are.
+  function typeUnits() {
+    const box = plot.getBoundingClientRect();
+    return parseFloat(getComputedStyle(read).fontSize) / box.width * W;
+  }
 
   function render() {
     const domains = data.domains;
@@ -4369,12 +4377,12 @@ if (document.readyState === 'loading') {
     // Decade guides, and under the field's foot the year they mark with Bill's
     // own age beneath it -- the second row turns the timeline into a life, so a
     // column can be read as a point in it rather than only as a date.
-    let guides = '<text class="bg-age" x="' + X0.toFixed(1) + '" y="' + (BASE + 54) + '">age</text>';
+    let guides = '<text class="bg-age" x="' + X0.toFixed(1) + '" y="' + (BASE + 80) + '">age</text>';
     for (let y = Math.ceil(y0 / 10) * 10; y <= y1; y += 10) {
       const gx = (X0 + (y - y0) * step).toFixed(1);
       guides += '<line class="bg-guide" x1="' + gx + '" y1="24" x2="' + gx + '" y2="' + (BASE + 14) + '"/>' +
-                '<text class="bg-axis" x="' + (+gx + 8) + '" y="' + (BASE + 34) + '">' + y + '</text>' +
-                '<text class="bg-age" x="' + (+gx + 8) + '" y="' + (BASE + 54) + '">' + (y - BORN) + '</text>';
+                '<text class="bg-axis" x="' + (+gx + 8) + '" y="' + (BASE + 46) + '">' + y + '</text>' +
+                '<text class="bg-age" x="' + (+gx + 8) + '" y="' + (BASE + 80) + '">' + (y - BORN) + '</text>';
     }
 
     let field = '<g mask="url(#bgWipe)">' + guides +
@@ -4412,6 +4420,8 @@ if (document.readyState === 'loading') {
       '<defs><mask id="bgWipe" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">' +
       '<rect class="bg-wipe-rect" x="0" y="0" height="' + H + '" fill="#fff"/></mask></defs>' +
       field + nodes + '</svg>';
+
+    plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
 
     const svg = plot.querySelector('svg');
     const hit = plot.querySelector('#bgHit');
