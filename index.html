@@ -4431,10 +4431,11 @@ if (document.readyState === 'loading') {
     const REST = '<i>one dot = one work</i>';
     read.innerHTML = REST;
 
+    // The year and the piece, and nothing else: the domain is already named down
+    // the left, in its own colour, and lit while the dot is under the pointer.
     function say(work) {
       if (!work) { read.innerHTML = REST; return; }
-      read.innerHTML = '<b>' + work[0] + '</b><span>' + esc(work[2]) + '</span>' +
-                       '<i>' + esc(domains[work[1]].label) + '</i>';
+      read.innerHTML = '<b>' + work[0] + '</b><span>' + esc(work[2]) + '</span>';
     }
 
     // Hit-testing is done on the column arithmetic rather than on the circles

@@ -34,15 +34,20 @@ OUT = os.path.join(HERE, 'assets', 'bill-works.json')
 TYPO_DEFAULT = os.path.expanduser('~/Downloads/works_extracted_v5 (1).xlsx')
 
 # Order matters: it is the order the dots stack in, bottom first, and the order
-# the six nodes stand in down the left of the graph. Colours are the page's own
-# signal palette -- see :root in styles.css.
+# the six labels stand in down the left of the graph.
+#
+# The colours are the page's own quote-band backgrounds -- see
+# .quote-band--white/green/red/dbblue in styles.css -- with sculpture on the
+# red. The bands run out at four, so the two smallest clusters take
+# --signal-yellow and --grey-60 from :root. The largest takes the white: it is
+# the mass that carries the field, and white is what reads on this ground.
 DOMAINS = [
-    ('typography', 'typography & print', '#F59A05'),
-    ('painting',   'painting',           '#FF0033'),
-    ('sculpture',  'sculpture',          '#7892FF'),
-    ('books',      'books & prints',     '#FFD500'),
-    ('product',    'product design',     '#00934C'),
-    ('drawing',    'drawings & objects', '#C0C0C0'),
+    ('typography', 'typography & print', '#FFFFFF'),
+    ('painting',   'painting',           '#00934C'),
+    ('sculpture',  'sculpture',          '#C90101'),
+    ('books',      'books & prints',     '#0018A8'),
+    ('product',    'product design',     '#FFD500'),
+    ('drawing',    'drawings & objects', '#999999'),
 ]
 IDX = {k: i for i, (k, _, _) in enumerate(DOMAINS)}
 
