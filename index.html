@@ -4307,7 +4307,11 @@ if (document.readyState === 'loading') {
   const PITCH = 5.8;
   const SIDE = 5;
   const BORN = 1908;           // Max Bill, 1908-1994
-  const NODE_Y0 = 72, NODE_DY = 76;
+  // The keys are set bottom-up from the field's foot rather than down from its
+  // head: the last of them sits on the line the columns stand on, so the block
+  // and the field share an edge. LIFT is the drop from a key's own line to its
+  // baseline, so the type sits on that edge rather than hanging off it.
+  const NODE_DY = 76, LIFT = 8;
 
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
                             .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -4344,7 +4348,7 @@ if (document.readyState === 'loading') {
     const span = y1 - y0 + 1;
     const step = (X1 - X0) / span;
     const colX = y => X0 + (y - y0 + 0.5) * step;
-    const nodeY = i => NODE_Y0 + i * NODE_DY;
+    const nodeY = i => BASE - LIFT - (domains.length - 1 - i) * NODE_DY;
 
     // Stack each year's works into a column. The data arrives sorted by year
     // and then by domain, so a column is already in the order it stacks in and
@@ -4420,7 +4424,7 @@ if (document.readyState === 'loading') {
       const y = nodeY(i);
       nodes += '<g class="bg-node" data-dom="' + i + '" fill="' + d.color + '">' +
         '<rect x="0" y="' + (y - 34) + '" width="' + KEY_W.toFixed(1) + '" height="68" fill="transparent"/>' +
-        '<text x="0" y="' + (y + 8) + '" xml:space="preserve">' +
+        '<text x="0" y="' + (y + LIFT) + '" xml:space="preserve">' +
         '<tspan class="bg-node-label">' + esc(d.label) + '</tspan>' +
         '<tspan class="bg-node-count">   ' + d.n + '</tspan></text></g>';
     });
