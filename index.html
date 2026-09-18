@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=91" />
+<link rel="stylesheet" href="styles.css?v=92" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -4473,11 +4473,16 @@ if (document.readyState === 'loading') {
     plot.querySelectorAll('.bg-node').forEach(node => {
       const d = +node.dataset.dom;
       node.addEventListener('pointerenter', () => {
-        held = d; hit.classList.remove('on'); focus(d);
+        // data-node, not just the focus: the fan belongs to the label, so it is
+        // drawn for a label under the pointer and not for a dot out in the field.
+        held = d; fig.dataset.node = d;
+        hit.classList.remove('on'); focus(d);
         read.innerHTML = '<b>' + domains[d].n + '</b><span>' + esc(domains[d].label) +
           '</span><i>' + esc(yearsOf(d)) + '</i>';
       });
-      node.addEventListener('pointerleave', () => { held = null; focus(null); say(null); });
+      node.addEventListener('pointerleave', () => {
+        held = null; delete fig.dataset.node; focus(null); say(null);
+      });
     });
 
     function yearsOf(d) {

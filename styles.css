@@ -4033,10 +4033,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   fill: #fff;
   fill-opacity: 0.3;
 }
-/* One thread to a domain-year: the fan on the left says, per practice, which
-   years it was alive in. At rest it is texture; under the pointer it is the
-   only thing on the page. */
-.bg-threads { fill: none; stroke-width: 0.7; stroke-opacity: 0.11; transition: stroke-opacity 0.4s ease; }
+/* One thread to a domain-year: the fan says, per practice, which years it was
+   alive in. It is drawn only while that practice's own label is under the
+   pointer -- at rest the field of dots stands on its own, and the fan is the
+   answer to a question rather than something laid over the reading. */
+.bg-threads { fill: none; stroke-width: 0.7; stroke-opacity: 0; transition: stroke-opacity 0.4s ease; }
 .bg-dots { transition: opacity 0.4s ease; }
 /* Label and count share one style: the node is a two-line mark, not a caption
    with a figure under it. Both sit flush on the plot's x=0, which is the
@@ -4063,8 +4064,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 
 /* Focus: one domain lit, the rest held back far enough to read through. */
 .bill-graph[data-focus] .bg-dots.dim { opacity: 0.1; }
-.bill-graph[data-focus] .bg-threads.dim { stroke-opacity: 0.03; }
-.bill-graph[data-focus] .bg-threads.lit { stroke-opacity: 0.5; }
+/* data-node is set only by a label under the pointer, never by a dot out in the
+   field -- which is what keeps the fan to the labels. */
+.bill-graph[data-node] .bg-threads.lit { stroke-opacity: 0.5; }
 .bill-graph[data-focus] .bg-node.dim .bg-node-label,
 .bill-graph[data-focus] .bg-node.dim .bg-node-count { fill-opacity: 0.25; }
 
