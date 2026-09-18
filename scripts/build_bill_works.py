@@ -37,18 +37,18 @@ TYPO_DEFAULT = os.path.expanduser('~/Downloads/works_extracted_v5 (1).xlsx')
 # the six labels stand in down the left of the graph.
 #
 # Sculpture takes the white -- it is the work this page is about, and white is
-# what carries furthest on the panel's near-black. Three of the others are the
-# page's own quote-band backgrounds, .quote-band--white/green/red in styles.css,
-# with typography on the red the sculpture left. Product design keeps
-# --signal-yellow from :root; books & prints and drawings & objects are given
-# outright.
+# what carries furthest on the panel's near-black. Painting keeps the green of
+# .quote-band--green, product design --signal-yellow from :root, and the rest
+# are given outright: typography a red brighter than the quote band's, since it
+# is the largest cluster and the one the caption below the plot wears most
+# often.
 #
 # The fourth quote band, the Deutsche Bank blue #0018A8, is not here: on this
 # ground it comes to 1.65:1 and reads as a stain rather than a colour. It was
 # drawn to carry white type on top of it, not to be type itself. Every colour
 # below clears 3:1.
 DOMAINS = [
-    ('typography', 'typography & print', '#C90101'),
+    ('typography', 'typography & print', '#E41802'),
     ('painting',   'painting',           '#00934C'),
     ('sculpture',  'sculpture',          '#FFFFFF'),
     ('books',      'books & prints',     '#FE8C01'),
