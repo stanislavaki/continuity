@@ -36,28 +36,32 @@ TYPO_DEFAULT = os.path.expanduser('~/Downloads/works_extracted_v5 (1).xlsx')
 # Order matters: it is the order the dots stack in, bottom first, and the order
 # the six labels stand in down the left of the graph.
 #
-# The six colours are handed out against the counts rather than by taste: the
-# fewer works a practice left, the further its colour stands off the panel's
-# near-black, so the rarest thing in the field is the easiest to pick out of it
-# and the commonest sits back and lets the others be seen. Measured against
-# #050505, the six run
+# The colours are dealt against the counts rather than by taste: the fewer works
+# a practice left, the further its colour stands off the panel's near-black, so
+# the rarest thing in the field is the easiest to pick out of it and the
+# commonest sits back and lets the rest be seen. Sculpture is the exception --
+# it holds the red outright, because it is the work this page is about.
+# Measured against #050505 the six run
 #
-#     570  typography   #E41802   4.30:1
+#     570  typography   #005CD3   3.37:1
 #     193  painting     #00934C   5.12:1
-#     107  sculpture    #FE8C01   8.70:1
-#      28  books        #FFD500  14.33:1
+#     107  sculpture    #E41802   4.30:1   <- held
+#      28  books        #FE8C01   8.70:1
 #      28  drawings     #25DDDB  12.08:1
-#      15  product      #FFFFFF  20.38:1
+#      15  product      #FFD500  14.33:1
 #
-# -- monotonic but for the two clusters of 28, which tie and can take either
-# way round. Every one clears 3:1. Change a colour here and check the ladder
-# still holds, or the figure starts pointing at the wrong things.
+# The ladder climbs the whole way but for sculpture, which sits one rung below
+# the painting above it: holding the red at 4.30 leaves nothing at or under it
+# for painting's larger count, since the only colour lower is typography's own.
+# The two clusters of 28 tie and can go either way round. Every colour clears
+# 3:1. Change one here and check the ladder, or the figure starts pointing at
+# the wrong things.
 DOMAINS = [
-    ('typography', 'typography & print', '#E41802'),
+    ('typography', 'typography & print', '#005CD3'),
     ('painting',   'painting',           '#00934C'),
-    ('sculpture',  'sculpture',          '#FE8C01'),
-    ('books',      'books & prints',     '#FFD500'),
-    ('product',    'product design',     '#FFFFFF'),
+    ('sculpture',  'sculpture',          '#E41802'),
+    ('books',      'books & prints',     '#FE8C01'),
+    ('product',    'product design',     '#FFD500'),
     ('drawing',    'drawings & objects', '#25DDDB'),
 ]
 IDX = {k: i for i, (k, _, _) in enumerate(DOMAINS)}
