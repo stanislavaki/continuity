@@ -3992,7 +3992,22 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   margin: 0;
 }
 .bill-graph-count { grid-column: 1 / 3; }
-.bill-graph-span { grid-column: 3 / -1; }
+/* The span is drawn the width of the years it covers: 1925 on the column the
+   field opens on, 1996 on the edge it ends at, and the em dash between them
+   pulled out into the run of time itself. The rule takes the dash's own weight
+   and sits where the dash sat -- centring on the line box puts it within a
+   pixel of the character it replaces. */
+.bill-graph-span {
+  grid-column: 3 / -1;
+  display: flex;
+  align-items: center;
+}
+.bill-graph-dash {
+  flex: 1;
+  height: 2px;
+  margin: 0 0.3em;
+  background: currentColor;
+}
 .bill-graph-plot svg { width: 100%; height: auto; display: block; }
 
 /* The foot holds the readout -- the work under the pointer. It is set in the
