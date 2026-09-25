@@ -195,8 +195,8 @@ body.light .cursor { color: #000; }
   z-index: 99;
   pointer-events: none;
 }
-/* On a phone the top line has the logo on the left and the + button on the
-   right, and the coordinates would run under both. They drop below the logo,
+/* On a phone the top line has the logo on the left, and the coordinates would
+   run under it. They drop below the logo,
    centred 160px down, where the other Méridien sites set them --
    measured off charging-bull.beta-mrdn.world at 375px. */
 @media (max-width: 600px) {
@@ -250,8 +250,16 @@ body.light .menu-btn { color: #000; }
    901px, the + button opens the rail's list in its place -- see .crail-panel --
    and turns to a cross while the list is open. */
 .menu-btn { display: none; }
+/* On a phone it stands on the middle of the screen's right edge, rather than
+   in the top corner, level with the gallery's squares on the left edge in the
+   journey (.jg-btn). Measured on the dynamic viewport, as the squares' sticky
+   dock is, so the two keep one line as the browser's bars come and go. */
 @media (max-width: 900px) {
-  .menu-btn { display: grid; }
+  .menu-btn {
+    display: grid;
+    top: calc(50vh - 24px);
+    top: calc(50dvh - 24px);
+  }
 }
 
 #ch1 { overflow: visible; }
@@ -653,7 +661,10 @@ body.light .crail-link.is-hover { color: #000; }
    the moment the deck closes. */
 body:has(.lightbox.is-open) .crail,
 body:has(.lightbox.is-open) .crail-panel,
-body:has(.lightbox.is-open) .tts-controls {
+body:has(.lightbox.is-open) .tts-controls,
+body:has(.jg.is-open) .crail,
+body:has(.jg.is-open) .crail-panel,
+body:has(.jg.is-open) .tts-controls {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -670,7 +681,9 @@ body:has(.lightbox.is-open) .tts-controls {
   .crail { display: none; }
   .crail-panel {
     align-items: flex-start;
-    padding: 81px var(--gutter) 0;   /* clear of the + button, 33px down and 48px tall */
+    /* Clear on the right of the + button, a cross while the list is open,
+       which stands on the middle of the right edge, 48px wide. */
+    padding: 81px calc(var(--gutter) + 48px) 0 var(--gutter);
     overflow-y: auto;
   }
   /* Set on the bottom of the screen, its last line's baseline twice --corner-y
@@ -2483,7 +2496,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 
 /* Journey · sticky map + scrolling stops */
-.journey { padding: 140px 0 0; background: var(--black); color: #fff; }
+.journey { --journey-pad: 140px; padding: var(--journey-pad) 0 0; background: var(--black); color: #fff; }
 .journey-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2782,9 +2795,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 /* Opening figure: the full 8-column measure, inside the container gutters.
    Laid out on those eight page columns itself, so what sits inside it can be
-   placed against them — the photograph takes all eight, its name starts at
-   column 5, set against the middle of the picture rather than under its
-   left-hand corner. */
+   placed against them — the photograph takes all eight, and its name starts
+   the measure, under the picture's left-hand corner, on column 1. */
 .journey-photo-measure {
   grid-column: 1 / -1;
   grid-row: 2;
@@ -2794,32 +2806,29 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   column-gap: var(--col-gap);
 }
 .journey-photo-measure img { grid-column: 1 / -1; }
-/* This one caption sets its mark beside the name rather than over it, and each
-   of the two takes a column of its own: the name begins column 5, where the
-   other captions in this sub-chapter begin, and the mark stands in column 4 on
-   the name's side of it, so the pair reads as one thing with the column gap
-   between them rather than a dot adrift in the measure.
-   The caption takes the figure's own tracks through subgrid rather than
-   guessing at the offset — it is the same eight columns either way. */
+/* This one caption sets its mark beside the name rather than over it, the two
+   as one row at the start of the measure, on column 1: the mark, then the
+   name, with the air the mark carries when it stands over a name. */
 .journey-photo-measure .journey-cap {
   grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: subgrid;
+  display: flex;
   align-items: center;
+  gap: 14px;
 }
 .journey-photo-measure .journey-cap::before {
-  grid-column: 4;
-  justify-self: end;
-  margin: 0;
+  flex: none;
+  /* The turned mark overhangs its 24px box by 3px each side (it is 30 long);
+     the margins take that back, so its head stands on the column line and
+     the gap to the name is the 14px it looks. */
+  margin: 0 3px;
   /* This is the one caption whose mark stands beside the name rather than over
      it, so the pin is turned a quarter to point across the gap at the name it
      marks instead of down at the column rule. Negative, the way .lb-next turns
      its arrow: the point hangs down, so a positive quarter swings it away from
      the name rather than towards it. The turn is visual only — the box stays
-     24 wide, so the name's column edge does not move. */
+     24 wide, so the margins above are what place it. */
   transform: rotate(-90deg);
 }
-.journey-photo-measure .journey-cap h5 { grid-column: 5 / -1; }
 /* Two photographs side by side across the full measure, four page columns
    each. Sits in its own row between the opening image and the text row. */
 .journey-photo-pair {
@@ -2882,14 +2891,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .article-grid > .journey-photo-measure ~ .article-body { grid-row: 5; }
   .journey-photo-six { grid-row: 6; }
   .journey-photo-six .journey-cap { grid-column: 1 / -1; }
-  /* Six and eight columns no longer mean what those placements assume, so the
-     opening caption gives up its tracks and runs as a plain row, the mark back
-     against the name with the air it carries when stacked. */
-  .journey-photo-measure .journey-cap {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
   .article-grid > .article-body.granite-tail { grid-row: 7; }
   .journey-photo-bleed { grid-row: 8; }
 }
@@ -3782,6 +3783,13 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   z-index: 3;
   pointer-events: none;
 }
+/* On desktop the journey gallery's squares hold the middle of the screen's
+   foot (.jg-btn), 27px tall on the corner line, until the section ends --
+   which is under this card. The card stands clear above them, a line's air
+   over the mark, however short the screen. */
+@media (min-width: 901px) {
+  #sculpture-trip .map-reveal-cap { bottom: max(6vh, calc(var(--corner-y) + 27px + 24px)); }
+}
 #sculpture-trip .map-meta {
   position: absolute;
   left: max(24px, calc(50vw - 50% + 24px));
@@ -4424,6 +4432,14 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   transform: translateX(-50%);
   width: 64px;
 }
+/* On desktop the cross stands where the journey gallery's squares do, on the
+   middle of the corner line the language menu's letters and the play button
+   stand on (--corner-y): the middle of the 27px mark, 13.5px up from it. The
+   gallery's own close button is those squares turned into this cross, so the
+   two are one mark in one place, whichever screen is open. */
+@media (min-width: 901px) {
+  .lb-close { bottom: calc(var(--corner-y) - 10.5px); }
+}
 .lb-x {
   position: relative;
   display: block;
@@ -4524,6 +4540,261 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   .lb-counter { top: 24px; }
 }
 .lb-clickable { cursor: pointer; }
+
+/* ---- Journey gallery ----
+   The button: four squares at the foot of the screen, in its middle, where
+   the lightbox's close button stands. It is held in a sticky dock let down
+   into the section to the top of its first photograph across the full
+   measure, the quarry (--jg-drop, measured by the gallery script; the
+   section's top edge until it has): it comes up from the bottom of the screen
+   with that photograph's top edge, stops with the squares' foot on the line
+   the language menu and the play button stand on in the bottom left
+   (--corner-y), stays there through the whole journey and leaves with the end
+   of 5.3. The dock is the button's height,
+   lets the pointer through everywhere but the button, and stands over the
+   map and the photographs, under the rail's list. Its place is given back by
+   the container after it rather than by the dock's own margin: a sticky box
+   is held inside its section by its margin box, so a negative bottom margin
+   would let the button hang on past the section's end. */
+.journey { --jg-dock-h: 48px; --jg-drop: calc(-1 * var(--journey-pad)); }
+.jg-dock {
+  position: sticky;
+  /* The 27px mark sits 10.5px down the 48px dock, so its foot is 37.5px down. */
+  top: calc(100vh - var(--corner-y) - 37.5px);
+  top: calc(100dvh - var(--corner-y) - 37.5px);
+  z-index: 60;
+  height: var(--jg-dock-h);
+  margin-top: var(--jg-drop);
+  pointer-events: none;
+  /* Held over the sheet until the sheet has faded, so the cross turns back
+     into squares in view rather than under it. */
+  transition: z-index 0s linear .3s;
+}
+.jg-dock:has(.jg-btn[aria-expanded="true"]) { z-index: 695; transition-delay: 0s; }
+.jg-dock + .container { margin-top: calc(-1 * (var(--jg-drop) + var(--jg-dock-h))); }
+/* A 48px target with the 27px mark in its middle, on the screen's middle, the
+   mark's foot on the corner line. The lightbox's close button is brought to
+   the same place (.lb-close), so the cross the squares turn into stands
+   exactly where the lightbox's does, and gives way to it when a photograph is
+   opened over the sheet. The mark takes the theme the body is tracking, as
+   .menu-btn does, and white on the black sheet. */
+.jg-btn {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 24px);
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #fff;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color .3s ease;
+}
+body.light .jg-btn { color: var(--ink); }
+.jg-dock .jg-btn[aria-expanded="true"] { color: #fff; }
+.jg-btn:focus { outline: none; }
+.jg-btn:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+/* On a phone the squares stand on the middle of the screen's left edge, level
+   with the + button on the right (.menu-btn), their left edge on the corner
+   inset the play button stands on below. The dock sticks there rather than at
+   the foot. */
+@media (max-width: 900px) {
+  .jg-dock {
+    top: calc(50vh - 24px);
+    top: calc(50dvh - 24px);
+  }
+  .jg-btn { left: calc(var(--corner-x) - 10.5px); }
+}
+.jg-ico {
+  position: relative;
+  display: block;
+  width: 27px;
+  height: 27px;
+  transition: transform .2s ease;
+}
+.jg-btn:hover .jg-ico { transform: scale(1.1); }
+/* The mark: four 9px squares with 9px between them. Pressed, it turns into
+   the cross in two steps, with a beat between them so the first is seen:
+   each square turns an eighth of the way round, into a diamond; then each
+   diamond draws out toward the middle, its outer edge where it was, until
+   the four meet as the cross's arms. The arms run the diagonals through the
+   middle, 9px thick, reaching 17.2px from it to their ends -- the diamond's
+   outer edge -- and on 4.5px past it, half an arm, so the four overlap in the
+   middle and no seam shows where they meet: 1 + sqrt 2 times the square
+   long. End to end the cross spans 34.5px, the lightbox's own 34, a little
+   heavier in the arm.
+   Two elements to a square so each step has its own transition: the square
+   turns, and the bar inside it stretches, each from its own end. A transition
+   runs on the timing of the state it is going to, so opening turns first and
+   stretches after the beat, and closing draws back first and turns after. */
+.jg-sq {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  transition: transform .3s cubic-bezier(.65, 0, .35, 1) .45s;
+}
+.jg-sq i {
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  transition: transform .3s cubic-bezier(.65, 0, .35, 1);
+}
+/* Each bar stretches from its outer end: turned clockwise, a square's own
+   left edge faces the top left, its top edge the top right, and so on. */
+.jg-sq--tl { left: 0;    top: 0; }
+.jg-sq--tr { left: 18px; top: 0; }
+.jg-sq--bl { left: 0;    top: 18px; }
+.jg-sq--br { left: 18px; top: 18px; }
+.jg-sq--tl i { transform-origin: 0 50%; }
+.jg-sq--tr i { transform-origin: 50% 0; }
+.jg-sq--bl i { transform-origin: 50% 100%; }
+.jg-sq--br i { transform-origin: 100% 50%; }
+.jg-btn[aria-expanded="true"] .jg-sq { transform: rotate(45deg); transition-delay: 0s; }
+.jg-btn[aria-expanded="true"] .jg-sq i { transition-delay: .45s; }
+.jg-btn[aria-expanded="true"] .jg-sq--tl i,
+.jg-btn[aria-expanded="true"] .jg-sq--br i { transform: scaleX(2.414); }
+.jg-btn[aria-expanded="true"] .jg-sq--tr i,
+.jg-btn[aria-expanded="true"] .jg-sq--bl i { transform: scaleY(2.414); }
+
+/* The sheet: the journey's black, over the whole screen, scrolling on its own
+   while the page under it is held. Under the lightbox (700), which opens over
+   it. */
+.jg {
+  position: fixed;
+  inset: 0;
+  z-index: 690;
+  background: var(--black);
+  color: #fff;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .3s ease, visibility 0s linear .3s;
+}
+.jg.is-open { opacity: 1; visibility: visible; transition: opacity .3s ease, visibility 0s; }
+.jg-sheet { padding-top: 112px; padding-bottom: 112px; }
+/* On the page's eight columns: four photographs to a row, each on two; two to
+   a row on a phone. Each photograph and its caption take two rows of the
+   sheet's grid -- the picture's and the caption's -- and share them with the
+   rest of their row as a subgrid: a row's pictures are only as tall as the
+   tallest of them, all standing on its foot, and its captions all start on
+   the line under it. The air between rows is the captions' own, below them. */
+.jg-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+}
+.jg-grid > li {
+  grid-column: span 2;
+  grid-row: span 2;
+  display: grid;
+  grid-template-rows: subgrid;
+}
+@media (max-width: 900px) {
+  .jg-sheet { padding-top: 104px; padding-bottom: 80px; }
+  .jg-grid > li { grid-column: span 4; }
+}
+.jg-item {
+  grid-row: span 2;
+  display: grid;
+  grid-template-rows: subgrid;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  /* The item's box is its whole share of the row -- over a short photograph,
+     the empty space the tallest one in the row leaves above it -- so the item
+     itself lets the pointer through, and only what is drawn takes it: the
+     photograph and its caption, which still press the item (a click on them
+     comes up through it). */
+  pointer-events: none;
+}
+.jg-item .jg-frame img,
+.jg-item .jg-frame video,
+.jg-item .jg-cap { pointer-events: auto; }
+.jg-item:focus { outline: none; }
+.jg-item:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+/* Every photograph whole, as large as a square on its columns allows: the
+   full width for a wide one, the square's height for a tall one, which keeps
+   to the captions' left edge. Set on the foot of its row. A pointer over one
+   turns it a little, one way or the other, about a point of its own -- the
+   script draws the angle (--tilt, mostly around 3 degrees but anywhere from
+   under 1 to 7) and the point it turns about (--tilt-at, anywhere from a
+   fifth to four fifths across and down) afresh each time, so the pile never
+   shifts the same way twice, on one spring for all of them -- like a
+   print nudged on a pile: quick, it is there in a tenth of a second, and on
+   a spring, overshooting by a quarter and swinging back before it settles.
+   It springs back the same way when the pointer leaves. The spring is drawn
+   with linear(), sampled off a damped oscillation (damping 0.38, 3.4 swings a
+   second); where linear() is not understood the declaration is dropped and a
+   single quick overshoot stands. */
+.jg-frame {
+  display: block;
+  align-self: end;
+  /* The square a picture is held to is read off the frame's width (100cqi).
+     The frame, not the item, is the container: a query container is laid out
+     on its own, and on the item that cut it out of the row's subgrid -- each
+     photograph stood on its own foot again. */
+  container-type: inline-size;
+}
+.jg-frame img,
+.jg-frame video {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100cqi;
+  transform-origin: var(--tilt-at, 50% 50%);
+  transition: transform .3s cubic-bezier(.34, 1.8, .64, 1);
+  transition: transform .55s linear(0, 0.061 3.12%, 0.216 6.25%, 0.425 9.38%, 0.650 12.5%,
+    0.860 15.6%, 1.036 18.8%, 1.165 21.9%, 1.243 25%, 1.274 28.1%, 1.265 31.2%,
+    1.228 34.4%, 1.173 37.5%, 1.112 40.6%, 1.052 43.8%, 1.001 46.9%, 0.962 50%,
+    0.937 53.1%, 0.926 56.2%, 0.926 59.4%, 0.934 62.5%, 0.948 65.6%, 0.965 68.8%,
+    0.982 71.9%, 0.996 75%, 1.008 78.1%, 1.016 81.2%, 1.020 84.4%, 1.021 87.5%,
+    1.019 90.6%, 1.015 93.8%, 1.011 96.9%, 1);
+}
+/* Turned only while the pointer is on the photograph itself, not its caption
+   or the air around it; from the keyboard, while its item has the focus. */
+.jg-frame img:hover,
+.jg-frame video:hover,
+.jg-item:focus-visible .jg-frame img,
+.jg-item:focus-visible .jg-frame video { transform: rotate(var(--tilt, 2deg)); }
+/* The caption: what is happening, then where and when, standing back in grey,
+   and under it the air before the next row. */
+.jg-cap {
+  display: block;
+  margin-top: 16px;
+  padding-bottom: 40px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+}
+.jg-cap > span { display: block; }
+.jg-where { margin-top: 10px; }
+.jg-where,
+.jg-when { color: var(--grey-60); }
+@media (max-width: 600px) {
+  .jg-cap { margin-top: 12px; padding-bottom: 28px; font-size: 15px; }
+  .jg-where { margin-top: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jg-btn[aria-expanded] .jg-sq, .jg-btn[aria-expanded] .jg-sq i,
+  .jg-ico, .jg, .jg.is-open, .jg-frame img, .jg-frame video { transition: none; }
+}
 
 /* Utility */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }

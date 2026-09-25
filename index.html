@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=128" />
+<link rel="stylesheet" href="styles.css?v=146" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -78,6 +78,22 @@
   <!-- The language menu's blur. The menu itself is the first control in
        .tts-controls, at the end of the body. -->
   <div class="lang-veil" id="langVeil" aria-hidden="true"></div>
+
+  <!-- Journey gallery: every photograph the lightbox holds, on one black
+       sheet, each with a caption under it -- what is happening, where, when.
+       Opened and closed by the four squares standing at the foot of the
+       screen, in its middle, through the journey -- on a phone, the middle of
+       its left edge -- (#jgBtn), which turn into the sheet's close button
+       while it is open, standing where the lightbox's own close button does.
+       A photograph pressed here opens in the lightbox, which
+       stands over the sheet. Filled by the journey gallery script, from the
+       lightbox's own list, so the two always hold the same photographs in the
+       same order. -->
+  <div class="jg" id="journeyGallery" role="dialog" aria-label="Photographs of the journey" aria-hidden="true">
+    <div class="container jg-sheet">
+      <ul class="jg-grid" id="jgGrid"></ul>
+    </div>
+  </div>
 
   <!-- Journey lightbox -->
   <div class="lightbox" id="lightbox" aria-hidden="true">
@@ -493,6 +509,18 @@
 
   <!-- Journey: 3 sub-chapters -->
   <section class="journey dark-section" id="journey">
+    <!-- The gallery's button: four squares at the foot of the screen, in its
+         middle, arriving with the quarry, the first photograph across the
+         full measure, and held there to the end of 5.3. Pressed, it opens the journey's photographs on one sheet
+         (#journeyGallery) and turns into that sheet's close button, where the
+         lightbox's stands -- the squares turn to diamonds, then, after a
+         beat, draw out into the lightbox's cross. -->
+    <div class="jg-dock">
+      <button class="jg-btn" id="jgBtn" type="button" aria-expanded="false"
+              aria-controls="journeyGallery" aria-label="Show all the photographs of the journey">
+        <span class="jg-ico" aria-hidden="true"><span class="jg-sq jg-sq--tl"><i></i></span><span class="jg-sq jg-sq--tr"><i></i></span><span class="jg-sq jg-sq--bl"><i></i></span><span class="jg-sq jg-sq--br"><i></i></span></span>
+      </button>
+    </div>
     <div class="container">
 
       <!-- ============== SUB-CHAPTER 1 · GRANITE TRIP ==============
@@ -3304,6 +3332,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
 
   let images = [];
   let current = 0;
+  // The page's scroll lock as the deck found it, given back on close: opened
+  // from the gallery sheet, the page is already locked, and has to stay so.
+  let overflowWas = '';
 
   function show() {
     if (!images.length) return;
@@ -3333,12 +3364,13 @@ document.querySelectorAll('.facts').forEach((facts) => {
     images = collect();
     current = Math.max(0, Math.min(images.length - 1, idx));
     show();
+    if (!lb.classList.contains('is-open')) overflowWas = document.body.style.overflow;
     lb.classList.add('is-open');
     document.body.style.overflow = 'hidden';
   }
   function close() {
     lb.classList.remove('is-open');
-    document.body.style.overflow = '';
+    document.body.style.overflow = overflowWas;
     // Same reason as in show(): nothing keeps playing behind a closed deck.
     lbVideo.pause();
     lbVideo.removeAttribute('src');
@@ -3363,12 +3395,15 @@ document.querySelectorAll('.facts').forEach((facts) => {
   // The map's previews are built later, on the globe's style.load, so they are
   // not there to be wired when this runs. They do not need to be: the deck
   // collects and indexes itself at open time, so all they need is a way in.
+  // The gallery sheet draws itself from list(), so it holds what the deck
+  // holds, in the deck's order, and opens a photograph with openFor().
   window.journeyDeck = {
     openFor(el) {
       const all = collect();
       const idx = all.findIndex(it => it.el === el);
       if (idx >= 0) open(idx);
     },
+    list: collect,
   };
 
   lbClose.addEventListener('click', close);
@@ -3381,6 +3416,183 @@ document.querySelectorAll('.facts').forEach((facts) => {
     else if (e.key === 'ArrowLeft') prev();
     else if (e.key === 'ArrowRight') next();
   });
+})();
+
+// ========== Journey gallery ==========
+// Every photograph of the journey on one black sheet, in the lightbox's order,
+// each with its caption under it. Opened by the four squares in the corner,
+// which become the sheet's close button; a photograph pressed on the sheet
+// opens in the lightbox, over the sheet, and closing the lightbox comes back
+// to it.
+(() => {
+  const btn = document.getElementById('jgBtn');
+  const sheet = document.getElementById('journeyGallery');
+  const grid = document.getElementById('jgGrid');
+  const lb = document.getElementById('lightbox');
+  if (!btn || !sheet || !grid || !lb || !window.journeyDeck) return;
+
+  // Each photograph's caption, by its file's name: what is happening, in a
+  // few words; where; when. Placeholders until the captions are written.
+  const TBD = ['Short description of what is happening', 'Location', 'Date'];
+  const CAPTIONS = {
+    // 5.1 Granite Trip
+    'IMG_1791.jpeg': TBD,
+    'IMG_1792.jpeg': TBD,
+    'IMG_1793.jpeg': TBD,
+    'IMG_1796.jpeg': TBD,
+    'IMG_1794.jpeg': TBD,
+    'IMG_1790.jpeg': TBD,
+    // 5.2 Sculpting
+    'J-1.jpg': TBD,
+    'J-2.jpg': TBD,
+    'J-3.jpg': TBD,
+    'J-4.jpg': TBD,
+    'J-5.jpg': TBD,
+    'J-6.jpg': TBD,
+    'J-7.jpg': TBD,
+    'J-8.jpg': TBD,
+    // 5.3 Sculpture Trip -- the photographs standing on the globe's marks
+    'IMG_8441.jpeg': TBD,
+    '6749362-hd_1920_1080_24fps.mp4': TBD,
+    'IMG_8446.jpeg': TBD,
+    'IMG_8443.jpeg': TBD,
+    'hero-sculpture.png': TBD,
+  };
+  const nameOf = url => decodeURIComponent(url.split(/[?#]/)[0].split('/').pop());
+  const cursorEl = document.getElementById('cursor');
+
+  // Drawn when first opened, and again only if the deck has changed since --
+  // the globe's photographs join it once the map has built its layers.
+  let drawn = [];
+  function draw() {
+    const plates = window.journeyDeck.list();
+    if (plates.length === drawn.length && plates.every((p, i) => p.el === drawn[i].el)) return;
+    drawn = plates;
+    grid.textContent = '';
+    plates.forEach(p => {
+      const [what, where, when] = CAPTIONS[nameOf(p.url)] || TBD;
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'jg-item';
+      const frame = document.createElement('span');
+      frame.className = 'jg-frame';
+      // The open-water passage is footage in the deck, so it is footage here
+      // too: muted and looping, as on the globe.
+      const video = p.el.tagName === 'VIDEO';
+      const media = document.createElement(video ? 'video' : 'img');
+      if (video) {
+        media.muted = true; media.loop = true; media.playsInline = true;
+        media.preload = 'metadata';
+        media.setAttribute('muted', ''); media.setAttribute('loop', '');
+        media.setAttribute('playsinline', '');
+      } else {
+        media.alt = '';
+        media.loading = 'lazy';
+        media.decoding = 'async';
+      }
+      media.src = p.url;
+      frame.appendChild(media);
+      const cap = document.createElement('span');
+      cap.className = 'jg-cap';
+      [['jg-what', what], ['jg-where', where], ['jg-when', when]].forEach(([cls, text]) => {
+        const line = document.createElement('span');
+        line.className = cls;
+        line.textContent = text;
+        cap.appendChild(line);
+      });
+      item.append(frame, cap);
+      item.addEventListener('click', () => window.journeyDeck.openFor(p.el));
+      // Pointed at -- the photograph itself, not its caption -- a photograph
+      // turns a little one way or the other, chosen
+      // afresh each time, and settles back when the pointer leaves: run the
+      // pointer across a row and the prints shift like a pile on a table.
+      // How far is as random as which way: from under a degree to seven,
+      // mostly around three -- the power leans the draw toward the small end,
+      // so the big swings come now and then rather than every time.
+      // Where it turns about is drawn afresh too, anywhere from a fifth to
+      // four fifths across and down the print, so one swings from near a
+      // corner and the next from just off its middle -- a print pushed at one
+      // edge rather than spun on a pin. Every print keeps the same spring.
+      media.addEventListener('pointerenter', () => {
+        const turn = (0.8 + Math.random() ** 1.5 * 6.2) * (Math.random() < 0.5 ? -1 : 1);
+        const at = () => (20 + Math.random() * 60).toFixed(1) + '%';
+        item.style.setProperty('--tilt', turn.toFixed(2) + 'deg');
+        item.style.setProperty('--tilt-at', at() + ' ' + at());
+      });
+      if (cursorEl) {
+        item.addEventListener('mouseenter', () => cursorEl.classList.add('is-hover'));
+        item.addEventListener('mouseleave', () => cursorEl.classList.remove('is-hover'));
+      }
+      const li = document.createElement('li');
+      li.appendChild(item);
+      grid.appendChild(li);
+    });
+  }
+
+  const isOpen = () => sheet.classList.contains('is-open');
+  let overflowWas = '';
+  function open() {
+    draw();
+    sheet.scrollTop = 0;
+    sheet.classList.add('is-open');
+    sheet.setAttribute('aria-hidden', 'false');
+    btn.setAttribute('aria-expanded', 'true');
+    btn.setAttribute('aria-label', 'Close the photographs');
+    overflowWas = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    sheet.querySelectorAll('video').forEach(v => {
+      const p = v.play();
+      if (p && p.catch) p.catch(() => {});
+    });
+  }
+  function close() {
+    sheet.classList.remove('is-open');
+    sheet.setAttribute('aria-hidden', 'true');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-label', 'Show all the photographs of the journey');
+    document.body.style.overflow = overflowWas;
+    sheet.querySelectorAll('video').forEach(v => v.pause());
+  }
+  btn.addEventListener('click', () => (isOpen() ? close() : open()));
+  // Drawn as the pointer or the keyboard reaches the button rather than on the
+  // press, so the sheet's first layout is not in the frame the squares start
+  // turning on.
+  btn.addEventListener('pointerenter', draw);
+  btn.addEventListener('focus', draw);
+
+  // The squares arrive with the first photograph across the full measure --
+  // the quarry at Scarraciana -- riding up with its top edge until they reach
+  // their place, and stay to the end of 5.3. The sticky dock is let down into
+  // the section to that photograph's top (--jg-drop): measured, since the
+  // prose above it sets how far down it stands, and measured again whenever
+  // the section changes height -- fonts arriving, a film opening, the width
+  // changing. The dock takes no room, so moving it never changes the height
+  // it is measured from.
+  const journey = document.getElementById('journey');
+  const quarry = journey && journey.querySelector('.journey-photo-measure');
+  if (quarry) {
+    const seat = () => {
+      const top = journey.getBoundingClientRect().top + parseFloat(getComputedStyle(journey).paddingTop);
+      journey.style.setProperty('--jg-drop', (quarry.getBoundingClientRect().top - top).toFixed(1) + 'px');
+    };
+    seat();
+    new ResizeObserver(seat).observe(journey);
+  }
+
+  // Caught on the way down, before the lightbox's own handler: with the
+  // lightbox open over the sheet, Escape is the lightbox's, and closes only
+  // it. Otherwise Escape closes the sheet, and Tab goes round the button and
+  // the photographs rather than into the page hidden under them.
+  window.addEventListener('keydown', e => {
+    if (!isOpen() || lb.classList.contains('is-open')) return;
+    if (e.key === 'Escape') { close(); btn.focus(); return; }
+    if (e.key !== 'Tab') return;
+    const stops = [btn, ...grid.querySelectorAll('.jg-item')];
+    const at = stops.indexOf(document.activeElement);
+    const to = e.shiftKey ? (at <= 0 ? stops.length - 1 : -1)
+                          : (at < 0 || at === stops.length - 1 ? 0 : -1);
+    if (to >= 0) { e.preventDefault(); stops[to].focus(); }
+  }, true);
 })();
 
 // ========== Sculpting · scroll-driven gallery ==========
@@ -4362,7 +4574,7 @@ function initSpeechEngine(btn, setState, hub) {
   const SKIP_SELECTOR = [
     '.cursor', '.cursor-dot', '.progress', '.menu-btn', '.lang',
     '.crail', '.crail-panel', '.tweaks', '.tts-toggle', '.fact-n',
-    '.hero-scroll', '.topo-toggle', '.topo-slider', '.lightbox',
+    '.hero-scroll', '.topo-toggle', '.topo-slider', '.lightbox', '.jg', '.jg-btn',
     '.tts-skip', '[aria-hidden="true"]', 'script', 'style', 'noscript'
   ].join(',');
 
