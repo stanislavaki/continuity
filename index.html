@@ -4692,21 +4692,27 @@ if (document.readyState === 'loading') {
       return { w, h, x0: c - len / 2, x1: c + len / 2 };
     });
 
-    // Each mark settles as low as it can go without touching a mark already
-    // placed, in the order the columns stack in: by the year begun, then by
-    // domain, and within a domain the heaviest and then the longest first, so
-    // each run stands on its weightiest work. A work dated to one year fits
-    // inside its own column, so those stack straight up it; a work that ran on
-    // rests on the tallest of the columns it crosses, and later columns stack
-    // around it. A mark can only come to rest on the foot or on top of another
-    // mark, so those are the only heights tried.
-    marks.sort((a, b) => a.w[0] - b.w[0] || a.w[1] - b.w[1] || b.h - a.h ||
+    // The domains stand in layers, one on another, in the order the keys
+    // stand: graphic design along the foot, painting on it, then sculpture,
+    // drawings, architecture and product design. A layer is packed whole
+    // before the next is laid on it, so every domain's marks stay together as
+    // one band from year to year, never broken up by another colour's marks.
+    // Within its layer each mark settles as low as it can go: never below the
+    // layers under it at any year it spans, never touching a mark of its own
+    // domain already placed. They are placed by the year begun, then the
+    // heaviest and the longest first, so each run stands on its weightiest
+    // work. A work that ran on rests on the highest point beneath it across
+    // the years it ran. A mark can only come to rest on the layer beneath or
+    // on another mark of its own, so those are the only heights tried.
+    marks.sort((a, b) => a.w[1] - b.w[1] || a.w[0] - b.w[0] || b.h - a.h ||
                          (b.x1 - b.x0) - (a.x1 - a.x0));
     const placed = [];
     marks.forEach(m => {
       const near = placed.filter(o => m.x0 < o.x1 + HGAP && o.x0 < m.x1 + HGAP);
-      const rests = [0, ...near.map(o => o.z + o.h + VGAP)].sort((a, b) => a - b);
-      m.z = rests.find(z => near.every(o => z + m.h + VGAP <= o.z || z >= o.z + o.h + VGAP));
+      const own = near.filter(o => o.w[1] === m.w[1]);
+      const floor = near.reduce((f, o) => o.w[1] === m.w[1] ? f : Math.max(f, o.z + o.h + VGAP), 0);
+      const rests = [floor, ...own.map(o => o.z + o.h + VGAP).filter(z => z > floor)].sort((a, b) => a - b);
+      m.z = rests.find(z => own.every(o => z + m.h + VGAP <= o.z || z >= o.z + o.h + VGAP));
       m.cy = BASE - m.z - m.h / 2;
       placed.push(m);
     });
@@ -4920,6 +4926,19 @@ if (document.readyState === 'loading') {
       }
       fit = hi;
       break;
+    }
+    // Then the keys grow, if they can, to stand exactly as tall as the field
+    // beside them -- its tallest column -- so the two tops line up; the
+    // smallest size the labels allow is only the floor. If the labels have no
+    // place at that height, the keys step down from it to the nearest that
+    // works.
+    const fieldH = Math.max(...marks.map(m => m.z + m.h));
+    const even = (fieldH - GAP * (domains.length - 1)) /
+                 domains.reduce((t, d) => t + Math.sqrt(d.n), 0);
+    if (even > fit) {
+      for (let u = Math.min(even, most); u > fit; u -= 0.05) {
+        if (layKeys(u)) { fit = u; break; }
+      }
     }
     layKeys(fit);
 
