@@ -4083,27 +4083,36 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   line-height: 1.35;
   letter-spacing: -0.005em;
 }
-/* On the field's own columns, so the line starts where the years start -- and
-   so it never runs under the language menu and the play button, which stand
-   fixed in this same bottom corner. */
+/* Under the field and across its whole width, all eight columns, so the line
+   starts where the years start. While the page scrolls it can pass under the
+   language menu and the play button fixed in the bottom-left corner; it
+   stands clear of them whenever the whole figure is in view. The readout is
+   set on the page's grid, its eight columns laid out again with the page's
+   own gap, so every part of it opens on a column line whatever it is saying.
+     at rest     the caption, three parts of two columns each, on columns
+                 one, three and five;
+     a work      its year on column one, its title from column two on;
+     a domain    its count on column one, its name on two and three, the
+                 years it was at work from column four on.
+   Where a screen is too narrow for a part, it wraps inside its own columns
+   rather than running into the next. */
 .bill-graph-read {
-  grid-column: 3 / -1;
-  display: flex;
-  gap: 1.5em;
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 0 var(--col-gap);
   align-items: baseline;
 }
 /* The quiet half of the readout: the encoding at rest, and the span of years
    behind a label. Set below the age row under the plot -- these are the two
    things in the figure that are there to be found rather than read. */
 .bill-graph-read i { font-style: normal; opacity: 0.35; }
-/* At rest the readout is the caption -- what a mark is, what its length and
-   its height mean -- and each part stays whole: where the line runs short the
-   last part moves down a line rather than every part breaking in two. */
-.bill-graph-read.is-rest { flex-wrap: wrap; row-gap: 0; }
-.bill-graph-read.is-rest i { white-space: nowrap; }
-/* The year never gives way to a long title: a range like 1964—1974 stays on
-   one line and the title wraps beside it instead. */
-.bill-graph-read b { font-weight: inherit; white-space: nowrap; flex: none; }
+.bill-graph-read.is-rest i { grid-column: span 2; }
+/* The year, or a domain's count, holds column one on one line. */
+.bill-graph-read b { font-weight: inherit; white-space: nowrap; }
+.bill-graph-read .rd-title { grid-column: span 7; }
+.bill-graph-read .rd-name { grid-column: span 2; }
+.bill-graph-read .rd-years { grid-column: span 5; }
 
 /* ---- the plot's own parts, all inside the one SVG ---- */
 .bg-guide { stroke: #fff; stroke-opacity: 0.14; stroke-width: 1; }
