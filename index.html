@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=111" />
+<link rel="stylesheet" href="styles.css?v=114" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -301,20 +301,17 @@
   </section>
 
   <!-- Bill · what he made, and when -------------------------------------
-       963 catalogued works, one mark to a work: a dot on the year it was
-       begun, drawn out along the years for as long as it took, stacked up
+       Every catalogued work, one mark to a work: a mark on the year it was
+       begun, as long as it took and as tall as its significance, stacked up
        its column and coloured by the domain it belongs to. ?marks=dots draws
-       every work as the same dot, for comparison.
+       every work as the same dot, for comparison. The count stands inside
+       the plot, over the column of keys it adds up.
        The plot is drawn by billGraph() at the foot of the script, from
        assets/bill-works.json -- built by scripts/build_bill_works.py out of
-       the art data set and Fleischmann's catalogue of the typographic work. -->
+       the art data set and Fleischmann's catalogue of the graphic work. -->
   <section class="bill-reveal dark-section" id="billReveal">
     <div class="container">
       <figure class="bill-graph reveal" id="billGraph">
-        <div class="bill-graph-head">
-          <p class="bill-graph-count" id="billGraphCount">963 works</p>
-          <p class="bill-graph-span"><span>1925</span><span class="bill-graph-dash" aria-hidden="true"></span><span>1997</span></p>
-        </div>
         <!-- Eight empty cells on the page's own grid, laid across the figure's
              measure. The plot measures its columns off them, so the SVG sits on
              the same grid as the text above and below it at any width. -->
@@ -4541,6 +4538,9 @@ if (document.readyState === 'loading') {
   const HAIR = 2, VAIR = PITCH - SIDE;
   const YEAR_AIR = 3;          // what a year-long mark leaves of its column
   const BORN = 1908;           // Max Bill, 1908-1994
+  // The work this page is about, by the year it was begun and its title in the
+  // catalogue: the granite Kontinuität in Frankfurt, 1983-1986.
+  const STAR = [1983, 'Kontinuität'];
   // Bill is taken to have worked about the same hours every year of his
   // working life, fewer from seventy on: the share of a full year he had at
   // each age, easing from all of it at seventy to six tenths at eighty-six.
@@ -4558,10 +4558,16 @@ if (document.readyState === 'loading') {
   // colour sized by its count, the blocks GAP apart; a label set inside its
   // square stands PADX in from the left side and SINK up from the foot.
   const PADX = 12, SINK = 14, GAP = 4;
-  // The keys stack from the foot up to KEY_TOP, the line the field's guides
-  // start on. A label that does not fit inside its block stands TXT_GAP to its
-  // right, centred on it by the type's cap height, CAP_H.
+  // The keys stack from the foot up, never past KEY_TOP, the line the field's
+  // guides start on. A label that does not fit inside its block stands TXT_GAP
+  // to its right, centred on it by the type's cap height, CAP_H.
   const KEY_TOP = 24, TXT_GAP = 12, CAP_H = 17;
+  const COUNT_GAP = 54;        // from the top of the keys up to the count's baseline
+  // The least air between one label's letters and anything else, in units.
+  // A label's letters are taken to run ASC above the baseline and DESC below
+  // it, the face's ascenders and descenders at this size, rather than the
+  // whole line box, which carries leading of its own.
+  const KEY_AIR = 4, ASC = 18, DESC = 6;
   // A label that fits neither inside nor beside its square on one line wraps
   // onto a second line above its own, LINE up -- see the keys in render().
   const LINE = 28;
@@ -4716,6 +4722,15 @@ if (document.readyState === 'loading') {
       m.box = [x, y, w, h];
       dots[m.w[1]].push('<rect x="' + x.toFixed(2) + '" y="' + y.toFixed(2) +
         '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '"/>');
+      // The work this page is about carries a white border, drawn just inside
+      // its own edge so it never touches the marks around it, and kept in its
+      // domain's group so it falls back and filters with the rest of them.
+      if (m.w[0] === STAR[0] && m.w[2] === STAR[1]) {
+        const sw = snap(2 * PX);
+        dots[m.w[1]].push('<rect class="bg-star" x="' + (x + sw / 2).toFixed(2) + '" y="' +
+          (y + sw / 2).toFixed(2) + '" width="' + (w - sw).toFixed(2) + '" height="' +
+          (h - sw).toFixed(2) + '" stroke-width="' + sw.toFixed(2) + '"/>');
+      }
     });
 
     // Decade guides, and under the field's foot the year they mark with Bill's
@@ -4768,7 +4783,7 @@ if (document.readyState === 'loading') {
     plot.innerHTML =
       '<svg viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="' +
       esc(works.length + ' works by Max Bill, ' + y0 + ' to ' + y1 +
-          (LINES ? ', each a mark on the year it was begun, drawn out for as long as it took and as thick as its share of that year\'s work, by domain: '
+          (LINES ? ', each a mark on the year it was begun, as long as the work took and as tall as its significance, by domain: '
                  : ', one dot each, by year and domain: ') +
           domains.map(d => d.n + ' ' + d.label).join(', ')) + '">' +
       // The field arrives through this mask, as a wipe across the years -- see
@@ -4779,24 +4794,27 @@ if (document.readyState === 'loading') {
 
     // The keys are a picture of the counts. Each block is a square whose area
     // is its domain's share of the works -- its side goes with the square root
-    // of the count -- and the squares stack from the foot up, GAP apart, to the
-    // line the field's guides start on, so the column of keys adds up to the
-    // works counted over it. The 570 printed pieces stand at the foot in the
-    // largest square; the fifteen products at the top in the smallest.
+    // of the count -- and the squares stack from the foot up, GAP apart. The
+    // six hundred pieces of graphic design stand at the foot in the largest
+    // square; the sixteen products at the top in the smallest.
     //
-    // Each label then takes the first place it fits: inside its square on one
-    // line, set at the square's foot; beside it on one line; inside it on two
-    // lines; beside it on two. Beside means TXT_GAP to the square's right,
-    // centred on it and set in the domain's colour, and never past columns one
-    // and two. On two lines, the first words step up a line above the rest,
-    // and a line never opens on the ampersand. A transparent target covers the
-    // square and its label, so a label standing beside its square presses it.
-    const unit = (BASE - KEY_TOP - GAP * (domains.length - 1)) /
-                 domains.reduce((t, d) => t + Math.sqrt(d.n), 0);
-    let foot = BASE;
-    [...plot.querySelectorAll('.bg-node')]
-      .sort((a, b) => a.dataset.dom - b.dataset.dom)
-      .forEach(node => {
+    // Each label takes the first place it fits: inside its square on one line,
+    // set at the square's foot; beside it on one line; inside it on two lines;
+    // beside it on two. Beside means TXT_GAP to the square's right, centred on
+    // it and set in the domain's colour, and never past columns one and two. On
+    // two lines, the first words step up a line above the rest, and a line
+    // never opens on the ampersand. A transparent target covers the square and
+    // its label, so a label standing beside its square presses it.
+    const keyNodes = [...plot.querySelectorAll('.bg-node')].sort((a, b) => a.dataset.dom - b.dataset.dom);
+    const touch = (a, b) => a[0] < b[0] + b[2] + KEY_AIR && b[0] < a[0] + a[2] + KEY_AIR &&
+                            a[1] < b[1] + b[3] + KEY_AIR && b[1] < a[1] + a[3] + KEY_AIR;
+    // Lays every key out with squares `unit` units to the root of a work, and
+    // answers whether each label found a place of its own, clear of every
+    // other key's label and square.
+    const layKeys = unit => {
+      let foot = BASE, fits = true;
+      const boxes = [];
+      keyNodes.forEach(node => {
         const side = unit * Math.sqrt(domains[+node.dataset.dom].n);
         const top = foot - side;
         const frame = node.querySelector('.bg-node-frame');
@@ -4805,10 +4823,11 @@ if (document.readyState === 'loading') {
         frame.setAttribute('height', side.toFixed(2));
 
         const text = node.querySelector('text');
-        const own = node.querySelector('.bg-node-label');
-        const words = own.textContent.split(' ');
+        const own = node.querySelector('.bg-node-label:not(.bg-node-up)');
+        text.querySelectorAll('.bg-node-up').forEach(e => e.remove());
+        const words = domains[+node.dataset.dom].label.split(' ');
         const up = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-        up.setAttribute('class', 'bg-node-label');
+        up.setAttribute('class', 'bg-node-label bg-node-up');
         // k words step up to a line of their own; none, and the label is one line.
         const set = (k, inside) => {
           const x = inside ? PADX : side + TXT_GAP;
@@ -4832,9 +4851,15 @@ if (document.readyState === 'loading') {
         };
         const splits = words.map((w, k) => k).filter(k => k > 0 && words[k] !== '&');
         const tries = [[0, true], [0, false], ...splits.map(k => [k, true]), ...splits.map(k => [k, false])];
-        if (!tries.some(([k, inside]) => set(k, inside))) set(splits[splits.length - 1] || 0, false);
+        if (!tries.some(([k, inside]) => set(k, inside))) {
+          fits = false;
+          set(splits[splits.length - 1] || 0, false);
+        }
 
         const t = text.getBBox();
+        const base = +text.getAttribute('y');
+        const above = (up.parentNode ? LINE : 0) + ASC;
+        boxes.push({ square: [0, top, side, side], label: [t.x, base - above, t.width, above + DESC] });
         const hit = node.querySelector('.bg-node-hit');
         const y0h = Math.min(top, t.y), y1h = Math.max(foot, t.y + t.height);
         hit.setAttribute('y', y0h.toFixed(2));
@@ -4842,16 +4867,52 @@ if (document.readyState === 'loading') {
         hit.setAttribute('height', (y1h - y0h).toFixed(2));
         foot = top - GAP;
       });
+      return fits && boxes.every((a, i) => boxes.every((b, j) =>
+        i === j || (!touch(a.label, b.label) && !touch(a.label, b.square))));
+    };
+    // The keys are drawn as small as their labels allow, so the column of
+    // keys stands no taller than it must beside the field. The areas keep
+    // their proportion at any size, so the one thing that sets the size is the
+    // labels: the top squares are small, their labels stand beside them, and
+    // below some size one label would run into the next. The sizes that work
+    // are not one unbroken run -- the largest square holds its label inside
+    // only above one size, and has room for it beside only below another, and
+    // between the two it has neither -- so the smallest is found by stepping up
+    // from small until one works, then halving the last step. The size that
+    // would fill the field's whole height is the ceiling, and the fallback.
+    const most = (BASE - KEY_TOP - GAP * (domains.length - 1)) /
+                 domains.reduce((t, d) => t + Math.sqrt(d.n), 0);
+    let fit = most;
+    for (let u = 1; u < most; u += 0.25) {
+      if (!layKeys(u)) continue;
+      let lo = u - 0.25, hi = u;
+      for (let i = 0; i < 6; i++) {
+        const mid = (lo + hi) / 2;
+        if (layKeys(mid)) hi = mid; else lo = mid;
+      }
+      fit = hi;
+      break;
+    }
+    layKeys(fit);
 
     plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
 
-    // The count over the figure is written into the page so it stands there
-    // before the data arrives, and set again from the data so it can never
-    // disagree with the dots below it.
-    const count = document.getElementById('billGraphCount');
-    if (count) count.textContent = works.length + ' works';
-    const ends = fig.querySelectorAll('.bill-graph-span > span:not(.bill-graph-dash)');
-    if (ends.length === 2) { ends[0].textContent = y0; ends[1].textContent = y1; }
+    // The count of all the works stands just over the column of keys, the sum
+    // their squares add up to, COUNT_GAP above the highest of them -- its
+    // square or its label, whichever reaches higher. It is set from the data,
+    // so it can never disagree with the marks, and in the readout's size.
+    let keyTop = BASE;
+    plot.querySelectorAll('.bg-node').forEach(node => {
+      const text = node.querySelector('text');
+      const inkTop = +text.getAttribute('y') - (text.querySelector('.bg-node-up') ? LINE : 0) - ASC;
+      keyTop = Math.min(keyTop, +node.querySelector('.bg-node-frame').getAttribute('y'), inkTop);
+    });
+    const count = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    count.setAttribute('class', 'bg-count');
+    count.setAttribute('x', '0');
+    count.setAttribute('y', (keyTop - COUNT_GAP).toFixed(2));
+    count.textContent = works.length + ' works';
+    plot.querySelector('svg').appendChild(count);
 
     const svg = plot.querySelector('svg');
     const hit = plot.querySelector('#bgHit');
@@ -4859,8 +4920,10 @@ if (document.readyState === 'loading') {
     const runs = plot.querySelectorAll('.bg-dots');
     let pointed = null;                        // the mark under the pointer
 
-    // At rest the readout states the encoding and nothing else.
-    const REST = LINES ? '<i>one mark = one work, as long as it took and as thick as its share of the year</i>'
+    // At rest the readout states the encoding and nothing else: what a mark
+    // is, then what its two dimensions mean, each set apart by the readout's
+    // own gap, as a year and a title are when a work is under the pointer.
+    const REST = LINES ? '<i>one mark = one work</i><i>length = how long it took</i><i>height = its significance</i>'
                        : '<i>one dot = one work</i>';
 
     // One place decides what the figure shows. A label under the pointer asks
@@ -4883,9 +4946,11 @@ if (document.readyState === 'loading') {
         k.classList.toggle('dim', lit !== null && d !== lit);
       });
       hit.classList.toggle('on', !!pointed && held === null);
+      const rest = !(pointed && held === null) && asked === null;
       if (pointed && held === null) say(pointed.w);
       else if (asked !== null) sum(asked);
       else { read.innerHTML = REST; read.style.color = ''; }
+      read.classList.toggle('is-rest', rest);
     }
 
     // The year and the piece, and nothing else: the domain is already named down
