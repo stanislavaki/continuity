@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=114" />
+<link rel="stylesheet" href="styles.css?v=115" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -4539,8 +4539,9 @@ if (document.readyState === 'loading') {
   const YEAR_AIR = 3;          // what a year-long mark leaves of its column
   const BORN = 1908;           // Max Bill, 1908-1994
   // The work this page is about, by the year it was begun and its title in the
-  // catalogue: the granite Kontinuität in Frankfurt, 1983-1986.
-  const STAR = [1983, 'Kontinuität'];
+  // catalogue: the granite Kontinuität in Frankfurt, 1983-1986. Its block
+  // carries an image of the sculpture, inset by STAR_INSET of the block's side.
+  const STAR = [1983, 'Kontinuität'], STAR_INSET = 0.1;
   // Bill is taken to have worked about the same hours every year of his
   // working life, fewer from seventy on: the share of a full year he had at
   // each age, easing from all of it at seventy to six tenths at eighty-six.
@@ -4722,14 +4723,19 @@ if (document.readyState === 'loading') {
       m.box = [x, y, w, h];
       dots[m.w[1]].push('<rect x="' + x.toFixed(2) + '" y="' + y.toFixed(2) +
         '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '"/>');
-      // The work this page is about carries a white border, drawn just inside
-      // its own edge so it never touches the marks around it, and kept in its
-      // domain's group so it falls back and filters with the rest of them.
+      // The work this page is about carries the sculpture itself -- the folded
+      // band chapter one draws it as, white straight on its own red block, set
+      // inside the block's edge by STAR_INSET of its side. The image is
+      // assets/kontinuitat-mark.png: chapter one's math-fold.png cut out of its
+      // black ground onto transparency, cropped to the band and made small. It is kept in its domain's
+      // group so it falls back and filters with the rest of them, and it never
+      // takes the pointer from the field's own hit-testing.
       if (m.w[0] === STAR[0] && m.w[2] === STAR[1]) {
-        const sw = snap(2 * PX);
-        dots[m.w[1]].push('<rect class="bg-star" x="' + (x + sw / 2).toFixed(2) + '" y="' +
-          (y + sw / 2).toFixed(2) + '" width="' + (w - sw).toFixed(2) + '" height="' +
-          (h - sw).toFixed(2) + '" stroke-width="' + sw.toFixed(2) + '"/>');
+        const inset = Math.min(w, h) * STAR_INSET;
+        dots[m.w[1]].push('<image class="bg-star" href="./assets/kontinuitat-mark.png" x="' +
+          (x + inset).toFixed(2) + '" y="' + (y + inset).toFixed(2) + '" width="' +
+          (w - 2 * inset).toFixed(2) + '" height="' + (h - 2 * inset).toFixed(2) +
+          '" preserveAspectRatio="xMidYMid meet" pointer-events="none"/>');
       }
     });
 
@@ -4738,12 +4744,14 @@ if (document.readyState === 'loading') {
     // column can be read as a point in it rather than only as a date.
     // Each of the two rows under the field is named at its own left edge, in its
     // own strength -- the decade at full, the age standing back with the figures
-    // it labels.
+    // it labels. The guides rise only as high as the tallest column, so none
+    // stands alone in the empty band over the field.
+    const fieldTop = BASE - Math.max(...marks.map(m => m.z + m.h));
     let guides = '<text class="bg-axis" x="' + X0.toFixed(1) + '" y="' + (BASE + 46) + '">year</text>' +
                  '<text class="bg-age" x="' + X0.toFixed(1) + '" y="' + (BASE + 80) + '">age</text>';
     for (let y = Math.ceil(y0 / 10) * 10; y <= y1; y += 10) {
       const gx = (X0 + (y - y0) * step).toFixed(1);
-      guides += '<line class="bg-guide" x1="' + gx + '" y1="24" x2="' + gx + '" y2="' + (BASE + 14) + '"/>' +
+      guides += '<line class="bg-guide" x1="' + gx + '" y1="' + fieldTop.toFixed(1) + '" x2="' + gx + '" y2="' + (BASE + 14) + '"/>' +
                 '<text class="bg-axis" x="' + (+gx + 8) + '" y="' + (BASE + 46) + '">' + y + '</text>' +
                 '<text class="bg-age" x="' + (+gx + 8) + '" y="' + (BASE + 80) + '">' + (y - BORN) + '</text>';
     }
@@ -4799,11 +4807,15 @@ if (document.readyState === 'loading') {
     // square; the sixteen products at the top in the smallest.
     //
     // Each label takes the first place it fits: inside its square on one line,
-    // set at the square's foot; beside it on one line; inside it on two lines;
-    // beside it on two. Beside means TXT_GAP to the square's right, centred on
-    // it and set in the domain's colour, and never past columns one and two. On
-    // two lines, the first words step up a line above the rest, and a line
-    // never opens on the ampersand. A transparent target covers the square and
+    // set at the square's foot; beside it on one line; beside it on one line
+    // running on into the field; for the lowest key, under its square on the
+    // year row's line; inside it on two lines; beside it on two.
+    // Beside means TXT_GAP to the square's right, centred on it, set in the
+    // domain's colour and kept to columns one and two. Running on into the
+    // field, a label is set level with its square's top and allowed only where
+    // it touches no mark -- the largest square's label on one line would
+    // otherwise have to wrap. On two lines, the first words step up a line
+    // above the rest, and a line never opens on the ampersand. A transparent target covers the square and
     // its label, so a label standing beside its square presses it.
     const keyNodes = [...plot.querySelectorAll('.bg-node')].sort((a, b) => a.dataset.dom - b.dataset.dom);
     const touch = (a, b) => a[0] < b[0] + b[2] + KEY_AIR && b[0] < a[0] + a[2] + KEY_AIR &&
@@ -4829,8 +4841,14 @@ if (document.readyState === 'loading') {
         const up = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
         up.setAttribute('class', 'bg-node-label bg-node-up');
         // k words step up to a line of their own; none, and the label is one line.
-        const set = (k, inside) => {
-          const x = inside ? PADX : side + TXT_GAP;
+        // Beside its square a label is centred on it, or with `wide` it may run
+        // on past columns one and two into the field, set level with the
+        // square's top -- but only where it touches no mark. With `below`, the
+        // lowest key's label stands under its square instead, on the line the
+        // year row under the field is set on, where columns one and two are
+        // empty.
+        const set = (k, inside, wide, below) => {
+          const x = inside || below ? (below ? 0 : PADX) : side + TXT_GAP;
           text.setAttribute('x', x.toFixed(2));
           text.classList.toggle('out', !inside);
           if (k) {
@@ -4845,13 +4863,23 @@ if (document.readyState === 'loading') {
             own.removeAttribute('x'); own.removeAttribute('dy');
           }
           const tall = CAP_H + (k ? LINE : 0);
-          text.setAttribute('y', (inside ? foot - SINK : foot - side / 2 + tall / 2).toFixed(2));
-          const room = inside ? side - 2 * PADX : KEY_W - side - TXT_GAP;
-          return text.getBBox().width <= room && (!inside || tall + 2 * SINK <= side);
+          const base = inside ? foot - SINK
+                     : below ? BASE + 46
+                     : wide ? top + ASC + (k ? LINE : 0)
+                     : foot - side / 2 + tall / 2;
+          text.setAttribute('y', base.toFixed(2));
+          const width = text.getBBox().width;
+          const room = inside ? side - 2 * PADX : below ? KEY_W : (wide ? X1 : KEY_W) - side - TXT_GAP;
+          if (width > room || (inside && tall + 2 * SINK > side)) return false;
+          if (below && foot !== BASE) return false;
+          if (!wide) return true;
+          const ink = [x, base - (k ? LINE : 0) - ASC, width, (k ? LINE : 0) + ASC + DESC];
+          return marks.every(m => !touch(ink, m.box));
         };
         const splits = words.map((w, k) => k).filter(k => k > 0 && words[k] !== '&');
-        const tries = [[0, true], [0, false], ...splits.map(k => [k, true]), ...splits.map(k => [k, false])];
-        if (!tries.some(([k, inside]) => set(k, inside))) {
+        const tries = [[0, true], [0, false], [0, false, true], [0, false, false, true],
+                       ...splits.map(k => [k, true]), ...splits.map(k => [k, false])];
+        if (!tries.some(([k, inside, wide, below]) => set(k, inside, wide, below))) {
           fits = false;
           set(splits[splits.length - 1] || 0, false);
         }
