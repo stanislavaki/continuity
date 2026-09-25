@@ -3783,13 +3783,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   z-index: 3;
   pointer-events: none;
 }
-/* On desktop the journey gallery's squares hold the middle of the screen's
-   foot (.jg-btn), 27px tall on the corner line, until the section ends --
-   which is under this card. The card stands clear above them, a line's air
-   over the mark, however short the screen. */
-@media (min-width: 901px) {
-  #sculpture-trip .map-reveal-cap { bottom: max(6vh, calc(var(--corner-y) + 27px + 24px)); }
-}
 #sculpture-trip .map-meta {
   position: absolute;
   left: max(24px, calc(50vw - 50% + 24px));
@@ -4432,14 +4425,6 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   transform: translateX(-50%);
   width: 64px;
 }
-/* On desktop the cross stands where the journey gallery's squares do, on the
-   middle of the corner line the language menu's letters and the play button
-   stand on (--corner-y): the middle of the 27px mark, 13.5px up from it. The
-   gallery's own close button is those squares turned into this cross, so the
-   two are one mark in one place, whichever screen is open. */
-@media (min-width: 901px) {
-  .lb-close { bottom: calc(var(--corner-y) - 10.5px); }
-}
 .lb-x {
   position: relative;
   display: block;
@@ -4525,6 +4510,37 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
    under the image -- prev, cross, next -- which is the shape the read-aloud
    transport already takes at the other corner. Sizes are untouched, only where
    they sit, so the arrow's line and the cross's arm stay the same weight. */
+/* On desktop the cross stands where the journey gallery's squares do, on the
+   middle of the screen's right edge: its middle on the squares' middle,
+   13.5px in from the corner inset. The gallery's own close button is those
+   squares turned into this cross, so the two are one mark in one place,
+   whichever screen is open. The two arrows leave the flanks for the foot,
+   side by side about the middle, 32px between them, the arrowheads' foot on
+   the line the language menu and the play button stand on (--corner-y): the
+   arrow turned on its side is 11 strokes tall in its 14-stroke box, so it
+   stands 1.5 strokes above the box's foot. The picture keeps clear of both:
+   of the cross at the side, the arrows at the foot. */
+@media (min-width: 901px) {
+  .lightbox {
+    padding: 80px calc(var(--corner-x) + 13.5px + 17px + var(--lb-arrow-air))
+             calc(var(--corner-y) + var(--tts-bar) * 11 + var(--lb-arrow-air));
+  }
+  .lb-close {
+    left: auto;
+    right: calc(var(--corner-x) - 18.5px);   /* the 64px box's middle 13.5px in */
+    bottom: auto;
+    top: calc(50vh - 24px);
+    top: calc(50dvh - 24px);
+    transform: none;
+  }
+  .lb-prev, .lb-next {
+    top: auto;
+    bottom: calc(var(--corner-y) - var(--tts-bar) * 1.5);
+    transform: none;
+  }
+  .lb-prev { left: auto; right: calc(50% + 16px); }
+  .lb-next { right: auto; left: calc(50% + 16px); }
+}
 @media (max-width: 600px) {
   .lightbox { padding: 72px var(--gutter) 110px; }
   .lb-prev, .lb-next {
@@ -4542,15 +4558,13 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
 .lb-clickable { cursor: pointer; }
 
 /* ---- Journey gallery ----
-   The button: four squares at the foot of the screen, in its middle, where
+   The button: four squares on the middle of the screen's right edge, where
    the lightbox's close button stands. It is held in a sticky dock let down
    into the section to the top of its first photograph across the full
    measure, the quarry (--jg-drop, measured by the gallery script; the
    section's top edge until it has): it comes up from the bottom of the screen
-   with that photograph's top edge, stops with the squares' foot on the line
-   the language menu and the play button stand on in the bottom left
-   (--corner-y), stays there through the whole journey and leaves with the end
-   of 5.3. The dock is the button's height,
+   with that photograph's top edge, stops at the middle of the screen, stays
+   there through the whole journey and leaves with the end of 5.3. The dock is the button's height,
    lets the pointer through everywhere but the button, and stands over the
    map and the photographs, under the rail's list. Its place is given back by
    the container after it rather than by the dock's own margin: a sticky box
@@ -4559,9 +4573,10 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
 .journey { --jg-dock-h: 48px; --jg-drop: calc(-1 * var(--journey-pad)); }
 .jg-dock {
   position: sticky;
-  /* The 27px mark sits 10.5px down the 48px dock, so its foot is 37.5px down. */
-  top: calc(100vh - var(--corner-y) - 37.5px);
-  top: calc(100dvh - var(--corner-y) - 37.5px);
+  /* Measured on the dynamic viewport, as the + button on a phone is, so the
+     two keep one line as the browser's bars come and go. */
+  top: calc(50vh - 24px);
+  top: calc(50dvh - 24px);
   z-index: 60;
   height: var(--jg-dock-h);
   margin-top: var(--jg-drop);
@@ -4572,16 +4587,16 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
 }
 .jg-dock:has(.jg-btn[aria-expanded="true"]) { z-index: 695; transition-delay: 0s; }
 .jg-dock + .container { margin-top: calc(-1 * (var(--jg-drop) + var(--jg-dock-h))); }
-/* A 48px target with the 27px mark in its middle, on the screen's middle, the
-   mark's foot on the corner line. The lightbox's close button is brought to
-   the same place (.lb-close), so the cross the squares turn into stands
-   exactly where the lightbox's does, and gives way to it when a photograph is
-   opened over the sheet. The mark takes the theme the body is tracking, as
-   .menu-btn does, and white on the black sheet. */
+/* A 48px target with the 27px mark in its middle, the mark's right edge on the
+   corner inset. The lightbox's close button is brought to the same place
+   (.lb-close), so the cross the squares turn into stands exactly where the
+   lightbox's does, and gives way to it when a photograph is opened over the
+   sheet. The mark takes the theme the body is tracking, as .menu-btn does,
+   and white on the black sheet. */
 .jg-btn {
   position: absolute;
   top: 0;
-  left: calc(50% - 24px);
+  right: calc(var(--corner-x) - 10.5px);
   width: 48px;
   height: 48px;
   display: grid;
@@ -4598,16 +4613,11 @@ body.light .jg-btn { color: var(--ink); }
 .jg-dock .jg-btn[aria-expanded="true"] { color: #fff; }
 .jg-btn:focus { outline: none; }
 .jg-btn:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
-/* On a phone the squares stand on the middle of the screen's left edge, level
-   with the + button on the right (.menu-btn), their left edge on the corner
-   inset the play button stands on below. The dock sticks there rather than at
-   the foot. */
+/* On a phone the + button holds the middle of the right edge, so the squares
+   take the middle of the left, level with it, their left edge on the corner
+   inset the play button stands on below. */
 @media (max-width: 900px) {
-  .jg-dock {
-    top: calc(50vh - 24px);
-    top: calc(50dvh - 24px);
-  }
-  .jg-btn { left: calc(var(--corner-x) - 10.5px); }
+  .jg-btn { right: auto; left: calc(var(--corner-x) - 10.5px); }
 }
 .jg-ico {
   position: relative;
@@ -4676,7 +4686,9 @@ body.light .jg-btn { color: var(--ink); }
   transition: opacity .3s ease, visibility 0s linear .3s;
 }
 .jg.is-open { opacity: 1; visibility: visible; transition: opacity .3s ease, visibility 0s; }
-.jg-sheet { padding-top: 112px; padding-bottom: 112px; }
+/* Framed on the page's gutter at the top as at the sides: nothing stands over
+   the sheet's top now, the close button being at the middle of its edge. */
+.jg-sheet { padding-top: var(--gutter); padding-bottom: 112px; }
 /* On the page's eight columns: four photographs to a row, each on two; two to
    a row on a phone. Each photograph and its caption take two rows of the
    sheet's grid -- the picture's and the caption's -- and share them with the
@@ -4698,7 +4710,7 @@ body.light .jg-btn { color: var(--ink); }
   grid-template-rows: subgrid;
 }
 @media (max-width: 900px) {
-  .jg-sheet { padding-top: 104px; padding-bottom: 80px; }
+  .jg-sheet { padding-bottom: 80px; }
   .jg-grid > li { grid-column: span 4; }
 }
 .jg-item {
@@ -4791,6 +4803,20 @@ body.light .jg-btn { color: var(--ink); }
   .jg-cap { margin-top: 12px; padding-bottom: 28px; font-size: 15px; }
   .jg-where { margin-top: 8px; }
 }
+/* A print growing from the sheet into the lightbox, and shrinking back into
+   its place when the lightbox closes (the journey gallery and lightbox
+   scripts name the two pictures alike for a view transition). Half a second,
+   quick off the start and settling long, like a print picked up off the pile
+   and brought up to the eye; the lightbox's black and controls fade in over
+   the first part of it. */
+::view-transition-group(jg-photo),
+::view-transition-old(jg-photo),
+::view-transition-new(jg-photo) {
+  animation-duration: .5s;
+  animation-timing-function: cubic-bezier(.2, .8, .2, 1);
+}
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: .3s; }
 @media (prefers-reduced-motion: reduce) {
   .jg-btn[aria-expanded] .jg-sq, .jg-btn[aria-expanded] .jg-sq i,
   .jg-ico, .jg, .jg.is-open, .jg-frame img, .jg-frame video { transition: none; }

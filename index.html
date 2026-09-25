@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=146" />
+<link rel="stylesheet" href="styles.css?v=149" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -81,8 +81,8 @@
 
   <!-- Journey gallery: every photograph the lightbox holds, on one black
        sheet, each with a caption under it -- what is happening, where, when.
-       Opened and closed by the four squares standing at the foot of the
-       screen, in its middle, through the journey -- on a phone, the middle of
+       Opened and closed by the four squares standing on the middle of the
+       screen's right edge through the journey -- on a phone, the middle of
        its left edge -- (#jgBtn), which turn into the sheet's close button
        while it is open, standing where the lightbox's own close button does.
        A photograph pressed here opens in the lightbox, which
@@ -509,8 +509,8 @@
 
   <!-- Journey: 3 sub-chapters -->
   <section class="journey dark-section" id="journey">
-    <!-- The gallery's button: four squares at the foot of the screen, in its
-         middle, arriving with the quarry, the first photograph across the
+    <!-- The gallery's button: four squares on the middle of the screen's
+         right edge, arriving with the quarry, the first photograph across the
          full measure, and held there to the end of 5.3. Pressed, it opens the journey's photographs on one sheet
          (#journeyGallery) and turns into that sheet's close button, where the
          lightbox's stands -- the squares turn to diamonds, then, after a
@@ -3368,7 +3368,27 @@ document.querySelectorAll('.facts').forEach((facts) => {
     lb.classList.add('is-open');
     document.body.style.overflow = 'hidden';
   }
+  // Opened over the gallery sheet, the plate on screen shrinks back into its
+  // own print on the sheet as the deck closes, rather than the deck simply
+  // going: while the sheet is open it answers closeTo() with that print, and
+  // the plate and the print are named alike for one view transition, which
+  // carries the one into the other. Footage closes plainly -- its print is
+  // moving and would not hold still to be flown back into -- as does
+  // everything where view transitions are missing or motion is reduced.
+  const stillMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   function close() {
+    const it = images[current];
+    const print = window.journeyDeck.closeTo && it && lbImg.style.display !== 'none'
+      && window.journeyDeck.closeTo(it.el);
+    if (!print || !document.startViewTransition || stillMotion.matches) { shut(); return; }
+    lbImg.style.viewTransitionName = 'jg-photo';
+    document.startViewTransition(() => {
+      lbImg.style.viewTransitionName = '';
+      shut();
+      print.style.viewTransitionName = 'jg-photo';
+    }).finished.finally(() => { print.style.viewTransitionName = ''; });
+  }
+  function shut() {
     lb.classList.remove('is-open');
     document.body.style.overflow = overflowWas;
     // Same reason as in show(): nothing keeps playing behind a closed deck.
@@ -3396,7 +3416,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
   // not there to be wired when this runs. They do not need to be: the deck
   // collects and indexes itself at open time, so all they need is a way in.
   // The gallery sheet draws itself from list(), so it holds what the deck
-  // holds, in the deck's order, and opens a photograph with openFor().
+  // holds, in the deck's order, and opens a photograph with openFor(). While
+  // it is open it sets closeTo (see close()).
   window.journeyDeck = {
     openFor(el) {
       const all = collect();
@@ -3404,6 +3425,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       if (idx >= 0) open(idx);
     },
     list: collect,
+    closeTo: null,
   };
 
   lbClose.addEventListener('click', close);
@@ -3460,6 +3482,45 @@ document.querySelectorAll('.facts').forEach((facts) => {
   };
   const nameOf = url => decodeURIComponent(url.split(/[?#]/)[0].split('/').pop());
   const cursorEl = document.getElementById('cursor');
+  const lbImg = document.getElementById('lbImg');
+  const stillMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const printOf = new Map();   // a plate of the deck -> its print on the sheet
+
+  // A print pressed on the sheet grows into the lightbox rather than the
+  // lightbox simply appearing over it: the print and the lightbox's picture
+  // are named alike for one view transition, so the browser carries the one
+  // into the other -- its size, its place, and whatever tilt the pointer had
+  // given it, which it straightens out of -- while the lightbox's black and
+  // controls fade in around it. Footage opens plainly (its first frame is not
+  // there in time to fly), as does everything where view transitions are
+  // missing or motion is reduced.
+  function grow(print, plate) {
+    if (!document.startViewTransition || stillMotion.matches || print.tagName === 'VIDEO' || !lbImg) {
+      window.journeyDeck.openFor(plate);
+      return;
+    }
+    print.style.viewTransitionName = 'jg-photo';
+    document.startViewTransition(async () => {
+      print.style.viewTransitionName = '';
+      window.journeyDeck.openFor(plate);
+      lbImg.style.viewTransitionName = 'jg-photo';
+      // Held until the lightbox's picture is decoded, so what the print grows
+      // into is the picture and not an empty box -- but never for long.
+      await Promise.race([lbImg.decode().catch(() => {}), new Promise(r => setTimeout(r, 400))]);
+    }).finished.finally(() => { lbImg.style.viewTransitionName = ''; });
+  }
+
+  // Asked by the lightbox as it closes over the sheet: the print of the plate
+  // on screen, brought into view on the sheet first if the lightbox was paged
+  // to a plate whose print has scrolled away, so the plate shrinks back to
+  // where the reader can see it land.
+  function printFor(plate) {
+    const print = printOf.get(plate);
+    if (!print) return null;
+    const r = print.getBoundingClientRect();
+    if (r.top < 0 || r.bottom > innerHeight) sheet.scrollTop += r.top - (innerHeight - r.height) / 2;
+    return print;
+  }
 
   // Drawn when first opened, and again only if the deck has changed since --
   // the globe's photographs join it once the map has built its layers.
@@ -3469,6 +3530,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     if (plates.length === drawn.length && plates.every((p, i) => p.el === drawn[i].el)) return;
     drawn = plates;
     grid.textContent = '';
+    printOf.clear();
     plates.forEach(p => {
       const [what, where, when] = CAPTIONS[nameOf(p.url)] || TBD;
       const item = document.createElement('button');
@@ -3501,7 +3563,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
         cap.appendChild(line);
       });
       item.append(frame, cap);
-      item.addEventListener('click', () => window.journeyDeck.openFor(p.el));
+      printOf.set(p.el, media);
+      item.addEventListener('click', () => grow(media, p.el));
       // Pointed at -- the photograph itself, not its caption -- a photograph
       // turns a little one way or the other, chosen
       // afresh each time, and settles back when the pointer leaves: run the
@@ -3538,6 +3601,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     sheet.setAttribute('aria-hidden', 'false');
     btn.setAttribute('aria-expanded', 'true');
     btn.setAttribute('aria-label', 'Close the photographs');
+    window.journeyDeck.closeTo = printFor;
     overflowWas = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     sheet.querySelectorAll('video').forEach(v => {
@@ -3550,6 +3614,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     sheet.setAttribute('aria-hidden', 'true');
     btn.setAttribute('aria-expanded', 'false');
     btn.setAttribute('aria-label', 'Show all the photographs of the journey');
+    window.journeyDeck.closeTo = null;
     document.body.style.overflow = overflowWas;
     sheet.querySelectorAll('video').forEach(v => v.pause());
   }
