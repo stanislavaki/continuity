@@ -119,7 +119,8 @@ NS = '{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
 # here, not researched work by work. A work dated to a single year is drawn no
 # longer than that year, whatever its tier.
 #
-# Each work goes out as [year begun, domain, title, tier, year finished].
+# Each work goes out as [year begun, domain, title, tier, year finished,
+# weight] -- the weight, from 1 to 5 in tenths, is set below.
 TIERS = ['days', 'weeks', 'months', 'a year', 'years']
 DAYS, WEEKS, MONTHS, A_YEAR, YEARS = range(5)
 
@@ -183,6 +184,84 @@ def year_range(text, start):
     last = re.findall(r'\d{2,4}', m.group(2))[-1]
     end = int(m.group(1)[:4 - len(last)] + last)
     return end if end > start else start
+
+
+# ---- weight: how much a work counts ---------------------------------------
+# The page draws each mark as thick as the work weighs in Bill's history, on a
+# continuous scale from 1, a small printed job, to 5, a monument. Nothing in the
+# data measures significance: the art set has a column for exactly that,
+# "Rank of quotation (1-5)", and it is empty. Until it is filled, a work's weight
+# is built up here from what its own row does say:
+#
+#   * its practice sets where it starts (BASE);
+#   * its scale moves it within the practice -- a painting by the size of its
+#     canvas, a sculpture by its height and whether it stands in public, a
+#     building by whether it was built, a printed piece by what kind of job it
+#     was;
+#   * a public museum holding it, or a note in the catalogue that it won a Grand
+#     Prix or is his principal work, lifts it;
+#   * CANON lifts a short list of works whose standing is on record beyond this
+#     data set. That list is an editorial call, not a measurement -- argue with
+#     it here.
+#
+# A rank entered in the art set's column replaces all of this for its work.
+BASE = {
+    'typography': 1.0,
+    'drawing': 1.8, 'books': 1.8,
+    'painting': 2.8, 'product': 2.8,
+    'sculpture': 3.6, 'architecture': 3.6,
+}
+# Printed matter by kind: a poster is a public statement, a brochure or a
+# catalogue a piece of work, an advertisement, a card or a letterhead a small job.
+TYPO_WEIGHT = {'Plakat': 0.8, 'Prospekt': 0.4, 'Broschüre': 0.4, 'Katalog': 0.4}
+MUSEUM = re.compile(r'museum|kunsthaus|musée|museu|museo|macba|pompidou', re.I)
+CANON = [
+    (r'dreiteilige einheit', 1.0),        # grand prize for sculpture, first São Paulo Bienal, 1951
+    (r'unendliche schleife', 0.6),        # the Endless Ribbon, his best-known form
+    (r'^kontinuität$', 0.6),              # the Frankfurt granite this page is about
+    (r'large-scale version of the sculpture', 0.4),   # the first large Kontinuität, ZÜKA 1947
+    (r'quinze variations', 0.8),          # the portfolio of fifteen variations, 1935-38
+    (r'ulmer hocker', 0.8),               # the Ulm stool
+    (r'junghans', 0.6),                   # the Junghans clocks
+    (r'kreuzzargenstuhl|cross-frame chair', 0.4),
+]
+
+
+def art_weight(domain, row, tier):
+    rank = next((v for k, v in row.items() if k and k.startswith('Rank of quotation')), '')
+    if re.fullmatch(r'[1-5](\.\d+)?', (rank or '').strip()):
+        return float(rank)
+    field = (row.get('Field') or '').strip()
+    title = (row.get('Title') or '').strip()
+    text = (title + ' ' + (row.get('Material') or '')).lower()
+    note = (row.get('Description') or '').lower()
+    w = BASE[domain]
+    if domain == 'painting':
+        a = canvas_m2(row.get('Dimension'))
+        if a is not None:
+            w += -0.6 if a < 0.1 else -0.2 if a < 0.5 else 0 if a < 1.5 else 0.4 if a < 2.5 else 0.7
+    elif domain == 'sculpture':
+        w += {WEEKS: -0.6, MONTHS: 0, A_YEAR: 0.7, YEARS: 1.2}.get(tier, 0)
+    elif domain == 'architecture':
+        w += 1.0 if 'built work' in note else -0.4 if 'unrealised' in note else 0
+    elif domain == 'books':
+        if 'portfolio' in text or 'series' in text or title.startswith('Posters'):
+            w += 0.5
+        elif tier == MONTHS:
+            w += 0.3                      # a whole book, not a catalogue
+    if MUSEUM.search(row.get('Collection') or ''):
+        w += 0.3
+    if 'grand prix' in note or 'principal' in note:
+        w += 0.6
+    for pattern, lift in CANON:
+        if re.search(pattern, title.lower()):
+            w += lift
+            break
+    return round(min(5.0, max(1.0, w)), 1)
+
+
+def typo_weight(kind):
+    return round(BASE['typography'] + TYPO_WEIGHT.get(kind, 0), 1)
 
 
 def art_tier(domain, row, start):
@@ -310,8 +389,9 @@ def main():
         if not re.fullmatch(r'\d{4}', year):
             dropped['no year'] += 1
             continue
-        works.append([int(year), IDX[domain], clean(row.get('Title')), art_tier(domain, row, int(year)),
-                      year_range(row.get('Year'), int(year))])
+        tier = art_tier(domain, row, int(year))
+        works.append([int(year), IDX[domain], clean(row.get('Title')), tier,
+                      year_range(row.get('Year'), int(year)), art_weight(domain, row, tier)])
 
     # --- the typographic catalogue ---------------------------------------
     for col in read_xlsx(typo_path)[1:]:
@@ -324,7 +404,7 @@ def main():
         client = clean(col.get('B'), 60)
         works.append([int(year), IDX['typography'],
                       clean(f'{kind} — {client}' if client else kind),
-                      TYPO_TIER.get(raw, DAYS), int(year)])
+                      TYPO_TIER.get(raw, DAYS), int(year), typo_weight(raw)])
 
     # Rank the domains by their counts, most first, and renumber every work to
     # match. The sort is stable, so a tie keeps the order DOMAINS gives it.

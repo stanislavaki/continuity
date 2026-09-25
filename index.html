@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=109" />
+<link rel="stylesheet" href="styles.css?v=110" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -4527,9 +4527,31 @@ if (document.readyState === 'loading') {
   // build script estimated for it: days, weeks, months, a year, years. A single
   // date keeps a work inside its year, so the last two are both drawn a year.
   const EST = [0.02, 0.08, 0.33, 1, 1];
-  const HGAP = 2;              // the least air between two marks in one lane
+  // A work's natural thickness, by the weight the build script gives it, from
+  // 1, a small printed job, to 5, a monument, in tenths. The scale is
+  // geometric: every step of one weight multiplies the thickness by the same
+  // amount, from one unit at 1 to TOP units at 5 -- about 5 for a painting, 11
+  // for a sculpture, 20 to 40 for the monuments and the buildings. What is
+  // drawn is that thickness scaled to the year the work shares (see YEAR_H),
+  // and never thinner than one pixel of the screen. ?marks=dots draws every
+  // mark SIDE thick, as before.
+  const TOP = 40;
+  // The least air between two marks, side by side and one over the other, in
+  // units -- never less than a pixel, so the thinnest marks stay apart.
+  const HAIR = 2, VAIR = PITCH - SIDE;
   const YEAR_AIR = 3;          // what a year-long mark leaves of its column
   const BORN = 1908;           // Max Bill, 1908-1994
+  // Bill is taken to have worked about the same hours every year of his
+  // working life, fewer from seventy on: the share of a full year he had at
+  // each age, easing from all of it at seventy to six tenths at eighty-six.
+  // Every year's marks are scaled together to stand YEAR_H tall at a full
+  // year's work; a year is never swollen more than SWELL times, and no mark
+  // grows past MAX_T -- see the marks in render().
+  const YEAR_H = 400, SWELL = 4, MAX_T = 60;
+  const working = y => {
+    const age = y - BORN;
+    return age <= 70 ? 1 : age >= 86 ? 0.6 : 1 - 0.4 * (age - 70) / 16;
+  };
   // The keys are set bottom-up from the field's foot rather than down from its
   // head: the first of them stands on the line the columns stand on, so the
   // block and the field share an edge. Each key is a label and its count on a
@@ -4595,7 +4617,7 @@ if (document.readyState === 'loading') {
 
   function render() {
     const domains = data.domains;
-    const works = data.works;   // [year begun, domain, title, tier, year finished]
+    const works = data.works;   // [year begun, domain, title, tier, year finished, weight]
     const grid = columns();
     const KEY_W = grid[1].x + grid[1].w;       // the labels' block, columns one and two
     const X0 = grid[2].x;                      // the field opens on column three
@@ -4614,39 +4636,84 @@ if (document.readyState === 'loading') {
     const footY = i => BASE - i * (FRAME_H + GAP);
 
     // One mark to a work: a dot on the year it was begun, drawn out along the
-    // years for as long as it took. Where the catalogue dates a work as a
-    // range, the mark runs from the dot on its first year to a dot on its last;
-    // otherwise it takes the build script's estimate, kept inside the one year
-    // it is dated to. Anything that took less time than a dot is wide stays a
-    // dot -- at this scale a year is about 14 units, so a dot is four months.
+    // years for as long as it took, and as thick as the work weighs. Where the
+    // catalogue dates a work as a range, the mark runs from the dot on its
+    // first year to a dot on its last; otherwise it takes the build script's
+    // estimate, kept inside the one year it is dated to. Anything that took
+    // less time than its mark is thick stays a square -- at this scale a year
+    // is about 14 units. A work dated to one year never runs wider than its own
+    // column, however heavy: a monument begun and finished in one year stands
+    // as a block a column wide and as tall as it weighs, rather than a square so
+    // big it would spill into the years on either side.
+    // A screen pixel in the plot's units, and a device pixel, which is what the
+    // marks are snapped to so that their square edges fall on whole pixels.
+    const PX = W / plot.getBoundingClientRect().width;
+    const DEV = PX / (window.devicePixelRatio || 1);
+    const snap = v => Math.round(v / DEV) * DEV;
+    const HGAP = Math.max(HAIR, PX), VGAP = Math.max(VAIR, PX);
+    // How thick each mark is drawn. A work's weight gives it a natural
+    // thickness, and the works of one year share that year: at their natural
+    // thickness they would stand as tall as their weights add up to, so a year
+    // crowded with small jobs would look idle and a year of three monuments
+    // would look like the busiest of his life. Instead each year's works are
+    // scaled together until they stand YEAR_H tall, less in his old age -- a
+    // crowded year's thinner, a sparse year's thicker -- and within the year
+    // they keep their weights against each other. A year the catalogue records
+    // only thinly, the student years and the last ones, is not blown up past
+    // SWELL times to fill itself out with a few swollen works; it stands lower.
+    // A work that ran over several years takes the smallest of their scales,
+    // so it never overfills the busiest of them.
+    const natural = w => TOP ** ((w[5] - 1) / 4);
+    const yearsOf1 = w => {
+      const ys = [];
+      for (let y = w[0]; y <= Math.max(w[0], w[4]); y++) ys.push(y);
+      return ys;
+    };
+    const load = new Map();
+    works.forEach(w => yearsOf1(w).forEach(y => load.set(y, (load.get(y) || 0) + natural(w) + VGAP)));
+    const scale = new Map([...load].map(([y, l]) => [y, Math.min(SWELL, YEAR_H * working(y) / l)]));
+    const thick = w => Math.min(MAX_T, Math.max(PX, natural(w) * Math.min(...yearsOf1(w).map(y => scale.get(y)))));
+    const CAP = step - YEAR_AIR;
     const marks = works.map(w => {
+      const h = LINES ? thick(w) : SIDE;
       const c = colX(w[0]);
-      if (LINES && w[4] > w[0]) return { w, x0: c - SIDE / 2, x1: colX(w[4]) + SIDE / 2 };
-      const len = LINES ? Math.max(SIDE, Math.min(EST[w[3]] * step, step - YEAR_AIR)) : SIDE;
-      return { w, x0: c - len / 2, x1: c + len / 2 };
+      const half = Math.min(h, CAP) / 2;
+      if (LINES && w[4] > w[0]) return { w, h, x0: c - half, x1: colX(w[4]) + half };
+      const len = Math.min(Math.max(h, LINES ? EST[w[3]] * step : 0), CAP);
+      return { w, h, x0: c - len / 2, x1: c + len / 2 };
     });
 
-    // Each mark takes the lowest lane with room for it, in the order the
-    // columns stack in: by the year begun, then by domain, and within a domain
-    // the longest first, so each run stands on its heaviest work. A work dated
-    // to one year fits inside its own column, so those fill the lanes exactly
-    // as the stacks of dots did; a work that ran on holds its lane across the
-    // years it ran, and the columns it crosses stack around it.
-    marks.sort((a, b) => a.w[0] - b.w[0] || a.w[1] - b.w[1] || (b.x1 - b.x0) - (a.x1 - a.x0));
-    const lanes = [];
+    // Each mark settles as low as it can go without touching a mark already
+    // placed, in the order the columns stack in: by the year begun, then by
+    // domain, and within a domain the heaviest and then the longest first, so
+    // each run stands on its weightiest work. A work dated to one year fits
+    // inside its own column, so those stack straight up it; a work that ran on
+    // rests on the tallest of the columns it crosses, and later columns stack
+    // around it. A mark can only come to rest on the foot or on top of another
+    // mark, so those are the only heights tried.
+    marks.sort((a, b) => a.w[0] - b.w[0] || a.w[1] - b.w[1] || b.h - a.h ||
+                         (b.x1 - b.x0) - (a.x1 - a.x0));
+    const placed = [];
     marks.forEach(m => {
-      let i = 0;
-      while (lanes[i] && lanes[i].some(o => m.x0 < o.x1 + HGAP && o.x0 < m.x1 + HGAP)) i++;
-      (lanes[i] || (lanes[i] = [])).push(m);
-      m.cy = BASE - (i + 0.5) * PITCH;
+      const near = placed.filter(o => m.x0 < o.x1 + HGAP && o.x0 < m.x1 + HGAP);
+      const rests = [0, ...near.map(o => o.z + o.h + VGAP)].sort((a, b) => a - b);
+      m.z = rests.find(z => near.every(o => z + m.h + VGAP <= o.z || z >= o.z + o.h + VGAP));
+      m.cy = BASE - m.z - m.h / 2;
+      placed.push(m);
     });
 
-    // A rect with its corners rounded to half its height: a dot when it is as
-    // long as it is high, a bar with round ends when it runs on.
+    // Every mark is a plain rectangle, square at the corners: a square when it
+    // is as long as it is thick, a bar when it runs on, a block when it weighs
+    // more than it lasted. Its edges are snapped to device pixels, and it is
+    // never less than one of them across, so the one-pixel marks draw as clean
+    // squares rather than grey smudges.
     const dots = domains.map(() => []);        // per domain: mark markup
     marks.forEach(m => {
-      dots[m.w[1]].push('<rect x="' + m.x0.toFixed(1) + '" y="' + (m.cy - SIDE / 2).toFixed(1) +
-        '" width="' + (m.x1 - m.x0).toFixed(1) + '" height="' + SIDE + '" rx="' + SIDE / 2 + '"/>');
+      const x = snap(m.x0), y = snap(m.cy - m.h / 2);
+      const w = Math.max(DEV, snap(m.x1) - x), h = Math.max(DEV, snap(m.cy + m.h / 2) - y);
+      m.box = [x, y, w, h];
+      dots[m.w[1]].push('<rect x="' + x.toFixed(2) + '" y="' + y.toFixed(2) +
+        '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '"/>');
     });
 
     // Decade guides, and under the field's foot the year they mark with Bill's
@@ -4671,7 +4738,7 @@ if (document.readyState === 'loading') {
       field += '<g class="bg-dots" data-dom="' + i + '" fill="' + d.color + '">' +
                dots[i].join('') + '</g>';
     });
-    field += '<rect class="bg-hit" id="bgHit" height="' + (SIDE + 6) + '" rx="' + (SIDE + 6) / 2 + '"/></g>';
+    field += '<rect class="bg-hit" id="bgHit" height="' + (SIDE + 6) + '"/></g>';
 
     // The labels, one to a domain, each in a frame standing on the first
     // column and set in the domain's own colour -- the colour key is the label
@@ -4701,7 +4768,7 @@ if (document.readyState === 'loading') {
     plot.innerHTML =
       '<svg viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="' +
       esc(works.length + ' works by Max Bill, ' + y0 + ' to ' + y1 +
-          (LINES ? ', each a dot on the year it was begun, drawn out for as long as it took, by domain: '
+          (LINES ? ', each a mark on the year it was begun, drawn out for as long as it took and as thick as its share of that year\'s work, by domain: '
                  : ', one dot each, by year and domain: ') +
           domains.map(d => d.n + ' ' + d.label).join(', ')) + '">' +
       // The field arrives through this mask, as a wipe across the years -- see
@@ -4772,7 +4839,7 @@ if (document.readyState === 'loading') {
     let pointed = null;                        // the mark under the pointer
 
     // At rest the readout states the encoding and nothing else.
-    const REST = LINES ? '<i>one dot = one work, drawn out for as long as it took</i>'
+    const REST = LINES ? '<i>one mark = one work, as long as it took and as thick as its share of the year</i>'
                        : '<i>one dot = one work</i>';
 
     // One place decides what the figure shows. A label under the pointer asks
@@ -4815,23 +4882,23 @@ if (document.readyState === 'loading') {
         '</span><i>' + esc(yearsOf(d)) + '</i>';
     }
 
-    // Hit-testing is done on the lane arithmetic rather than on the marks
-    // themselves: a dot is 5 units across and the page hides the system cursor,
-    // so asking the browser which one is under the pointer would mostly answer
-    // none. The height gives the lane, and in it the nearest mark answers, as
-    // far as half a column to either side of it. Filtered, only the marks still
-    // drawn can answer.
+    // Hit-testing is done on the marks' own arithmetic rather than asking the
+    // browser: the thinnest mark is 3 units high and the page can hide the
+    // system cursor, so asking which one is under the pointer would mostly
+    // answer none. Each mark answers for its own height and half the air
+    // above and below it, so a column is covered without a gap, and for as far
+    // as half a column to either side; the nearest answers. Filtered, only the
+    // marks still drawn can answer.
     function at(ev) {
       const r = svg.getBoundingClientRect();
       const k = W / r.width;
       const ux = (ev.clientX - r.left) * k;
-      const uy = (ev.clientY - r.top) * k;
-      if (ux < X0 || uy > BASE) return null;
-      const lane = lanes[Math.floor((BASE - uy) / PITCH)];
-      if (!lane) return null;
+      const uz = BASE - (ev.clientY - r.top) * k;
+      if (ux < X0 || uz < 0) return null;
       let best = null, off = step / 2;
-      lane.forEach(m => {
+      marks.forEach(m => {
         if (pinned !== null && m.w[1] !== pinned) return;
+        if (uz < m.z - VGAP / 2 || uz > m.z + m.h + VGAP / 2) return;
         const d = Math.max(m.x0 - ux, ux - m.x1, 0);
         if (d <= off) { off = d; best = m; }
       });
@@ -4845,9 +4912,11 @@ if (document.readyState === 'loading') {
       if (m === pointed) return;
       pointed = m;
       if (m) {
-        hit.setAttribute('x', (m.x0 - 3).toFixed(1));
-        hit.setAttribute('y', (m.cy - SIDE / 2 - 3).toFixed(1));
-        hit.setAttribute('width', (m.x1 - m.x0 + 6).toFixed(1));
+        const [bx, by, bw, bh] = m.box;
+        hit.setAttribute('x', (bx - 3).toFixed(2));
+        hit.setAttribute('y', (by - 3).toFixed(2));
+        hit.setAttribute('width', (bw + 6).toFixed(2));
+        hit.setAttribute('height', (bh + 6).toFixed(2));
         hit.setAttribute('stroke', domains[m.w[1]].color);
       }
       paint();

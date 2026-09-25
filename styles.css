@@ -4151,6 +4151,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    so the two are read in order rather than at once. */
 .bg-age { fill-opacity: 0.6; }
 .bg-dots { transition: opacity 0.4s ease; }
+/* One mark to a work, square at the corners, its edges on whole pixels -- the
+   script snaps them there, and this keeps the browser from blurring them. */
+.bg-dots rect { shape-rendering: crispEdges; }
 /* Label and count share one style: the node is one mark, not a caption with a
    figure under it. Both are set on a block of the domain's own colour, in
    black or white, whichever the script finds stands off that colour more, so
