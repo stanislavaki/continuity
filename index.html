@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=110" />
+<link rel="stylesheet" href="styles.css?v=111" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -4554,13 +4554,16 @@ if (document.readyState === 'loading') {
   };
   // The keys are set bottom-up from the field's foot rather than down from its
   // head: the first of them stands on the line the columns stand on, so the
-  // block and the field share an edge. Each key is a label and its count on a
-  // block of its colour FRAME_H tall, the type PADX in from the block's left
-  // side and SINK up from its foot to the baseline, and the blocks stack GAP
-  // apart.
-  const FRAME_H = 44, PADX = 12, SINK = 14, GAP = 4;
-  // A label too long for a frame in columns one and two wraps onto a second
-  // line above its own, LINE up -- see the labels in render().
+  // block and the field share an edge. Each key is a square of its domain's
+  // colour sized by its count, the blocks GAP apart; a label set inside its
+  // square stands PADX in from the left side and SINK up from the foot.
+  const PADX = 12, SINK = 14, GAP = 4;
+  // The keys stack from the foot up to KEY_TOP, the line the field's guides
+  // start on. A label that does not fit inside its block stands TXT_GAP to its
+  // right, centred on it by the type's cap height, CAP_H.
+  const KEY_TOP = 24, TXT_GAP = 12, CAP_H = 17;
+  // A label that fits neither inside nor beside its square on one line wraps
+  // onto a second line above its own, LINE up -- see the keys in render().
   const LINE = 28;
 
   // Colour arithmetic, for type set in or on a domain's colour. The marks take
@@ -4633,7 +4636,6 @@ if (document.readyState === 'loading') {
     // typography, stands at the foot, its block on the line its runs stand on
     // at the foot of every column. Where the others stand is settled once the
     // type has been measured, since a wrapped label makes its block taller.
-    const footY = i => BASE - i * (FRAME_H + GAP);
 
     // One mark to a work: a dot on the year it was begun, drawn out along the
     // years for as long as it took, and as thick as the work weighs. Where the
@@ -4740,27 +4742,25 @@ if (document.readyState === 'loading') {
     });
     field += '<rect class="bg-hit" id="bgHit" height="' + (SIDE + 6) + '"/></g>';
 
-    // The labels, one to a domain, each in a frame standing on the first
-    // column and set in the domain's own colour -- the colour key is the label
-    // rather than a swatch beside it. Name and count run on one line, three
-    // spaces apart, which is why the text preserves its whitespace: the gap is
-    // set in the string rather than measured out, so it stays three spaces of
-    // whatever the line is set in. Each key is a toggle button: pressed, it
-    // filters the field to its domain. The frame is what the pointer finds.
-    // Its width is set once the type has been measured, below.
+    // The keys, one to a domain: a block of the domain's own colour and its
+    // label, name and count, three spaces apart -- which is why the text
+    // preserves its whitespace: the gap is set in the string rather than
+    // measured out, so it stays three spaces of whatever the line is set in.
+    // Each key is a toggle button: pressed, it filters the field to its domain.
+    // Where the blocks stand and how big they are, and where each label goes,
+    // is settled once the type can be measured, below.
     // They are written top first, the way the list reads, so the keyboard and
     // a screen reader meet them in the order the eye does; where each stands
     // comes from its index, not from its place in the markup.
     let nodes = '';
     domains.map((d, i) => [d, i]).reverse().forEach(([d, i]) => {
-      const foot = footY(i);
       nodes += '<g class="bg-node" data-dom="' + i + '" role="button" tabindex="0" aria-pressed="false"' +
         ' aria-label="' + esc(d.label + ', ' + d.n + ' works') + '" style="--c:' + d.color +
-        ';--ink:' + inkOn(d.color) + '"' +
+        ';--ink:' + inkOn(d.color) + ';--tc:' + legible(d.color) + '"' +
         ' fill="' + d.color + '">' +
-        '<rect class="bg-node-frame" x="0" y="' + (foot - FRAME_H) + '" width="' + KEY_W.toFixed(1) +
-        '" height="' + FRAME_H + '"/>' +
-        '<text x="' + PADX + '" y="' + (foot - SINK) + '" xml:space="preserve">' +
+        '<rect class="bg-node-hit" x="0" y="0" width="0" height="0"/>' +
+        '<rect class="bg-node-frame" x="0" y="0" width="0" height="0"/>' +
+        '<text x="' + PADX + '" y="' + BASE + '" xml:space="preserve">' +
         '<tspan class="bg-node-label">' + esc(d.label) + '</tspan>' +
         '<tspan class="bg-node-count">   ' + d.n + '</tspan></text></g>';
     });
@@ -4777,49 +4777,70 @@ if (document.readyState === 'loading') {
       '<rect class="bg-wipe-rect" x="0" y="0" height="' + H + '" fill="#fff"/></mask></defs>' +
       field + nodes + '</svg>';
 
-    // Each frame is fitted to its type once the type can be measured. A label
-    // too long for a frame inside columns one and two wraps, as a line of text
-    // would in a measure that narrow, rather than running on into the field.
-    // The last words keep the label's own line, with the count, level with
-    // every other label; the first words step up a line above them, where the
-    // block has room, and the block grows up by that line. A line never opens
-    // on the ampersand.
-    const ROOM = KEY_W - 2 * PADX;
-    plot.querySelectorAll('.bg-node').forEach(node => {
-      const text = node.querySelector('text');
-      const frame = node.querySelector('.bg-node-frame');
-      if (text.getBBox().width > ROOM) {
-        const own = node.querySelector('.bg-node-label');
-        const words = own.textContent.split(' ');
-        const up = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-        up.setAttribute('class', 'bg-node-label');
-        up.setAttribute('x', PADX);
-        up.setAttribute('dy', -LINE);
-        text.insertBefore(up, own);
-        own.setAttribute('x', PADX);
-        own.setAttribute('dy', LINE);
-        for (let k = 1; k < words.length; k++) {
-          if (words[k] === '&') continue;
-          up.textContent = words.slice(0, k).join(' ');
-          own.textContent = words.slice(k).join(' ');
-          if (text.getBBox().width <= ROOM) break;
-        }
-        frame.setAttribute('height', FRAME_H + LINE);
-      }
-      const box = text.getBBox();
-      frame.setAttribute('width', Math.min(KEY_W, box.x + box.width + PADX).toFixed(1));
-    });
-    // Then the blocks are stacked from the foot up, each GAP clear of the one
-    // below whatever its height, the type riding on its own block.
+    // The keys are a picture of the counts. Each block is a square whose area
+    // is its domain's share of the works -- its side goes with the square root
+    // of the count -- and the squares stack from the foot up, GAP apart, to the
+    // line the field's guides start on, so the column of keys adds up to the
+    // works counted over it. The 570 printed pieces stand at the foot in the
+    // largest square; the fifteen products at the top in the smallest.
+    //
+    // Each label then takes the first place it fits: inside its square on one
+    // line, set at the square's foot; beside it on one line; inside it on two
+    // lines; beside it on two. Beside means TXT_GAP to the square's right,
+    // centred on it and set in the domain's colour, and never past columns one
+    // and two. On two lines, the first words step up a line above the rest,
+    // and a line never opens on the ampersand. A transparent target covers the
+    // square and its label, so a label standing beside its square presses it.
+    const unit = (BASE - KEY_TOP - GAP * (domains.length - 1)) /
+                 domains.reduce((t, d) => t + Math.sqrt(d.n), 0);
     let foot = BASE;
     [...plot.querySelectorAll('.bg-node')]
       .sort((a, b) => a.dataset.dom - b.dataset.dom)
       .forEach(node => {
+        const side = unit * Math.sqrt(domains[+node.dataset.dom].n);
+        const top = foot - side;
         const frame = node.querySelector('.bg-node-frame');
-        const h = +frame.getAttribute('height');
-        frame.setAttribute('y', foot - h);
-        node.querySelector('text').setAttribute('y', foot - SINK);
-        foot -= h + GAP;
+        frame.setAttribute('y', top.toFixed(2));
+        frame.setAttribute('width', side.toFixed(2));
+        frame.setAttribute('height', side.toFixed(2));
+
+        const text = node.querySelector('text');
+        const own = node.querySelector('.bg-node-label');
+        const words = own.textContent.split(' ');
+        const up = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        up.setAttribute('class', 'bg-node-label');
+        // k words step up to a line of their own; none, and the label is one line.
+        const set = (k, inside) => {
+          const x = inside ? PADX : side + TXT_GAP;
+          text.setAttribute('x', x.toFixed(2));
+          text.classList.toggle('out', !inside);
+          if (k) {
+            up.textContent = words.slice(0, k).join(' ');
+            own.textContent = words.slice(k).join(' ');
+            if (!up.parentNode) text.insertBefore(up, own);
+            up.setAttribute('x', x.toFixed(2)); up.setAttribute('dy', -LINE);
+            own.setAttribute('x', x.toFixed(2)); own.setAttribute('dy', LINE);
+          } else {
+            up.remove();
+            own.textContent = words.join(' ');
+            own.removeAttribute('x'); own.removeAttribute('dy');
+          }
+          const tall = CAP_H + (k ? LINE : 0);
+          text.setAttribute('y', (inside ? foot - SINK : foot - side / 2 + tall / 2).toFixed(2));
+          const room = inside ? side - 2 * PADX : KEY_W - side - TXT_GAP;
+          return text.getBBox().width <= room && (!inside || tall + 2 * SINK <= side);
+        };
+        const splits = words.map((w, k) => k).filter(k => k > 0 && words[k] !== '&');
+        const tries = [[0, true], [0, false], ...splits.map(k => [k, true]), ...splits.map(k => [k, false])];
+        if (!tries.some(([k, inside]) => set(k, inside))) set(splits[splits.length - 1] || 0, false);
+
+        const t = text.getBBox();
+        const hit = node.querySelector('.bg-node-hit');
+        const y0h = Math.min(top, t.y), y1h = Math.max(foot, t.y + t.height);
+        hit.setAttribute('y', y0h.toFixed(2));
+        hit.setAttribute('width', Math.max(side, t.x + t.width).toFixed(2));
+        hit.setAttribute('height', (y1h - y0h).toFixed(2));
+        foot = top - GAP;
       });
 
     plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');

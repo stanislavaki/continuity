@@ -4173,6 +4173,13 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    field is showing. */
 .bg-node { cursor: pointer; outline: none; transition: opacity 0.4s ease; }   /* the hand, as over the rail and the transport */
 .bg-node-frame { fill: var(--c); stroke: none; pointer-events: all; }
+/* The key's whole target: its square and, where the label stands beside the
+   square, the label too. */
+.bg-node-hit { fill: transparent; pointer-events: all; }
+/* A label standing beside its square rather than on it is set in the domain's
+   colour, lifted where that colour is too dark to read on the black. */
+.bg-node text.out .bg-node-label,
+.bg-node text.out .bg-node-count { fill: var(--tc); }
 /* Reached from the keyboard, the block takes a white edge instead of the
    browser's ring, which would sit on the SVG's box rather than the block. */
 .bg-node:focus-visible .bg-node-frame { stroke: #fff; stroke-width: 2; }
