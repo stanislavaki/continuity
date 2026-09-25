@@ -4052,10 +4052,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    measure rather than shrink to fit the figure inside it. */
 .bill-reveal > .container { width: 100%; }
 .bill-graph { margin: 0; width: 100%; }
-/* Measuring rule and foot sit on the page's eight columns, the same grid the
-   figure between them is drawn on: the keys on columns one and two, the
-   readout on three to eight, under the years it speaks of. */
+/* Measuring rule, row of names and foot sit on the page's eight columns, the
+   same grid the figures between them are drawn on. */
 .bill-graph-grid,
+.bill-graph-keys,
 .bill-graph-foot {
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
@@ -4065,7 +4065,56 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    is never drawn; it exists so the SVG can ask the page where the columns fall
    rather than recompute --col-gap and --gutter for itself. */
 .bill-graph-grid { height: 0; visibility: hidden; pointer-events: none; }
+.bill-graph-bars svg,
 .bill-graph-plot svg { width: 100%; height: auto; display: block; }
+/* The row of names under the boxes. Sticky: once it reaches the top of the
+   screen it stays there, over the field scrolling up under it, until the
+   figure is done. Held to the very top with its air carried as padding, as
+   the journey's dates are, on the panel's black so nothing scrolling under
+   it shows through. */
+.bill-graph-keys {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  padding: 24px 0 16px;
+  background: var(--black);
+  align-items: baseline;
+}
+/* The two parts of the figure stand 200px apart. */
+.bill-graph-plot { margin-top: 200px; }
+/* A name is a toggle button: pressed, it filters the field to its domain. Set
+   at the size of the boxes' counts, in the domain's colour, lifted where that
+   colour is too dark to read on the black; a name too wide for its column
+   wraps. */
+.bg-key {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: var(--bg-key, 24px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--tc);
+  cursor: pointer;      /* the hand, as over the rail and the transport */
+  transition: opacity 0.4s ease;
+}
+.bg-key:focus { outline: none; }
+.bg-key:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+/* The count of all the works the boxes add up to, closing the row on the last
+   column, in the figure's one voice. */
+.bg-total {
+  grid-column: -2 / -1;
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(20px, 1.7vw, 26px);
+  letter-spacing: -0.005em;
+  color: #fff;
+}
 
 /* The foot holds the readout -- the work under the pointer. It is set in the
    figure's one voice: the same face, weight, size, leading and tracking as the
@@ -4121,9 +4170,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    tracking as the readout below them and the count above the plot. The size
    arrives as --bg-type, measured off the readout by billGraph() and converted
    into the plot's own units, so the two stay matched as the figure scales. */
-/* The count of all the works, over the column of keys it sums -- set in the
-   figure's one voice, the size the axis and the readout are set in. */
-.bg-count,
 .bg-axis,
 .bg-age {
   font-family: var(--sans);
@@ -4139,35 +4185,18 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* One mark to a work, square at the corners, its edges on whole pixels -- the
    script snaps them there, and this keeps the browser from blurring them. */
 .bg-dots rect { shape-rendering: crispEdges; }
-/* Label and count share one style: the node is one mark, not a caption with a
-   figure under it. Both are set on a block of the domain's own colour, in
-   black or white, whichever the script finds stands off that colour more, so
-   the block itself is the key and no swatch is needed beside it. */
-.bg-node-label,
-.bg-node-count {
+/* A box's count, set on the box in black or white, whichever the script finds
+   stands off its colour more. */
+.bg-bar-count {
   font-family: var(--sans);
   font-weight: 700;
   font-size: 24px;
   letter-spacing: -0.02em;
   fill: var(--ink, var(--black));
 }
-/* Each key is a toggle button: a solid block of its domain's colour, standing
-   on the first column, with no outline. The block is the key's target. A
-   pressed key filters the field to its domain, and every other key falls back
-   with the domains it names, so the one left at full strength is the one the
-   field is showing. */
-.bg-node { cursor: pointer; outline: none; transition: opacity 0.4s ease; }   /* the hand, as over the rail and the transport */
-.bg-node-frame { fill: var(--c); stroke: none; pointer-events: all; }
-/* The key's whole target: its square and, where the label stands beside the
-   square, the label too. */
-.bg-node-hit { fill: transparent; pointer-events: all; }
-/* A label standing beside its square rather than on it is set in the domain's
-   colour, lifted where that colour is too dark to read on the black. */
-.bg-node text.out .bg-node-label,
-.bg-node text.out .bg-node-count { fill: var(--tc); }
-/* Reached from the keyboard, the block takes a white edge instead of the
-   browser's ring, which would sit on the SVG's box rather than the block. */
-.bg-node:focus-visible .bg-node-frame { stroke: #fff; stroke-width: 2; }
+/* A box presses its key as its name does. */
+.bg-bar { cursor: pointer; transition: opacity 0.4s ease; }
+.bg-bar-box { fill: var(--c); }
 .bg-hit { fill: none; stroke: #fff; stroke-width: 1.5; opacity: 0; transition: opacity 0.15s ease; }
 .bg-hit.on { opacity: 1; }
 
@@ -4175,7 +4204,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    filter goes further and takes the rest out of the field altogether. */
 .bg-dots.dim { opacity: 0.1; }
 .bg-dots.off { opacity: 0; }
-.bg-node.dim { opacity: 0.25; }
+.bg-key.dim,
+.bg-bar.dim { opacity: 0.25; }
 
 /* The field arrives as a wipe across the years rather than a fade, so the
    figure is read left to right the first time as well. The mask rect's width

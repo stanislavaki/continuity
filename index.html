@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=118" />
+<link rel="stylesheet" href="styles.css?v=120" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -316,6 +316,13 @@
              measure. The plot measures its columns off them, so the SVG sits on
              the same grid as the text above and below it at any width. -->
         <div class="bill-graph-grid" id="billGraphGrid" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <!-- Two views on one scroll. First the count of each practice, a box to
+             a domain standing on one line; then, 200px on, the field of marks.
+             The row of names under the boxes is sticky: as the boxes scroll
+             away it stays at the top of the screen, naming the colours of the
+             field that comes up under it. -->
+        <div class="bill-graph-bars" id="billGraphBars"></div>
+        <div class="bill-graph-keys" id="billGraphKeys"></div>
         <div class="bill-graph-plot" id="billGraphPlot"></div>
         <figcaption class="bill-graph-foot">
           <span class="bill-graph-read" id="billGraphRead"></span>
@@ -4498,9 +4505,11 @@ if (document.readyState === 'loading') {
 (function billGraph() {
   const fig = document.getElementById('billGraph');
   const plot = document.getElementById('billGraphPlot');
+  const barsEl = document.getElementById('billGraphBars');
+  const keysEl = document.getElementById('billGraphKeys');
   const read = document.getElementById('billGraphRead');
   const rule = document.getElementById('billGraphGrid');
-  if (!fig || !plot || !rule) return;
+  if (!fig || !plot || !rule || !barsEl || !keysEl) return;
 
   // Geometry, in the viewBox's own units. The plot is 1340 wide because that is
   // the container's measure at the page's 1440 maximum, so at full width one
@@ -4555,27 +4564,29 @@ if (document.readyState === 'loading') {
     const age = y - BORN;
     return age <= 70 ? 1 : age >= 86 ? 0.6 : 1 - 0.4 * (age - 70) / 16;
   };
-  // The keys stand in a row over the field: under the count of all the works,
-  // whose baseline is COUNT_Y down from the plot's top, COUNT_AIR above the
-  // tallest square. The squares stand on one line, the key line, and each
-  // label is set under its square, LABEL_DROP below that line to its first
-  // baseline and LINE from one line to the next -- the domain's name, then its
-  // count. DESC is how far the face's descenders reach below a baseline, and
-  // FIELD_AIR the space from the labels' foot to the top of the field's
-  // tallest column.
-  const COUNT_Y = 24, COUNT_AIR = 32, LABEL_DROP = 30, LINE = 28, DESC = 6, FIELD_AIR = 56;
+  // The count of each practice is drawn first, a box to a domain standing on
+  // one line, the tallest BAR_TOP down from its own figure's top. A box's
+  // count sits in its top-right corner, COUNT_IN in from both edges; CAP is
+  // the height of the face's figures. The field is drawn in a figure of its
+  // own below, its tallest column FIELD_TOP down from that figure's top.
+  const BAR_TOP = 4, FIELD_TOP = 8, COUNT_IN = 8, CAP = 17;
 
-  // Colour arithmetic, for type set in a domain's colour. The marks take the
-  // colour as it is, however little it stands off the black -- the commonest
-  // domains are dark on purpose -- but type has to be read: in the keys' labels
-  // and the readout, a colour too dark to read on the black is lifted toward
-  // white until it clears 4.5:1.
+  // Colour arithmetic, for type set in or on a domain's colour. The marks take
+  // the colour as it is, however little it stands off the black -- the
+  // commonest domains are dark on purpose -- but type has to be read: on a
+  // key's square it is black or white, whichever stands off the square's
+  // colour more, and in the keys' labels and the readout a colour too dark to
+  // read on the black is lifted toward white until it clears 4.5:1.
   const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
   const lum = c => {
     const [r, g, b] = c.map(v => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   };
   const PANEL = lum([5, 5, 5]);
+  const inkOn = hex => {
+    const l = lum(rgb(hex));
+    return 1.05 / (l + 0.05) > (l + 0.05) / (PANEL + 0.05) ? '#fff' : 'var(--black)';
+  };
   const legible = hex => {
     const c = rgb(hex);
     for (let t = 0; t <= 1; t += 0.05) {
@@ -4680,9 +4691,12 @@ if (document.readyState === 'loading') {
       return { w, h, x0: c - len / 2, x1: c + len / 2 };
     });
 
-    // The domains stand in layers, one on another, in the order the keys
-    // stand: graphic design along the foot, painting on it, then sculpture,
-    // drawings, architecture and product design. A layer is packed whole
+    // The domains stand in layers, one on another, in the order Bill took
+    // them up (the data arrives in that order): the practice he began first
+    // along the foot, each later one laid on those before it -- graphic
+    // design, sculpture, drawings, painting, architecture, product design.
+    // Read up a column, the layers are a record of when each practice began,
+    // where it thinned out, and which he kept at into old age. A layer is packed whole
     // before the next is laid on it, so every domain's marks stay together as
     // one band from year to year, never broken up by another colour's marks.
     // Within its layer each mark settles as low as it can go: never below the
@@ -4705,53 +4719,70 @@ if (document.readyState === 'loading') {
     });
     const fieldH = Math.max(...marks.map(m => m.z + m.h));
 
-    // The keys, one to a domain, in a row over the field, in the order the
-    // layers stand: graphic design first, product design last. Each key is a
-    // square of its domain's colour whose area is its domain's share of the
-    // works -- its side goes with the square root of the count, and the
-    // largest square is exactly one column wide -- with the domain's name and
-    // its count set under it in the domain's colour. Every key opens on a
-    // column line and takes as many whole columns as its square or its name
-    // needs; where the row would need more than the page's eight, every key
-    // takes one column and a name too long for it breaks onto two lines.
+    // The keys, one to a domain, in a row, in the order the layers stand, the
+    // order Bill took them up: graphic design first, product design last. Each
+    // is a box of its domain's colour whose area is its domain's share of the
+    // works -- a square, or where a square would be wider than a column, a box
+    // one column wide and as tall as its area needs -- with its count in the
+    // box's top-right corner, and under it, in the row of names, the domain's
+    // name in its colour. Every key takes one column, left to right, and the
+    // count of all the works closes the row on the last column.
     const NS = 'http://www.w3.org/2000/svg';
     const probe = document.createElementNS(NS, 'svg');
     probe.setAttribute('style', 'position:absolute;left:0;top:0;visibility:hidden');
     plot.appendChild(probe);
     const measure = str => {
       const t = document.createElementNS(NS, 'text');
-      t.setAttribute('class', 'bg-node-label');
+      t.setAttribute('class', 'bg-bar-count');
       t.textContent = str;
       probe.appendChild(t);
       const width = t.getBBox().width;
       t.remove();
       return width;
     };
-    const pitch = grid[1].x - grid[0].x;       // one column and one gap
-    const colGap = pitch - grid[0].w;
-    const across = cols => cols * pitch - colGap;
-    const unit = grid[0].w / Math.sqrt(Math.max(...domains.map(d => d.n)));
-    const slots = domains.map((d, i) => ({
-      i, side: unit * Math.sqrt(d.n), name: [d.label],
-      need: Math.max(unit * Math.sqrt(d.n), measure(d.label), measure(String(d.n)))
-    }));
-    slots.forEach(k => { k.cols = Math.max(1, Math.ceil((k.need + colGap) / pitch - 1e-6)); });
-    if (slots.reduce((t, k) => t + k.cols, 0) > grid.length) {
-      slots.forEach(k => {
-        k.cols = 1;
-        if (measure(k.name[0]) > across(1) && k.name[0].includes(' ')) k.name = k.name[0].split(' ');
-      });
-    }
+    // Every box holds its own count in its top-right corner, COUNT_IN in from
+    // both edges, so the scale is set by the box that finds that hardest:
+    // the smallest box is made just big enough for its number, and every box
+    // is scaled with it, the area of each still its domain's share of the
+    // works. A box that would then be wider than a column keeps the column's
+    // width and grows taller instead, its area the same.
+    const unit = Math.max(...domains.map(d =>
+      Math.max(measure(String(d.n)), CAP) / Math.sqrt(d.n) + 2 * COUNT_IN / Math.sqrt(d.n)));
     probe.remove();
-    let col = 0;
-    slots.forEach(k => { k.col = Math.min(col, grid.length - 1); col += k.cols; });
+    const slots = domains.map((d, i) => {
+      const area = unit * unit * d.n;
+      const w = Math.min(grid[0].w, Math.sqrt(area));
+      return { i, col: Math.min(i, grid.length - 2), w, h: area / w };
+    });
 
-    // Down the plot: the count, the squares on the key line, their labels, the
-    // field, and under its foot the year and age rows.
-    const keyLine = COUNT_Y + COUNT_AIR + Math.max(...slots.map(k => k.side));
-    const labelLines = k => k.name.length + 1;
-    const labelFoot = keyLine + LABEL_DROP + (Math.max(...slots.map(labelLines)) - 1) * LINE + DESC;
-    const BASE = labelFoot + FIELD_AIR + fieldH;   // the line the columns stand on
+    // The boxes, standing on the foot of their own figure.
+    const barsH = BAR_TOP + Math.max(...slots.map(k => k.h));
+    barsEl.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + barsH.toFixed(1) + '" aria-hidden="true">' +
+      slots.map(k => {
+        const d = domains[k.i], x = grid[k.col].x, top = barsH - k.h;
+        return '<g class="bg-bar" data-dom="' + k.i + '" style="--c:' + d.color + ';--ink:' + inkOn(d.color) + '">' +
+          '<rect class="bg-bar-box" x="' + x.toFixed(1) + '" y="' + top.toFixed(1) + '" width="' +
+            k.w.toFixed(1) + '" height="' + k.h.toFixed(1) + '"/>' +
+          '<text class="bg-bar-count" text-anchor="end" x="' + (x + k.w - COUNT_IN).toFixed(1) +
+            '" y="' + (top + COUNT_IN + CAP).toFixed(1) + '">' + d.n + '</text></g>';
+      }).join('') + '</svg>';
+
+    // The row of names: one toggle button to a domain, on its box's column --
+    // pressed, it filters the field to its domain -- and the count of all the
+    // works on the last column. The names are set at the size the boxes'
+    // counts are drawn at, a name too wide for its column wrapping onto a
+    // second line.
+    keysEl.innerHTML = slots.map(k => {
+      const d = domains[k.i];
+      return '<button type="button" class="bg-key" data-dom="' + k.i + '" aria-pressed="false"' +
+        ' aria-label="' + esc(d.label + ', ' + d.n + ' works') + '" style="grid-column:' + (k.col + 1) +
+        ';--tc:' + legible(d.color) + '">' + esc(d.label) + '</button>';
+    }).join('') + '<p class="bg-total">' + works.length + ' works</p>';
+    fig.style.setProperty('--bg-key', (24 / PX).toFixed(2) + 'px');
+
+    // The field's own figure: the tallest column FIELD_TOP down from its top,
+    // and under the columns' foot the year and age rows.
+    const BASE = FIELD_TOP + fieldH;          // the line the columns stand on
     const H = BASE + 96;
     marks.forEach(m => { m.cy = BASE - m.z - m.h / 2; });
 
@@ -4809,29 +4840,6 @@ if (document.readyState === 'loading') {
     });
     field += '<rect class="bg-hit" id="bgHit" height="' + (SIDE + 6) + '"/></g>';
 
-    // Each key is a toggle button: pressed, it filters the field to its
-    // domain. A transparent target covers its square and its label, the width
-    // of the columns it takes. Written in the row's order, left to right, so
-    // the keyboard and a screen reader meet them in the order the eye does.
-    let nodes = '<text class="bg-count" x="' + X0.toFixed(1) + '" y="' + COUNT_Y + '">' +
-                works.length + ' works</text>';
-    slots.forEach(k => {
-      const d = domains[k.i];
-      const x = grid[k.col].x, top = keyLine - k.side;
-      const foot = keyLine + LABEL_DROP + (labelLines(k) - 1) * LINE + DESC;
-      const lines = k.name.map((ln, j) => '<tspan class="bg-node-label" x="' + x.toFixed(1) + '"' +
-        (j ? ' dy="' + LINE + '"' : '') + '>' + esc(ln) + '</tspan>').join('') +
-        '<tspan class="bg-node-count" x="' + x.toFixed(1) + '" dy="' + LINE + '">' + d.n + '</tspan>';
-      nodes += '<g class="bg-node" data-dom="' + k.i + '" role="button" tabindex="0" aria-pressed="false"' +
-        ' aria-label="' + esc(d.label + ', ' + d.n + ' works') + '" style="--c:' + d.color +
-        ';--tc:' + legible(d.color) + '" fill="' + d.color + '">' +
-        '<rect class="bg-node-hit" x="' + x.toFixed(1) + '" y="' + top.toFixed(1) + '" width="' +
-          across(k.cols).toFixed(1) + '" height="' + (foot - top).toFixed(1) + '"/>' +
-        '<rect class="bg-node-frame" x="' + x.toFixed(1) + '" y="' + top.toFixed(1) + '" width="' +
-          k.side.toFixed(1) + '" height="' + k.side.toFixed(1) + '"/>' +
-        '<text class="out" x="' + x.toFixed(1) + '" y="' + (keyLine + LABEL_DROP) + '">' + lines + '</text></g>';
-    });
-
     plot.innerHTML =
       '<svg viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="' +
       esc(works.length + ' works by Max Bill, ' + y0 + ' to ' + y1 +
@@ -4842,13 +4850,14 @@ if (document.readyState === 'loading') {
       // .bg-wipe-rect.
       '<defs><mask id="bgWipe" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">' +
       '<rect class="bg-wipe-rect" x="0" y="0" height="' + H + '" fill="#fff"/></mask></defs>' +
-      field + nodes + '</svg>';
+      field + '</svg>';
 
     plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
 
     const svg = plot.querySelector('svg');
     const hit = plot.querySelector('#bgHit');
-    const keys = plot.querySelectorAll('.bg-node');
+    const keyBtns = keysEl.querySelectorAll('.bg-key');
+    const bars = barsEl.querySelectorAll('.bg-bar');
     const runs = plot.querySelectorAll('.bg-dots');
     let pointed = null;                        // the mark under the pointer
 
@@ -4872,11 +4881,10 @@ if (document.readyState === 'loading') {
         g.classList.toggle('off', pinned !== null && d !== asked);
         g.classList.toggle('dim', pinned === null && lit !== null && d !== lit);
       });
-      keys.forEach(k => {
-        const d = +k.dataset.dom;
-        k.setAttribute('aria-pressed', d === pinned ? 'true' : 'false');
-        k.classList.toggle('dim', lit !== null && d !== lit);
+      [...keyBtns, ...bars].forEach(k => {
+        k.classList.toggle('dim', lit !== null && +k.dataset.dom !== lit);
       });
+      keyBtns.forEach(k => k.setAttribute('aria-pressed', +k.dataset.dom === pinned ? 'true' : 'false'));
       hit.classList.toggle('on', !!pointed && held === null);
       const rest = !(pointed && held === null) && asked === null;
       if (pointed && held === null) say(pointed.w);
@@ -4944,25 +4952,20 @@ if (document.readyState === 'loading') {
       pointed = null; paint();
     });
 
-    // A press toggles the filter: pressing a key filters the field to its
-    // domain, pressing it again lets every domain back, and pressing another
-    // moves the filter there. Enter and Space press a focused key, as they
-    // would a button.
+    // A press toggles the filter: pressing a key -- its name or its box --
+    // filters the field to its domain, pressing it again lets every domain
+    // back, and pressing another moves the filter there. The names are
+    // buttons, so Enter and Space press a focused one.
     const press = d => {
       pinned = pinned === d ? null : d;
       if (pointed && pinned !== null && pointed.w[1] !== pinned) pointed = null;
       paint();
     };
-    keys.forEach(key => {
+    [...keyBtns, ...bars].forEach(key => {
       const d = +key.dataset.dom;
       key.addEventListener('pointerenter', () => { held = d; pointed = null; paint(); });
       key.addEventListener('pointerleave', () => { held = null; paint(); });
       key.addEventListener('click', () => press(d));
-      key.addEventListener('keydown', ev => {
-        if (ev.key !== 'Enter' && ev.key !== ' ') return;
-        ev.preventDefault();
-        press(d);
-      });
     });
     paint();
 

@@ -28,6 +28,7 @@ import io
 import json
 import os
 import re
+import statistics
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
@@ -40,42 +41,42 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(HERE, 'assets', 'bill-works.json')
 TYPO_DEFAULT = os.path.expanduser('~/Downloads/works_extracted_v5 (1).xlsx')
 
-# The domains go out ordered by how many works each holds, most first: the order
-# the dots stack in, bottom first, and the order the labels stand in up the left
-# of the graph, bottom first too, so each label stands on the same side of the
-# list as its dots do in a column, and the list reads as a ranking. main() sorts
-# them by their counts, so the order below only settles a tie.
+# The domains go out in the order Bill took them up: by the year of each one's
+# first work, and where two began the same year, the one whose works cluster
+# earlier -- the earlier median year -- first. That is the order the layers
+# stack in on the page, the first practice along the foot and each later one
+# laid on those before it, and the order the keys stand in, left to right, so
+# the figure reads as a record of when each practice began, where it thinned
+# out, and which ones he kept at into old age. main() sorts them; the order
+# below only settles what the data cannot.
 #
-# The colours are dealt against the counts rather than by taste: the fewer works
-# a practice left, the further its colour stands off the panel's near-black, so
-# the rarest thing in the field is the easiest to pick out of it and the
-# commonest sits back and lets the rest be seen. The six hundred pieces of
-# graphic design are a dark blue that barely lifts off the black, and the paintings a violet a step
-# along from it, so the two largest bodies of work read as neighbours and sit
-# back together. The fifteen products and twenty buildings are the palest,
-# brightest marks in the field, so a handful of dots still reads. Measured
-# against #050505 the six run
+# The colours. The three largest bodies of work are dealt against their counts:
+# the more works a practice left, the less its colour stands off the panel's
+# near-black, so the six hundred pieces of graphic design are a dark blue that
+# barely lifts off the black, the paintings a violet a step along from it, and
+# sculpture keeps the red it has always had. The three smallest are chosen to
+# be told apart at a glance rather than ranked: architecture orange, drawings
+# a light sky blue, well clear of graphic design's dark one, product design a
+# pale red, lighter and softer than sculpture's. All
+# three stand well off the black, so a handful of their marks still reads.
+# Measured against #050505:
 #
-#     601  graphic      #1E3FA0   2.21:1
+#     605  graphic      #1E3FA0   2.21:1
 #     194  painting     #7030C0   2.79:1
 #     111  sculpture    #E41802   4.30:1
-#      25  drawings     #FFD500  14.33:1
-#      20  architecture #FFCFF3  15.02:1
-#      16  product      #B8FFF6  18.12:1
+#      23  drawings     #6CCBFF  11.28:1
+#      20  architecture #FE8C01   8.70:1
+#      16  product      #FF9E9E  10.32:1
 #
-# The ladder climbs the whole way. Sculpture keeps the red it has always had,
-# which happens to fall on its own rung. The two darkest are below 3:1 on
-# purpose, as marks; where
-# the page sets type in a domain's colour it lifts a colour that dark until the
-# type can be read. Change one here and check the ladder, or the figure starts
-# pointing at the wrong things.
+# The two darkest are below 3:1 on purpose, as marks; where the page sets type
+# in a domain's colour it lifts a colour that dark until the type can be read.
 DOMAINS = [
     ('graphic',      'graphic design',            '#1E3FA0'),
     ('painting',     'painting',                  '#7030C0'),
     ('sculpture',    'sculpture',                 '#E41802'),
-    ('drawing',      'drawings',                  '#FFD500'),
-    ('architecture', 'architecture',              '#FFCFF3'),
-    ('product',      'product design',            '#B8FFF6'),
+    ('drawing',      'drawings',                  '#6CCBFF'),
+    ('architecture', 'architecture',              '#FE8C01'),
+    ('product',      'product design',            '#FF9E9E'),
 ]
 IDX = {k: i for i, (k, _, _) in enumerate(DOMAINS)}
 
@@ -476,10 +477,14 @@ def main():
                       clean(f'{kind} — {client}' if client else kind),
                       TYPO_TIER.get(raw, DAYS), int(year), typo_weight(raw)])
 
-    # Rank the domains by their counts, most first, and renumber every work to
-    # match. The sort is stable, so a tie keeps the order DOMAINS gives it.
+    # Order the domains by when Bill took each up, and renumber every work to
+    # match.
     counts = collections.Counter(w[1] for w in works)
-    rank = sorted(range(len(DOMAINS)), key=lambda i: -counts[i])
+    years = collections.defaultdict(list)
+    for w in works:
+        years[w[1]].append(w[0])
+    begun = lambda i: (min(years[i]), statistics.median(years[i]), -counts[i])
+    rank = sorted(range(len(DOMAINS)), key=begun)
     renumber = {old: new for new, old in enumerate(rank)}
     domains = [DOMAINS[i] for i in rank]
     for w in works:
