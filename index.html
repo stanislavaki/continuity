@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=120" />
+<link rel="stylesheet" href="styles.css?v=124" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -312,6 +312,8 @@
   <section class="bill-reveal dark-section" id="billReveal">
     <div class="container">
       <figure class="bill-graph reveal" id="billGraph">
+        <!-- The figure's heading, set as the pull-quotes are, in white. -->
+        <h3 class="bill-graph-title">Max Bill&rsquo;s works</h3>
         <!-- Eight empty cells on the page's own grid, laid across the figure's
              measure. The plot measures its columns off them, so the SVG sits on
              the same grid as the text above and below it at any width. -->
@@ -4549,10 +4551,25 @@ if (document.readyState === 'loading') {
   const HAIR = 2, VAIR = PITCH - SIDE;
   const YEAR_AIR = 3;          // what a year-long mark leaves of its column
   const BORN = 1908;           // Max Bill, 1908-1994
-  // The work this page is about, by the year it was begun and its title in the
-  // catalogue: the granite Kontinuität in Frankfurt, 1983-1986. Its block
-  // carries an image of the sculpture, inset by STAR_INSET of the block's side.
-  const STAR = [1983, 'Kontinuität'], STAR_INSET = 0.1;
+  // Two works carry an image in their block, each found by the year it was
+  // begun and its title in the catalogue. `box` says where in the block
+  // [x, y, w, h] the image may go, and `fit` how it settles there, as SVG's
+  // own preserveAspectRatio: it keeps its proportions, as large as the room
+  // allows, against the sides `fit` names. The granite Kontinuität in
+  // Frankfurt, 1983-1986, the work this page is about, carries the sculpture,
+  // centred and nearly filling its block, a tenth of the block's shorter side
+  // in from its edges. The Ulm School of Design, 1950-55, the school Bill
+  // co-founded and first led, carries the school's own name in lower case,
+  // small, in the block's bottom-left corner: its letters a little over a
+  // third of the block across, COUNT_IN in from its left and bottom edges, as
+  // far as each box's count stands in from its box's right edge.
+  const INLAYS = [
+    { year: 1983, title: 'Kontinuität', src: './assets/kontinuitat-mark.png', fit: 'xMidYMid',
+      box: (x, y, w, h) => { const i = Math.min(w, h) * 0.1; return [x + i, y + i, w - 2 * i, h - 2 * i]; } },
+    { year: 1950, title: 'Hochschule für Gestaltung Ulm / Ulm School of Design',
+      src: './assets/ulm-mark.png', fit: 'xMinYMax',
+      box: (x, y, w, h) => [x + COUNT_IN, y, w * 0.345, h - COUNT_IN] },
+  ];
   // Bill is taken to have worked about the same hours every year of his
   // working life, fewer from seventy on: the share of a full year he had at
   // each age, easing from all of it at seventy to six tenths at eighty-six.
@@ -4566,10 +4583,12 @@ if (document.readyState === 'loading') {
   };
   // The count of each practice is drawn first, a box to a domain standing on
   // one line, the tallest BAR_TOP down from its own figure's top. A box's
-  // count sits in its top-right corner, COUNT_IN in from both edges; CAP is
-  // the height of the face's figures. The field is drawn in a figure of its
-  // own below, its tallest column FIELD_TOP down from that figure's top.
-  const BAR_TOP = 4, FIELD_TOP = 8, COUNT_IN = 8, CAP = 17;
+  // count sits in its top-right corner, COUNT_IN in from its right edge and
+  // COUNT_TOP, a little more, down from its top: at the same distance from
+  // both, the figures read as pressed up under the top. CAP is the height of
+  // the face's figures. The field is drawn in a figure of its own
+  // below, its tallest column FIELD_TOP down from that figure's top.
+  const BAR_TOP = 4, FIELD_TOP = 8, COUNT_IN = 8, COUNT_TOP = 10, CAP = 17;
 
   // Colour arithmetic, for type set in or on a domain's colour. The marks take
   // the colour as it is, however little it stands off the black -- the
@@ -4681,13 +4700,14 @@ if (document.readyState === 'loading') {
     works.forEach(w => yearsOf1(w).forEach(y => load.set(y, (load.get(y) || 0) + natural(w) + VGAP)));
     const scale = new Map([...load].map(([y, l]) => [y, Math.min(SWELL, YEAR_H * working(y) / l)]));
     const thick = w => Math.min(MAX_T, Math.max(PX, natural(w) * Math.min(...yearsOf1(w).map(y => scale.get(y)))));
-    const CAP = step - YEAR_AIR;
+    // The widest a mark may stand in one year: its column, less YEAR_AIR.
+    const YEAR_W = step - YEAR_AIR;
     const marks = works.map(w => {
       const h = LINES ? thick(w) : SIDE;
       const c = colX(w[0]);
-      const half = Math.min(h, CAP) / 2;
+      const half = Math.min(h, YEAR_W) / 2;
       if (LINES && w[4] > w[0]) return { w, h, x0: c - half, x1: colX(w[4]) + half };
-      const len = Math.min(Math.max(h, LINES ? EST[w[3]] * step : 0), CAP);
+      const len = Math.min(Math.max(h, LINES ? EST[w[3]] * step : 0), YEAR_W);
       return { w, h, x0: c - len / 2, x1: c + len / 2 };
     });
 
@@ -4722,11 +4742,12 @@ if (document.readyState === 'loading') {
     // The keys, one to a domain, in a row, in the order the layers stand, the
     // order Bill took them up: graphic design first, product design last. Each
     // is a box of its domain's colour whose area is its domain's share of the
-    // works -- a square, or where a square would be wider than a column, a box
-    // one column wide and as tall as its area needs -- with its count in the
+    // works -- a square, or where a square would be wider than half a column,
+    // a box one column wide and as tall as its area needs -- with its count in the
     // box's top-right corner, and under it, in the row of names, the domain's
-    // name in its colour. Every key takes one column, left to right, and the
-    // count of all the works closes the row on the last column.
+    // name in its colour. Every key takes one column, left to right -- the
+    // tallest two, see the slots below -- and the count of all the works
+    // closes the row on the last column.
     const NS = 'http://www.w3.org/2000/svg';
     const probe = document.createElementNS(NS, 'svg');
     probe.setAttribute('style', 'position:absolute;left:0;top:0;visibility:hidden');
@@ -4741,18 +4762,32 @@ if (document.readyState === 'loading') {
       return width;
     };
     // Every box holds its own count in its top-right corner, COUNT_IN in from
-    // both edges, so the scale is set by the box that finds that hardest:
-    // the smallest box is made just big enough for its number, and every box
-    // is scaled with it, the area of each still its domain's share of the
-    // works. A box that would then be wider than a column keeps the column's
-    // width and grows taller instead, its area the same.
+    // its right edge and COUNT_TOP down from its top, so the scale is set by
+    // the box that finds that hardest: the smallest box is made just big
+    // enough for its number -- COUNT_IN clear of it on the left, and below --
+    // and every box is scaled with it, the area of each still its domain's
+    // share of the works. A box whose square would then be wider than half a
+    // column takes the column's whole width instead and stands as tall as its
+    // area needs, the area the same: the big practices stand as bars of one
+    // width, and only the small ones, too flat to hold their counts at a
+    // column's width, stay square.
     const unit = Math.max(...domains.map(d =>
-      Math.max(measure(String(d.n)), CAP) / Math.sqrt(d.n) + 2 * COUNT_IN / Math.sqrt(d.n)));
+      Math.max(measure(String(d.n)) + 2 * COUNT_IN, CAP + COUNT_TOP + COUNT_IN) / Math.sqrt(d.n)));
     probe.remove();
+    // A key whose box would stand more than twice as tall as a column is wide
+    // takes two columns and the gap between them, its area the same, rather
+    // than towering over the row: graphic design, which holds more works than
+    // the other five together. Its name and its year then run on one line.
+    const one = grid[0].w, two = grid[1].x + grid[1].w - grid[0].x;
+    let next = 0;
     const slots = domains.map((d, i) => {
       const area = unit * unit * d.n;
-      const w = Math.min(grid[0].w, Math.sqrt(area));
-      return { i, col: Math.min(i, grid.length - 2), w, h: area / w };
+      const side = Math.sqrt(area);
+      const span = side > one / 2 && area / one > 2 * one ? 2 : 1;
+      const w = span === 2 ? two : side > one / 2 ? one : side;
+      const col = next;
+      next += span;
+      return { i, col, span, w, h: area / w };
     });
 
     // The boxes, standing on the foot of their own figure.
@@ -4764,20 +4799,26 @@ if (document.readyState === 'loading') {
           '<rect class="bg-bar-box" x="' + x.toFixed(1) + '" y="' + top.toFixed(1) + '" width="' +
             k.w.toFixed(1) + '" height="' + k.h.toFixed(1) + '"/>' +
           '<text class="bg-bar-count" text-anchor="end" x="' + (x + k.w - COUNT_IN).toFixed(1) +
-            '" y="' + (top + COUNT_IN + CAP).toFixed(1) + '">' + d.n + '</text></g>';
+            '" y="' + (top + COUNT_TOP + CAP).toFixed(1) + '">' + d.n + '</text></g>';
       }).join('') + '</svg>';
 
     // The row of names: one toggle button to a domain, on its box's column --
     // pressed, it filters the field to its domain -- and the count of all the
     // works on the last column. The names are set at the size the boxes'
     // counts are drawn at, a name too wide for its column wrapping onto a
-    // second line.
+    // second line. Under them, on a row of their own, the year each practice
+    // began -- the year of its first work in the catalogue, which is sorted
+    // by the year begun. The first says what the row is; the rest carry on
+    // from it, 'in' and the year.
+    const firstYear = i => works.find(w => w[1] === i)[0];
     keysEl.innerHTML = slots.map(k => {
       const d = domains[k.i];
       return '<button type="button" class="bg-key" data-dom="' + k.i + '" aria-pressed="false"' +
         ' aria-label="' + esc(d.label + ', ' + d.n + ' works') + '" style="grid-column:' + (k.col + 1) +
-        ';--tc:' + legible(d.color) + '">' + esc(d.label) + '</button>';
-    }).join('') + '<p class="bg-total">' + works.length + ' works</p>';
+        ' / span ' + k.span + ';--tc:' + legible(d.color) + '">' + esc(d.label) + '</button>';
+    }).join('') + '<p class="bg-total">' + works.length + ' works</p>' +
+    slots.map((k, n) => '<p class="bg-first" data-dom="' + k.i + '" style="grid-column:' + (k.col + 1) +
+      ' / span ' + k.span + '">' + (n === 0 ? 'first work in ' : 'in ') + firstYear(k.i) + '</p>').join('');
     fig.style.setProperty('--bg-key', (24 / PX).toFixed(2) + 'px');
 
     // The field's own figure: the tallest column FIELD_TOP down from its top,
@@ -4798,19 +4839,25 @@ if (document.readyState === 'loading') {
       m.box = [x, y, w, h];
       dots[m.w[1]].push('<rect x="' + x.toFixed(2) + '" y="' + y.toFixed(2) +
         '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '"/>');
-      // The work this page is about carries the sculpture itself -- the folded
-      // band chapter one draws it as, white straight on its own red block, set
-      // inside the block's edge by STAR_INSET of its side. The image is
+      // The blocks in INLAYS carry an image. The work this page is about
+      // carries the sculpture itself -- the folded band chapter one draws it
+      // as, white straight on its own red block. The image is
       // assets/kontinuitat-mark.png: chapter one's math-fold.png cut out of its
-      // black ground onto transparency, cropped to the band and made small. It is kept in its domain's
+      // black ground onto transparency, cropped to the band and made small. The
+      // Ulm School carries its name, black on its own orange block. The image
+      // is assets/ulm-mark.png: the school's mark with its orange ground cut
+      // away onto transparency, so the letters stand on the block's own orange
+      // rather than on a near match of it, and cropped to the letters, so its
+      // corner is theirs. Each is kept in its domain's
       // group so it falls back and filters with the rest of them, and it never
       // takes the pointer from the field's own hit-testing.
-      if (m.w[0] === STAR[0] && m.w[2] === STAR[1]) {
-        const inset = Math.min(w, h) * STAR_INSET;
-        dots[m.w[1]].push('<image class="bg-star" href="./assets/kontinuitat-mark.png" x="' +
-          (x + inset).toFixed(2) + '" y="' + (y + inset).toFixed(2) + '" width="' +
-          (w - 2 * inset).toFixed(2) + '" height="' + (h - 2 * inset).toFixed(2) +
-          '" preserveAspectRatio="xMidYMid meet" pointer-events="none"/>');
+      const inlay = INLAYS.find(i => m.w[0] === i.year && m.w[2] === i.title);
+      if (inlay) {
+        const [ix, iy, iw, ih] = inlay.box(x, y, w, h);
+        dots[m.w[1]].push('<image class="bg-inlay" href="' + inlay.src + '" x="' +
+          ix.toFixed(2) + '" y="' + iy.toFixed(2) + '" width="' +
+          iw.toFixed(2) + '" height="' + ih.toFixed(2) +
+          '" preserveAspectRatio="' + inlay.fit + ' meet" pointer-events="none"/>');
       }
     });
 
@@ -4857,6 +4904,7 @@ if (document.readyState === 'loading') {
     const svg = plot.querySelector('svg');
     const hit = plot.querySelector('#bgHit');
     const keyBtns = keysEl.querySelectorAll('.bg-key');
+    const firsts = keysEl.querySelectorAll('.bg-first');
     const bars = barsEl.querySelectorAll('.bg-bar');
     const runs = plot.querySelectorAll('.bg-dots');
     let pointed = null;                        // the mark under the pointer
@@ -4881,7 +4929,7 @@ if (document.readyState === 'loading') {
         g.classList.toggle('off', pinned !== null && d !== asked);
         g.classList.toggle('dim', pinned === null && lit !== null && d !== lit);
       });
-      [...keyBtns, ...bars].forEach(k => {
+      [...keyBtns, ...bars, ...firsts].forEach(k => {
         k.classList.toggle('dim', lit !== null && +k.dataset.dom !== lit);
       });
       keyBtns.forEach(k => k.setAttribute('aria-pressed', +k.dataset.dom === pinned ? 'true' : 'false'));

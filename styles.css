@@ -58,6 +58,10 @@
      Struve at this weight and tracking, 390px at the ramp's floor, which is why
      a phone opens the menu upward instead. */
   --lang-type: clamp(22px, 2.2vw, 36px);
+  /* The pull-quotes' type: 46px on desktop, kept as a clamp so it still
+     scales down on narrow screens. Held at the root because the works
+     graph's heading is set at it too -- see .bill-graph-title. */
+  --quote-size: clamp(27px, 3.89vw, 46px);
 }
 @media (min-width: 901px) {
   :root { --corner-x: var(--rail-x); --corner-y: var(--rail-x); }
@@ -4038,11 +4042,12 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    The plot is one SVG on a viewBox, so it scales with the column and carries
    no breakpoint of its own. The figure is drawn for the desktop measure. */
 .bill-reveal {
+  --bill-air: 100px;            /* the panel's air above and below the figure */
   background: var(--black);
   color: #fff;
   min-height: 100vh;
   width: 100%;
-  padding: 100px 0;
+  padding: var(--bill-air) 0;
   position: relative;
   display: flex;
   align-items: center;
@@ -4052,6 +4057,25 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    measure rather than shrink to fit the figure inside it. */
 .bill-reveal > .container { width: 100%; }
 .bill-graph { margin: 0; width: 100%; }
+/* The figure's heading, set as the pull-quotes are -- their size, weight,
+   leading and tracking, and lower case -- in white on the panel's black. It
+   stands on column one and is lifted out of the figure's top into the panel's
+   air, to stand as far from the panel's top edge as the columns stand from
+   its side: the gutter. Lifted by an offset rather than a margin, so the room
+   it takes in the figure stays where it was -- the boxes do not move and the
+   panel keeps its height. */
+.bill-graph-title {
+  position: relative;
+  top: calc(var(--gutter) - var(--bill-air));
+  margin: 0 0 calc(1.043 * var(--quote-size));
+  font-family: var(--sans);
+  font-size: var(--quote-size);
+  font-weight: 700;
+  line-height: 1.043;
+  letter-spacing: -0.7px;
+  text-transform: lowercase;
+  color: #fff;
+}
 /* Measuring rule, row of names and foot sit on the page's eight columns, the
    same grid the figures between them are drawn on. */
 .bill-graph-grid,
@@ -4079,6 +4103,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   padding: 24px 0 16px;
   background: var(--black);
   align-items: baseline;
+  /* Half a line of the names' size between them and the years under them. */
+  row-gap: calc(0.5 * var(--bg-key, 24px));
 }
 /* The two parts of the figure stand 200px apart. */
 .bill-graph-plot { margin-top: 200px; }
@@ -4101,6 +4127,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   color: var(--tc);
   cursor: pointer;      /* the hand, as over the rail and the transport */
   transition: opacity 0.4s ease;
+  grid-row: 1;
 }
 .bg-key:focus { outline: none; }
 .bg-key:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
@@ -4108,12 +4135,30 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    column, in the figure's one voice. */
 .bg-total {
   grid-column: -2 / -1;
+  grid-row: 1;
   margin: 0;
   font-family: var(--sans);
   font-weight: 500;
   font-size: clamp(20px, 1.7vw, 26px);
   letter-spacing: -0.005em;
   color: #fff;
+}
+/* Under the names, the year each practice began, set as the readout's legend
+   at rest is -- the figure's one voice, standing back at 35% -- at the names'
+   size, and falling back with its name. The years share one line, which the
+   row stands on; the first, which says what they are, spans its key's two
+   columns and runs on it too. */
+.bg-first {
+  grid-row: 2;
+  align-self: end;
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--bg-key, 24px);
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+  color: rgba(255, 255, 255, 0.35);
+  transition: opacity 0.4s ease;
 }
 
 /* The foot holds the readout -- the work under the pointer. It is set in the
@@ -4205,7 +4250,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bg-dots.dim { opacity: 0.1; }
 .bg-dots.off { opacity: 0; }
 .bg-key.dim,
-.bg-bar.dim { opacity: 0.25; }
+.bg-bar.dim,
+.bg-first.dim { opacity: 0.25; }
 
 /* The field arrives as a wipe across the years rather than a fade, so the
    figure is read left to right the first time as well. The mask rect's width
@@ -4236,8 +4282,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    higher WCAG contrast on that ground: on #00934C black wins (5.28 vs 3.98),
    on #002BDE white wins (8.75 vs 2.40). */
 .quote-band {
-  /* 46px on desktop, kept as a clamp so it still scales down on narrow screens. */
-  --quote-size: clamp(27px, 3.89vw, 46px);
   padding: 177px 0;
 }
 /* Body copy meets a band at the same distance one paragraph sits from the
