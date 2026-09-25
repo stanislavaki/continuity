@@ -75,7 +75,7 @@ DOMAINS = [
     ('architecture', 'architecture',     '#FFB8EE'),
     ('books',      'books & prints',     '#FE8C01'),
     ('product',    'product design',     '#FFD500'),
-    ('drawing',    'drawings & objects', '#25DDDB'),
+    ('drawing',    'drawings & graphic design', '#25DDDB'),
 ]
 IDX = {k: i for i, (k, _, _) in enumerate(DOMAINS)}
 
@@ -342,9 +342,9 @@ def main():
     years = [w[0] for w in works]
     print(f'{len(works)} works, {min(years)}-{max(years)} -> {OUT}')
     tiered = collections.Counter((w[1], w[3]) for w in works)
-    print(f'  {"":24s}' + ''.join(f'{t:>8s}' for t in TIERS))
+    print(f'  {"":32s}' + ''.join(f'{t:>8s}' for t in TIERS))
     for i, (_, label, _) in enumerate(DOMAINS):
-        print(f'  {per_domain[i]:4d}  {label:18s}' +
+        print(f'  {per_domain[i]:4d}  {label:26s}' +
               ''.join(f'{tiered[(i, t)] or "":>8}' for t in range(len(TIERS))))
     for reason, n in dropped.items():
         print(f'  dropped {n}: {reason}')

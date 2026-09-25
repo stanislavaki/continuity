@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=103" />
+<link rel="stylesheet" href="styles.css?v=106" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -4486,8 +4486,7 @@ if (document.readyState === 'loading') {
 // up that year's column and coloured by domain -- so a building that ran five
 // years weighs five years in the field, and a business card weighs a dot. Seven labels
 // stand down the left, one to a domain and set in its colour, and while one is
-// under the pointer a thread runs from the field's left edge into every year
-// that domain was at work.
+// under the pointer that domain's marks stay lit and the rest fall back.
 //
 // The whole figure is laid on the page's own eight columns: the labels take
 // columns one and two, the field takes three to eight. The column positions are
@@ -4532,10 +4531,14 @@ if (document.readyState === 'loading') {
   const YEAR_AIR = 3;          // what a year-long mark leaves of its column
   const BORN = 1908;           // Max Bill, 1908-1994
   // The keys are set bottom-up from the field's foot rather than down from its
-  // head: the first of them sits on the line the columns stand on, so the block
-  // and the field share an edge. LIFT is the drop from a key's own line to its
-  // baseline, so the type sits on that edge rather than hanging off it.
-  const NODE_DY = 76, LIFT = 8;
+  // head: the first of them stands on the line the columns stand on, so the
+  // block and the field share an edge. Each key is a label and its count in a
+  // frame FRAME_H tall, the type PADX in from the frame's left side and SINK up
+  // from its foot to the baseline.
+  const NODE_DY = 76, FRAME_H = 44, PADX = 12, SINK = 14;
+  // A label too long for a frame in columns one and two wraps onto a second
+  // line above its own, LINE up -- see the labels in render().
+  const LINE = 28;
 
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
                             .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -4552,6 +4555,9 @@ if (document.readyState === 'loading') {
 
   let data = null;
   let held = null;             // a label under the pointer outranks the field
+  // A pressed label filters the field to its own domain until it is pressed
+  // again. It outlives a redraw, so a resize keeps the reader where they were.
+  let pinned = null;
 
   // The type inside the SVG is set in the plot's own units, which scale with
   // the figure -- so to keep the axis at the size the readout is set at, the
@@ -4576,9 +4582,9 @@ if (document.readyState === 'loading') {
     const step = (X1 - X0) / span;
     const colX = y => X0 + (y - y0 + 0.5) * step;
     // The labels stand in the order the dots stack in, so the first domain,
-    // typography, stands at the foot, level with the run it names at the foot
-    // of every column.
-    const nodeY = i => BASE - LIFT - i * NODE_DY;
+    // typography, stands at the foot, its frame on the line its runs stand on
+    // at the foot of every column.
+    const footY = i => BASE - i * NODE_DY;
 
     // One mark to a work: a dot on the year it was begun, drawn out along the
     // years for as long as it took. Where the catalogue dates a work as a
@@ -4616,25 +4622,6 @@ if (document.readyState === 'loading') {
         '" width="' + (m.x1 - m.x0).toFixed(1) + '" height="' + SIDE + '" rx="' + SIDE / 2 + '"/>');
     });
 
-    // A flat S from the field's own left edge to the foot of each domain's run
-    // in each year, the lowest mark begun that year: both ends leave
-    // horizontally, so the fan opens rather than kinks. Every thread starts on
-    // column three, where the years start, so the fan is gathered on the line
-    // the field opens on.
-    const footOf = new Map();                  // domain|year -> its lowest mark
-    marks.forEach(m => {
-      const k = m.w[1] + '|' + m.w[0], f = footOf.get(k);
-      if (!f || m.cy > f.cy) footOf.set(k, m);
-    });
-    const threads = domains.map(() => []);     // per domain: one path per year
-    footOf.forEach(m => {
-      const sx = X0, sy = nodeY(m.w[1]), ex = colX(m.w[0]), ey = m.cy, dx = ex - sx;
-      threads[m.w[1]].push('<path d="M' + sx.toFixed(1) + ',' + sy +
-        'C' + (sx + dx * 0.55).toFixed(1) + ',' + sy + ' ' +
-        (ex - dx * 0.35).toFixed(1) + ',' + ey.toFixed(1) + ' ' +
-        ex.toFixed(1) + ',' + ey.toFixed(1) + '"/>');
-    });
-
     // Decade guides, and under the field's foot the year they mark with Bill's
     // own age beneath it -- the second row turns the timeline into a life, so a
     // column can be read as a point in it rather than only as a date.
@@ -4652,46 +4639,82 @@ if (document.readyState === 'loading') {
 
     // No rule under the columns: they stand on a line the decade guides already
     // stop at, and the marks' own feet draw it more plainly than a stroke did.
-    let field = '<g mask="url(#bgWipe)">' + guides;
-    domains.forEach((d, i) => {
-      field += '<g class="bg-threads" data-dom="' + i + '" stroke="' + d.color + '">' +
-               threads[i].join('') + '</g>';
-    });
+    let field = '<g mask="url(#bgWipe)" aria-hidden="true">' + guides;
     domains.forEach((d, i) => {
       field += '<g class="bg-dots" data-dom="' + i + '" fill="' + d.color + '">' +
                dots[i].join('') + '</g>';
     });
     field += '<rect class="bg-hit" id="bgHit" height="' + (SIDE + 6) + '" rx="' + (SIDE + 6) / 2 + '"/></g>';
 
-    // The labels, one to a domain, flush on the first column and set in the domain's own
-    // colour -- the colour key is the label rather than a swatch beside it.
-    // Name and count run on one line, three spaces apart, which is why the text
-    // preserves its whitespace: the gap is set in the string rather than
-    // measured out, so it stays three spaces of whatever the line is set in.
-    // The transparent rect is what the pointer actually finds, and it takes the
-    // labels' whole block rather than the line alone.
+    // The labels, one to a domain, each in a frame standing on the first
+    // column and set in the domain's own colour -- the colour key is the label
+    // rather than a swatch beside it. Name and count run on one line, three
+    // spaces apart, which is why the text preserves its whitespace: the gap is
+    // set in the string rather than measured out, so it stays three spaces of
+    // whatever the line is set in. Each key is a toggle button: pressed, it
+    // filters the field to its domain. The frame is what the pointer finds.
+    // Its width is set once the type has been measured, below.
+    // They are written top first, the way the list reads, so the keyboard and
+    // a screen reader meet them in the order the eye does; where each stands
+    // comes from its index, not from its place in the markup.
     let nodes = '';
-    domains.forEach((d, i) => {
-      const y = nodeY(i);
-      nodes += '<g class="bg-node" data-dom="' + i + '" fill="' + d.color + '">' +
-        '<rect x="0" y="' + (y - 34) + '" width="' + KEY_W.toFixed(1) + '" height="68" fill="transparent"/>' +
-        '<text x="0" y="' + (y + LIFT) + '" xml:space="preserve">' +
+    domains.map((d, i) => [d, i]).reverse().forEach(([d, i]) => {
+      const foot = footY(i);
+      nodes += '<g class="bg-node" data-dom="' + i + '" role="button" tabindex="0" aria-pressed="false"' +
+        ' aria-label="' + esc(d.label + ', ' + d.n + ' works') + '" style="--c:' + d.color + '"' +
+        ' fill="' + d.color + '">' +
+        '<rect class="bg-node-frame" x="0" y="' + (foot - FRAME_H) + '" width="' + KEY_W.toFixed(1) +
+        '" height="' + FRAME_H + '"/>' +
+        '<text x="' + PADX + '" y="' + (foot - SINK) + '" xml:space="preserve">' +
         '<tspan class="bg-node-label">' + esc(d.label) + '</tspan>' +
         '<tspan class="bg-node-count">   ' + d.n + '</tspan></text></g>';
     });
 
     plot.innerHTML =
-      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' +
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="' +
       esc(works.length + ' works by Max Bill, ' + y0 + ' to ' + y1 +
           (LINES ? ', each a dot on the year it was begun, drawn out for as long as it took, by domain: '
                  : ', one dot each, by year and domain: ') +
           domains.map(d => d.n + ' ' + d.label).join(', ')) + '">' +
-      // The mask opens across the whole plot, not just the field: the threads
-      // leave the nodes at the foot of column two, so a mask that began at the
-      // field's own left edge would cut the first stretch off every one.
+      // The field arrives through this mask, as a wipe across the years -- see
+      // .bg-wipe-rect.
       '<defs><mask id="bgWipe" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">' +
       '<rect class="bg-wipe-rect" x="0" y="0" height="' + H + '" fill="#fff"/></mask></defs>' +
       field + nodes + '</svg>';
+
+    // Each frame is fitted to its type once the type can be measured. A label
+    // too long for a frame inside columns one and two wraps, as a line of text
+    // would in a measure that narrow, rather than running on into the field.
+    // The last words keep the label's own line, with the count, level with
+    // every other label; the first words step up a line above them, where the
+    // block has room, and the frame grows up by that line. A line never opens
+    // on the ampersand.
+    const ROOM = KEY_W - 2 * PADX;
+    plot.querySelectorAll('.bg-node').forEach(node => {
+      const text = node.querySelector('text');
+      const frame = node.querySelector('.bg-node-frame');
+      if (text.getBBox().width > ROOM) {
+        const own = node.querySelector('.bg-node-label');
+        const words = own.textContent.split(' ');
+        const up = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        up.setAttribute('class', 'bg-node-label');
+        up.setAttribute('x', PADX);
+        up.setAttribute('dy', -LINE);
+        text.insertBefore(up, own);
+        own.setAttribute('x', PADX);
+        own.setAttribute('dy', LINE);
+        for (let k = 1; k < words.length; k++) {
+          if (words[k] === '&') continue;
+          up.textContent = words.slice(0, k).join(' ');
+          own.textContent = words.slice(k).join(' ');
+          if (text.getBBox().width <= ROOM) break;
+        }
+        frame.setAttribute('y', +frame.getAttribute('y') - LINE);
+        frame.setAttribute('height', FRAME_H + LINE);
+      }
+      const box = text.getBBox();
+      frame.setAttribute('width', Math.min(KEY_W, box.x + box.width + PADX).toFixed(1));
+    });
 
     plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
 
@@ -4705,38 +4728,60 @@ if (document.readyState === 'loading') {
 
     const svg = plot.querySelector('svg');
     const hit = plot.querySelector('#bgHit');
-    const groups = plot.querySelectorAll('.bg-dots, .bg-threads, .bg-node');
-
-    // Focus: hold one domain and let the rest fall back.
-    function focus(d) {
-      if (d === null) { delete fig.dataset.focus; } else { fig.dataset.focus = d; }
-      groups.forEach(g => {
-        const mine = d !== null && +g.dataset.dom === d;
-        g.classList.toggle('dim', d !== null && !mine);
-        g.classList.toggle('lit', mine);
-      });
-    }
+    const keys = plot.querySelectorAll('.bg-node');
+    const runs = plot.querySelectorAll('.bg-dots');
+    let pointed = null;                        // the mark under the pointer
 
     // At rest the readout states the encoding and nothing else.
     const REST = LINES ? '<i>one dot = one work, drawn out for as long as it took</i>'
                        : '<i>one dot = one work</i>';
-    read.innerHTML = REST;
+
+    // One place decides what the figure shows. A label under the pointer asks
+    // for its domain; failing that, a pressed label keeps its own; failing
+    // that, a mark under the pointer lights the domain it belongs to. Filtered,
+    // every other domain's marks are gone rather than held back, so the field
+    // answers only for the one domain left in it. The readout follows: the
+    // work under the pointer, else the domain asked for, else the encoding.
+    function paint() {
+      const asked = held ?? pinned;
+      const lit = asked ?? (pointed ? pointed.w[1] : null);
+      runs.forEach(g => {
+        const d = +g.dataset.dom;
+        g.classList.toggle('off', pinned !== null && d !== asked);
+        g.classList.toggle('dim', pinned === null && lit !== null && d !== lit);
+      });
+      keys.forEach(k => {
+        const d = +k.dataset.dom;
+        k.setAttribute('aria-pressed', d === pinned ? 'true' : 'false');
+        k.classList.toggle('dim', lit !== null && d !== lit);
+      });
+      hit.classList.toggle('on', !!pointed && held === null);
+      if (pointed && held === null) say(pointed.w);
+      else if (asked !== null) sum(asked);
+      else { read.innerHTML = REST; read.style.color = ''; }
+    }
 
     // The year and the piece, and nothing else: the domain is already named down
     // the left, so the line says which one it belongs to by taking its colour
     // rather than by repeating its name.
     function say(work) {
-      if (!work) { read.innerHTML = REST; read.style.color = ''; return; }
       read.style.color = domains[work[1]].color;
       read.innerHTML = '<b>' + (work[4] > work[0] ? work[0] + '—' + work[4] : work[0]) +
         '</b><span>' + esc(work[2]) + '</span>';
+    }
+    // A domain: how many works, what it is, the years it was at work.
+    function sum(d) {
+      read.style.color = domains[d].color;
+      read.innerHTML = '<b>' + domains[d].n + '</b><span>' + esc(domains[d].label) +
+        '</span><i>' + esc(yearsOf(d)) + '</i>';
     }
 
     // Hit-testing is done on the lane arithmetic rather than on the marks
     // themselves: a dot is 5 units across and the page hides the system cursor,
     // so asking the browser which one is under the pointer would mostly answer
     // none. The height gives the lane, and in it the nearest mark answers, as
-    // far as half a column to either side of it.
+    // far as half a column to either side of it. Filtered, only the marks still
+    // drawn can answer.
     function at(ev) {
       const r = svg.getBoundingClientRect();
       const k = W / r.width;
@@ -4747,6 +4792,7 @@ if (document.readyState === 'loading') {
       if (!lane) return null;
       let best = null, off = step / 2;
       lane.forEach(m => {
+        if (pinned !== null && m.w[1] !== pinned) return;
         const d = Math.max(m.x0 - ux, ux - m.x1, 0);
         if (d <= off) { off = d; best = m; }
       });
@@ -4757,35 +4803,42 @@ if (document.readyState === 'loading') {
     svg.addEventListener('pointermove', ev => {
       if (held !== null) return;
       const m = at(ev);
-      if (!m) { hit.classList.remove('on'); say(null); focus(null); return; }
-      hit.setAttribute('x', (m.x0 - 3).toFixed(1));
-      hit.setAttribute('y', (m.cy - SIDE / 2 - 3).toFixed(1));
-      hit.setAttribute('width', (m.x1 - m.x0 + 6).toFixed(1));
-      hit.setAttribute('stroke', domains[m.w[1]].color);
-      hit.classList.add('on');
-      say(m.w);
-      focus(m.w[1]);
+      if (m === pointed) return;
+      pointed = m;
+      if (m) {
+        hit.setAttribute('x', (m.x0 - 3).toFixed(1));
+        hit.setAttribute('y', (m.cy - SIDE / 2 - 3).toFixed(1));
+        hit.setAttribute('width', (m.x1 - m.x0 + 6).toFixed(1));
+        hit.setAttribute('stroke', domains[m.w[1]].color);
+      }
+      paint();
     });
     svg.addEventListener('pointerleave', () => {
       if (held !== null) return;
-      hit.classList.remove('on'); say(null); focus(null);
+      pointed = null; paint();
     });
 
-    plot.querySelectorAll('.bg-node').forEach(node => {
-      const d = +node.dataset.dom;
-      node.addEventListener('pointerenter', () => {
-        // data-node, not just the focus: the fan belongs to the label, so it is
-        // drawn for a label under the pointer and not for a dot out in the field.
-        held = d; fig.dataset.node = d;
-        hit.classList.remove('on'); focus(d);
-        read.style.color = domains[d].color;
-        read.innerHTML = '<b>' + domains[d].n + '</b><span>' + esc(domains[d].label) +
-          '</span><i>' + esc(yearsOf(d)) + '</i>';
-      });
-      node.addEventListener('pointerleave', () => {
-        held = null; delete fig.dataset.node; focus(null); say(null);
+    // A press toggles the filter: pressing a key filters the field to its
+    // domain, pressing it again lets every domain back, and pressing another
+    // moves the filter there. Enter and Space press a focused key, as they
+    // would a button.
+    const press = d => {
+      pinned = pinned === d ? null : d;
+      if (pointed && pinned !== null && pointed.w[1] !== pinned) pointed = null;
+      paint();
+    };
+    keys.forEach(key => {
+      const d = +key.dataset.dom;
+      key.addEventListener('pointerenter', () => { held = d; pointed = null; paint(); });
+      key.addEventListener('pointerleave', () => { held = null; paint(); });
+      key.addEventListener('click', () => press(d));
+      key.addEventListener('keydown', ev => {
+        if (ev.key !== 'Enter' && ev.key !== ' ') return;
+        ev.preventDefault();
+        press(d);
       });
     });
+    paint();
 
     function yearsOf(d) {
       const ws = works.filter(w => w[1] === d);
@@ -4817,7 +4870,10 @@ if (document.readyState === 'loading') {
     io.disconnect();
     fetch('./assets/bill-works.json')
       .then(r => r.json())
-      .then(d => { data = d; render(); })
+      // The labels are measured to be wrapped, so the figure is drawn once the
+      // page's own fonts are in rather than against a fallback's widths.
+      .then(d => { data = d; return document.fonts.ready; })
+      .then(render)
       .catch(() => { plot.innerHTML = ''; });
   }, { rootMargin: '600px 0px' });
   io.observe(fig);

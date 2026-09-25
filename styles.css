@@ -4025,14 +4025,14 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 
 /* Bill · what he made, and when -------------------------------------------
-   A dot to a catalogued work: across for the year it was begun, stacked up
-   that year's column, coloured by domain. Six nodes stand down the left, one
-   to a domain, and a thread runs from each node into every year that domain
-   was at work -- kept faint until the domain is under the pointer, which is
-   when a single practice's rhythm is worth following.
+   A mark to a catalogued work: a dot on the year it was begun, drawn out for
+   as long as it took, stacked up that year's column, coloured by domain. The
+   labels stand down the left, one to a domain; pointing at one keeps that
+   practice's marks lit and lets the rest fall back, which is when a single
+   practice's rhythm is worth following.
 
    Black, like the quote bands: the section already stood as its own panel in
-   the middle of a light run, and the plot's six signal colours only separate
+   the middle of a light run, and the plot's seven signal colours only separate
    on a dark ground.
 
    The plot is one SVG on a viewBox, so it scales with the column and carries
@@ -4128,7 +4128,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    behind a label. Set below the age row under the plot -- these are the two
    things in the figure that are there to be found rather than read. */
 .bill-graph-read i { font-style: normal; opacity: 0.35; }
-.bill-graph-read b { font-weight: inherit; }
+/* The year never gives way to a long title: a range like 1964—1974 stays on
+   one line and the title wraps beside it instead. */
+.bill-graph-read b { font-weight: inherit; white-space: nowrap; flex: none; }
 
 /* ---- the plot's own parts, all inside the one SVG ---- */
 .bg-guide { stroke: #fff; stroke-opacity: 0.14; stroke-width: 1; }
@@ -4148,11 +4150,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* The age row stands back from the decade above it -- same setting, less ink,
    so the two are read in order rather than at once. */
 .bg-age { fill-opacity: 0.6; }
-/* One thread to a domain-year: the fan says, per practice, which years it was
-   alive in. It is drawn only while that practice's own label is under the
-   pointer -- at rest the field of dots stands on its own, and the fan is the
-   answer to a question rather than something laid over the reading. */
-.bg-threads { fill: none; stroke-width: 0.7; stroke-opacity: 0; transition: stroke-opacity 0.4s ease; }
 .bg-dots { transition: opacity 0.4s ease; }
 /* Label and count share one style: the node is a two-line mark, not a caption
    with a figure under it. Both sit flush on the plot's x=0, which is the
@@ -4166,20 +4163,35 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   font-size: 24px;
   letter-spacing: -0.02em;
 }
-/* A transparent fill is hit-tested, but say so outright rather than rely on it:
-   this rect is the whole of the label block's target. */
-.bg-node rect { pointer-events: all; }
-.bg-node { cursor: none; }
+/* Each key is a toggle button in a frame of its own colour. The frame is the
+   key's target -- a transparent fill is hit-tested, but say so outright rather
+   than rely on it -- and pressed, it fills with the colour and the type turns
+   to the panel's black, so the one domain the field is filtered to reads as
+   pressed from across the figure. */
+.bg-node { cursor: none; outline: none; }
+.bg-node-frame {
+  fill: transparent;
+  stroke: var(--c);
+  stroke-width: 1.5;
+  pointer-events: all;
+  transition: fill 0.25s ease, fill-opacity 0.4s ease, stroke-opacity 0.4s ease;
+}
+.bg-node[aria-pressed="true"] .bg-node-frame { fill: var(--c); }
+.bg-node[aria-pressed="true"] .bg-node-label,
+.bg-node[aria-pressed="true"] .bg-node-count { fill: var(--black); }
+/* Reached from the keyboard, the frame draws heavier instead of taking the
+   browser's ring, which would sit on the SVG's box rather than the frame. */
+.bg-node:focus-visible .bg-node-frame { stroke-width: 3; }
 .bg-hit { fill: none; stroke: #fff; stroke-width: 1.5; opacity: 0; transition: opacity 0.15s ease; }
 .bg-hit.on { opacity: 1; }
 
-/* Focus: one domain lit, the rest held back far enough to read through. */
-.bill-graph[data-focus] .bg-dots.dim { opacity: 0.1; }
-/* data-node is set only by a label under the pointer, never by a dot out in the
-   field -- which is what keeps the fan to the labels. */
-.bill-graph[data-node] .bg-threads.lit { stroke-opacity: 0.5; }
-.bill-graph[data-focus] .bg-node.dim .bg-node-label,
-.bill-graph[data-focus] .bg-node.dim .bg-node-count { fill-opacity: 0.25; }
+/* Focus: one domain lit, the rest held back far enough to read through. A
+   filter goes further and takes the rest out of the field altogether. */
+.bg-dots.dim { opacity: 0.1; }
+.bg-dots.off { opacity: 0; }
+.bg-node.dim .bg-node-label,
+.bg-node.dim .bg-node-count { fill-opacity: 0.25; }
+.bg-node.dim .bg-node-frame { stroke-opacity: 0.25; fill-opacity: 0.25; }
 
 /* The field arrives as a wipe across the years rather than a fade, so the
    figure is read left to right the first time as well. The mask rect's width
