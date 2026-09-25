@@ -4062,8 +4062,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    stands on column one and is lifted out of the figure's top into the panel's
    air, to stand as far from the panel's top edge as the columns stand from
    its side: the gutter. Lifted by an offset rather than a margin, so the room
-   it takes in the figure stays where it was -- the boxes do not move and the
-   panel keeps its height. */
+   it takes in the figure stays where it was -- the row of names does not move
+   and the panel keeps its height. */
 .bill-graph-title {
   position: relative;
   top: calc(var(--gutter) - var(--bill-air));
@@ -4089,9 +4089,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    is never drawn; it exists so the SVG can ask the page where the columns fall
    rather than recompute --col-gap and --gutter for itself. */
 .bill-graph-grid { height: 0; visibility: hidden; pointer-events: none; }
-.bill-graph-bars svg,
 .bill-graph-plot svg { width: 100%; height: auto; display: block; }
-/* The row of names under the boxes. Sticky: once it reaches the top of the
+/* The row of names over the field. Sticky: once it reaches the top of the
    screen it stays there, over the field scrolling up under it, until the
    figure is done. Held to the very top with its air carried as padding, as
    the journey's dates are, on the panel's black so nothing scrolling under
@@ -4100,18 +4099,23 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   position: sticky;
   top: 0;
   z-index: 3;
-  padding: 24px 0 16px;
+  padding: 24px 0 48px;
   background: var(--black);
   align-items: baseline;
-  /* Half a line of the names' size between them and the years under them. */
-  row-gap: calc(0.5 * var(--bg-key, 24px));
 }
-/* The two parts of the figure stand 200px apart. */
-.bill-graph-plot { margin-top: 200px; }
+/* The names run on one line, 30px apart, from column one to the count on the
+   last column. */
+.bg-names {
+  grid-column: 1 / -2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 30px;
+}
 /* A name is a toggle button: pressed, it filters the field to its domain. Set
-   at the size of the boxes' counts, in the domain's colour, lifted where that
-   colour is too dark to read on the black; a name too wide for its column
-   wraps. */
+   at 24 of the plot's units (--bg-key, from billGraph()), in the domain's
+   colour, lifted where that colour is too dark to read on the black, and kept
+   whole on its line. */
 .bg-key {
   appearance: none;
   margin: 0;
@@ -4125,17 +4129,16 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   line-height: 1.15;
   letter-spacing: -0.02em;
   color: var(--tc);
+  white-space: nowrap;
   cursor: pointer;      /* the hand, as over the rail and the transport */
   transition: opacity 0.4s ease;
-  grid-row: 1;
 }
 .bg-key:focus { outline: none; }
 .bg-key:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
-/* The count of all the works the boxes add up to, closing the row on the last
+/* The count of all the works the names add up to, closing the row on the last
    column, in the figure's one voice. */
 .bg-total {
   grid-column: -2 / -1;
-  grid-row: 1;
   margin: 0;
   font-family: var(--sans);
   font-weight: 500;
@@ -4143,24 +4146,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   letter-spacing: -0.005em;
   color: #fff;
 }
-/* Under the names, the year each practice began, set as the readout's legend
-   at rest is -- the figure's one voice, standing back at 35% -- at the names'
-   size, and falling back with its name. The years share one line, which the
-   row stands on; the first, which says what they are, spans its key's two
-   columns and runs on it too. */
-.bg-first {
-  grid-row: 2;
-  align-self: end;
-  margin: 0;
-  font-family: var(--sans);
-  font-weight: 500;
-  font-size: var(--bg-key, 24px);
-  line-height: 1.15;
-  letter-spacing: -0.005em;
-  color: rgba(255, 255, 255, 0.35);
-  transition: opacity 0.4s ease;
-}
-
 /* The foot holds the readout -- the work under the pointer. It is set in the
    figure's one voice: the same face, weight, size, leading and tracking as the
    count and span above the plot and the labels down its left.
@@ -4230,18 +4215,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* One mark to a work, square at the corners, its edges on whole pixels -- the
    script snaps them there, and this keeps the browser from blurring them. */
 .bg-dots rect { shape-rendering: crispEdges; }
-/* A box's count, set on the box in black or white, whichever the script finds
-   stands off its colour more. */
-.bg-bar-count {
-  font-family: var(--sans);
-  font-weight: 700;
-  font-size: 24px;
-  letter-spacing: -0.02em;
-  fill: var(--ink, var(--black));
-}
-/* A box presses its key as its name does. */
-.bg-bar { cursor: pointer; transition: opacity 0.4s ease; }
-.bg-bar-box { fill: var(--c); }
 .bg-hit { fill: none; stroke: #fff; stroke-width: 1.5; opacity: 0; transition: opacity 0.15s ease; }
 .bg-hit.on { opacity: 1; }
 
@@ -4249,9 +4222,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    filter goes further and takes the rest out of the field altogether. */
 .bg-dots.dim { opacity: 0.1; }
 .bg-dots.off { opacity: 0; }
-.bg-key.dim,
-.bg-bar.dim,
-.bg-first.dim { opacity: 0.25; }
+.bg-key.dim { opacity: 0.25; }
 
 /* The field arrives as a wipe across the years rather than a fade, so the
    figure is read left to right the first time as well. The mask rect's width
