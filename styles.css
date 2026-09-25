@@ -4101,7 +4101,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 
 /* The foot holds the readout -- the work under the pointer. It is set in the
    figure's one voice: the same face, weight, size, leading and tracking as the
-   count and span above the plot and the six labels down its left.
+   count and span above the plot and the labels down its left.
    Its height is held at two lines. The longest title in the catalogue runs to
    96 characters, which is wider than columns three to eight at this size, so
    some works wrap -- and the panel centres its contents, so a line arriving or
@@ -4171,8 +4171,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bg-node rect { pointer-events: all; }
 .bg-node { cursor: none; }
 .bg-hit { fill: none; stroke: #fff; stroke-width: 1.5; opacity: 0; transition: opacity 0.15s ease; }
-/* One dot to a work -- drawn square, and squared off at the corners too. */
-.bg-dots rect { shape-rendering: crispEdges; }
 .bg-hit.on { opacity: 1; }
 
 /* Focus: one domain lit, the rest held back far enough to read through. */

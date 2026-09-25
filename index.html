@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=102" />
+<link rel="stylesheet" href="styles.css?v=103" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -301,8 +301,10 @@
   </section>
 
   <!-- Bill · what he made, and when -------------------------------------
-       941 catalogued works, one dot to a work: across for the year it was
-       begun, stacked up its column, coloured by the domain it belongs to.
+       963 catalogued works, one mark to a work: a dot on the year it was
+       begun, drawn out along the years for as long as it took, stacked up
+       its column and coloured by the domain it belongs to. ?marks=dots draws
+       every work as the same dot, for comparison.
        The plot is drawn by billGraph() at the foot of the script, from
        assets/bill-works.json -- built by scripts/build_bill_works.py out of
        the art data set and Fleischmann's catalogue of the typographic work. -->
@@ -310,8 +312,8 @@
     <div class="container">
       <figure class="bill-graph reveal" id="billGraph">
         <div class="bill-graph-head">
-          <p class="bill-graph-count">941 works</p>
-          <p class="bill-graph-span"><span>1925</span><span class="bill-graph-dash" aria-hidden="true"></span><span>1996</span></p>
+          <p class="bill-graph-count" id="billGraphCount">963 works</p>
+          <p class="bill-graph-span"><span>1925</span><span class="bill-graph-dash" aria-hidden="true"></span><span>1997</span></p>
         </div>
         <!-- Eight empty cells on the page's own grid, laid across the figure's
              measure. The plot measures its columns off them, so the SVG sits on
@@ -4479,8 +4481,10 @@ if (document.readyState === 'loading') {
 }
 
 // ========== Bill · what he made, and when ==========
-// The graph in #billReveal. One dot to a catalogued work: across for the year
-// Bill began it, stacked up that year's column, coloured by domain. Six labels
+// The graph in #billReveal. One mark to a catalogued work: a dot on the year
+// Bill began it, drawn out along the years for as long as the work took, stacked
+// up that year's column and coloured by domain -- so a building that ran five
+// years weighs five years in the field, and a business card weighs a dot. Seven labels
 // stand down the left, one to a domain and set in its colour, and while one is
 // under the pointer a thread runs from the field's left edge into every year
 // that domain was at work.
@@ -4493,7 +4497,7 @@ if (document.readyState === 'loading') {
 //
 // The data is assets/bill-works.json, built by scripts/build_bill_works.py out
 // of two catalogues that were kept from overlapping -- the art data set for the
-// paintings, sculptures, drawings, books and objects, and Fleischmann's
+// paintings, sculptures, buildings, drawings, books and objects, and Fleischmann's
 // catalogue for the 570 pieces of typographic work.
 (function billGraph() {
   const fig = document.getElementById('billGraph');
@@ -4510,14 +4514,25 @@ if (document.readyState === 'loading') {
   const BASE = 616;            // the columns' foot
   // One mark to the next, up a column, and the mark itself. The whole height of
   // the figure comes out of these two: 1931 holds 101 works, so the field is
-  // 101 pitches tall and everything else is set below it. A 5 square on a 5.8
-  // pitch leaves 0.8 between marks -- half the air the 6.8 square had, and a
-  // third off the tallest column, which falls from 889 units to 586.
+  // 101 pitches tall and everything else is set below it. A dot 5 across on a
+  // 5.8 pitch leaves 0.8 between marks -- half the air the 6.8 square had, and
+  // a third off the tallest column, which falls from 889 units to 586. The
+  // marks were squares until they were drawn round; SIDE is the dot's diameter.
   const PITCH = 5.8;
   const SIDE = 5;
+  // A work is drawn for as long as it took -- see the marks in render() --
+  // unless the page is opened with ?marks=dots, which draws the catalogue the
+  // way it was first drawn: one dot to a work, whatever the work took.
+  const LINES = new URLSearchParams(location.search).get('marks') !== 'dots';
+  // How long a work dated to a single year took, in years, by the tier the
+  // build script estimated for it: days, weeks, months, a year, years. A single
+  // date keeps a work inside its year, so the last two are both drawn a year.
+  const EST = [0.02, 0.08, 0.33, 1, 1];
+  const HGAP = 2;              // the least air between two marks in one lane
+  const YEAR_AIR = 3;          // what a year-long mark leaves of its column
   const BORN = 1908;           // Max Bill, 1908-1994
   // The keys are set bottom-up from the field's foot rather than down from its
-  // head: the last of them sits on the line the columns stand on, so the block
+  // head: the first of them sits on the line the columns stand on, so the block
   // and the field share an edge. LIFT is the drop from a key's own line to its
   // baseline, so the type sits on that edge rather than hanging off it.
   const NODE_DY = 76, LIFT = 8;
@@ -4548,49 +4563,76 @@ if (document.readyState === 'loading') {
 
   function render() {
     const domains = data.domains;
-    const works = data.works;                  // [year, domain, label]
+    const works = data.works;   // [year begun, domain, title, tier, year finished]
     const grid = columns();
     const KEY_W = grid[1].x + grid[1].w;       // the labels' block, columns one and two
     const X0 = grid[2].x;                      // the field opens on column three
     const y0 = works[0][0];
-    const y1 = works[works.length - 1][0];
+    // The field runs to the last year anything was being worked on, which can
+    // be later than the last year anything was begun: the pavilion sculpture
+    // begun in 1994 was finished in 1997.
+    const y1 = works.reduce((m, w) => Math.max(m, LINES ? w[4] : w[0]), 0);
     const span = y1 - y0 + 1;
     const step = (X1 - X0) / span;
     const colX = y => X0 + (y - y0 + 0.5) * step;
-    const nodeY = i => BASE - LIFT - (domains.length - 1 - i) * NODE_DY;
+    // The labels stand in the order the dots stack in, so the first domain,
+    // typography, stands at the foot, level with the run it names at the foot
+    // of every column.
+    const nodeY = i => BASE - LIFT - i * NODE_DY;
 
-    // Stack each year's works into a column. The data arrives sorted by year
-    // and then by domain, so a column is already in the order it stacks in and
-    // each domain sits in one unbroken run of dots.
-    const cols = new Map();
-    works.forEach(w => {
-      let col = cols.get(w[0]);
-      if (!col) cols.set(w[0], col = []);
-      col.push(w);
+    // One mark to a work: a dot on the year it was begun, drawn out along the
+    // years for as long as it took. Where the catalogue dates a work as a
+    // range, the mark runs from the dot on its first year to a dot on its last;
+    // otherwise it takes the build script's estimate, kept inside the one year
+    // it is dated to. Anything that took less time than a dot is wide stays a
+    // dot -- at this scale a year is about 14 units, so a dot is four months.
+    const marks = works.map(w => {
+      const c = colX(w[0]);
+      if (LINES && w[4] > w[0]) return { w, x0: c - SIDE / 2, x1: colX(w[4]) + SIDE / 2 };
+      const len = LINES ? Math.max(SIDE, Math.min(EST[w[3]] * step, step - YEAR_AIR)) : SIDE;
+      return { w, x0: c - len / 2, x1: c + len / 2 };
     });
 
-    const dots = domains.map(() => []);        // per domain: circle markup
+    // Each mark takes the lowest lane with room for it, in the order the
+    // columns stack in: by the year begun, then by domain, and within a domain
+    // the longest first, so each run stands on its heaviest work. A work dated
+    // to one year fits inside its own column, so those fill the lanes exactly
+    // as the stacks of dots did; a work that ran on holds its lane across the
+    // years it ran, and the columns it crosses stack around it.
+    marks.sort((a, b) => a.w[0] - b.w[0] || a.w[1] - b.w[1] || (b.x1 - b.x0) - (a.x1 - a.x0));
+    const lanes = [];
+    marks.forEach(m => {
+      let i = 0;
+      while (lanes[i] && lanes[i].some(o => m.x0 < o.x1 + HGAP && o.x0 < m.x1 + HGAP)) i++;
+      (lanes[i] || (lanes[i] = [])).push(m);
+      m.cy = BASE - (i + 0.5) * PITCH;
+    });
+
+    // A rect with its corners rounded to half its height: a dot when it is as
+    // long as it is high, a bar with round ends when it runs on.
+    const dots = domains.map(() => []);        // per domain: mark markup
+    marks.forEach(m => {
+      dots[m.w[1]].push('<rect x="' + m.x0.toFixed(1) + '" y="' + (m.cy - SIDE / 2).toFixed(1) +
+        '" width="' + (m.x1 - m.x0).toFixed(1) + '" height="' + SIDE + '" rx="' + SIDE / 2 + '"/>');
+    });
+
+    // A flat S from the field's own left edge to the foot of each domain's run
+    // in each year, the lowest mark begun that year: both ends leave
+    // horizontally, so the fan opens rather than kinks. Every thread starts on
+    // column three, where the years start, so the fan is gathered on the line
+    // the field opens on.
+    const footOf = new Map();                  // domain|year -> its lowest mark
+    marks.forEach(m => {
+      const k = m.w[1] + '|' + m.w[0], f = footOf.get(k);
+      if (!f || m.cy > f.cy) footOf.set(k, m);
+    });
     const threads = domains.map(() => []);     // per domain: one path per year
-    cols.forEach((col, year) => {
-      const x = colX(year).toFixed(1);
-      const firstOf = new Map();               // domain -> its lowest dot's y
-      col.forEach((w, i) => {
-        const cy = BASE - (i + 0.5) * PITCH;
-        dots[w[1]].push('<rect x="' + (+x - SIDE / 2).toFixed(1) + '" y="' +
-          (cy - SIDE / 2).toFixed(1) + '" width="' + SIDE + '" height="' + SIDE + '"/>');
-        if (!firstOf.has(w[1])) firstOf.set(w[1], cy);
-      });
-      firstOf.forEach((cy, d) => {
-        // A flat S from the field's own left edge to the foot of that domain's
-        // run of dots: both ends leave horizontally, so the fan opens rather
-        // than kinks. Every thread starts on column three, where the years
-        // start, so the fan is gathered on the line the field opens on.
-        const sx = X0, sy = nodeY(d), ex = +x, dx = ex - sx;
-        threads[d].push('<path d="M' + sx.toFixed(1) + ',' + sy +
-          'C' + (sx + dx * 0.55).toFixed(1) + ',' + sy + ' ' +
-          (ex - dx * 0.35).toFixed(1) + ',' + cy.toFixed(1) + ' ' +
-          ex + ',' + cy.toFixed(1) + '"/>');
-      });
+    footOf.forEach(m => {
+      const sx = X0, sy = nodeY(m.w[1]), ex = colX(m.w[0]), ey = m.cy, dx = ex - sx;
+      threads[m.w[1]].push('<path d="M' + sx.toFixed(1) + ',' + sy +
+        'C' + (sx + dx * 0.55).toFixed(1) + ',' + sy + ' ' +
+        (ex - dx * 0.35).toFixed(1) + ',' + ey.toFixed(1) + ' ' +
+        ex.toFixed(1) + ',' + ey.toFixed(1) + '"/>');
     });
 
     // Decade guides, and under the field's foot the year they mark with Bill's
@@ -4619,9 +4661,9 @@ if (document.readyState === 'loading') {
       field += '<g class="bg-dots" data-dom="' + i + '" fill="' + d.color + '">' +
                dots[i].join('') + '</g>';
     });
-    field += '<rect class="bg-hit" id="bgHit" width="' + (SIDE + 6) + '" height="' + (SIDE + 6) + '"/></g>';
+    field += '<rect class="bg-hit" id="bgHit" height="' + (SIDE + 6) + '" rx="' + (SIDE + 6) / 2 + '"/></g>';
 
-    // The six labels, flush on the first column and set in the domain's own
+    // The labels, one to a domain, flush on the first column and set in the domain's own
     // colour -- the colour key is the label rather than a swatch beside it.
     // Name and count run on one line, three spaces apart, which is why the text
     // preserves its whitespace: the gap is set in the string rather than
@@ -4640,7 +4682,9 @@ if (document.readyState === 'loading') {
 
     plot.innerHTML =
       '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' +
-      esc(works.length + ' works by Max Bill, ' + y0 + ' to ' + y1 + ', one dot each, by year and domain: ' +
+      esc(works.length + ' works by Max Bill, ' + y0 + ' to ' + y1 +
+          (LINES ? ', each a dot on the year it was begun, drawn out for as long as it took, by domain: '
+                 : ', one dot each, by year and domain: ') +
           domains.map(d => d.n + ' ' + d.label).join(', ')) + '">' +
       // The mask opens across the whole plot, not just the field: the threads
       // leave the nodes at the foot of column two, so a mask that began at the
@@ -4650,6 +4694,14 @@ if (document.readyState === 'loading') {
       field + nodes + '</svg>';
 
     plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
+
+    // The count over the figure is written into the page so it stands there
+    // before the data arrives, and set again from the data so it can never
+    // disagree with the dots below it.
+    const count = document.getElementById('billGraphCount');
+    if (count) count.textContent = works.length + ' works';
+    const ends = fig.querySelectorAll('.bill-graph-span > span:not(.bill-graph-dash)');
+    if (ends.length === 2) { ends[0].textContent = y0; ends[1].textContent = y1; }
 
     const svg = plot.querySelector('svg');
     const hit = plot.querySelector('#bgHit');
@@ -4666,7 +4718,8 @@ if (document.readyState === 'loading') {
     }
 
     // At rest the readout states the encoding and nothing else.
-    const REST = '<i>one dot = one work</i>';
+    const REST = LINES ? '<i>one dot = one work, drawn out for as long as it took</i>'
+                       : '<i>one dot = one work</i>';
     read.innerHTML = REST;
 
     // The year and the piece, and nothing else: the domain is already named down
@@ -4675,37 +4728,43 @@ if (document.readyState === 'loading') {
     function say(work) {
       if (!work) { read.innerHTML = REST; read.style.color = ''; return; }
       read.style.color = domains[work[1]].color;
-      read.innerHTML = '<b>' + work[0] + '</b><span>' + esc(work[2]) + '</span>';
+      read.innerHTML = '<b>' + (work[4] > work[0] ? work[0] + '—' + work[4] : work[0]) +
+        '</b><span>' + esc(work[2]) + '</span>';
     }
 
-    // Hit-testing is done on the column arithmetic rather than on the circles
-    // themselves: the dots are 3.4 units across and the page hides the system
-    // cursor, so asking the browser which one is under the pointer would mostly
-    // answer none. Reading the year off x and the height off y always answers.
+    // Hit-testing is done on the lane arithmetic rather than on the marks
+    // themselves: a dot is 5 units across and the page hides the system cursor,
+    // so asking the browser which one is under the pointer would mostly answer
+    // none. The height gives the lane, and in it the nearest mark answers, as
+    // far as half a column to either side of it.
     function at(ev) {
       const r = svg.getBoundingClientRect();
       const k = W / r.width;
       const ux = (ev.clientX - r.left) * k;
       const uy = (ev.clientY - r.top) * k;
       if (ux < X0 || uy > BASE) return null;
-      const year = y0 + Math.floor((ux - X0) / step);
-      const col = cols.get(year);
-      if (!col) return null;
-      const i = Math.floor((BASE - uy) / PITCH);
-      return (i < 0 || i >= col.length) ? null : { work: col[i], x: colX(year), y: BASE - (i + 0.5) * PITCH };
+      const lane = lanes[Math.floor((BASE - uy) / PITCH)];
+      if (!lane) return null;
+      let best = null, off = step / 2;
+      lane.forEach(m => {
+        const d = Math.max(m.x0 - ux, ux - m.x1, 0);
+        if (d <= off) { off = d; best = m; }
+      });
+      return best;
     }
 
     held = null;
     svg.addEventListener('pointermove', ev => {
       if (held !== null) return;
-      const h = at(ev);
-      if (!h) { hit.classList.remove('on'); say(null); focus(null); return; }
-      hit.setAttribute('x', (h.x - (SIDE + 6) / 2).toFixed(1));
-      hit.setAttribute('y', (h.y - (SIDE + 6) / 2).toFixed(1));
-      hit.setAttribute('stroke', domains[h.work[1]].color);
+      const m = at(ev);
+      if (!m) { hit.classList.remove('on'); say(null); focus(null); return; }
+      hit.setAttribute('x', (m.x0 - 3).toFixed(1));
+      hit.setAttribute('y', (m.cy - SIDE / 2 - 3).toFixed(1));
+      hit.setAttribute('width', (m.x1 - m.x0 + 6).toFixed(1));
+      hit.setAttribute('stroke', domains[m.w[1]].color);
       hit.classList.add('on');
-      say(h.work);
-      focus(h.work[1]);
+      say(m.w);
+      focus(m.w[1]);
     });
     svg.addEventListener('pointerleave', () => {
       if (held !== null) return;
@@ -4729,8 +4788,8 @@ if (document.readyState === 'loading') {
     });
 
     function yearsOf(d) {
-      const ys = works.filter(w => w[1] === d).map(w => w[0]);
-      return ys[0] + '—' + ys[ys.length - 1];
+      const ws = works.filter(w => w[1] === d);
+      return ws[0][0] + '—' + ws.reduce((m, w) => Math.max(m, LINES ? w[4] : w[0]), 0);
     }
 
     // Read the mask rect back before lighting it, so the browser has actually
