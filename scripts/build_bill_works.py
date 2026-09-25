@@ -39,43 +39,44 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(HERE, 'assets', 'bill-works.json')
 TYPO_DEFAULT = os.path.expanduser('~/Downloads/works_extracted_v5 (1).xlsx')
 
-# Order matters: it is the order the dots stack in, bottom first, and the order
-# the labels stand in up the left of the graph, bottom first too, so each label
-# stands on the same side of the list as its dots do in a column.
+# The domains go out ordered by how many works each holds, most first: the order
+# the dots stack in, bottom first, and the order the labels stand in up the left
+# of the graph, bottom first too, so each label stands on the same side of the
+# list as its dots do in a column, and the list reads as a ranking. main() sorts
+# them by their counts, so the order below only settles a tie.
 #
 # The colours are dealt against the counts rather than by taste: the fewer works
 # a practice left, the further its colour stands off the panel's near-black, so
 # the rarest thing in the field is the easiest to pick out of it and the
-# commonest sits back and lets the rest be seen. Sculpture is the exception --
-# it holds the red outright, because it is the work this page is about.
-# Measured against #050505 the six run
+# commonest sits back and lets the rest be seen. The 570 printed pieces are a
+# dark blue that barely lifts off the black, and the paintings a violet a step
+# along from it, so the two largest bodies of work read as neighbours and sit
+# back together. The fifteen products and twenty buildings are the palest,
+# brightest marks in the field, so a handful of dots still reads. Measured
+# against #050505 the seven run
 #
-#     570  typography   #005CD3   3.37:1
-#     193  painting     #00934C   5.12:1
-#     109  sculpture    #E41802   4.30:1   <- held
+#     570  typography   #1E3FA0   2.21:1
+#     193  painting     #7030C0   2.79:1
+#     109  sculpture    #E41802   4.30:1
 #      28  books        #FE8C01   8.70:1
-#      28  drawings     #25DDDB  12.08:1
-#      20  architecture #FFB8EE  12.95:1
-#      15  product      #FFD500  14.33:1
+#      28  drawings     #FFD500  14.33:1
+#      20  architecture #FFCFF3  15.02:1
+#      15  product      #B8FFF6  18.12:1
 #
-# The ladder climbs the whole way but for sculpture, which sits one rung below
-# the painting above it: holding the red at 4.30 leaves nothing at or under it
-# for painting's larger count, since the only colour lower is typography's own.
-# The two clusters of 28 tie and can go either way round. Architecture came
-# last, and took the one hue the six had left, a pale pink, lifted to fall
-# between the drawings' 28 and product design's 15. Every colour clears 3:1.
-#
-# Architecture stacks straight after sculpture, so Bill's two practices in
-# three dimensions stand next to each other in every column. Change one here and check the ladder, or the figure starts pointing at
-# the wrong things.
+# The ladder climbs the whole way. Sculpture keeps the red it has always had,
+# which happens to fall on its own rung. The two clusters of 28 tie and can go
+# either way round. The two darkest are below 3:1 on purpose, as marks; where
+# the page sets type in a domain's colour it lifts a colour that dark until the
+# type can be read. Change one here and check the ladder, or the figure starts
+# pointing at the wrong things.
 DOMAINS = [
-    ('typography', 'typography & print', '#005CD3'),
-    ('painting',   'painting',           '#00934C'),
-    ('sculpture',  'sculpture',          '#E41802'),
-    ('architecture', 'architecture',     '#FFB8EE'),
-    ('books',      'books & prints',     '#FE8C01'),
-    ('product',    'product design',     '#FFD500'),
-    ('drawing',    'drawings & graphic design', '#25DDDB'),
+    ('typography',   'typography & print',        '#1E3FA0'),
+    ('painting',     'painting',                  '#7030C0'),
+    ('sculpture',    'sculpture',                 '#E41802'),
+    ('books',        'books & prints',            '#FE8C01'),
+    ('drawing',      'drawings & graphic design', '#FFD500'),
+    ('architecture', 'architecture',              '#FFCFF3'),
+    ('product',      'product design',            '#B8FFF6'),
 ]
 IDX = {k: i for i, (k, _, _) in enumerate(DOMAINS)}
 
@@ -300,7 +301,7 @@ def main():
     # --- the art data set -------------------------------------------------
     for row in art_rows(art_path):
         field = (row.get('Field') or '').strip()
-        # An unknown field is a work all the same; it lands in the last cluster.
+        # An unknown field is a work all the same; it lands with the drawings.
         domain = FIELD_TO_DOMAIN.get(field, 'drawing')
         if domain is None:
             dropped['graphic design (already in the typographic catalogue)'] += 1
@@ -325,6 +326,15 @@ def main():
                       clean(f'{kind} — {client}' if client else kind),
                       TYPO_TIER.get(raw, DAYS), int(year)])
 
+    # Rank the domains by their counts, most first, and renumber every work to
+    # match. The sort is stable, so a tie keeps the order DOMAINS gives it.
+    counts = collections.Counter(w[1] for w in works)
+    rank = sorted(range(len(DOMAINS)), key=lambda i: -counts[i])
+    renumber = {old: new for new, old in enumerate(rank)}
+    domains = [DOMAINS[i] for i in rank]
+    for w in works:
+        w[1] = renumber[w[1]]
+
     # By year, then domain -- the order a column stacks in -- and within a
     # domain the heaviest first, so each run of dots stands on its largest.
     works.sort(key=lambda w: (w[0], w[1], -w[3]))
@@ -332,7 +342,7 @@ def main():
 
     payload = {
         'domains': [{'key': k, 'label': label, 'color': colour, 'n': per_domain[i]}
-                    for i, (k, label, colour) in enumerate(DOMAINS)],
+                    for i, (k, label, colour) in enumerate(domains)],
         'tiers': TIERS,
         'works': works,
     }
@@ -343,7 +353,7 @@ def main():
     print(f'{len(works)} works, {min(years)}-{max(years)} -> {OUT}')
     tiered = collections.Counter((w[1], w[3]) for w in works)
     print(f'  {"":32s}' + ''.join(f'{t:>8s}' for t in TIERS))
-    for i, (_, label, _) in enumerate(DOMAINS):
+    for i, (_, label, _) in enumerate(domains):
         print(f'  {per_domain[i]:4d}  {label:26s}' +
               ''.join(f'{tiered[(i, t)] or "":>8}' for t in range(len(TIERS))))
     for reason, n in dropped.items():

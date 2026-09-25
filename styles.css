@@ -4151,37 +4151,28 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    so the two are read in order rather than at once. */
 .bg-age { fill-opacity: 0.6; }
 .bg-dots { transition: opacity 0.4s ease; }
-/* Label and count share one style: the node is a two-line mark, not a caption
-   with a figure under it. Both sit flush on the plot's x=0, which is the
-   container's left edge -- the page's first column, the line the head above
-   the figure starts on. Neither sets a fill: the colour comes down from the
-   group, so the label itself is the key and no swatch is needed beside it. */
+/* Label and count share one style: the node is one mark, not a caption with a
+   figure under it. Both are set on a block of the domain's own colour, in
+   black or white, whichever the script finds stands off that colour more, so
+   the block itself is the key and no swatch is needed beside it. */
 .bg-node-label,
 .bg-node-count {
   font-family: var(--sans);
   font-weight: 700;
   font-size: 24px;
   letter-spacing: -0.02em;
+  fill: var(--ink, var(--black));
 }
-/* Each key is a toggle button in a frame of its own colour. The frame is the
-   key's target -- a transparent fill is hit-tested, but say so outright rather
-   than rely on it -- and pressed, it fills with the colour and the type turns
-   to the panel's black, so the one domain the field is filtered to reads as
-   pressed from across the figure. */
-.bg-node { cursor: none; outline: none; }
-.bg-node-frame {
-  fill: transparent;
-  stroke: var(--c);
-  stroke-width: 1.5;
-  pointer-events: all;
-  transition: fill 0.25s ease, fill-opacity 0.4s ease, stroke-opacity 0.4s ease;
-}
-.bg-node[aria-pressed="true"] .bg-node-frame { fill: var(--c); }
-.bg-node[aria-pressed="true"] .bg-node-label,
-.bg-node[aria-pressed="true"] .bg-node-count { fill: var(--black); }
-/* Reached from the keyboard, the frame draws heavier instead of taking the
-   browser's ring, which would sit on the SVG's box rather than the frame. */
-.bg-node:focus-visible .bg-node-frame { stroke-width: 3; }
+/* Each key is a toggle button: a solid block of its domain's colour, standing
+   on the first column, with no outline. The block is the key's target. A
+   pressed key filters the field to its domain, and every other key falls back
+   with the domains it names, so the one left at full strength is the one the
+   field is showing. */
+.bg-node { cursor: pointer; outline: none; transition: opacity 0.4s ease; }   /* the hand, as over the rail and the transport */
+.bg-node-frame { fill: var(--c); stroke: none; pointer-events: all; }
+/* Reached from the keyboard, the block takes a white edge instead of the
+   browser's ring, which would sit on the SVG's box rather than the block. */
+.bg-node:focus-visible .bg-node-frame { stroke: #fff; stroke-width: 2; }
 .bg-hit { fill: none; stroke: #fff; stroke-width: 1.5; opacity: 0; transition: opacity 0.15s ease; }
 .bg-hit.on { opacity: 1; }
 
@@ -4189,9 +4180,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    filter goes further and takes the rest out of the field altogether. */
 .bg-dots.dim { opacity: 0.1; }
 .bg-dots.off { opacity: 0; }
-.bg-node.dim .bg-node-label,
-.bg-node.dim .bg-node-count { fill-opacity: 0.25; }
-.bg-node.dim .bg-node-frame { stroke-opacity: 0.25; fill-opacity: 0.25; }
+.bg-node.dim { opacity: 0.25; }
 
 /* The field arrives as a wipe across the years rather than a fade, so the
    figure is read left to right the first time as well. The mask rect's width
