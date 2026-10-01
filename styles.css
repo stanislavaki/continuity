@@ -1218,7 +1218,7 @@ section { position: relative; }
    long as this fact is taller than it, so its height is the length of the
    hold. A little more room under it keeps Year away from the standing tower. */
 .rail-fact[data-rule="weight"] {
-  min-height: 120vh;
+  min-height: 150vh;
   margin-bottom: 10vh;
 }
 .rail-fact-pin {
@@ -1243,6 +1243,17 @@ section { position: relative; }
   font-size: clamp(30px, 4.35vw, 56px);
   line-height: 1.05;
   letter-spacing: -0.03em;
+}
+/* The figures that ride past the stone, at twice that size, so they hold their
+   own beside it. Place keeps the size above: at twice it, its name would run
+   to four lines. */
+.intro .rail-val {
+  font-size: clamp(60px, 8.7vw, 112px);
+  /* Closer set at this size. */
+  letter-spacing: -0.05em;
+  /* A figure is one word: on one line, running on past its two columns
+     rather than breaking "4.5 m" in two. */
+  white-space: nowrap;
 }
 /* Stone rules. Comparisons drawn beside the stone, at its own scale, while a
    fact goes by; the script sets their geometry and switches .is-on, and the
@@ -1271,10 +1282,11 @@ section { position: relative; }
 }
 /* When a rule is up, read by the script as fractions of the stone's span from
    the tip (0) to the base (1), against the middle of its fact's value: from
-   the stone's middle to its tip. */
+   the stone's middle until the value's top edge would reach the tip, where
+   the Height rule's top line is drawn. */
 .stone-rule {
   --rule-from: 0.5;
-  --rule-until: 0;
+  --rule-until: 0.12;
 }
 .stone-rule .container {
   height: 100%;
@@ -1354,19 +1366,28 @@ section { position: relative; }
   --aspect: 1.5209;   /* the cut-out's width over its height, 1019 x 670 */
   --stack-gap: 3px;
   /* The elephant the moment the Weight fact comes in. The fact's figure then
-     holds level with the middle of the stone; three tenths into that hold the
-     tower starts, and it is built by 0.85 of it, so it stands complete for a
-     moment before the fact moves on. The tower stays until the value is a
-     fifth of the stone past the tip. */
+     holds level with the middle of the stone; he keeps his full size for the
+     first 0.45 of that hold, the tower is built by 0.88 of it, and it stands
+     complete for a moment before the fact moves on. The tower stays until the
+     value is a fifth of the stone past the tip. */
   --rule-from: reveal;
   --pin-align: center;
-  --stack-from: 0.3;
-  --stack-to: 0.85;
+  --stack-from: 0.45;
+  --stack-to: 0.88;
   --rule-until: -0.2;
 }
+/* He walks in: when the rule comes up the herd starts a screen's width to the
+   left, behind the edge, and comes to its place, slowing as he arrives; going
+   back up, he walks off the same way. */
 .weight-rule-herd {
   position: absolute;
   inset: 0;
+  transform: translateX(-100%);
+  transition: transform 1.4s cubic-bezier(.2, .65, .25, 1);
+}
+.weight-rule.is-on .weight-rule-herd { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .weight-rule-herd { transition: none; }
 }
 .weight-rule-herd i {
   position: absolute;
@@ -1386,25 +1407,29 @@ section { position: relative; }
   grid-row: 1;
   align-self: start;
 }
-/* The elephant's caption, over his back in columns 1-2, 14px of air above the
-   shoulder and narrow enough to stay clear of the stone; the tower's, in
-   column 2 beside it, standing on the ground as the Modulor's does and flush
-   left against it. One gives way to the other. */
+/* The elephant's caption, over his back from column 2, 14px of air above the
+   shoulder, set in three short lines to stay clear of the stone; the tower's, in
+   column 2 beside the top elephant -- the last to land, and it comes up as he
+   does -- level with his top and flush left against the tower. One gives way
+   to the other. */
 .weight-rule .weight-rule-caption { transition: opacity .4s ease; }
 .weight-rule .weight-rule-caption--one {
-  grid-column: 1 / 3;
+  grid-column: 2 / 4;
   top: calc(var(--rule-bottom, 0px) - var(--figure-h, 0px));
   transform: translateY(calc(-100% - 14px));
   max-width: 16em;
 }
 .weight-rule .weight-rule-caption--stack {
   grid-column: 2 / 3;
-  top: var(--rule-bottom, 0);
-  transform: translateY(calc(-100% - 10px));
-  opacity: 0;
+  top: var(--rule-top, 0);
+  /* Two lines, broken where the markup says: "as much as the sculpture"
+     holds together, running on past the column up here by the tip, where the
+     stone is only at its centre. */
+  white-space: nowrap;
 }
-.weight-rule.is-stacking .weight-rule-caption--one { opacity: 0; }
-.weight-rule.is-stacked .weight-rule-caption--stack { opacity: 1; }
+/* Each only hides; shown, both keep .caption's own grey. */
+.weight-rule.is-stacking .weight-rule-caption--one,
+.weight-rule:not(.is-stacked) .weight-rule-caption--stack { opacity: 0; }
 @media (max-width: 900px) {
   /* The facts run full width over the stone here, and so do the lines. */
   .height-rule-span { grid-column: 1 / -1; }
@@ -1427,8 +1452,8 @@ section { position: relative; }
   .weight-rule {
     --rule-from: 0.12;
     --pin-align: above;
-    --stack-from: 0.25;
-    --stack-to: 0.85;
+    --stack-from: 0.4;
+    --stack-to: 0.88;
     --rule-until: -0.8;
   }
   .weight-rule .caption { justify-self: start; text-align: left; }
@@ -1461,7 +1486,7 @@ section { position: relative; }
      continuous object rather than being sliced by opaque bands. */
   .facts-rail { row-gap: 48vh; padding: 20vh 0 24vh; }
   .rail-fact[data-rule="weight"] {
-    min-height: 100vh;
+    min-height: 125vh;
     margin-bottom: 20vh;
   }
   .rail-fact--left,
