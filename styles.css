@@ -942,32 +942,44 @@ section { position: relative; }
 @media (max-width: 600px) {
   .hero-title-line { display: block; }
 }
-/* Opening paragraph. It used to sit over the hero photograph; it now opens the
-   black section instead, riding up the right-hand columns ahead of the facts.
-   Unlike the facts it is NOT lifted above the sculpture: it stays in normal
-   flow, which paints beneath every positioned element, so the pinned object
-   (z-index 5) passes in front of it where the two overlap. */
-.intro-opening {
-  display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-  column-gap: var(--col-gap);
-  padding-top: 14vh;
+/* The hero's ticker: the opening sentence running right to left across the
+   foot of the photograph without end, at twice the body copy's size (the
+   .article-body ramp). It runs below the stone's base on the plinth, under the
+   sculpture (z-index 2 to its 5), which passes in front of it as the hero
+   scrolls away. The track holds two copies, each wider than the screen, and
+   slides one copy's width before starting over, so the seam never shows; each
+   copy ends in a single (non-breaking) space, so one pass runs into the next
+   as a sentence runs into the next. About 60px a second at a desktop width.
+   A soft shadow keeps it legible on the photograph; held still for anyone who
+   asks for reduced motion. */
+.hero-ticker {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12vh;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
 }
-.intro-opening-text {
-  /* Four columns, and the same measure as the body copy everywhere else —
-     .article-body, .intro-text and .math-body all share this ramp. */
-  grid-column: 5 / 9;
+.hero-ticker-track {
+  display: flex;
+  width: max-content;
   margin: 0;
+  animation: hero-ticker 36s linear infinite;
+}
+.hero-ticker-text {
+  flex: none;
   color: #fff;
-  font-size: clamp(20px, 1.7vw, 26px);
-  line-height: 1.35;
+  font-size: clamp(40px, 3.4vw, 52px);
+  line-height: 1.2;
   font-weight: 500;
   letter-spacing: -0.005em;
+  white-space: nowrap;
+  text-shadow: 0 2px 24px rgba(0,0,0,0.4);
 }
-.intro-opening-text strong { font-weight: 700; }
-@media (max-width: 900px) {
-  .intro-opening { padding-top: 12vh; }
-  .intro-opening-text { grid-column: 1 / -1; text-shadow: 0 2px 18px rgba(0,0,0,0.55); }
+@keyframes hero-ticker { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-ticker-track { animation: none; }
 }
 
 /* Logo in the page's top-left corner, matching the placement used on the other
@@ -1192,9 +1204,9 @@ section { position: relative; }
      beside the stone: a rule holds while its value climbs from the stone's
      middle to its tip, and the stone stands ~0.58 of the window tall. */
   row-gap: 80vh;
-  /* Shorter than it was: the opening paragraph above now carries part of the
-     lead-in before the first fact. */
-  padding: 30vh 0 30vh;
+  /* The lead-in before the first fact; the section has no opening paragraph
+     to carry it now (its first sentence runs across the hero instead). */
+  padding: 42vh 0 30vh;
   position: relative;
   z-index: 6;
 }
@@ -4579,7 +4591,6 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
    Pictures, films and maps keep the full width between the gutters, and the
    centred chapter and journey titles keep their full measure to centre on. */
 @media (max-width: 900px) {
-  .intro-opening-text,
   .article-body p,
   .math-body p,
   .stop-cap,
