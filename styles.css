@@ -3241,6 +3241,25 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* Both align to the top of their own cell, or the shorter one would stretch. */
 .journey-photo-pair figure { align-self: start; }
 .journey-photo-pair img { display: block; width: 100%; height: auto; }
+/* Two photographs set into the Bill chapter's text. The model takes the text
+   column (page columns 5-8), a paragraph's distance from the text on either
+   side. The chair hangs beside it on columns 1-3, 100px higher, the stagger the
+   journey's pairs have: the body is four columns and three gaps, so a column is
+   (100% - 3 gaps) / 4, and columns 1-3 start a body-width and a gap to the left
+   and come to 75% - a quarter gap. On one column the chair simply goes first. */
+.article-body .bill-photos { position: relative; margin-top: 1.2em; }
+.article-body .bill-photos + p { margin-top: 1.2em; }
+.bill-photo { margin: 0; }
+.bill-photo img { display: block; width: 100%; height: auto; }
+.bill-photo--side {
+  position: absolute;
+  top: -100px;
+  left: calc(-100% - var(--col-gap));
+  width: calc(75% - 0.25 * var(--col-gap));
+}
+@media (max-width: 900px) {
+  .bill-photo--side { position: static; width: 100%; margin-bottom: 1.2em; }
+}
 
 .journey-photos { grid-row: 4; }
 .article-grid > .journey-photo-measure ~ .article-body { grid-row: 4; }
