@@ -1205,8 +1205,10 @@ section { position: relative; }
      middle to its tip, and the stone stands ~0.58 of the window tall. */
   row-gap: 80vh;
   /* The lead-in before the first fact; the section has no opening paragraph
-     to carry it now (its first sentence runs across the hero instead). */
-  padding: 42vh 0 30vh;
+     to carry it now (its first sentence runs across the hero instead). The
+     tail holds the stone a while after Weight, its last fact now (Year has
+     gone down beside Place), so the tower is down before the stone moves off. */
+  padding: 42vh 0 80vh;
   position: relative;
   z-index: 6;
 }
@@ -1258,7 +1260,7 @@ section { position: relative; }
 }
 /* The figures that ride past the stone, at twice that size, so they hold their
    own beside it. Place keeps the size above: at twice it, its name would run
-   to four lines. */
+   to four lines. Year, down in the tail beside Place, is set as Place is. */
 .intro .rail-val {
   font-size: clamp(60px, 8.7vw, 112px);
   /* Closer set at this size. */
@@ -1267,6 +1269,9 @@ section { position: relative; }
      rather than breaking "4.5 m" in two. */
   white-space: nowrap;
 }
+/* Material runs to two lines, set close so they read as one figure. Only here:
+   the one-line figures keep their boxes, which the stone rules measure. */
+.intro .rail-val--stacked { line-height: 0.8; }
 /* Stone rules. Comparisons drawn beside the stone, at its own scale, while a
    fact goes by; the script sets their geometry and switches .is-on, and the
    fade is the stylesheet's. Each stands across the stone from its fact: the
@@ -1354,6 +1359,17 @@ section { position: relative; }
   -webkit-mask: url(assets/modulor.svg) no-repeat center / contain;
   mask: url(assets/modulor.svg) no-repeat center / contain;
 }
+/* The lines come up first, as "4.5 m" comes up to the stone's base, and he
+   follows with his caption once the figure is halfway up the stone. Each only
+   hides; shown, the caption keeps .caption's own grey. */
+.height-rule {
+  --rule-from: 1.15;
+  --figure-from: 0.5;
+}
+.height-rule-figure,
+.height-rule .height-rule-caption { transition: opacity .5s ease; }
+.height-rule:not(.is-figure) .height-rule-figure,
+.height-rule:not(.is-figure) .height-rule-caption { opacity: 0; }
 /* His caption, in column 8 beside him: it stands on the base line as he does,
    with .caption's own 10px of air between it and the line, set flush left,
    against him, as a caption to the right of its subject is. */
@@ -1480,6 +1496,9 @@ section { position: relative; }
      block — body already paints the same black. */
   background: transparent;
 }
+/* Year and Place share the tail's one row: Year on columns 2-3, as the facts
+   above it are, and Place on 5-8, their tops level. */
+.facts-rail--tail > .rail-fact { grid-row: 1; }
 .facts-rail--tail {
   row-gap: 0;
   /* The sticky sculpture carries a -1 x width margin-bottom to pull the hero
@@ -1504,6 +1523,10 @@ section { position: relative; }
   .rail-fact--left,
   .rail-fact--right,
   .rail-fact--wide { grid-column: 1 / -1; }
+  /* One column here, so Year goes over Place, as close as one fact sits under
+     its own label -- the rail's row gap above is for the stone's facts. */
+  .facts-rail--tail { row-gap: 0; }
+  .facts-rail--tail > .rail-fact { grid-row: auto; }
   .rail-fact {
     background: none;
     padding: 14px 0 20px;
@@ -1750,6 +1773,23 @@ section { position: relative; }
   letter-spacing: -0.005em;
 }
 .article-body p + p { margin-top: 1.2em; }
+/* The intro's opening paragraph, set as the pull-quote bands set their quotes
+   (--quote-size, its weight, leading and tracking, though not their lowercase)
+   and breaking out of the body's right half to columns 2-8. The body is four
+   columns and three gaps (5-8), so a column is (100% - 3 gaps) / 4: reaching
+   back three columns and three gaps comes to 75% + 0.75 gap, and seven columns
+   and six gaps to 175% + 0.75 gap. */
+.article-body .article-lead {
+  margin-left: calc(-75% - 0.75 * var(--col-gap));
+  width: calc(175% + 0.75 * var(--col-gap));
+  font-size: var(--quote-size);
+  font-weight: 700;
+  line-height: 1.043;
+  letter-spacing: -0.7px;
+}
+@media (max-width: 900px) {
+  .article-body .article-lead { margin-left: 0; width: 100%; }
+}
 .article-body strong, .math-body strong, .intro-text strong { font-weight: inherit; }
 
 /* Maps / timeline */
@@ -4521,9 +4561,9 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   column-gap: var(--col-gap);
 }
 .quote-band .quote-text {
-  /* Columns 5–8; the attribution takes 1–2. Both are pinned to row 1: the
+  /* Columns 5–8; the attribution takes 2–3. Both are pinned to row 1: the
      quote comes first in source order, and grid's sparse auto-placement will
-     not backtrack to columns 1–2, so the attribution would otherwise drop to
+     not backtrack to columns 2–3, so the attribution would otherwise drop to
      a second row and its column would collapse to zero height. */
   grid-column: 5 / -1;
   grid-row: 1;
@@ -4545,12 +4585,14 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
    line box the height of one quote line (.quote-text is line-height 1.08 at
    --quote-size), so it lands on that same rhythm despite being set much
    smaller. Full-strength ink, not a faded tint of it. */
-/* Attribution rides columns 1–2. Its column stretches the full height of the
+/* Attribution rides columns 2–3, starting on the line the facts and the
+   intro's opening paragraph start on, with column 4 left clear before the
+   quote. Its column stretches the full height of the
    quote so the sticky <p> inside has somewhere to travel; the margins that
    put its baseline on the quote's first and last lines are measured and set
    in JS, since the two differ in size and half-leading. */
 .quote-credit-col {
-  grid-column: 1 / 3;
+  grid-column: 2 / 4;
   grid-row: 1;
   align-self: stretch;
   position: relative;
