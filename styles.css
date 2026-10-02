@@ -262,14 +262,14 @@ body.light .menu-btn { color: #000; }
   }
 }
 
-#ch1 { overflow: visible; }
-/* The 1's own left side bearing, which is what puts its ink on the column line
-   the grid draws — see .chapter-num for the size this pairs with. Scoped here
+#ch2 { overflow: visible; }
+/* The 1's own left side bearing, which is what puts its ink on the column
+   line — see .chapter-num for the size this pairs with. Scoped here
    because every digit carries a different bearing: at this size the 4's is a
    third of the 1's, so this figure would pull the other four out of true. */
 #ch1 .chapter-num { margin-left: -0.078em; }
-#ch1 .chapter-head { margin-bottom: 0; }
-#ch1 .math-body { margin-top: 200px; }
+#ch2 .chapter-head { margin-bottom: 0; }
+#ch2 .math-body { margin-top: 200px; }
 .scroll-video-sticky {
   width: 100%;
   margin-top: 20px;
@@ -1506,8 +1506,10 @@ section { position: relative; }
      what buys Place back its own space below the released sculpture -- and
      the sculpture's base hangs --plinth-dy plate px below the line the pin
      releases on, so the padding is measured from there: a fixed 26vh let the
-     label touch the base at squarer windows. */
-  padding: calc(var(--plinth-dy) * var(--plate-px) + 16vh) 0 34vh;
+     label touch the base at squarer windows. Below, the intro's opening
+     paragraph follows at the band's 177px, the distance it keeps above the
+     green band too. */
+  padding: calc(var(--plinth-dy) * var(--plate-px) + 16vh) 0 177px;
 }
 
 @media (max-width: 900px) {
@@ -1944,8 +1946,8 @@ section { position: relative; }
   margin-left: calc(-100% - 24px);
   width: calc(200% + 24px);
 }
-#ch1 .quote-text { color: var(--bill-blue); padding-top: 40px; }
-#ch1 .quote-attr { margin-left: calc(50% + 12px); margin-bottom: 20px; }
+#ch2 .quote-text { color: var(--bill-blue); padding-top: 40px; }
+#ch2 .quote-attr { margin-left: calc(50% + 12px); margin-bottom: 20px; }
 .math-body blockquote {
   margin: 0;
   padding: 0;
@@ -2638,6 +2640,111 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   -webkit-tap-highlight-color: transparent;
 }
 .narr-film.is-open:not(.is-flying) .narr-film-collapse { opacity: 1; pointer-events: auto; }
+/* Full screen, in the upper right corner, the collapse button's box and stock:
+   two corners pointing out, upper right and lower left, each two arms of the
+   bar stock, three quarters of the 24px glyph long, so they overlap into one
+   mark. In full screen they turn in. */
+.narr-film-full {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(0, 0, 0, .55));
+  transition: opacity .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.narr-film-full[hidden] { display: none; }
+.narr-film.is-open:not(.is-flying) .narr-film-full { opacity: 1; pointer-events: auto; }
+.narr-film-full:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.narr-film-expand {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 0 auto;
+}
+.narr-film-expand::before,
+.narr-film-expand::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  border: 0 solid currentColor;
+  transition: transform .2s ease;
+}
+.narr-film-expand::before {   /* upper right */
+  top: 0;
+  right: 0;
+  border-top-width: var(--tts-bar, 6px);
+  border-right-width: var(--tts-bar, 6px);
+}
+.narr-film-expand::after {    /* lower left */
+  bottom: 0;
+  left: 0;
+  border-bottom-width: var(--tts-bar, 6px);
+  border-left-width: var(--tts-bar, 6px);
+}
+.narr-film-full:hover .narr-film-expand::before { transform: translate(2px, -2px); }
+.narr-film-full:hover .narr-film-expand::after  { transform: translate(-2px, 2px); }
+.narr-film.is-full .narr-film-expand::before { border-width: 0 0 var(--tts-bar, 6px) var(--tts-bar, 6px); }
+.narr-film.is-full .narr-film-expand::after  { border-width: var(--tts-bar, 6px) var(--tts-bar, 6px) 0 0; }
+.narr-film.is-full .narr-film-full:hover .narr-film-expand::before { transform: translate(-2px, 2px); }
+.narr-film.is-full .narr-film-full:hover .narr-film-expand::after  { transform: translate(2px, -2px); }
+/* In full screen the frame is the screen, black, and the film fills it. */
+.narr-film-frame:fullscreen { background: #000; }
+.narr-film-frame:fullscreen .narr-film-video { width: 100%; height: 100%; max-height: none; aspect-ratio: auto; }
+
+/* The timeline, along the frame's foot and as wide as it: a stroke of the
+   contents rail laid on its side -- 4px, the rail's white over its 45% track on
+   the dark -- that swells as a rail stroke does under the pointer. The strip
+   above it takes the pointer, so it is easy to catch: pressed or dragged, it
+   seeks. Under the collapse button, which stands 16px clear of it. */
+.narr-film-time {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24px;
+  cursor: pointer;
+  touch-action: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.narr-film.is-open:not(.is-flying) .narr-film-time { opacity: 1; pointer-events: auto; }
+.narr-film-time:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+.narr-film-time-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.45);
+  transform-origin: center bottom;
+  transition: transform .18s cubic-bezier(.22, 1, .36, 1);
+}
+.narr-film-time:hover .narr-film-time-track,
+.narr-film-time.is-seeking .narr-film-time-track,
+.narr-film-time:focus-visible .narr-film-time-track { transform: scaleY(var(--crail-swell)); }
+.narr-film-time-fill {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
 .narr-film-corner {
   position: relative;
   display: block;
@@ -2702,7 +2809,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 @media (prefers-reduced-motion: reduce) {
   .narr-film, .narr-film-fold, .narr-film-play, .narr-film-toggle, .narr-film-glyph,
-  .narr-film-collapse, .narr-film-corner { transition: none; }
+  .narr-film-collapse, .narr-film-corner, .narr-film-full, .narr-film-time, .narr-film-time-track,
+  .narr-film-expand::before, .narr-film-expand::after { transition: none; }
 }
 
 /* Responsive */
@@ -4548,8 +4656,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    clamp(20px, 1.7vw, 26px). The em can't be inherited here — on the section
    it would resolve against the root size — so the same product is restated. */
 .quote-band + section.article { padding-top: calc(1.2 * clamp(20px, 1.7vw, 26px)); }
-/* Any section that runs into a band, chapters included — #ch1 was still
-   holding .math's 120px below its body copy. Only the bottom is generalised:
+/* Any section that runs into a band, chapters included — the math chapter
+   (#ch2) was still holding .math's 120px below its body copy. Only the bottom is generalised:
    a chapter *after* a band opens on its big numeral and keeps its own
    padding-top, so that rule stays scoped to .article. */
 section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)); }
@@ -4625,6 +4733,13 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
    quote, so the band closes up to 2.5 times less. */
 @media (max-width: 600px) {
   .quote-band { padding: calc(177px / 2.5) 0; }
+}
+/* The intro's large opening paragraph stands as far above the green band as
+   the band's quote stands inside it, rather than a body paragraph's distance:
+   at its size that closed it up against the colour. */
+section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
+@media (max-width: 600px) {
+  section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: calc(177px / 2.5); }
 }
 /* Below 901px the + button and the language menu stand fixed on the right
    gutter, top and bottom, and running text scrolled under them. So the text
