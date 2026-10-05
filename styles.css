@@ -52,12 +52,12 @@
      desktop, where the rail is out. */
   --corner-x: var(--gutter);
   --corner-y: var(--gutter);
-  /* The language menu's type, .crail-nav's ramp, held at the root because the
-     read-aloud cluster is spaced off it as well -- see .lang and .tts-controls.
-     Open, the row with the play button after it comes to 16.87em and 19px in
-     Struve at this weight and tracking, 390px at the ramp's floor, which is why
-     a phone opens the menu upward instead. */
-  --lang-type: clamp(22px, 2.2vw, 36px);
+  /* The language menu's type, the body copy's size (.article-body), held at
+     the root because the read-aloud cluster is spaced off it as well -- see
+     .lang and .tts-controls. Open, the row with the play button after it comes
+     to 16.87em and 19px in Struve at this weight and tracking, 356px at the
+     ramp's floor, which is why a phone opens the menu upward instead. */
+  --lang-type: clamp(20px, 1.7vw, 26px);
   /* The pull-quotes' type: 46px on desktop, kept as a clamp so it still
      scales down on narrow screens. Held at the root because the works
      graph's heading is set at it too -- see .bill-graph-title. */
@@ -251,9 +251,9 @@ body.light .menu-btn { color: #000; }
    and turns to a cross while the list is open. */
 .menu-btn { display: none; }
 /* On a phone it stands on the middle of the screen's right edge, rather than
-   in the top corner, level with the gallery's squares on the left edge in the
-   journey (.jg-btn). Measured on the dynamic viewport, as the squares' sticky
-   dock is, so the two keep one line as the browser's bars come and go. */
+   in the top corner, which the journey gallery's squares (.jg-btn) and the
+   lightbox's cross hold. Measured on the dynamic viewport, so it keeps its
+   line as the browser's bars come and go. */
 @media (max-width: 900px) {
   .menu-btn {
     display: grid;
@@ -263,11 +263,19 @@ body.light .menu-btn { color: #000; }
 }
 
 #ch2 { overflow: visible; }
-/* The 1's own left side bearing, which is what puts its ink on the column
-   line — see .chapter-num for the size this pairs with. Scoped here
-   because every digit carries a different bearing: at this size the 4's is a
-   third of the 1's, so this figure would pull the other four out of true. */
-#ch1 .chapter-num { margin-left: -0.078em; }
+/* Each numeral's own left side bearing, which is what puts its ink on the
+   column line -- see .chapter-num and .sub-num for the size it pairs with.
+   One rule a numeral because every digit carries a different bearing: the 4's
+   is not half the 6's, so one figure for all would pull the rest out of true.
+   Measured off Struve at 500 (canvas measureText, actualBoundingBoxLeft over
+   the font size), in em so they hold at any size. */
+#ch1 .chapter-num              { margin-left: -0.068em; }  /* 2 */
+#ch2 .chapter-num              { margin-left: -0.062em; }  /* 3 */
+#deutsche-bank .sub-num        { margin-left: -0.026em; }  /* 4 */
+#stroobant .sub-num            { margin-left: -0.064em; }  /* 5 */
+#granite-trip .sub-num         { margin-left: -0.077em; }  /* 6 */
+#sculpting .sub-num            { margin-left: -0.052em; }  /* 7 */
+#sculpture-trip .sub-num       { margin-left: -0.056em; }  /* 8 */
 #ch2 .chapter-head { margin-bottom: 0; }
 #ch2 .math-body { margin-top: 200px; }
 .scroll-video-sticky {
@@ -601,16 +609,15 @@ body.light .crail-panel {
   cursor: pointer;              /* the hand, as on the rail */
 }
 /* The number, in a lane between the stroke and the title exactly as wide as the
-   widest of them — a sub-chapter's 4.3, which measures 1.627em in Struve at
-   this weight and tracking (the figures are tabular, so 4.4 and 4.5 match) — so
-   every title starts on the same x, one lead past the widest number, whether
-   its own number shows or not. It shows for the part you are in, and for the
-   others only while they are hovered — the pointer on the link or on its part
-   of the rail, which crailPaint() marks .is-hover — or the keyboard is on the
-   link. */
+   widest of them -- every number is a single figure now, and the figures are
+   tabular, so each measures 0.65em in Struve at this weight and tracking -- so
+   every title starts on the same x, one lead past the number, whether its own
+   number shows or not. It shows for the part you are in, and for the others
+   only while they are hovered -- the pointer on the link or on its part of the
+   rail, which crailPaint() marks .is-hover -- or the keyboard is on the link. */
 .crail-num {
   flex: none;
-  width: 1.63em;
+  width: 0.65em;
   font-variant-numeric: tabular-nums;
   opacity: 0;
   transition: opacity .25s ease;
@@ -1637,8 +1644,13 @@ section { position: relative; }
   align-items: start;
 }
 .article-grid > .article-image { grid-column: 2 / 4; }
-/* The making chapter's photograph, on page columns 1-6. */
-.article-grid > .making-photo { grid-column: 1 / span 3; }
+/* Stroobant's photograph, on page columns 2-6. The grid's first three tracks
+   are page columns 1-6, six columns and five gaps, so it is set in by one
+   column and its gap: a sixth of the span and a sixth of a gap. */
+.article-grid > .making-photo {
+  grid-column: 1 / span 3;
+  margin-left: calc(100% / 6 + var(--col-gap) / 6);
+}
 .article-grid > .article-body { grid-column: 3 / 5; margin-left: 0; width: 100%; }
 .article-image {
   aspect-ratio: 4/5;
@@ -2704,40 +2716,68 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .narr-film-fold--still, .narr-film-fold--reel { grid-column: 1; }
 }
 
-/* Letters as a pile (.doc-deck). Laid out on the page's eight columns out of
-   the body's four, as the films are, with the pile on columns 3-6. The sheets
-   are stacked in one cell; the script lays each at its own slight angle and a
-   few pixels off true, orders them, and shuffles them when the pile is
-   pressed. Each casts its own shadow, so the edges peeking out from under the
-   top sheet read as more paper rather than as a frame. */
+/* Letters as two piles (.doc-deck), laid out on the page's eight columns out
+   of the body's four, as the films are. The letters start as one pile on
+   columns 1-4; pressed, its top sheet is carried across onto a second pile on
+   columns 5-8, and pressing that one carries its top sheet back. Each pile
+   stands a little smaller than its four columns, half a column in from either
+   side. The sheets all live in the left pile's box (.doc-deck-table) and the
+   script carries one over to the right by the distance between the two boxes,
+   so a sheet in flight is one element moving rather than one swapped for
+   another. Each lies at its own slight angle and a few pixels off true, and
+   casts its own shadow, so the edges peeking out from under a pile's top sheet
+   read as more paper rather than as a frame. */
 .doc-deck {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
   column-gap: var(--col-gap);
   margin: 1.2em 0 0;
+  /* The sheets' stacking stays among themselves, under the page's fixed
+     controls. */
+  isolation: isolate;
 }
 .article-grid > .article-body .doc-deck {
   margin-left: calc(-100% - var(--col-gap));
   width: calc(200% + var(--col-gap));
 }
 .article-body .doc-deck + p { margin-top: 1.2em; }
-/* The pile is the button. Room is left round it for the corners the angles
-   push out and for the shadows, so the paragraphs either side keep their
-   distance from the paper rather than from an invisible box. */
-.doc-deck-stage {
-  grid-column: 3 / 7;
+/* A pile's box: its four columns, half a column in from the outer edge and
+   only 16px from the inner one, so the two piles stand close about the middle
+   and the paper is as large as that allows. Four columns are four tracks and
+   three gaps, so half a column is an eighth of what the gaps leave. The 16px
+   is room for the corners the angles push out -- up to 3 degrees on a sheet
+   this tall, and 8px off true, is some 26px -- so two piles leaning in at
+   once still keep clear of each other across the gap. The 12px above and
+   below is room for the same corners and for the shadows. */
+.doc-deck-table,
+.doc-deck-pile {
   grid-row: 1;
-  display: grid;
-  padding: 0;
-  margin: 12px 0;
+  --pile-out: calc((100% - 3 * var(--col-gap)) / 8);
+  --pile-in: 16px;
+}
+.doc-deck-table,
+.doc-deck-pile--left  { padding: 12px var(--pile-in) 12px var(--pile-out); }
+.doc-deck-pile--right { padding: 12px var(--pile-out) 12px var(--pile-in); }
+.doc-deck-table { grid-column: 1 / 5; display: grid; }
+.doc-deck-pile--left  { grid-column: 1 / 5; }
+.doc-deck-pile--right { grid-column: 5 / 9; }
+/* The two piles' buttons lie over the paper and take the presses, each over
+   its own four columns: a sheet on the right lives in the left pile's box, so
+   it could not take a press for its own pile. */
+.doc-deck-pile {
+  position: relative;
+  z-index: 100;
+  margin: 0;
   border: 0;
   background: none;
   color: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.doc-deck-stage:focus { outline: none; }
-.doc-deck-stage:focus-visible { outline: 2px solid currentColor; outline-offset: 16px; }
+.doc-deck-pile:disabled { cursor: default; }
+.doc-deck-pile:focus { outline: none; }
+.doc-deck-pile:focus-visible { outline: 2px solid currentColor; outline-offset: -2px; }
 .doc-deck-page {
   grid-area: 1 / 1;
   display: block;
@@ -2745,14 +2785,22 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   height: auto;
   background: #fff;
   /* A close contact shadow and a soft one further out, in a deep blue rather
-     than black, so on the bank's ground they read as shade, not as soot. */
-  box-shadow: 0 1px 2px rgba(0, 6, 60, .28), 0 10px 28px rgba(0, 6, 60, .32);
-  /* Only the lift on hover is a transition; the shuffle is the script's. */
+     than black, so on the bank's ground they read as shade, not as soot. In
+     the air (--lift, written by the script as it tosses a sheet, 0 lying down
+     to 1 at its highest) the contact shadow fades and the far one drops and
+     spreads, the way a sheet's shadow does as it comes off the table. */
+  box-shadow: 0 1px 2px rgba(0, 6, 60, calc(.28 * (1 - var(--lift, 0)))),
+              0 calc(10px + 22px * var(--lift, 0)) calc(28px + 30px * var(--lift, 0)) rgba(0, 6, 60, .32);
+  pointer-events: none;
+  /* Only the lift on hover is a transition; the tossing is the script's. */
   transition: translate .2s ease, box-shadow .2s ease;
 }
-/* The top sheet comes up a little under the pointer, the one hint that the
-   pile can be pressed now that there are no arrows. */
-.doc-deck-stage:hover .doc-deck-page.is-top {
+/* In the air nothing eases after it: the script draws every frame. */
+.doc-deck-page.is-flying { transition: none; }
+/* A pile's top sheet comes up a little under the pointer, the hint that it can
+   be pressed. */
+.doc-deck:has(.doc-deck-pile--left:hover:enabled) .doc-deck-page.is-top-left:not(.is-flying),
+.doc-deck:has(.doc-deck-pile--right:hover:enabled) .doc-deck-page.is-top-right:not(.is-flying) {
   translate: 0 -4px;
   box-shadow: 0 2px 4px rgba(0, 6, 60, .26), 0 16px 36px rgba(0, 6, 60, .36);
 }
@@ -2764,13 +2812,15 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    soft tone, led by an italic serif label in the full ink, 1.15em and 4px.
    There the tones are a warm grey and a warm white on black; on the bank's
    blue they are white at 72% (6.8:1, well clear of AA at this size) and white.
-   It stands to the right of the pile in columns 7-8, level with its middle,
-   where a tilted sheet's side is no further out than its few pixels off true,
-   so the column gap keeps the type clear of the paper. */
+   It stands in columns 2-3 under the piles, beside the paragraph after them,
+   its first line on the baseline of that paragraph's first line: out of the
+   flow, hung under the piles' row by a drop the script measures (--cap-drop;
+   the fallback is near enough without it). */
 .doc-deck-cap {
-  grid-column: 7 / 9;
+  position: absolute;
+  grid-column: 2 / 4;
   grid-row: 1;
-  align-self: center;
+  top: calc(100% + var(--cap-drop, calc(1.2em + 10px)));
   margin: 0;
   font-family: var(--mono);
   font-size: 12px;
@@ -2785,18 +2835,24 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .doc-deck-cap .fig-label {
   font-family: "Martina Plantijn", Georgia, "Times New Roman", serif;
   font-style: italic;
-  font-size: calc(1.15em + 4px);
+  /* Smaller than the study's 1.15em and 4px: just over the mono's size, which
+     the serif's smaller x-height brings level with it. */
+  font-size: 1.15em;
   line-height: 1;
   color: #fff;
 }
 @media (max-width: 900px) {
-  /* One column: the pile across the measure, a little in from its edges so the
-     corners the angles push out stay inside the gutters, and the caption under
-     it. */
+  /* One column: the two piles side by side across the measure, each a little
+     in from its half, and the caption under them. */
   .article-grid > .article-body .doc-deck { margin-left: 0; width: 100%; }
-  .doc-deck { grid-template-columns: minmax(0, 1fr); }
-  .doc-deck-stage { grid-column: 1; margin: 12px 4%; }
-  .doc-deck-cap { grid-column: 1; grid-row: 2; align-self: start; margin: 8px 4% 0; }
+  .doc-deck { grid-template-columns: 1fr 1fr; }
+  .doc-deck-table,
+  .doc-deck-pile { padding: 10px 4%; }
+  .doc-deck-table,
+  .doc-deck-pile--left { grid-column: 1; }
+  .doc-deck-pile--right { grid-column: 2; }
+  /* No paragraph beside it here: back in the flow, under the piles. */
+  .doc-deck-cap { position: static; grid-column: 1 / -1; grid-row: 2; margin: 12px 0 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .narr-film, .narr-film-fold, .narr-film-play, .narr-film-toggle, .narr-film-glyph,
@@ -2818,6 +2874,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .article-grid > .article-image,
   .article-grid > .making-photo,
   .article-grid > .article-body { grid-column: 1 / -1; }
+  .article-grid > .making-photo { margin-left: 0; }
   .img-strip { grid-template-columns: repeat(2, 1fr); }
   .fact-row { grid-template-columns: 1fr 1fr; }
   .fact-row::before { width: 100%; } /* full-width divider on the stacked mobile layout */
@@ -2889,7 +2946,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    for the whole of the wrapper and giving its own height back with a negative
    margin, so everything after it in the wrapper lies over it. What comes
    after is the story, in layers. A part with a ground of its own (the bank's
-   black, Stroobant's paper, the granite's black, the workshop's ochre) covers
+   black, Stroobant's paper, the granite's black, the workshop's white) covers
    the map as it passes; a .making-window has no ground and nothing in it, so
    the map shows for as long as it takes to scroll, and the camera makes its
    move there -- see the track in the journey script. The Sculpture Trip has
@@ -2950,7 +3007,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   overflow: visible;
   padding-bottom: 0;
 }
-/* A sub-chapter's head on a ground of its own: 4.1 on the bank's black, 4.2 on
+/* A sub-chapter's head on a ground of its own: Deutsche Bank on the bank's black, Stroobant on
    Stroobant's paper. Set as the journey's sub-heads are (.journey-sub
    .sub-head), with the chapter's 140px over it. */
 /* A flow root, so the margin under the head stays inside the section's ground
@@ -3233,7 +3290,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .journey-photo-measure img,
 .journey-photo-bleed img { display: block; width: 100%; height: auto; }
 
-/* The place names under the photographs. They are set as 4.4's gallery notes
+/* The place names under the photographs. They are set as Sculpting's gallery notes
    are — the type spec below is shared rather than repeated, so a caption reads
    the same wherever in the journey it appears. Only the air above it belongs
    here, since these sit in the page flow and those are placed absolutely. */
@@ -3249,7 +3306,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    column 1, where the measure does.
    Black rather than the section's white: the photograph is a scan of a printed
    spread and the sky behind the line is near-paper, which white would be lost
-   on entirely. The one caption in 4.3 that is not on the near-black takes the
+   on entirely. The one caption in the Granite Trip that is not on the near-black takes the
    ink that ground asks for. */
 .journey-photo-bleed { position: relative; }
 .journey-cap--over {
@@ -3586,30 +3643,21 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   line-height: 1.35;
   letter-spacing: -0.005em;
 }
-/* Set as the chapter numbers are: the same face, weight, leading and tracking,
-   in the same column of the same four-track head.
-   The size is the one place it parts company with them. .chapter-num derives
-   its size from the head, so the numeral's ink fills exactly one column; this
-   is set outright instead, because a three-character number filling a column
-   came out larger than the head wanted. It falls back to the derived figure
-   only when the head is too narrow to hold 216px -- so the number is a fixed
-   size on any real desktop and starts scaling once the column can no longer
-   carry it. */
+/* Set as the chapter numbers are: the same face, weight, size, leading and
+   tracking, in the same column of the same four-track head. The parts are
+   numbered on from the chapters in whole numbers, so a part's figure is a
+   chapter's: its ink fills exactly one column of the head. */
 .sub-num {
   font-family: var(--sans);
   font-weight: 500;
-  font-size: min(216px, calc((100cqw - 3 * var(--col-gap)) / 4 / 1.27 * 1.36));
+  font-size: calc((100cqw - 3 * var(--col-gap)) / 4 / 0.468);
   line-height: 0.85;
-  /* Tighter than the chapter numeral's -0.04em: three characters set at this
-     size leave the pair of digits floating apart, and the point of the figure
-     is that it reads as one mark. Held in em rather than the -20px it was
-     picked at, so it keeps its proportion as the container query resizes the
-     head. */
-  letter-spacing: -0.1em;
+  letter-spacing: -0.04em;
   grid-column: 2 / 3;
   justify-self: start;
   text-align: left;
-  /* The optical left overhang, in proportion to the size, as .chapter-num. */
+  /* The optical left overhang, in proportion to the size, as .chapter-num;
+     each numeral's own is set with the chapters' (#ch1 .chapter-num). */
   margin-left: -0.056em;
   opacity: 0.96;
   margin-bottom: 24px;
@@ -3632,238 +3680,40 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* The route reads as a descent rather than a line: one place to a row, with the
    arrow turned to match. The arrows are drawn between the rows rather than
    written into the sentence, so a route is only its places and the punctuation
-   is the stylesheet's business — which is what lets 4.4, a route of one place,
+   is the stylesheet's business — which is what lets Sculpting, a route of one place,
    sit there without a dangling arrow after it. */
 .sub-route {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-/* Every place in the journey opens on the same mark — a dot in the section's
-   ink, beating slowly so it reads as a position being held rather than as a
-   bullet. One rule serves 4.4's route, which names its place in the head, and
-   4.3's captions, which name theirs under the photographs. currentColor for
-   the reason the arrows below give: the mark has to sit on the journey's
-   near-black and on 4.4's ochre alike. */
+/* Every place in the journey opens on the same mark: the drawn map pin, in the
+   section's ink, standing still. One rule serves Sculpting's head, which names
+   its place there, and the Granite Trip's captions, which name theirs under the
+   photographs. currentColor, so the mark sits on the journey's near-black and
+   on the workshop's white alike. The box is 24x30, the drawing's own
+   proportion at 30px high. */
 .sub-route::before,
 .journey-cap::before {
   content: '';
   display: block;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: currentColor;
-  /* Closer to the name under it than the arrows are to the names they join:
-     the dot belongs to the first place rather than sitting between things. */
-  margin: 0 auto 14px;
-}
-/* Only the route moves, and here it is worked rather than beaten. 4.4 is the
-   one place on the journey where the stone is cut, so its mark is the one that
-   changes shape: a circle drawn out into a squared block, then into a solid
-   with three corners, then back, every edge left soft because granite taken
-   down by diamond chain comes away in curves, not facets.
-   Seven seconds a cycle — slow enough to read as work being done, quick
-   enough that a form comes and goes while the head is still on screen.
-   The captions in 4.3 name places the stone only passed through, so theirs
-   stand still, at the size this one opens on. */
-.sub-route::before {
-  /* The channel the pin stop cuts through the mark. It is a mask rather than a
-     second element or a border: a mask is applied in the mark's own coordinate
-     space, before the transform, so the hole turns with the shape instead of
-     having to be animated to chase it, and what shows through is the ground
-     itself rather than a disc painted to match it.
-     The void is not a circle. A circle read as drilled — a regular thing
-     entering an irregular one — so it is three overlapping ellipses instead,
-     unioned: a body and two lobes that each carry their own size and offset.
-     What comes out is lumpy and off-balance at every moment, and its edge is
-     soft the whole way round, which is what the outside of the mark is doing
-     too. Every lobe's size and offset is a multiple of the void's own radius,
-     so when that radius is nothing the whole void is nothing, and the stops
-     either side of the pin need say nothing about the lobes at all.
-     What the keyframes animate is the lengths and numbers below, not the
-     gradients: mask-image is a discrete property, so keyframes written against
-     it snap from one stop to the next and the void arrives fully formed rather
-     than being cut. Registered through @property, these interpolate, and the
-     gradients are rebuilt from them each frame. Lengths are px rather than
-     percentages, because a percentage radius is measured against the distance
-     to the farthest corner and would swell as the void travels off the edge —
-     the opposite of what a cut does.
-     At rest: radius nothing, parked 8px clear of the right-hand edge. */
-  --hx: 38px;
-  --hy: 14px;
-  --hr: 0px;
-  --ha: 1.16;
-  --l1x: .48;  --l1y: -.46; --l1f: .74;
-  --l2x: -.42; --l2y: .48;  --l2f: .62;
-  mask-image:
-    radial-gradient(ellipse calc(var(--hr) * var(--ha)) calc(var(--hr) / var(--ha))
-                    at var(--hx) var(--hy),
-                    transparent 0 94%, #000 100%),
-    radial-gradient(ellipse calc(var(--hr) * var(--l1f) * 1.15) calc(var(--hr) * var(--l1f) * .85)
-                    at calc(var(--hx) + var(--hr) * var(--l1x))
-                       calc(var(--hy) + var(--hr) * var(--l1y)),
-                    transparent 0 94%, #000 100%),
-    radial-gradient(ellipse calc(var(--hr) * var(--l2f) * 1.15) calc(var(--hr) * var(--l2f) * .85)
-                    at calc(var(--hx) + var(--hr) * var(--l2x))
-                       calc(var(--hy) + var(--hr) * var(--l2y)),
-                    transparent 0 94%, #000 100%);
-  mask-size: 100% 100%;
-  mask-repeat: no-repeat;
-  /* Each layer is ink with one void in it; intersect multiplies the alphas, so
-     the mark is cut wherever ANY of the three is empty — the union of the
-     three, which is the lumpy shape, not their overlap. */
-  mask-composite: intersect;
-  /* Two clocks. The shape and the cut keep the eleven-second cycle; the lobes
-     wander on four point three, which is not a divisor of it, so the void
-     never comes back to the same outline at the same point in the cut. */
-  animation: route-hew 11s ease-in-out infinite,
-             route-swell 4.3s ease-in-out infinite;
-}
-/* The route is centred and its mark centres with it; the captions are ranged
-   left, so theirs sits on the same edge the name starts from.
-   And in 4.3 the mark is the drawn pin rather than a dot. 4.4's mark keeps the
-   dot, because it is the one that gets worked — it becomes the pin in the
-   middle of its cycle and has to start from something that is not one. Here
-   the place is simply named, so the sign is simply given.
-   The box is 24x30, the drawing's own proportion at the dot's height. The
-   shared rule's 50% radius has to go: border-radius clips what a mask lets
-   through, and at 50% it would take the point off. */
-.journey-cap::before {
-  margin: 0 0 14px;
   width: 24px;
   height: 30px;
-  border-radius: 0;
+  background: currentColor;
   -webkit-mask: var(--pin) no-repeat center / contain;
   mask: var(--pin) no-repeat center / contain;
+  /* Closer to the name under it than the arrows are to the names they join:
+     the mark belongs to the first place rather than sitting between things. */
+  margin: 0 auto 14px;
 }
+/* The route is centred and its mark centres with it; the captions are ranged
+   left, so theirs sits on the same edge the name starts from. */
+.journey-cap::before { margin: 0 0 14px; }
 /* Except the closing one, which names the crossing between two places rather
    than a place the stone stopped at, and so has no position to hold. Set here,
    after the mark itself, because the two selectors weigh the same and the last
    one written is the one that counts. */
 .journey-cap--over::before { display: none; }
-/* The mark being cut. border-radius in its eight-value form — four horizontal
-   radii before the slash, four vertical after — so each corner is an ellipse
-   of its own and the outline can go irregular while staying curved throughout;
-   there is no step in the cycle where a hard corner appears.
-   The stops, in order: circle, a block squared off on all four sides, a form
-   drawn down to three soft corners, the map pin, a lopsided mass, a block
-   again. Each is taken as far from its neighbours as the shape allows — the block's radii
-   down near a tenth, the round corners up near three-quarters — so the cut
-   reads at 30px rather than dissolving into a general wobble. Scale and
-   rotation carry the rest: the mass is visibly wider than tall at one stop and
-   taller than wide at the next, the way a block turns under the chain.
-   Transform rather than width, so nothing the shape does moves the name below
-   it. The one rule the corners keep: adjacent radii are held under 100% of
-   the edge they share, since past that the browser scales every radius down
-   to fit and hands back a tamer outline than the one written here.
-
-   The pin is the one stop that is a sign rather than a shape — the mark for a
-   place, which is what this dot has stood for all along — so it is the one
-   corner allowed to come near a point, and it is held for the whole middle of
-   the cycle, 32% to 76%, while its hole is cut. That is nearly five seconds of
-   the eleven, which is why the cycle is eleven and not seven: the cutting is
-   the part worth watching, and it cannot be read at speed.
-   The hole is cut the way the sculpture was. It does not fade in at the
-   centre; it starts as a notch bitten into the edge, is driven inward, opens
-   out to full size in the head of the pin, is held there, and fills back in.
-   Then the same again reversed — it opens from inside at full size, with no
-   channel cut to reach it, and travels out through the other side. Most of the
-   work on the granite happened inside the block, reached by long channels
-   opened from the outside; the mark is made and unmade the same way. */
-/* Unregistered custom properties are strings as far as animation is concerned
-   and would step between keyframes. Declared with a type, they interpolate.
-   Where the void is, and how big: */
-@property --hx  { syntax: '<length>'; inherits: false; initial-value: 38px; }
-@property --hy  { syntax: '<length>'; inherits: false; initial-value: 14px; }
-@property --hr  { syntax: '<length>'; inherits: false; initial-value: 0px; }
-/* And what shape it is: the body's aspect, then each lobe's offset from the
-   body and its size, all as multiples of --hr. */
-@property --ha  { syntax: '<number>'; inherits: false; initial-value: 1.16; }
-@property --l1x { syntax: '<number>'; inherits: false; initial-value: .48; }
-@property --l1y { syntax: '<number>'; inherits: false; initial-value: -.46; }
-@property --l1f { syntax: '<number>'; inherits: false; initial-value: .74; }
-@property --l2x { syntax: '<number>'; inherits: false; initial-value: -.42; }
-@property --l2y { syntax: '<number>'; inherits: false; initial-value: .48; }
-@property --l2f { syntax: '<number>'; inherits: false; initial-value: .62; }
-@keyframes route-hew {
-  /* --- the shape, worked. No void here, so the lobes are left unsaid. --- */
-  0%, 100% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
-             transform: rotate(0deg) scale(1, 1);
-             --hx: 38px; --hy: 14px; --hr: 0px; }
-  /* Squared off: radii down near a tenth, corners still turned. */
-  10%      { border-radius: 14% 12% 15% 13% / 13% 15% 12% 14%;
-             transform: rotate(-11deg) scale(1.09, .91); }
-  /* Three corners: bottom right drawn in tight, the others left full. */
-  22%      { border-radius: 54% 44% 10% 44% / 52% 48% 10% 46%;
-             transform: rotate(13deg) scale(.91, 1.10); }
-
-  /* --- the pin, held while the void is cut --- */
-  /* It arrives whole. The cut is still outside the stone. */
-  32%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
-             transform: rotate(-45deg) scale(1, 1);
-             --hx: 38px; --hy: 14px; --hr: 0px; }
-  /* Bitten into the edge. The void straddles the outline, so what reads is
-     not a hole but a piece taken out of the side. */
-  39%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
-             transform: rotate(-45deg) scale(1, 1);
-             --hx: 27px; --hy: 14px; --hr: 4.6px; }
-  /* Driven inward, opening as it goes. */
-  46%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
-             transform: rotate(-45deg) scale(1, 1);
-             --hx: 20px; --hy: 13.6px; --hr: 5.4px; }
-  /* Open in the head of the pin — twelve or so across on a mark of thirty,
-     the proportion the sign is drawn with, though never twice the same shape. */
-  53%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
-             transform: rotate(-45deg) scale(1, 1);
-             --hx: 16.5px; --hy: 13.5px; --hr: 6.2px; }
-  /* Held. The one stretch in the cycle when the mark is a sign, not a mass. */
-  58%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
-             transform: rotate(-45deg) scale(1, 1);
-             --hx: 16.5px; --hy: 13.5px; --hr: 6.2px; }
-  /* Filled back in where it stands, rather than retreating the way it came. */
-  63%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
-             transform: rotate(-45deg) scale(1, 1);
-             --hx: 16.5px; --hy: 13.5px; --hr: 0px; }
-  /* And again, reversed: it opens from inside at full size, with no channel
-     cut to reach it. */
-  68%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
-             transform: rotate(-45deg) scale(1, 1);
-             --hx: 16.5px; --hy: 13.5px; --hr: 6.2px; }
-  /* Then works its way out through the other side, a bite in that edge on
-     the way. */
-  73%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
-             transform: rotate(-45deg) scale(1, 1);
-             --hx: 2px; --hy: 17px; --hr: 4.6px; }
-  /* Clear of the stone, which is whole again. */
-  78%      { border-radius: 50% 50% 50% 6% / 50% 50% 50% 6%;
-             transform: rotate(-45deg) scale(1, 1);
-             --hx: -8px; --hy: 17px; --hr: 0px; }
-
-  /* --- the shape again --- */
-  /* Irregular — the mass mid-cut, no two corners alike. */
-  85%      { border-radius: 72% 26% 24% 74% / 36% 72% 26% 62%;
-             transform: rotate(-9deg) scale(1.10, .90); }
-  /* Coming back towards the block, and squarer on the other diagonal. */
-  93%      { border-radius: 22% 18% 62% 34% / 32% 58% 22% 42%;
-             transform: rotate(7deg) scale(.92, 1.06); }
-}
-
-/* The lobes wandering, on their own short clock. Nothing here knows where in
-   the cut it is — it only keeps the void off-balance, and because 4.3 does not
-   divide 11 it is never off-balance the same way twice running. */
-@keyframes route-swell {
-  0%, 100% { --ha: 1.16; --l1x: .48;  --l1y: -.46; --l1f: .74;
-                         --l2x: -.42; --l2y: .48;  --l2f: .62; }
-  25%      { --ha: .88;  --l1x: -.50; --l1y: -.38; --l1f: .80;
-                         --l2x: .52;  --l2y: .42;  --l2f: .68; }
-  50%      { --ha: 1.22; --l1x: .44;  --l1y: .52;  --l1f: .66;
-                         --l2x: -.48; --l2y: -.44; --l2f: .76; }
-  75%      { --ha: .92;  --l1x: -.46; --l1y: .40;  --l1f: .78;
-                         --l2x: .40;  --l2y: -.52; --l2f: .64; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .sub-route::before { animation: none; }
-}
 /* The drawn arrow, at its own 44x56. Carried as a mask filled with currentColor
    rather than as an <img> or a background: the file is a black fill, and these
    heads sit on the journey's near-black as well as on Sculpting's white, so the
@@ -3893,7 +3743,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    head has gone up past it until the sub-chapter itself ends, naming the span
    of time you are looking at for exactly as long as you are looking at it.
 
-   pointer-events: none because for 4.5 it rides over a full-bleed map, and
+   pointer-events: none because in the Sculpture Trip it rides over a full-bleed map, and
    nothing that is only a label should take a press away from what is under it.
    The z-index clears that map (0) and the photographs riding over it (1). */
 .journey-sub > .sub-dates {
@@ -3909,8 +3759,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   pointer-events: none;
 }
 /* No sub-chapter puts a ground under its date. A band is only invisible while
-   nothing is passing beneath it, and something always is: in 4.3 it cut a hard
-   black edge across the photographs, in 4.4 an ochre one, and in 4.5 it would
+   nothing is passing beneath it, and something always is: in the Granite Trip it cut a hard
+   black edge across the photographs, in Sculpting a white one, and in the Sculpture Trip it would
    sit on the satellite plate as a rectangle. The line rides what it rides. */
 
 /* Per-stop diary list */
@@ -4006,19 +3856,18 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* Typography now comes from .article-body, so it matches the body text
    everywhere else. The trailing space belongs below the block, not between
    its paragraphs — those keep the shared .article-body rhythm. */
-/* Sculpting · the ochre room ---------------------------------------------
+/* Sculpting · the white room ---------------------------------------------
    The ground is a pseudo-element rather than a background on the block
    itself, so the sub-chapter keeps the container's measure and stays on the
    page grid while the colour runs to both edges. `isolation` gives it a
    stacking context, so the negative z-index lands behind this sub-chapter's
    own content but still on top of .journey's black.
 
-   The ground is Bill's own ochre, the amber of the painted triangle. The ink
-   stays the .light-section black: on this amber that is still ~9.7:1, where
-   white would be 2.2:1. */
+   The ground is white and the ink black, the one lit room in the chapter: a
+   .light-section, so the header, the rail and the cursor turn black over it. */
 /* The Granite Trip closes on its bleed image and the map comes up straight
    off it (the crossing's window), so it carries no margin under it; the
-   workshop's room then comes up over the map on its own ochre. */
+   workshop's room then comes up over the map on its own white. */
 #granite-trip { position: relative; isolation: isolate; margin-bottom: 0; }
 #granite-trip::before {
   content: "";
@@ -4048,7 +3897,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   /* Same scrollbar-aware full-bleed measure as .journey-photo-bleed. */
   left: calc(50% - (100vw - var(--sbw, 0px)) / 2);
   width: calc(100vw - var(--sbw, 0px));
-  background: #E8A317;
+  background: #fff;
 }
 /* .sub-title is set in white for the dark journey; here it follows the ink. */
 #sculpting .sub-title { color: inherit; }
@@ -4468,8 +4317,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   /* Back to the single column with the head. Left at 2 / 3 the number would
      open implicit tracks beside a one-track grid and drag the head off the
      measure; the container query keeps sizing it against the head's own width,
-     which is now the full column. */
-  .journey-sub .sub-num { grid-column: 1; font-size: min(216px, calc(100cqw / 1.27)); }
+     which is now the full column -- by the chapter numerals' measure, so the
+     two stay one size here too. */
+  .journey-sub .sub-num { grid-column: 1; font-size: calc((100cqw - 3 * var(--col-gap)) / 4 / 0.468); }
   .diary-list li { grid-template-columns: 1fr; gap: 6px; }
   .sg-bookend--narrow { display: block; }
   .sg-bookend--narrow img { grid-column: auto; }
@@ -4792,6 +4642,9 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   opacity: 1;
 }
 .quote-band--green { background: #00934C; color: #000; }
+/* The page's signal yellow, so it follows the accent; black wins on it by a
+   distance (14.8 vs 1.4). */
+.quote-band--yellow { background: var(--signal-yellow); color: #000; }
 .quote-band--red   { background: #C90101; color: #fff; }
 .quote-band--white { background: #fff;    color: #0018A8; }
 .quote-band--dbblue{ background: #0018A8; color: #fff; }
@@ -4834,7 +4687,7 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   }
 }
 
-/* Stroobant's body (4.2) runs as two sections so his pull-quote can sit
+/* Stroobant's body runs as two sections so his pull-quote can sit
    between them at full width. Padding stays here rather than inline so the
    band adjacency rules above outrank it and own the space on both sides. */
 .making-body { padding: 0; }
@@ -4893,14 +4746,16 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   cursor: pointer;
   z-index: 701;
 }
-/* Centred on the page rather than cornered: the stage's 80px bottom padding is
-   the band the image never reaches into, so the cross sits under the picture on
-   its centre line and reads as belonging to it. Wider than the other two
-   buttons only so the arms have room -- the mark itself is the transport's. */
+/* In the screen's upper right corner, where the journey gallery's squares
+   stand: its middle on the squares' middle, 13.5px in from both corner insets.
+   The gallery's own close button is those squares turned into this cross, so
+   the two are one mark in one place, whichever screen is open. It stands in
+   the stage's top padding, which the picture never reaches into. Wider than
+   the other two buttons only so the arms have room -- the mark itself is the
+   transport's. */
 .lb-close {
-  left: 50%;
-  bottom: 24px;
-  transform: translateX(-50%);
+  top: calc(var(--corner-y) - 10.5px);
+  right: calc(var(--corner-x) - 18.5px);   /* the 64px box's middle 13.5px in */
   width: 64px;
 }
 .lb-x {
@@ -4984,32 +4839,20 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
 }
 /* Below this the flanks cost more than they are worth: gutter + arrow + air on
    both sides takes better than half a phone's width, and the picture is what
-   the deck is for. So the three controls come off the sides and form one row
-   under the image -- prev, cross, next -- which is the shape the read-aloud
-   transport already takes at the other corner. Sizes are untouched, only where
-   they sit, so the arrow's line and the cross's arm stay the same weight. */
-/* On desktop the cross stands where the journey gallery's squares do, on the
-   middle of the screen's right edge: its middle on the squares' middle,
-   13.5px in from the corner inset. The gallery's own close button is those
-   squares turned into this cross, so the two are one mark in one place,
-   whichever screen is open. The two arrows leave the flanks for the foot,
-   side by side about the middle, 32px between them, the arrowheads' foot on
-   the line the language menu and the play button stand on (--corner-y): the
-   arrow turned on its side is 11 strokes tall in its 14-stroke box, so it
-   stands 1.5 strokes above the box's foot. The picture keeps clear of both:
-   of the cross at the side, the arrows at the foot. */
+   the deck is for. So the two arrows come off the sides and stand under the
+   image, side by side. Sizes are untouched, only where they sit, so the
+   arrow's line stays the cross's arm's weight. */
+/* On desktop the two arrows leave the flanks for the foot too, side by side
+   about the middle, 32px between them, the arrowheads' foot on the line the
+   language menu stands on (--corner-y): the arrow turned on its side is 11
+   strokes tall in its 14-stroke box, so it stands 1.5 strokes above the box's
+   foot. The picture keeps clear of the arrows at the foot and of the cross in
+   the corner above it, and its flanks keep the width they had when the cross
+   stood at the side, so it is framed as it was. */
 @media (min-width: 901px) {
   .lightbox {
     padding: 80px calc(var(--corner-x) + 13.5px + 17px + var(--lb-arrow-air))
              calc(var(--corner-y) + var(--tts-bar) * 11 + var(--lb-arrow-air));
-  }
-  .lb-close {
-    left: auto;
-    right: calc(var(--corner-x) - 18.5px);   /* the 64px box's middle 13.5px in */
-    bottom: auto;
-    top: calc(50vh - 24px);
-    top: calc(50dvh - 24px);
-    transform: none;
   }
   .lb-prev, .lb-next {
     top: auto;
@@ -5023,26 +4866,26 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   .lightbox { padding: 72px var(--gutter) 110px; }
   .lb-prev, .lb-next {
     top: auto;
-    /* Centre-line of the row, which the 48px-tall cross sitting at 24px puts
-       at 48px up: drop the arrow half its own height below that. */
+    /* The row's centre-line 48px up: drop the arrow half its own height
+       below that. */
     bottom: calc(48px - var(--lb-arrow-box) / 2);
     transform: none;
   }
-  /* Half the cross's 64px box, one gap, then the arrow's own width. */
-  .lb-prev { left: 50%;  margin-left:  calc(-32px - 16px - var(--lb-arrow-box)); }
-  .lb-next { right: 50%; margin-right: calc(-32px - 16px - var(--lb-arrow-box)); }
+  /* Side by side about the middle, 32px between them, as on desktop. */
+  .lb-prev { left: auto; right: calc(50% + 16px); }
+  .lb-next { right: auto; left: calc(50% + 16px); }
   .lb-counter { top: 24px; }
 }
 .lb-clickable { cursor: pointer; }
 
 /* ---- Journey gallery ----
-   The button: four squares on the middle of the screen's right edge, where
-   the lightbox's close button stands. It is held in a sticky dock let down
+   The button: four squares in the screen's upper right corner, where the
+   lightbox's close button stands. It is held in a sticky dock let down
    into the section to the top of its first photograph across the full
    measure, the quarry (--jg-drop, measured by the gallery script; the
    section's top edge until it has): it comes up from the bottom of the screen
-   with that photograph's top edge, stops at the middle of the screen, stays
-   there through the whole journey and leaves with the end of 4.5. The dock is the button's height,
+   with that photograph's top edge, stops in the corner, stays there through
+   the whole journey and leaves with the end of the Sculpture Trip. The dock is the button's height,
    lets the pointer through everywhere but the button, and stands over the
    map and the photographs, under the rail's list. Its place is given back by
    the container after it rather than by the dock's own margin: a sticky box
@@ -5051,10 +4894,9 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
 .journey { --jg-dock-h: 48px; --jg-drop: calc(-1 * var(--journey-pad)); }
 .jg-dock {
   position: sticky;
-  /* Measured on the dynamic viewport, as the + button on a phone is, so the
-     two keep one line as the browser's bars come and go. */
-  top: calc(50vh - 24px);
-  top: calc(50dvh - 24px);
+  /* The mark's top edge on the corner inset, as its right edge is: the 48px
+     box centres the 27px mark, 10.5px in from the box's edge. */
+  top: calc(var(--corner-y) - 10.5px);
   z-index: 60;
   height: var(--jg-dock-h);
   margin-top: var(--jg-drop);
@@ -5065,8 +4907,8 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
 }
 .jg-dock:has(.jg-btn[aria-expanded="true"]) { z-index: 695; transition-delay: 0s; }
 .jg-dock + .container { margin-top: calc(-1 * (var(--jg-drop) + var(--jg-dock-h))); }
-/* A 48px target with the 27px mark in its middle, the mark's right edge on the
-   corner inset. The lightbox's close button is brought to the same place
+/* A 48px target with the 27px mark in its middle, the mark's top and right
+   edges on the corner insets. The lightbox's close button is brought to the same place
    (.lb-close), so the cross the squares turn into stands exactly where the
    lightbox's does, and gives way to it when a photograph is opened over the
    sheet. The mark takes the theme the body is tracking, as .menu-btn does,
@@ -5091,12 +4933,6 @@ body.light .jg-btn { color: var(--ink); }
 .jg-dock .jg-btn[aria-expanded="true"] { color: #fff; }
 .jg-btn:focus { outline: none; }
 .jg-btn:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
-/* On a phone the + button holds the middle of the right edge, so the squares
-   take the middle of the left, level with it, their left edge on the corner
-   inset the play button stands on below. */
-@media (max-width: 900px) {
-  .jg-btn { right: auto; left: calc(var(--corner-x) - 10.5px); }
-}
 .jg-ico {
   position: relative;
   display: block;
@@ -5164,9 +5000,10 @@ body.light .jg-btn { color: var(--ink); }
   transition: opacity .3s ease, visibility 0s linear .3s;
 }
 .jg.is-open { opacity: 1; visibility: visible; transition: opacity .3s ease, visibility 0s; }
-/* Framed on the page's gutter at the top as at the sides: nothing stands over
-   the sheet's top now, the close button being at the middle of its edge. */
-.jg-sheet { padding-top: var(--gutter); padding-bottom: 112px; }
+/* Framed on the page's gutter at the sides; at the top it starts clear of the
+   close button in the corner, the cross's 27px and the corner inset again
+   under it. */
+.jg-sheet { padding-top: calc(var(--corner-y) * 2 + 27px); padding-bottom: 112px; }
 /* On the page's eight columns: four photographs to a row, each on two; two to
    a row on a phone. Each photograph and its caption take two rows of the
    sheet's grid -- the picture's and the caption's -- and share them with the
