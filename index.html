@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=204" />
+<link rel="stylesheet" href="styles.css?v=206" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -131,26 +131,15 @@
 
     <!-- Stone rules: a comparison drawn beside the stone, at its own scale,
          while a fact goes by. Height: two lines closing on the stone's tip and
-         base, and Le Corbusier's Modulor man standing on the lower one. Weight:
-         an African elephant bull on the same ground, who then shrinks into a
-         tower of thirteen. data-for names the fact each belongs to, data-metres
-         how tall its figure stands, data-stack how many make the stone's
-         weight, data-steady that it holds still rather than following the
-         turn. Fixed, not pinned: the script places them against the stone, and
-         the sculpture is pinned for the whole of both passages. -->
+         base, and Le Corbusier's Modulor man standing on the lower one.
+         data-for names the fact a rule belongs to, data-metres how tall its
+         figure stands. Fixed, not pinned: the script places it against the
+         stone, and the sculpture is pinned for the whole of the passage. -->
     <div class="stone-rule height-rule" data-for="height" data-metres="2.26" aria-hidden="true">
       <div class="container">
         <div class="height-rule-span"><i class="height-rule-figure"></i></div>
         <p class="caption height-rule-caption">Modulor by Le&nbsp;Corbusier, the height of a man with his arm raised, 2.26&nbsp;m</p>
       </div>
-    </div>
-    <div class="stone-rule weight-rule" data-for="weight" data-metres="3.2" data-stack="13" data-steady aria-hidden="true">
-      <div class="container">
-        <div class="weight-rule-tower"></div>
-        <p class="caption weight-rule-caption weight-rule-caption--one">Male African elephant,<br>3.2&nbsp;m at the shoulder,<br>about 6&nbsp;t</p>
-        <p class="caption weight-rule-caption weight-rule-caption--stack">13 of them weigh<br>as much as the sculpture</p>
-      </div>
-      <div class="weight-rule-herd"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i><i style="--k:3"></i><i style="--k:4"></i><i style="--k:5"></i><i style="--k:6"></i><i style="--k:7"></i><i style="--k:8"></i><i style="--k:9"></i><i style="--k:10"></i><i style="--k:11"></i><i style="--k:12"></i></div>
     </div>
 
     <!-- HERO -->
@@ -170,13 +159,18 @@
          so lengthening the rail is what keeps it fixed longer. The facts are
          ordinary flow content on the 8-column grid — cols 1–2 or 7–8 per
          fact — so they ride past the sculpture on either side rather than
-         floating over it. Height rides cols 2–3 with Material and Year, and
-         Weight cols 7–8, each across the stone from the comparison drawn for
-         it (the stone rules, above); Place/Year share a row, one per column,
-         so that pair lands on screen together. -->
+         floating over it. Architect comes first, from col 6, then Material
+         and Height on cols 2–3 as Year is, Height across the stone from the
+         comparison drawn for it (the stone rules, above), and Weight on cols
+         7–8; Place/Year share a row, one per column, so that pair lands on
+         screen together. -->
     <section class="intro dark-section" id="introFacts">
       <div class="container">
         <div class="facts-rail">
+          <div class="rail-fact rail-fact--six reveal">
+            <span class="rail-key">Architect</span>
+            <span class="rail-val">Max Bill</span>
+          </div>
           <div class="rail-fact rail-fact--left reveal">
             <span class="rail-key">Material</span>
             <span class="rail-val rail-val--stacked">Sardinian<br>granite</span>
@@ -185,11 +179,9 @@
             <span class="rail-key">Height</span>
             <span class="rail-val">4.5 m</span>
           </div>
-          <div class="rail-fact rail-fact--right reveal" data-rule="weight">
-            <div class="rail-fact-pin">
-              <span class="rail-key">Weight</span>
-              <span class="rail-val">80 t</span>
-            </div>
+          <div class="rail-fact rail-fact--right reveal">
+            <span class="rail-key">Weight</span>
+            <span class="rail-val">80 t</span>
           </div>
         </div>
         </div>
@@ -1805,10 +1797,8 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
 
 // Stone rules. While a fact goes by, a comparison is drawn beside the stone at
 // its own scale: for Height, two lines closing on its tip and base, with Le
-// Corbusier's Modulor man standing on the lower one; for Weight, an African
-// elephant bull on the same ground, who then becomes a tower of thirteen. Each
-// overlay names its fact (data-for) and how tall its figure stands
-// (data-metres).
+// Corbusier's Modulor man standing on the lower one. Each overlay names its
+// fact (data-for) and how tall its figure stands (data-metres).
 //
 // The tip holds still as the sculpture turns -- the clip turns about an axis
 // through it, on row 0.213 of every frame -- but the base does not: across the
@@ -1824,17 +1814,10 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
 //
 // The span between tip and base is the stone's 4.5 m, and each figure is sized
 // from it: the Modulor drawing is 2.26 m to the raised hand (1.83 m to the
-// crown), the elephant 3.2 m to the shoulder. Since the Height rule's span is
-// re-read every frame, so is the Modulor's size: as the base turns towards the
-// camera the ground drops and he grows a little, as anyone standing at the
-// stone's front edge would, and figure and stone never disagree about scale.
-//
-// The elephant's rule holds still instead (data-steady). Standing on each
-// frame's own base he rose and sank and grew and shrank as the stone turned
-// under him; so he and his tower are placed against the stone's full reach --
-// the tip, and the lowest its base comes anywhere in the turn (STEADY, measured
-// over all 192 frames) -- and keep one place and one size for the passage. In
-// front of the stone, his feet a little below its base read as nearer.
+// crown). Since the span is re-read every frame, so is the Modulor's size: as
+// the base turns towards the camera the ground drops and he grows a little, as
+// anyone standing at the stone's front edge would, and figure and stone never
+// disagree about scale.
 //
 // A rule is put up when its fact arrives and taken down once the fact's value
 // has risen past the tip. The script only switches a class; the stylesheet
@@ -1848,21 +1831,6 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
 // A rule can also hold back its figure: --figure-from, on the same measure,
 // puts .is-figure on it once the value has risen that far, so the lines can
 // come up first and the figure after them.
-//
-// The Weight fact's figure then holds still (.rail-fact-pin is sticky) while
-// the stone turns on -- level with the middle of the stone, or, where it would
-// stand on the elephant, just clear above the tip (--pin-align) -- and the
-// tower goes up during that hold, tied to the scrollbar: from --stack-from to
-// --stack-to of the hold the elephant shrinks into the foot of the tower
-// (SHRINK of that run, eased in and out, and scaled evenly to the eye -- by
-// the same ratio each step, not the same amount, which spent most of a tenfold
-// shrink in its first moments) and the twelve others settle onto the tower
-// one after another, each from DROP of a place above its own (over CLIMB of
-// the run): the places above are always still empty, and each starts after
-// the one below it, so none ever passes over another. The last arrives before
-// the figure lets go. The tower follows the scrollbar a little behind (FOLLOW of the way
-// each frame) rather than jumping with it, so a wheel's notch is a glide, not
-// a step. Scrolling back takes the tower down again the same way.
 (() => {
   const sculpture = document.querySelector('.sticky-sculpture');
   if (!sculpture) return;
@@ -1872,33 +1840,17 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
       el,
       fact,
       value: fact.querySelector('.rail-val') || fact,
-      pin: fact.querySelector('.rail-fact-pin'),
       metres: parseFloat(el.dataset.metres) || 0,
-      stack: parseInt(el.dataset.stack, 10) || 0,
-      steady: el.hasAttribute('data-steady'),
-      tower: el.querySelector('.weight-rule-tower'),
-      herd: [...el.querySelectorAll('.weight-rule-herd i')],
       shown: false,
       figureShown: false,
-      stacking: false,
-      stacked: false,
-      sTarget: 0,
-      sShown: 0,
-      geo: [0, 1, 0],
-      raf: 0,
     };
   }).filter(Boolean);
   if (!rules.length) return;
 
   const FPS = 24, ALPHA = 128;
-  const STONE_M = 4.5, REVEAL = 0.9, PIN_GAP = 24;
-  const STEADY = [0.213, 0.875];   // the tip, and the base at its lowest, in the frame
-  const SHRINK = 0.35, CLIMB = 0.3, DROP = 0.6, FOLLOW = 0.14, LANDED = 0.9;
-  const clamp01 = (x) => Math.min(1, Math.max(0, x));
-  const easeOut = (t) => 1 - (1 - t) ** 3;
-  const easeInOut = (t) => (t < 0.5 ? 4 * t ** 3 : 1 - (2 - 2 * t) ** 3 / 2);
+  const STONE_M = 4.5, REVEAL = 0.9;
 
-  // The stylesheet's numbers for each rule: its beats, and the herd's shape.
+  // The stylesheet's numbers for each rule: its beats.
   const readStyle = () => rules.forEach((r) => {
     const cs = getComputedStyle(r.el);
     const num = (name, fallback) => {
@@ -1909,24 +1861,8 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
     r.from = num('--rule-from', 0.5);
     r.until = num('--rule-until', 0);
     r.figureFrom = num('--figure-from', NaN);
-    r.stackFrom = num('--stack-from', 0);
-    r.stackTo = num('--stack-to', 1);
-    r.pinAbove = cs.getPropertyValue('--pin-align').trim() === 'above';
-    r.aspect = num('--aspect', 1);
-    r.gap = num('--stack-gap', 0);
-    const fs = getComputedStyle(r.fact);
-    r.padTop = parseFloat(fs.paddingTop) || 0;
-    r.padBottom = parseFloat(fs.paddingBottom) || 0;
   });
   readStyle();
-
-  // How far through its hold the fact's figure is: 0 until it sticks, 1 once
-  // it has reached the foot of its fact and moves on with it.
-  const held = (r) => {
-    const outer = r.fact.getBoundingClientRect(), inner = r.pin.getBoundingClientRect();
-    const travel = outer.height - r.padTop - r.padBottom - inner.height;
-    return travel > 0 ? clamp01((inner.top - outer.top - r.padTop) / travel) : 0;
-  };
 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -1959,56 +1895,11 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
     return (last = e);
   };
 
-  // The tower at s of its way up: 0 the one elephant at full size, 1 all
-  // thirteen in their places. Gives back how far in the last one is.
-  const build = (r, s, slot, scale, dx) => {
-    const n = r.herd.length;
-    let last = 0;
-    r.herd.forEach((el, k) => {
-      if (k === 0) {
-        // His middle goes straight from where he stands to the foot of the
-        // tower while his size eases down; the corner the scale hangs from
-        // follows from those two, so he never swings out past the tower.
-        const t = easeInOut(clamp01(s / SHRINK));
-        const w = slot * r.aspect, size = scale ** (1 - t);
-        const middle = (dx + scale * w / 2) * (1 - t) + (w / 2) * t;
-        el.style.transform = `translate(${middle - size * w / 2}px, 0) scale(${size})`;
-        return;
-      }
-      const start = SHRINK + (k - 1) * (1 - SHRINK - CLIMB) / (n - 2);
-      const t = easeOut(clamp01((s - start) / CLIMB));
-      el.style.transform = `translateY(${-(1 - t) * DROP * (slot + r.gap)}px)`;
-      el.style.opacity = t;
-      last = t;
-    });
-    return last;
-  };
-
-  // Eases the shown tower after the scrollbar's, a frame at a time, and keeps
-  // the captions with what is shown: the tower's comes up as soon as the last
-  // elephant is LANDED of the way in, where he already reads as arrived,
-  // rather than waiting out the last of his settling.
-  const follow = (r) => {
-    if (r.raf) return;
-    const step = () => {
-      r.raf = 0;
-      const d = r.sTarget - r.sShown;
-      r.sShown = Math.abs(d) < 0.001 ? r.sTarget : r.sShown + d * FOLLOW;
-      const last = build(r, r.sShown, ...r.geo);
-      const stacking = r.sShown > 0, stacked = last >= LANDED;
-      if (stacking !== r.stacking) r.el.classList.toggle('is-stacking', (r.stacking = stacking));
-      if (stacked !== r.stacked) r.el.classList.toggle('is-stacked', (r.stacked = stacked));
-      if (r.sShown !== r.sTarget) r.raf = requestAnimationFrame(step);
-    };
-    step();
-  };
-
   const update = () => {
     const box = sculpture.getBoundingClientRect();
     // Only work while a value is anywhere near the stone -- within a screen of
-    // it, since the elephant's rule runs on past the tip. A rule keeps being
-    // placed a little either side of the span it shows in, so its fade out
-    // still follows the turn.
+    // it. A rule keeps being placed a little either side of the span it shows
+    // in, so its fade out still follows the turn.
     const margin = window.innerHeight;
     let e;
     rules.forEach((r) => {
@@ -2016,10 +1907,9 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
       const mid = v.top + v.height / 2;
       let on = false, figureOn = false;
       if (mid > box.top - margin && mid < box.bottom + margin) {
-        if (!r.steady && e === undefined) e = measure();
-        const ext = r.steady ? STEADY : e;
-        if (ext) {
-          const top = box.top + ext[0] * box.height, bottom = box.top + ext[1] * box.height;
+        if (e === undefined) e = measure();
+        if (e) {
+          const top = box.top + e[0] * box.height, bottom = box.top + e[1] * box.height;
           const span = bottom - top, at = (mid - top) / span;   // 1 at the base, 0 at the tip
           const started = r.fromReveal
             ? r.fact.getBoundingClientRect().top < window.innerHeight * REVEAL
@@ -2032,27 +1922,6 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
           r.el.style.setProperty('--rule-top', (top - o.top) + 'px');
           r.el.style.setProperty('--rule-bottom', (bottom - o.top) + 'px');
           r.el.style.setProperty('--figure-h', figure + 'px');
-          if (r.pin) {
-            const h = r.pin.offsetHeight;
-            const pinTop = r.pinAbove ? top - PIN_GAP - h : (top + bottom - h) / 2;
-            r.fact.style.setProperty('--pin-top', pinTop + 'px');
-          }
-          if (r.stack) {
-            // One slot of the tower, how far the first elephant is scaled up out
-            // of it to stand at full size with his tusk on the centre line, and
-            // where the tower stands: flush right in its column, against its
-            // caption.
-            const slot = (span - (r.stack - 1) * r.gap) / r.stack;
-            const towerLeft = r.tower.getBoundingClientRect().right - slot * r.aspect - o.left;
-            const bigLeft = box.left + box.width / 2 - figure * r.aspect - o.left;
-            r.el.style.setProperty('--stack-h', slot + 'px');
-            r.el.style.setProperty('--tower-left', towerLeft + 'px');
-            r.geo = [slot, figure / slot, bigLeft - towerLeft];
-            r.sTarget = r.pin ? clamp01((held(r) - r.stackFrom) / (r.stackTo - r.stackFrom)) : 0;
-            // Out of sight there is nothing to ease: be there already.
-            if (!r.shown) r.sShown = r.sTarget;
-            follow(r);
-          }
         }
       }
       if (on !== r.shown) {
