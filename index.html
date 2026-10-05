@@ -32,8 +32,9 @@
   <!-- Chapter rail — second contents control, on the left gutter at the
        vertical centre. Six strokes end to end, one per chapter, each as long
        as its chapter is to scroll: the one you are in fills as you read
-       through it. Clicking any of them opens .crail-panel below; on narrow
-       screens, where the rail is hidden, the + button above opens it.
+       through it. Hovering (with a mouse) or clicking any of them opens
+       .crail-panel below; on narrow screens, where the rail is hidden, the
+       + button above opens it.
        Each stroke is drawn in parts, .crail-seg. A bar's first part starts
        with its chapter; any later one starts at its data-crail-from anchor,
        which is how the journey's stroke is cut at its sub-chapters. -->
@@ -1449,6 +1450,30 @@ function crailSync(scrollTop, docH) {
   // Where the rail is hidden, the + button opens the list in its place, and
   // turns to a cross while it is open.
   menuBtn.addEventListener('click', () => crailOpen(!panel.classList.contains('is-open')));
+
+  // With a mouse, the list also opens on hover: resting on the rail for a
+  // moment (OPEN_AFTER, so a pointer only crossing the gutter does not set it
+  // off) brings it up, and it closes once the pointer has been off both the
+  // rail and the titles for CLOSE_AFTER -- long enough to cross the blur from
+  // the strokes to a title. A press still works as before; on an open list it
+  // goes to the part under the pointer.
+  const hoverable = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const OPEN_AFTER = 120, CLOSE_AFTER = 320;
+  let hoverTimer = 0;
+  const hoverIn = () => {
+    if (!hoverable.matches) return;
+    clearTimeout(hoverTimer);
+    if (!panel.classList.contains('is-open')) hoverTimer = setTimeout(() => crailOpen(true), OPEN_AFTER);
+  };
+  const hoverOut = () => {
+    if (!hoverable.matches) return;
+    clearTimeout(hoverTimer);
+    hoverTimer = setTimeout(crailClose, CLOSE_AFTER);
+  };
+  rail.addEventListener('pointerenter', hoverIn);
+  rail.addEventListener('pointerleave', hoverOut);
+  nav.addEventListener('pointerenter', () => clearTimeout(hoverTimer));
+  nav.addEventListener('pointerleave', hoverOut);
 
   // Chapter tops and lengths shift with the layout, and the rail's own first
   // paint needs a measured pass — onScroll() re-measures whenever the document
