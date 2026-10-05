@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=206" />
+<link rel="stylesheet" href="styles.css?v=209" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -30,22 +30,22 @@
   </div>
 
   <!-- Chapter rail — second contents control, on the left gutter at the
-       vertical centre. Six strokes end to end, one per chapter, each as long
+       vertical centre. Four strokes end to end, one per chapter, each as long
        as its chapter is to scroll: the one you are in fills as you read
        through it. Hovering (with a mouse) or clicking any of them opens
        .crail-panel below; on narrow screens, where the rail is hidden, the
        + button above opens it.
        Each stroke is drawn in parts, .crail-seg. A bar's first part starts
        with its chapter; any later one starts at its data-crail-from anchor,
-       which is how the journey's stroke is cut at its sub-chapters. -->
+       which is how the making's stroke is cut at its sub-chapters. -->
   <button class="crail" id="crail" aria-label="Contents" data-i18n-label="nav.contents" aria-expanded="false" aria-controls="crailPanel">
-    <span class="crail-bar" aria-hidden="true"><span class="crail-seg"><span class="crail-fill"></span></span></span>
-    <span class="crail-bar" aria-hidden="true"><span class="crail-seg"><span class="crail-fill"></span></span></span>
     <span class="crail-bar" aria-hidden="true"><span class="crail-seg"><span class="crail-fill"></span></span></span>
     <span class="crail-bar" aria-hidden="true"><span class="crail-seg"><span class="crail-fill"></span></span></span>
     <span class="crail-bar" aria-hidden="true"><span class="crail-seg"><span class="crail-fill"></span></span></span>
     <span class="crail-bar" aria-hidden="true">
       <span class="crail-seg"><span class="crail-fill"></span></span>
+      <span class="crail-seg" data-crail-from="stroobant"><span class="crail-fill"></span></span>
+      <span class="crail-seg" data-crail-from="granite-trip"><span class="crail-fill"></span></span>
       <span class="crail-seg" data-crail-from="sculpting"><span class="crail-fill"></span></span>
       <span class="crail-seg" data-crail-from="sculpture-trip"><span class="crail-fill"></span></span>
     </span>
@@ -55,23 +55,24 @@
     <nav class="crail-nav">
       <!-- Laid out on the rail's own measure and built as the rail is, so each
            title stands level with its part of the rail — see .crail-nav. A row
-           per bar and a link per part: the journey's bar is cut at its
-           sub-chapters, so its row holds three separate items, each linking to
-           its own sub-chapter. A link's number shows for the part you are in,
+           per bar and a link per part: the making's bar is cut at its
+           sub-chapters, so its row holds five separate items, each linking to
+           its own sub-chapter (the first to the chapter's opening, which it
+           starts with). A link's number shows for the part you are in,
            and for the others only while the pointer is on them. Below 901px,
-           where the + button opens this list without the rail, the journey's
-           title stands once over its three sub-chapters, unnumbered, and they
+           where the + button opens this list without the rail, the making's
+           title stands once over its five sub-chapters, unnumbered, and they
            drop it — see .crail-chapter. -->
       <div class="crail-row"><a href="#top" class="crail-link" style="--i:0" data-crail-close><span class="crail-num" aria-hidden="true">0</span><span class="crail-txt" data-i18n="nav.intro">Intro</span></a></div>
       <div class="crail-row"><a href="#ch1" class="crail-link" style="--i:1" data-crail-close><span class="crail-num" aria-hidden="true">1</span><span class="crail-txt">Max Bill</span></a></div>
-      <div class="crail-row"><a href="#ch2" class="crail-link" style="--i:2" data-crail-close><span class="crail-num" aria-hidden="true">2</span><span class="crail-txt" data-i18n="nav.math">Mathematics of the sculpture</span></a></div>
-      <div class="crail-row"><a href="#ch3" class="crail-link" style="--i:3" data-crail-close><span class="crail-num" aria-hidden="true">3</span><span class="crail-txt">Deutsche Bank</span></a></div>
-      <div class="crail-row"><a href="#ch4" class="crail-link" style="--i:4" data-crail-close><span class="crail-num" aria-hidden="true">4</span><span class="crail-txt" data-i18n="nav.making">Dominique Stroobant</span></a></div>
+      <div class="crail-row"><a href="#ch2" class="crail-link" style="--i:2" data-crail-close><span class="crail-num" aria-hidden="true">2</span><span class="crail-txt" data-i18n="nav.math">Kontinuität = an infinity loop?</span></a></div>
       <div class="crail-row">
-        <a href="#ch5" class="crail-link crail-chapter" style="--i:5" data-crail-close><span class="crail-num" aria-hidden="true"></span><span class="crail-txt" data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span></a>
-        <a href="#granite-trip" class="crail-link" style="--i:6" data-crail-close><span class="crail-num" aria-hidden="true">5.1</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span>: </span><span data-i18n="nav.granite-trip">Granite Trip</span></span></a>
-        <a href="#sculpting" class="crail-link" style="--i:7" data-crail-close><span class="crail-num" aria-hidden="true">5.2</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span>: </span><span data-i18n="nav.sculpting">Sculpting</span></span></a>
-        <a href="#sculpture-trip" class="crail-link" style="--i:8" data-crail-close><span class="crail-num" aria-hidden="true">5.3</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.journey">Journey from Sardinia to Frankfurt</span>: </span><span data-i18n="nav.sculpture-trip">Sculpture Trip</span></span></a>
+        <a href="#ch3" class="crail-link crail-chapter" style="--i:3" data-crail-close><span class="crail-num" aria-hidden="true"></span><span class="crail-txt" data-i18n="nav.making">The story of the making</span></a>
+        <a href="#ch3" class="crail-link" style="--i:4" data-crail-close><span class="crail-num" aria-hidden="true">3.1</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span>Deutsche Bank</span></span></a>
+        <a href="#stroobant" class="crail-link" style="--i:5" data-crail-close><span class="crail-num" aria-hidden="true">3.2</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span>Dominique Stroobant</span></span></a>
+        <a href="#granite-trip" class="crail-link" style="--i:6" data-crail-close><span class="crail-num" aria-hidden="true">3.3</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.granite-trip">Granite Trip</span></span></a>
+        <a href="#sculpting" class="crail-link" style="--i:7" data-crail-close><span class="crail-num" aria-hidden="true">3.4</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.sculpting">Sculpting</span></span></a>
+        <a href="#sculpture-trip" class="crail-link" style="--i:8" data-crail-close><span class="crail-num" aria-hidden="true">3.5</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.sculpture-trip">Sculpture Trip</span></span></a>
       </div>
     </nav>
   </div>
@@ -335,7 +336,7 @@
     </div>
   </section>
 
-  <!-- CHAPTER 2 · Mathematics -->
+  <!-- CHAPTER 2 · Kontinuität = an infinity loop? The mathematics of the sculpture -->
   <section class="chapter math" id="ch2">
     <!-- The project's own 8-column grid, drawn rather than implied: this is the
          chapter about how the sculpture was measured, so the measure the page
@@ -348,7 +349,7 @@
     <div class="container">
       <div class="chapter-head">
         <div class="chapter-num">2</div>
-        <h2 class="chapter-title" data-narr="ch5-title">Mathematics behind the sculpture</h2>
+        <h2 class="chapter-title" data-narr="ch5-title">Kontinuität = an infinity loop?</h2>
       </div>
 
       <div class="scroll-video-sticky">
@@ -420,396 +421,443 @@
     </div>
   </section>
 
-  <!-- CHAPTER 3 · Deutsche Bank -->
-  <section class="chapter dark-section db-section" id="ch3">
-    <div class="container">
-      <div class="chapter-head">
-        <div class="chapter-num">3</div>
-        <h2 class="chapter-title">Why Deutsche Bank commissioned a sculpture</h2>
-      </div>
-    </div>
-  </section>
+  <!-- CHAPTER 3 · The story of the making
+       One chapter where there were three (Deutsche Bank, Dominique Stroobant,
+       the journey), told on one map. The map is pinned behind the whole
+       chapter and the story passes over it in layers: each part comes up over
+       the map on a ground of its own, and when it has gone by the map is there
+       again and the camera moves on to where the next part happens.
 
-  <!-- Deutsche Bank · article -->
-  <section class="article dark-section db-section db-body">
-    <div class="container">
-      <div class="article-grid">
-        <div class="article-body">
-          <p data-narr="db-1">Why would one of Germany's leading banks decide to place a large sculpture in front of its headquarters?</p>
-          <p data-narr="db-2">As the Deutsche Bank Twin Towers rose in Frankfurt between 1979 and 1984, the bank's senior management faced a crucial question: what monumental artwork should stand at the threshold of the new headquarters? In 1981, while construction continued, the board began to search for a proper sculptor. Deutsche Bank had long committed to art and culture&nbsp;— a programme whose scope is evident today across the Towers' sixty floors, where the collection spans a hundred international artworks from more than forty countries.</p>
+         the globe            -> down onto Frankfurt
+         3.1 Deutsche Bank       (black)
+         Frankfurt            -> out, and down onto Sardinia
+         3.2 Dominique Stroobant (paper)
+         3.3 Granite Trip        (black)
+         Sardinia             -> north with the route to Marina di Carrara
+         3.4 Sculpting           (ochre)
+         3.5 Sculpture Trip      (on the map itself, to Rotterdam and Frankfurt)
 
-          <p data-narr="db-3">The choice had to meet several criteria. The artist should come from the German-speaking countries. The work should fit Deutsche Bank's collecting profile&nbsp;— meaning significant contemporary art. It should relate less to the building's facade than to the plaza in front of it. And the artist should be free in his solution, while that solution still reflected the functions of the bank.</p>
+       The stretches where the map shows are .making-window: empty, and as tall
+       as the camera's move needs to be scrolled through. -->
+  <div class="making" id="making">
+    <!-- The map: one MapLibre globe for the chapter, sticky for all of it and
+         giving its own height back (see .making-map), so everything after it
+         lies over it. The Walk-around scene sits on its centre point, which
+         by the end is the sculpture's real coordinate: it opens as a preview
+         on Frankfurt, grows, then turns. -->
+    <aside class="journey-map-wrap making-map is-zoomed" id="makingMap">
+      <div class="journey-map" id="globeMap" aria-hidden="true"></div>
+      <img class="map-reveal" id="mapReveal" src="./assets/hero-sculpture.png" alt="" aria-hidden="true">
+      <p class="map-reveal-cap" id="mapRevealCap" aria-hidden="true">Walk around&nbsp;— a Gaussian splatting scene</p>
+    </aside>
 
-          <p data-narr="db-4">Few names fit better than Max Bill. An established Swiss artist and sculptor, modern and unexpected, his work corresponded closely to the bank's vision. Since his Bauhaus years, Bill had built an art of precise geometry, calculation and mathematics&nbsp;— carried through painting, sculpture and graphic work, an approach as innovative as it was rigorous.</p>
-
-          <p data-narr="db-5">Bill first proposed a coloured column, conceived to present the viewer with numbers and quantities. Yet when the board asked how he himself would decide in their place, he gave his preference to Continuity&nbsp;— the work recommended by the bank's art advisers.</p>
-
+    <!-- The chapter opens on the whole globe, its title over it; scrolled on,
+         the globe comes down onto Frankfurt, and only then does 3.1 arrive. -->
+    <section class="chapter dark-section making-window making-open" id="ch3" data-making-window="open">
+      <div class="container">
+        <div class="chapter-head">
+          <div class="chapter-num">3</div>
+          <h2 class="chapter-title">The story of the making</h2>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Pull-quote band: the quote's own colour becomes the ground. -->
-  <section class="quote-band quote-band--white">
-    <div class="container">
-      <p class="quote-text" data-narr="db-6">The chance to finally bring this long-running hit, now approaching its fortieth anniversary, to life was so tempting that I cast aside all my reservations about its age&nbsp;— and a wave of almost insurmountable difficulties that was welling up inside me&nbsp;— and decided to take the plunge on this adventure.</p>
-      <div class="quote-credit-col">
-        <p class="quote-attr">Max Bill</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="article dark-section db-section db-body">
-    <div class="container">
-      <div class="article-grid">
-        <div class="article-body">
-
-          <p data-narr="db-7">Kontinuität worked through contrast to the straight Twin Towers while proposing harmony. The sculpture had once been destroyed by vandals in Zurich, and the idea of the unbroken continuity of world trade and banking&nbsp;— together with the restoration of art as a restoration of life in post-war Germany&nbsp;— suited the commission perfectly. The work was given to Max Bill.</p>
-
-          <p data-narr="db-8">Carving the large granite sculpture took three years. It required a second sculptor, Dominique Stroobant, charged with its realisation alongside the bank's management. Stroobant approached the task with rigour. He set up the firm, hired assistants, found a suitable quarry for the granite in Sardinia, and built a workshop in the port of Carrara&nbsp;— working for three years always in consultation with, and under the supervision of, Max Bill.</p>
-
-          <p data-narr="db-9">At haus bill&nbsp;— the home where Max Bill's widow Angela Thomas lives today&nbsp;— we found a large archive of documentation, accounts and invoices connected to the sculpture. Stroobant was responsible for the entire management: the extensive correspondence with Deutsche Bank over shipments, the selection and ordering of transport, the payment of invoices, the preparations for the opening, and the accompanying exhibition.</p>
-
-          <p data-narr="db-10">It is precisely these documents&nbsp;— the notebooks, drawings, draft letters, expense calculations and photographs of the work in progress&nbsp;— that allow us today to understand the full complexity of realising such an ambitious idea. Stroobant did not simply make the sculpture: he coordinated an entire logistics operation, smoothed away bureaucratic obstacles, and ensured quality at every stage. Deutsche Bank, for its part, placed its trust in his experience and his sense of responsibility.</p>
-
-
-          <p data-narr="db-13">Deutsche Bank's investment in art was never purely aesthetic. It reflected a broader conviction&nbsp;— that cultural engagement is part of what an institution owes to its people and to society, building cultural capital that extends from the workplace to the city and beyond. Kontinuität is perhaps the most eloquent expression of that idea: a sculpture whose name speaks to the unbroken continuity of this commitment.</p>
-
-          <div class="db-zapp-anchor" style="margin-top:1.2em;">
-            <figure class="db-portrait">
-              <img src="./assets/_db/herbert-zapp.jpg" alt="Herbert Zapp">
-            </figure>
-          </div>
+    <!-- 3.1 · Deutsche Bank: Frankfurt, 1982 -->
+    <section class="dark-section db-section making-head" id="deutsche-bank">
+      <div class="container">
+        <div class="journey-sub">
+          <header class="sub-head">
+            <div class="sub-num">3.1</div>
+            <div class="sub-head-text">
+              <h3 class="sub-title">Deutsche Bank</h3>
+            </div>
+          </header>
+          <p class="sub-dates">Frankfurt am Main, 1982</p>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Pull-quote band: the quote's own colour becomes the ground. -->
-  <section class="quote-band quote-band--dbblue dark-section">
-    <div class="container">
-      <p class="quote-text" data-narr="db-12">Max Bill's sculpture does not simply correspond to the bank building&nbsp;— it occupies an urbanistically significant setting, and will be seen and rediscovered daily by many people. Whether from a car, a park bench, on foot, from the Opernplatz or from the Taunusanlage: from every angle, and for everyone who takes pleasure in it, this granite sculpture with its infinite loop is meant to be an offering, a point of reference.</p>
-      <div class="quote-credit-col">
-        <p class="quote-attr">Herbert Zapp, Deutsche Bank board member and initiator of its art collection, at the sculpture's inauguration in 1986.</p>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- CHAPTER 4 · The making -->
-  <section class="chapter paper-section" id="ch4" style="color:#000;background:#fff;">
-    <div class="container">
-      <div class="chapter-head">
-        <div class="chapter-num">4</div>
-        <h2 class="chapter-title">Dominique Stroobant</h2>
-      </div>
-    </div>
-  </section>
-
-  <section class="paper-section making-body" style="background:#fff;">
-    <div class="container">
-      <div class="article-grid">
-        <div class="making-photo">
-          <div class="article-image" style="aspect-ratio:auto; background:none;">
-            <img src="./assets/H__6322.jpg" alt="" style="display:block; width:100%; height:auto;"/>
-          </div>
-        </div>
-        <div class="article-body">
-          <p data-narr="ch4-1">In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity&nbsp;— the development of which took three years.</p>
-          <p data-narr="ch4-2">Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
-          <p data-narr="ch4-3">Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation&nbsp;— often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
-          <p>In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity&nbsp;— the development of which took three years.</p>
-          <p>Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Pull-quote band: the quote's own colour becomes the ground. -->
-  <section class="quote-band quote-band--green">
-    <div class="container">
-      <p class="quote-text">I reckoned right at the start that the Kontinuit&auml;t sculpture would take us about 20,000 hours to make. That is how it turned out in practice&nbsp;&mdash; we kept a detailed record of our working time.</p>
-      <div class="quote-credit-col">
-        <p class="quote-attr">Dominique Stroobant, May 2026</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="paper-section making-body" style="background:#fff;">
-    <div class="container">
-      <div class="article-grid">
-        <div class="article-body">
-          <p>Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation&nbsp;— often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
-          <p>In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity&nbsp;— the development of which took three years.</p>
-          <p>Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
-        </div>
-        <!-- The making of Continuity, on Vimeo: across the full measure, columns 1-8,
-             between "Stroobant was responsible" and "Dominique Stroobant is", which it
-             splits into two article bodies on the grid. -->
-        <div class="video-measure">
-          <div style="position:relative; width:100%; padding-top:56.25%; background:#000;">
-            <iframe src="https://player.vimeo.com/video/1201575787?title=0&byline=0&portrait=0&dnt=1" style="position:absolute; inset:0; width:100%; height:100%; border:0;" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" allowfullscreen title="Continuity — the making"></iframe>
-          </div>
-        </div>
-        <div class="article-body">
-          <p>Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation&nbsp;— often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CHAPTER 5 · Journey -->
-  <section class="chapter dark-section" id="ch5">
-    <div class="container">
-      <div class="chapter-head">
-        <div class="chapter-num">5</div>
-        <h2 class="chapter-title">A journey from a Sardinian quarry to Frankfurt's financial district</h2>
-      </div>
-    </div>
-  </section>
-
-  <!-- Journey: 3 sub-chapters -->
-  <section class="journey dark-section" id="journey">
-    <!-- The gallery's button: four squares on the middle of the screen's
-         right edge, arriving with the quarry, the first photograph across the
-         full measure, and held there to the end of 5.3. Pressed, it opens the journey's photographs on one sheet
-         (#journeyGallery) and turns into that sheet's close button, where the
-         lightbox's stands -- the squares turn to diamonds, then, after a
-         beat, draw out into the lightbox's cross. -->
-    <div class="jg-dock">
-      <button class="jg-btn" id="jgBtn" type="button" aria-expanded="false"
-              aria-controls="journeyGallery" aria-label="Show all the photographs of the journey">
-        <span class="jg-ico" aria-hidden="true"><span class="jg-sq jg-sq--tl"><i></i></span><span class="jg-sq jg-sq--tr"><i></i></span><span class="jg-sq jg-sq--bl"><i></i></span><span class="jg-sq jg-sq--br"><i></i></span></span>
-      </button>
-    </div>
-    <div class="container">
-
-      <!-- ============== SUB-CHAPTER 1 · GRANITE TRIP ==============
-           No map here: photographs run down the left half, the account down
-           the right, on the same 4-column article grid the chapters above use. -->
-      <div class="journey-sub" id="granite-trip">
-        <header class="sub-head">
-          <div class="sub-num">5.1</div>
-          <div class="sub-head-text">
-            <h3 class="sub-title">Granite Trip</h3>
-          </div>
-        </header>
-
-        <p class="sub-dates">October 1983&nbsp;— February 1984</p>
-
+    <!-- Deutsche Bank · article -->
+    <section class="article dark-section db-section db-body">
+      <div class="container">
         <div class="article-grid">
-          <!-- Lead paragraphs, above the opening image. -->
-          <div class="article-body granite-lead">
-            <p data-narr="granite-1">The search for the stone began before there was anyone to cut it. On <strong>25 April 1983</strong> the &ldquo;Esagono&rdquo; work collective was formed&nbsp;— the group of sculptors and technicians who would spend the next three years on a single object. Five months later, on <strong>13 September</strong>, Max Bill travelled to Sardinia with Rodolfo Costantino to inspect the <strong>Scarraciana quarry</strong> in the island&rsquo;s north-east, looking for a block large enough, and sound enough, to survive what was about to be done to it.</p>
-            <!-- Max Bill, short cut (0:26): the quarry, the blast, the barge. A still of its
-                 first frame stands between the lead paragraphs, four columns wide on columns
-                 3-6, centred; pressed, it opens the film six columns wide, centred, and plays
-                 it, for anyone reading. The read-aloud opens the same film when the narrator
-                 reaches it, and goes on to the next paragraph once it has closed. -->
-            <figure class="narr-film" data-narr-film>
-              <div class="narr-film-fold narr-film-fold--still">
-                <div class="narr-film-clip">
-                  <div class="narr-film-pad narr-film-pad--still">
-                    <button class="narr-film-preview" type="button" aria-label="Play the film: Max Bill, 0:26">
-                      <img src="./assets/_videos/maxbill-kurzschnitt-3-poster.jpg" alt="" width="1920" height="1080" loading="lazy" decoding="async">
-                      <span class="narr-film-play" aria-hidden="true"></span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div class="narr-film-fold narr-film-fold--reel">
-                <div class="narr-film-clip">
-                  <div class="narr-film-pad">
-                    <div class="narr-film-frame">
-                      <video class="narr-film-video" src="./assets/_videos/maxbill-kurzschnitt-3.mp4" poster="./assets/_videos/maxbill-kurzschnitt-3-poster.jpg" preload="none" playsinline aria-label="Max Bill, short film"></video>
-                      <button class="narr-film-toggle" type="button" aria-label="Pause the film"><span class="narr-film-glyph" aria-hidden="true"></span></button>
-                      <button class="narr-film-collapse" type="button" aria-label="Collapse the film"><span class="narr-film-corner" aria-hidden="true"></span></button>
-                      <button class="narr-film-full" type="button" aria-label="Show the film full screen"><span class="narr-film-expand" aria-hidden="true"></span></button>
-                      <div class="narr-film-time" role="slider" tabindex="0" aria-label="Film position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="narr-film-time-track"><span class="narr-film-time-fill"></span></span></div>
+          <div class="article-body">
+            <p data-narr="db-1">Why would one of Germany's leading banks decide to place a large sculpture in front of its headquarters?</p>
+            <p data-narr="db-2">As the Deutsche Bank Twin Towers rose in Frankfurt between 1979 and 1984, the bank's senior management faced a crucial question: what monumental artwork should stand at the threshold of the new headquarters? In 1981, while construction continued, the board began to search for a proper sculptor. Deutsche Bank had long committed to art and culture&nbsp;— a programme whose scope is evident today across the Towers' sixty floors, where the collection spans a hundred international artworks from more than forty countries.</p>
+
+            <p data-narr="db-3">The choice had to meet several criteria. The artist should come from the German-speaking countries. The work should fit Deutsche Bank's collecting profile&nbsp;— meaning significant contemporary art. It should relate less to the building's facade than to the plaza in front of it. And the artist should be free in his solution, while that solution still reflected the functions of the bank.</p>
+
+            <p data-narr="db-4">Few names fit better than Max Bill. An established Swiss artist and sculptor, modern and unexpected, his work corresponded closely to the bank's vision. Since his Bauhaus years, Bill had built an art of precise geometry, calculation and mathematics&nbsp;— carried through painting, sculpture and graphic work, an approach as innovative as it was rigorous.</p>
+
+            <p data-narr="db-5">Bill first proposed a coloured column, conceived to present the viewer with numbers and quantities. Yet when the board asked how he himself would decide in their place, he gave his preference to Continuity&nbsp;— the work recommended by the bank's art advisers.</p>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pull-quote band: the quote's own colour becomes the ground. -->
+    <section class="quote-band quote-band--white">
+      <div class="container">
+        <p class="quote-text" data-narr="db-6">The chance to finally bring this long-running hit, now approaching its fortieth anniversary, to life was so tempting that I cast aside all my reservations about its age&nbsp;— and a wave of almost insurmountable difficulties that was welling up inside me&nbsp;— and decided to take the plunge on this adventure.</p>
+        <div class="quote-credit-col">
+          <p class="quote-attr">Max Bill</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="article dark-section db-section db-body">
+      <div class="container">
+        <div class="article-grid">
+          <div class="article-body">
+
+            <p data-narr="db-7">Kontinuität worked through contrast to the straight Twin Towers while proposing harmony. The sculpture had once been destroyed by vandals in Zurich, and the idea of the unbroken continuity of world trade and banking&nbsp;— together with the restoration of art as a restoration of life in post-war Germany&nbsp;— suited the commission perfectly. The work was given to Max Bill.</p>
+
+            <p data-narr="db-8">Carving the large granite sculpture took three years. It required a second sculptor, Dominique Stroobant, charged with its realisation alongside the bank's management. Stroobant approached the task with rigour. He set up the firm, hired assistants, found a suitable quarry for the granite in Sardinia, and built a workshop in the port of Carrara&nbsp;— working for three years always in consultation with, and under the supervision of, Max Bill.</p>
+
+            <p data-narr="db-9">At haus bill&nbsp;— the home where Max Bill's widow Angela Thomas lives today&nbsp;— we found a large archive of documentation, accounts and invoices connected to the sculpture. Stroobant was responsible for the entire management: the extensive correspondence with Deutsche Bank over shipments, the selection and ordering of transport, the payment of invoices, the preparations for the opening, and the accompanying exhibition.</p>
+
+            <p data-narr="db-10">It is precisely these documents&nbsp;— the notebooks, drawings, draft letters, expense calculations and photographs of the work in progress&nbsp;— that allow us today to understand the full complexity of realising such an ambitious idea. Stroobant did not simply make the sculpture: he coordinated an entire logistics operation, smoothed away bureaucratic obstacles, and ensured quality at every stage. Deutsche Bank, for its part, placed its trust in his experience and his sense of responsibility.</p>
+
+
+            <p data-narr="db-13">Deutsche Bank's investment in art was never purely aesthetic. It reflected a broader conviction&nbsp;— that cultural engagement is part of what an institution owes to its people and to society, building cultural capital that extends from the workplace to the city and beyond. Kontinuität is perhaps the most eloquent expression of that idea: a sculpture whose name speaks to the unbroken continuity of this commitment.</p>
+
+            <div class="db-zapp-anchor" style="margin-top:1.2em;">
+              <figure class="db-portrait">
+                <img src="./assets/_db/herbert-zapp.jpg" alt="Herbert Zapp">
+              </figure>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pull-quote band: the quote's own colour becomes the ground. -->
+    <section class="quote-band quote-band--dbblue dark-section">
+      <div class="container">
+        <p class="quote-text" data-narr="db-12">Max Bill's sculpture does not simply correspond to the bank building&nbsp;— it occupies an urbanistically significant setting, and will be seen and rediscovered daily by many people. Whether from a car, a park bench, on foot, from the Opernplatz or from the Taunusanlage: from every angle, and for everyone who takes pleasure in it, this granite sculpture with its infinite loop is meant to be an offering, a point of reference.</p>
+        <div class="quote-credit-col">
+          <p class="quote-attr">Herbert Zapp, Deutsche Bank board member and initiator of its art collection, at the sculpture's inauguration in 1986.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Frankfurt again, as the bank's last band goes up; then the camera
+         pulls out and comes down onto Sardinia. -->
+    <section class="dark-section making-window" data-making-window="sardinia" aria-hidden="true"></section>
+
+    <!-- 3.2 · Dominique Stroobant: the story in Sardinia starts with him -->
+    <section class="paper-section making-head" id="stroobant" style="color:#000;background:#fff;">
+      <div class="container">
+        <div class="journey-sub">
+          <header class="sub-head">
+            <div class="sub-num">3.2</div>
+            <div class="sub-head-text">
+              <h3 class="sub-title">Dominique Stroobant</h3>
+            </div>
+          </header>
+        </div>
+      </div>
+    </section>
+
+    <section class="paper-section making-body" style="background:#fff;">
+      <div class="container">
+        <div class="article-grid">
+          <div class="making-photo">
+            <div class="article-image" style="aspect-ratio:auto; background:none;">
+              <img src="./assets/H__6322.jpg" alt="" style="display:block; width:100%; height:auto;"/>
+            </div>
+          </div>
+          <div class="article-body">
+            <p data-narr="ch4-1">In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity&nbsp;— the development of which took three years.</p>
+            <p data-narr="ch4-2">Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
+            <p data-narr="ch4-3">Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation&nbsp;— often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
+            <p>In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity&nbsp;— the development of which took three years.</p>
+            <p>Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pull-quote band: the quote's own colour becomes the ground. -->
+    <section class="quote-band quote-band--green">
+      <div class="container">
+        <p class="quote-text">I reckoned right at the start that the Kontinuit&auml;t sculpture would take us about 20,000 hours to make. That is how it turned out in practice&nbsp;&mdash; we kept a detailed record of our working time.</p>
+        <div class="quote-credit-col">
+          <p class="quote-attr">Dominique Stroobant, May 2026</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="paper-section making-body" style="background:#fff;">
+      <div class="container">
+        <div class="article-grid">
+          <div class="article-body">
+            <p>Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation&nbsp;— often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
+            <p>In 1981, Max Bill met the young and energetic sculptor and photographer <strong>Dominique Stroobant</strong>. This encounter grew into a lifelong friendship. Their greatest challenge would become the project Continuity&nbsp;— the development of which took three years.</p>
+            <p>Stroobant was responsible for the entire production process: from planning the transportation route of a massive block of granite, to the creation of the full-scale, four-meter sculpture together with his team of four sculptors.</p>
+          </div>
+          <!-- The making of Continuity, on Vimeo: across the full measure, columns 1-8,
+               between "Stroobant was responsible" and "Dominique Stroobant is", which it
+               splits into two article bodies on the grid. -->
+          <div class="video-measure">
+            <div style="position:relative; width:100%; padding-top:56.25%; background:#000;">
+              <iframe src="https://player.vimeo.com/video/1201575787?title=0&byline=0&portrait=0&dnt=1" style="position:absolute; inset:0; width:100%; height:100%; border:0;" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" allowfullscreen title="Continuity — the making"></iframe>
+            </div>
+          </div>
+          <div class="article-body">
+            <p>Dominique Stroobant is a Belgian artist and mathematician known for his work at the intersection of geometry, perception and conceptual art. His practice explores spatial structures, continuity, and transformation&nbsp;— often translating abstract mathematical principles into precise visual or sculptural expressions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The journey: Granite Trip, Sculpting, Sculpture Trip. Its ground is the
+         chapter's map rather than a black of its own, so the section is a sheet
+         that lets the map through wherever a sub-chapter does not cover it:
+         between the granite's crossing and the workshop, and all through the
+         Sculpture Trip, whose accounts ride straight on the map. -->
+    <section class="journey dark-section" id="journey">
+      <!-- The gallery's button: four squares on the middle of the screen's
+           right edge, arriving with the quarry, the first photograph across the
+           full measure, and held there to the end of 3.5. Pressed, it opens the journey's photographs on one sheet
+           (#journeyGallery) and turns into that sheet's close button, where the
+           lightbox's stands -- the squares turn to diamonds, then, after a
+           beat, draw out into the lightbox's cross. -->
+      <div class="jg-dock">
+        <button class="jg-btn" id="jgBtn" type="button" aria-expanded="false"
+                aria-controls="journeyGallery" aria-label="Show all the photographs of the journey">
+          <span class="jg-ico" aria-hidden="true"><span class="jg-sq jg-sq--tl"><i></i></span><span class="jg-sq jg-sq--tr"><i></i></span><span class="jg-sq jg-sq--bl"><i></i></span><span class="jg-sq jg-sq--br"><i></i></span></span>
+        </button>
+      </div>
+      <div class="container">
+
+        <!-- ============== SUB-CHAPTER 1 · GRANITE TRIP ==============
+             No map here: photographs run down the left half, the account down
+             the right, on the same 4-column article grid the chapters above use. -->
+        <div class="journey-sub" id="granite-trip">
+          <header class="sub-head">
+            <div class="sub-num">3.3</div>
+            <div class="sub-head-text">
+              <h3 class="sub-title">Granite Trip</h3>
+            </div>
+          </header>
+
+          <p class="sub-dates">October 1983&nbsp;— February 1984</p>
+
+          <div class="article-grid">
+            <!-- Lead paragraphs, above the opening image. -->
+            <div class="article-body granite-lead">
+              <p data-narr="granite-1">The search for the stone began before there was anyone to cut it. On <strong>25 April 1983</strong> the &ldquo;Esagono&rdquo; work collective was formed&nbsp;— the group of sculptors and technicians who would spend the next three years on a single object. Five months later, on <strong>13 September</strong>, Max Bill travelled to Sardinia with Rodolfo Costantino to inspect the <strong>Scarraciana quarry</strong> in the island&rsquo;s north-east, looking for a block large enough, and sound enough, to survive what was about to be done to it.</p>
+              <!-- Max Bill, short cut (0:26): the quarry, the blast, the barge. A still of its
+                   first frame stands between the lead paragraphs, four columns wide on columns
+                   3-6, centred; pressed, it opens the film six columns wide, centred, and plays
+                   it, for anyone reading. The read-aloud opens the same film when the narrator
+                   reaches it, and goes on to the next paragraph once it has closed. -->
+              <figure class="narr-film" data-narr-film>
+                <div class="narr-film-fold narr-film-fold--still">
+                  <div class="narr-film-clip">
+                    <div class="narr-film-pad narr-film-pad--still">
+                      <button class="narr-film-preview" type="button" aria-label="Play the film: Max Bill, 0:26">
+                        <img src="./assets/_videos/maxbill-kurzschnitt-3-poster.jpg" alt="" width="1920" height="1080" loading="lazy" decoding="async">
+                        <span class="narr-film-play" aria-hidden="true"></span>
+                      </button>
                     </div>
                   </div>
                 </div>
-              </div>
+                <div class="narr-film-fold narr-film-fold--reel">
+                  <div class="narr-film-clip">
+                    <div class="narr-film-pad">
+                      <div class="narr-film-frame">
+                        <video class="narr-film-video" src="./assets/_videos/maxbill-kurzschnitt-3.mp4" poster="./assets/_videos/maxbill-kurzschnitt-3-poster.jpg" preload="none" playsinline aria-label="Max Bill, short film"></video>
+                        <button class="narr-film-toggle" type="button" aria-label="Pause the film"><span class="narr-film-glyph" aria-hidden="true"></span></button>
+                        <button class="narr-film-collapse" type="button" aria-label="Collapse the film"><span class="narr-film-corner" aria-hidden="true"></span></button>
+                        <button class="narr-film-full" type="button" aria-label="Show the film full screen"><span class="narr-film-expand" aria-hidden="true"></span></button>
+                        <div class="narr-film-time" role="slider" tabindex="0" aria-label="Film position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="narr-film-time-track"><span class="narr-film-time-fill"></span></span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </figure>
+              <p data-narr="granite-2">They found it there. On <strong>20 October 1983</strong> the charges were set and a block of some <strong>500 tons</strong> was blasted clear of the rock face&nbsp;— many times the weight of the finished sculpture, because the finished sculpture had to come out of a single uninterrupted mass. Nothing about Continuity could be assembled from parts. Every curve had to already be present inside the stone, waiting to be found.</p>
+              <!-- Repeats the paragraph that opens the text under the photographs, so the
+                   film is followed by more than one paragraph. Not read aloud. -->
+              <p>Through October and November the block was worked down where it lay. Five hundred tons became three hundred; three hundred became <strong>180</strong>, and the difference was left on the quarry floor as waste. What remained was not yet a sculpture but a <strong>polyhedron</strong>&nbsp;— a faceted, roughly geometric solid, shaped as much for the journey ahead as for the carving still to come. In that form it was loaded onto a <strong>Fagioli truck with a 52-metre platform</strong>, a vehicle built for loads that ordinary roads are not.</p>
+            </div>
+            <!-- Opens across the full measure, columns 1-8. The three places the
+                 route used to name in the head are now read off the photographs,
+                 in the order the stone passed through them. -->
+            <figure class="journey-photo-measure">
+              <img src="./assets/_journey/1%20italy/IMG_1791.jpeg" alt="">
+              <figcaption class="journey-cap"><h5>Quarry Scarraciana</h5></figcaption>
             </figure>
-            <p data-narr="granite-2">They found it there. On <strong>20 October 1983</strong> the charges were set and a block of some <strong>500 tons</strong> was blasted clear of the rock face&nbsp;— many times the weight of the finished sculpture, because the finished sculpture had to come out of a single uninterrupted mass. Nothing about Continuity could be assembled from parts. Every curve had to already be present inside the stone, waiting to be found.</p>
-            <!-- Repeats the paragraph that opens the text under the photographs, so the
-                 film is followed by more than one paragraph. Not read aloud. -->
-            <p>Through October and November the block was worked down where it lay. Five hundred tons became three hundred; three hundred became <strong>180</strong>, and the difference was left on the quarry floor as waste. What remained was not yet a sculpture but a <strong>polyhedron</strong>&nbsp;— a faceted, roughly geometric solid, shaped as much for the journey ahead as for the carving still to come. In that form it was loaded onto a <strong>Fagioli truck with a 52-metre platform</strong>, a vehicle built for loads that ordinary roads are not.</p>
-          </div>
-          <!-- Opens across the full measure, columns 1-8. The three places the
-               route used to name in the head are now read off the photographs,
-               in the order the stone passed through them. -->
-          <figure class="journey-photo-measure">
-            <img src="./assets/_journey/1%20italy/IMG_1791.jpeg" alt="">
-            <figcaption class="journey-cap"><h5>Quarry Scarraciana</h5></figcaption>
-          </figure>
-          <!-- Pair across the full measure, four page columns each. -->
-          <div class="journey-photo-pair">
-            <figure><img src="./assets/_journey/1%20italy/IMG_1792.jpeg" alt=""></figure>
-            <figure><img src="./assets/_journey/1%20italy/IMG_1793.jpeg" alt=""></figure>
-          </div>
-          <div class="journey-photos">
-            <figure><img src="./assets/_journey/1%20italy/IMG_1796.jpeg" alt=""></figure>
-          </div>
-          <!-- Six page columns, flush left. Too wide for the photo column, which
-               only spans four, so it sits directly on the article grid. -->
-          <figure class="journey-photo-six">
-            <img src="./assets/_journey/1%20italy/IMG_1794.jpeg" alt="">
-            <figcaption class="journey-cap"><h5>Porto di Santa Teresa Gallura</h5></figcaption>
-          </figure>
-          <div class="article-body">
-            <!-- Prose worked up from the source document's dated chain
-                 (content/editorial-clean.md, §3). Every date, tonnage and place
-                 name below is from that timeline. -->
-            <p>Through October and November the block was worked down where it lay. Five hundred tons became three hundred; three hundred became <strong>180</strong>, and the difference was left on the quarry floor as waste. What remained was not yet a sculpture but a <strong>polyhedron</strong>&nbsp;— a faceted, roughly geometric solid, shaped as much for the journey ahead as for the carving still to come. In that form it was loaded onto a <strong>Fagioli truck with a 52-metre platform</strong>, a vehicle built for loads that ordinary roads are not.</p>
-            <p>The reductions were not a matter of tidying the block up. They were the condition of it moving at all: at five hundred tons nothing on the island could lift it, carry it, or float it, and each stage of cutting bought a margin against the limits of the crane, the platform and the ship that would have to take it in turn. What was struck off in Sardinia was never going to be part of the sculpture, but the sculpture could not have left without it going first.</p>
-            <p>Which was the next problem, because no road ran from the quarry to the highway that could carry such a weight. So one was built: a temporary road laid across open ground for the sake of a single vehicle making a single trip, then abandoned. It is the kind of detail that measures the ambition of the commission more precisely than any statement about it&nbsp;— an entire road, built once, to move one stone.</p>
-          </div>
-          <!-- Resumes below the photo column, clear of the last image. -->
-          <div class="article-body granite-tail">
-            <p>On <strong>8 and 9 February 1984</strong> the public route was closed for two days while the truck carried the block across Sardinia to the port of <strong>San Teresa di Gallura</strong>, travelling at the pace such a load demands. For those two days the island&rsquo;s traffic arranged itself around the granite rather than the other way round.</p>
-            <p>This was only the first leg. Ahead lay a route that would run some <strong>2,800 kilometres by water</strong> and <strong>1,200 by road</strong>, across <strong>five countries</strong> and most of <strong>six months</strong>, before the stone reached Frankfurt. The crossing to the mainland was the short part of it, and even that had to wait on the sea.</p>
-            <p>At the port the weather turned against it. The cargo waited <strong>ten days</strong> for conditions safe enough to sail&nbsp;— a hundred and eighty tons of granite standing at a quayside while the Tyrrhenian stayed unworkable. Then, on <strong>20 February 1984</strong>, the ship reached <strong>Marina di Carrara</strong> on the Tuscan coast, where the Esagono workshop was waiting. The stone had left Sardinia as raw material; it arrived at the place where three years of carving would begin.</p>
-          </div>
-          <!-- Closes the sub-chapter edge to edge, outside the container gutters.
-               Its line is set into the picture, along the bottom edge: 5.2
-               starts straight off this image with no black between them, so a
-               line under it would land on the ochre rather than on the
-               journey, and there is no black above it to hold one either. It
-               names the crossing rather than a place, and so carries no dot.
-               Written after the image, in the order it is read. -->
-          <figure class="journey-photo-bleed">
-            <img src="./assets/_journey/1%20italy/IMG_1790.jpeg" alt="">
-            <figcaption class="journey-cap journey-cap--over"><h5>The granite block under tow from Porto di Santa Teresa Gallura to Porto Marina di Carrara</h5></figcaption>
-          </figure>
-        </div>
-      </div>
-
-      <!-- ============== SUB-CHAPTER 2 · SCULPTING ============== -->
-      <!-- The one lit room in the journey: white ground, black ink. A
-           <section> rather than a <div> so the scroll handler that themes the
-           header and cursor sees it and flips them to their light state. -->
-      <section class="journey-sub light-section" id="sculpting">
-        <header class="sub-head">
-          <div class="sub-num">5.2</div>
-          <div class="sub-head-text">
-            <h3 class="sub-title">Sculpting</h3>
-            <p class="sub-route"><span>Marina di Carrara</span></p>
-          </div>
-        </header>
-
-        <p class="sub-dates">February 1984&nbsp;— June 1986</p>
-
-        <!-- Intro sits in the right half, on the same article grid as the
-             body text elsewhere. The numbered list below keeps its own
-             full-width layout. -->
-        <div class="article-grid">
-          <div class="article-body sculpt-intro">
-          <p>A site near the port was chosen for convenient stone transport and waste handling&nbsp;— roughly 120 tons of granite would have to be removed. A temporary metal building rose around the block, with a separate pavilion housing the four-fold magnified plaster model that served as the master measurement.</p>
-          <p>Work began in <strong>February 1984</strong>. A grid of &ldquo;measuring points&rdquo; was carried across from that enlarged gypsum model using giant dividers, so that every dimension cut into the granite could be referred back to a single authority.</p>
-          <p>The cutting was done with drilling machines and diamond chains made specially for the job&nbsp;— ordinary ones are built for marble, not granite. Most of the work happened inside the block, by methods both intricate and dangerous: only two people could be within the stone at a time, so the carving ran in shifts, and the long internal channels that the loop&rsquo;s hidden topology depends on were opened out gradually.</p>
-          <p>By <strong>January 1985</strong> the main through-cuts were complete and the interior shape had begun to emerge. On <strong>22 March 1986</strong> the sculpture was turned over onto three support points so that carving could continue across the faces it had been resting on. It was finished on <strong>30 June 1986</strong>.</p>
+            <!-- Pair across the full measure, four page columns each. -->
+            <div class="journey-photo-pair">
+              <figure><img src="./assets/_journey/1%20italy/IMG_1792.jpeg" alt=""></figure>
+              <figure><img src="./assets/_journey/1%20italy/IMG_1793.jpeg" alt=""></figure>
+            </div>
+            <div class="journey-photos">
+              <figure><img src="./assets/_journey/1%20italy/IMG_1796.jpeg" alt=""></figure>
+            </div>
+            <!-- Six page columns, flush left. Too wide for the photo column, which
+                 only spans four, so it sits directly on the article grid. -->
+            <figure class="journey-photo-six">
+              <img src="./assets/_journey/1%20italy/IMG_1794.jpeg" alt="">
+              <figcaption class="journey-cap"><h5>Porto di Santa Teresa Gallura</h5></figcaption>
+            </figure>
+            <div class="article-body">
+              <!-- Prose worked up from the source document's dated chain
+                   (content/editorial-clean.md, §3). Every date, tonnage and place
+                   name below is from that timeline. -->
+              <p>Through October and November the block was worked down where it lay. Five hundred tons became three hundred; three hundred became <strong>180</strong>, and the difference was left on the quarry floor as waste. What remained was not yet a sculpture but a <strong>polyhedron</strong>&nbsp;— a faceted, roughly geometric solid, shaped as much for the journey ahead as for the carving still to come. In that form it was loaded onto a <strong>Fagioli truck with a 52-metre platform</strong>, a vehicle built for loads that ordinary roads are not.</p>
+              <p>The reductions were not a matter of tidying the block up. They were the condition of it moving at all: at five hundred tons nothing on the island could lift it, carry it, or float it, and each stage of cutting bought a margin against the limits of the crane, the platform and the ship that would have to take it in turn. What was struck off in Sardinia was never going to be part of the sculpture, but the sculpture could not have left without it going first.</p>
+              <p>Which was the next problem, because no road ran from the quarry to the highway that could carry such a weight. So one was built: a temporary road laid across open ground for the sake of a single vehicle making a single trip, then abandoned. It is the kind of detail that measures the ambition of the commission more precisely than any statement about it&nbsp;— an entire road, built once, to move one stone.</p>
+            </div>
+            <!-- Resumes below the photo column, clear of the last image. -->
+            <div class="article-body granite-tail">
+              <p>On <strong>8 and 9 February 1984</strong> the public route was closed for two days while the truck carried the block across Sardinia to the port of <strong>San Teresa di Gallura</strong>, travelling at the pace such a load demands. For those two days the island&rsquo;s traffic arranged itself around the granite rather than the other way round.</p>
+              <p>This was only the first leg. Ahead lay a route that would run some <strong>2,800 kilometres by water</strong> and <strong>1,200 by road</strong>, across <strong>five countries</strong> and most of <strong>six months</strong>, before the stone reached Frankfurt. The crossing to the mainland was the short part of it, and even that had to wait on the sea.</p>
+              <p>At the port the weather turned against it. The cargo waited <strong>ten days</strong> for conditions safe enough to sail&nbsp;— a hundred and eighty tons of granite standing at a quayside while the Tyrrhenian stayed unworkable. Then, on <strong>20 February 1984</strong>, the ship reached <strong>Marina di Carrara</strong> on the Tuscan coast, where the Esagono workshop was waiting. The stone had left Sardinia as raw material; it arrived at the place where three years of carving would begin.</p>
+            </div>
+            <!-- Closes the sub-chapter edge to edge, outside the container gutters.
+                 Its line is set into the picture, along the bottom edge: the
+                 map comes up straight off this image with no black between
+                 them, so a line under it would land on the map rather than on
+                 the journey, and there is no black above it to hold one either. It
+                 names the crossing rather than a place, and so carries no dot.
+                 Written after the image, in the order it is read. -->
+            <figure class="journey-photo-bleed">
+              <img src="./assets/_journey/1%20italy/IMG_1790.jpeg" alt="">
+              <figcaption class="journey-cap journey-cap--over"><h5>The granite block under tow from Porto di Santa Teresa Gallura to Porto Marina di Carrara</h5></figcaption>
+            </figure>
           </div>
         </div>
 
+        <!-- The crossing: a window onto the map between two sub-chapters. The
+             camera holds its height and follows the stone north while the route
+             from the quarry to Marina di Carrara draws itself -- see the making
+             map's track in the journey script. -->
+        <div class="making-window" data-making-window="crossing" aria-hidden="true"></div>
 
-        <div class="sculpt-gallery">
-          <figure class="sg-bookend">
-            <img src="./assets/_journey/2%20sculpting/J-1.jpg" alt="">
-          </figure>
+        <!-- ============== SUB-CHAPTER 2 · SCULPTING ============== -->
+        <!-- The one lit room in the journey: white ground, black ink. A
+             <section> rather than a <div> so the scroll handler that themes the
+             header and cursor sees it and flips them to their light state. -->
+        <section class="journey-sub light-section" id="sculpting">
+          <header class="sub-head">
+            <div class="sub-num">3.4</div>
+            <div class="sub-head-text">
+              <h3 class="sub-title">Sculpting</h3>
+              <p class="sub-route"><span>Marina di Carrara</span></p>
+            </div>
+          </header>
 
-          <div class="sg-stage" id="sculptStage">
-            <div class="sg-pin">
-              <div class="sg-canvas">
-                <img class="sg-tile" data-kf="j2" src="./assets/_journey/2%20sculpting/J-2.jpg" alt="">
-                <img class="sg-tile" data-kf="j3" src="./assets/_journey/2%20sculpting/J-3.jpg" alt="">
-                <img class="sg-tile" data-kf="j4" src="./assets/_journey/2%20sculpting/J-4.jpg" alt="">
-                <img class="sg-tile" data-kf="j5" src="./assets/_journey/2%20sculpting/J-5.jpg" alt="">
-                <img class="sg-tile" data-kf="j6" src="./assets/_journey/2%20sculpting/J-6.jpg" alt="">
-                <img class="sg-tile" data-kf="j7" src="./assets/_journey/2%20sculpting/J-7.jpg" alt="">
+          <p class="sub-dates">February 1984&nbsp;— June 1986</p>
+
+          <!-- Intro sits in the right half, on the same article grid as the
+               body text elsewhere. The numbered list below keeps its own
+               full-width layout. -->
+          <div class="article-grid">
+            <div class="article-body sculpt-intro">
+            <p>A site near the port was chosen for convenient stone transport and waste handling&nbsp;— roughly 120 tons of granite would have to be removed. A temporary metal building rose around the block, with a separate pavilion housing the four-fold magnified plaster model that served as the master measurement.</p>
+            <p>Work began in <strong>February 1984</strong>. A grid of &ldquo;measuring points&rdquo; was carried across from that enlarged gypsum model using giant dividers, so that every dimension cut into the granite could be referred back to a single authority.</p>
+            <p>The cutting was done with drilling machines and diamond chains made specially for the job&nbsp;— ordinary ones are built for marble, not granite. Most of the work happened inside the block, by methods both intricate and dangerous: only two people could be within the stone at a time, so the carving ran in shifts, and the long internal channels that the loop&rsquo;s hidden topology depends on were opened out gradually.</p>
+            <p>By <strong>January 1985</strong> the main through-cuts were complete and the interior shape had begun to emerge. On <strong>22 March 1986</strong> the sculpture was turned over onto three support points so that carving could continue across the faces it had been resting on. It was finished on <strong>30 June 1986</strong>.</p>
+            </div>
+          </div>
+
+
+          <div class="sculpt-gallery">
+            <figure class="sg-bookend">
+              <img src="./assets/_journey/2%20sculpting/J-1.jpg" alt="">
+            </figure>
+
+            <div class="sg-stage" id="sculptStage">
+              <div class="sg-pin">
+                <div class="sg-canvas">
+                  <img class="sg-tile" data-kf="j2" src="./assets/_journey/2%20sculpting/J-2.jpg" alt="">
+                  <img class="sg-tile" data-kf="j3" src="./assets/_journey/2%20sculpting/J-3.jpg" alt="">
+                  <img class="sg-tile" data-kf="j4" src="./assets/_journey/2%20sculpting/J-4.jpg" alt="">
+                  <img class="sg-tile" data-kf="j5" src="./assets/_journey/2%20sculpting/J-5.jpg" alt="">
+                  <img class="sg-tile" data-kf="j6" src="./assets/_journey/2%20sculpting/J-6.jpg" alt="">
+                  <img class="sg-tile" data-kf="j7" src="./assets/_journey/2%20sculpting/J-7.jpg" alt="">
+                </div>
               </div>
             </div>
+
+            <figure class="sg-bookend sg-bookend--narrow">
+              <img src="./assets/_journey/2%20sculpting/J-8.jpg" alt="">
+              <figcaption class="sg-endnote">
+                <h5>30 June 1986</h5>
+                <p>The sculpture is completed.</p>
+              </figcaption>
+            </figure>
           </div>
+        </section>
 
-          <figure class="sg-bookend sg-bookend--narrow">
-            <img src="./assets/_journey/2%20sculpting/J-8.jpg" alt="">
-            <figcaption class="sg-endnote">
-              <h5>30 June 1986</h5>
-              <p>The sculpture is completed.</p>
-            </figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <!-- ============== SUB-CHAPTER 3 · SCULPTURE TRIP ============== -->
-      <div class="journey-sub" id="sculpture-trip">
-        <header class="sub-head">
-          <div class="sub-num">5.3</div>
-          <div class="sub-head-text">
-            <h3 class="sub-title">Sculpture Trip</h3>
-          </div>
-        </header>
-
-        <p class="sub-dates">August&nbsp;— September 1986</p>
-
-        <div class="journey-grid">
-          <aside class="journey-map-wrap is-zoomed">
-            <div class="journey-map" id="globeMap" aria-hidden="true"></div>
-            <!-- The Walk-around scene, sitting on the map's centre point, which
-                 is the sculpture's real coordinate. Opens as a speck, grows,
-                 then turns — a title card for the chapter it hands off to. -->
-            <img class="map-reveal" id="mapReveal" src="./assets/hero-sculpture.png" alt="" aria-hidden="true">
-            <p class="map-reveal-cap" id="mapRevealCap" aria-hidden="true">Walk around&nbsp;— a Gaussian splatting scene</p>
-          </aside>
-
-          <div class="journey-stops">
-            <!-- These boxes used to carry the photographs across the bottom of
-                 the screen, one traverse each. The photographs are on the map
-                 itself now — one preview standing where each white stop mark
-                 stood, opening into the deck on a click (see the stop previews
-                 block in the journey globes script). The boxes stay, and stay
-                 empty, because they were never only frames: they are the
-                 sequence's clock. Where each sits in this column is what tells
-                 the camera when to leave one stop for the next, and the four
-                 accounts are paced against those same moves.
-
-                 What each box has lost is its content, and with it the height
-                 the photograph inside used to give it. That height is written
-                 as an aspect ratio on the box instead — the ratio the picture
-                 had at that grid span, so every box is exactly as tall as it
-                 was — which also takes the last of the measuring out of the
-                 script: there is nothing left to read back and pin. -->
-            <article class="stop" data-stop="1"></article>
-
-            <!-- The four accounts read as one passage rather than a caption
-                 apiece: the stops are marks on a globe now, so there is nothing
-                 in the column for a caption to sit beside. They pass directly
-                 after the first stop — the loading in Carrara — which is where
-                 the reader has just been told what they are looking at and has
-                 the whole passage still ahead of them. Source order follows the
-                 column, so this sits here and not at the end. -->
-            <div class="stop-caps">
-            <p class="stop-cap" data-cap-for="1">Between 4 and 8 August 1986, the finished <strong>Continuity</strong> was mounted into a sturdy steel transport frame in Carrara and loaded onto the cargo ship <strong>MV Kupari</strong>.</p>
-            <p class="stop-cap" data-cap-for="2">The Kupari sailed via the <strong>Strait of Gibraltar</strong>, west of Portugal, across the <strong>Bay of Biscay</strong> and through the <strong>English Channel</strong> to the North Sea&nbsp;— a 2,800 km open-water passage taking just over two weeks.</p>
-            <p class="stop-cap" data-cap-for="3">After unloading in <strong>Rotterdam</strong>, the sculpture was transferred to a river barge and pushed up the <strong>Rhine</strong> and <strong>Main</strong> rivers toward the German interior.</p>
-            <p class="stop-cap" data-cap-for="4">In Frankfurt, a <strong>Colonia crane</strong> moved from the Osthafen to Taunusanlage 12 lifted the 80-tonne sculpture above the trees and into place beside the Deutsche Bank towers the following morning.</p>
+        <!-- ============== SUB-CHAPTER 3 · SCULPTURE TRIP ============== -->
+        <div class="journey-sub" id="sculpture-trip">
+          <header class="sub-head">
+            <div class="sub-num">3.5</div>
+            <div class="sub-head-text">
+              <h3 class="sub-title">Sculpture Trip</h3>
             </div>
+          </header>
+
+          <p class="sub-dates">August&nbsp;— September 1986</p>
+
+          <div class="journey-grid">
+            <!-- The map these ride over is the chapter's own, pinned behind the
+                 whole of it: see .making-map at the head of the chapter. -->
+            <div class="journey-stops">
+              <!-- These boxes used to carry the photographs across the bottom of
+                   the screen, one traverse each. The photographs are on the map
+                   itself now — one preview standing where each white stop mark
+                   stood, opening into the deck on a click (see the stop previews
+                   block in the journey globes script). The boxes stay, and stay
+                   empty, because they were never only frames: they are the
+                   sequence's clock. Where each sits in this column is what tells
+                   the camera when to leave one stop for the next, and the four
+                   accounts are paced against those same moves.
+
+                   What each box has lost is its content, and with it the height
+                   the photograph inside used to give it. That height is written
+                   as an aspect ratio on the box instead — the ratio the picture
+                   had at that grid span, so every box is exactly as tall as it
+                   was — which also takes the last of the measuring out of the
+                   script: there is nothing left to read back and pin. -->
+              <article class="stop" data-stop="1"></article>
+
+              <!-- The four accounts read as one passage rather than a caption
+                   apiece: the stops are marks on a globe now, so there is nothing
+                   in the column for a caption to sit beside. They pass directly
+                   after the first stop — the loading in Carrara — which is where
+                   the reader has just been told what they are looking at and has
+                   the whole passage still ahead of them. Source order follows the
+                   column, so this sits here and not at the end. -->
+              <div class="stop-caps">
+              <p class="stop-cap" data-cap-for="1">Between 4 and 8 August 1986, the finished <strong>Continuity</strong> was mounted into a sturdy steel transport frame in Carrara and loaded onto the cargo ship <strong>MV Kupari</strong>.</p>
+              <p class="stop-cap" data-cap-for="2">The Kupari sailed via the <strong>Strait of Gibraltar</strong>, west of Portugal, across the <strong>Bay of Biscay</strong> and through the <strong>English Channel</strong> to the North Sea&nbsp;— a 2,800 km open-water passage taking just over two weeks.</p>
+              <p class="stop-cap" data-cap-for="3">After unloading in <strong>Rotterdam</strong>, the sculpture was transferred to a river barge and pushed up the <strong>Rhine</strong> and <strong>Main</strong> rivers toward the German interior.</p>
+              <p class="stop-cap" data-cap-for="4">In Frankfurt, a <strong>Colonia crane</strong> moved from the Osthafen to Taunusanlage 12 lifted the 80-tonne sculpture above the trees and into place beside the Deutsche Bank towers the following morning.</p>
+              </div>
 
 
-            <article class="stop" data-stop="2"></article>
+              <article class="stop" data-stop="2"></article>
 
-            <figure class="stop-lead" data-lead-for="3"></figure>
-            <article class="stop" data-stop="3"></article>
+              <figure class="stop-lead" data-lead-for="3"></figure>
+              <article class="stop" data-stop="3"></article>
 
-            <figure class="stop-lead" data-lead-for="4"></figure>
-            <article class="stop" data-stop="4"></article>
+              <figure class="stop-lead" data-lead-for="4"></figure>
+              <article class="stop" data-stop="4"></article>
 
+            </div>
           </div>
         </div>
-      </div>
 
-    </div>
-  </section>
+      </div>
+    </section>
+  </div><!-- /.making -->
 
 
 
@@ -1016,9 +1064,8 @@ const I18N = {
     'lang.label': 'Sprache',
     'nav.contents': 'Inhalt',
     'nav.intro': 'Einführung',
-    'nav.math': 'Mathematik der Skulptur',
-    'nav.making': 'Dominique Stroobant',
-    'nav.journey': 'Reise von Sardinien nach Frankfurt',
+    'nav.math': 'Kontinuität = eine unendliche Schleife?',
+    'nav.making': 'Die Geschichte der Entstehung',
     'nav.granite-trip': 'Granittransport',
     'nav.sculpting': 'Bildhauerei',
     'nav.sculpture-trip': 'Skulpturentransport',
@@ -1027,9 +1074,8 @@ const I18N = {
     'lang.label': 'Lingua',
     'nav.contents': 'Indice',
     'nav.intro': 'Introduzione',
-    'nav.math': 'La matematica della scultura',
-    'nav.making': 'Dominique Stroobant',
-    'nav.journey': 'Viaggio dalla Sardegna a Francoforte',
+    'nav.math': 'Kontinuität = un nastro senza fine?',
+    'nav.making': 'La storia della realizzazione',
     'nav.granite-trip': 'Il trasporto del granito',
     'nav.sculpting': 'La lavorazione',
     'nav.sculpture-trip': 'Il trasporto della scultura',
@@ -1038,9 +1084,8 @@ const I18N = {
     'lang.label': 'Idioma',
     'nav.contents': 'Índice',
     'nav.intro': 'Introducción',
-    'nav.math': 'Las matemáticas de la escultura',
-    'nav.making': 'Dominique Stroobant',
-    'nav.journey': 'Viaje de Cerdeña a Fráncfort',
+    'nav.math': '¿Kontinuität = una cinta sin fin?',
+    'nav.making': 'La historia de la realización',
     'nav.granite-trip': 'El transporte del granito',
     'nav.sculpting': 'El tallado',
     'nav.sculpture-trip': 'El transporte de la escultura',
@@ -1156,7 +1201,7 @@ function crailInit() {
   const segs = [...rail.querySelectorAll('.crail-seg')];
   return {
     rail, panel,
-    ids: ['top', 'ch1', 'ch2', 'ch3', 'ch4', 'ch5'],
+    ids: ['top', 'ch1', 'ch2', 'ch3'],
     bars,
     // The parts the strokes are drawn in, in page order, with the fill each
     // carries and the chapter each belongs to.
@@ -1248,7 +1293,7 @@ function crailFit(st) {
   }
 }
 
-// Chapter tops are measured from the viewport, not offsetTop: #ch5's journey
+// Chapter tops are measured from the viewport, not offsetTop: the making's journey
 // sub-chapters sit inside a positioned ancestor, and the same is true of other
 // anchors here, so offsetTop would be relative to the wrong box.
 //
@@ -2343,10 +2388,13 @@ document.querySelectorAll('.facts').forEach((facts) => {
 // texture: tiles stay sharp at ANY zoom, so the camera can dive right down onto
 // the quarry / ports while wide shots still show the curved globe.
 //
-// Each section is a scroll-driven cinematic: an IntersectionObserver picks the
-// narrative stop nearest the viewport centre and eases the camera to it, while
-// the route line fills in (completed = solid, current = a marching field of
-// round dots) and the active stop marker glows.
+// One globe for the whole of chapter 3, The story of the making, pinned behind
+// it (.making-map). The camera is a pure function of the scroll offset -- see
+// makeScrub -- and runs the chapter's length: the whole globe, down onto
+// Frankfurt, out and down onto Sardinia, north with the granite to Marina di
+// Carrara, and then the Sculpture Trip's own track to Rotterdam and Frankfurt.
+// The route draws itself as the camera travels it, the leg under way in blue and
+// the legs behind it in purple, and each stretch shows only its own marks.
 // ----------------------------------------------------------------------------
 (() => {
   const ESRI_IMAGERY =
@@ -2360,22 +2408,6 @@ document.querySelectorAll('.facts').forEach((facts) => {
   const LINK    = '#0000EE';   // the leg under way
   const VISITED = '#551A8B';   // the legs behind it
 
-  const GRANITE = {
-    containerId: 'graniteGlobe',
-    sectionId: 'granite-trip',
-    overview: { center: [9.4, 41.9], zoom: 5.0 },
-    stops: [ [9.10, 41.05], [9.19, 41.24], [10.04, 44.04] ],
-    segments: [
-      [[9.10, 41.05], [9.15, 41.10], [9.18, 41.18], [9.19, 41.24]],
-      [[9.19, 41.24], [9.45, 41.80], [9.65, 42.40], [9.85, 43.10], [10.00, 43.60], [10.04, 44.04]],
-    ],
-    states: [
-      { center: [9.12, 41.10], zoom: 9.2,  prog: 0, glow: 0 },  // 1 quarry
-      { center: [9.18, 41.30], zoom: 8.6,  prog: 0, glow: 1 },  // 2 crossing → port
-      { center: [9.7,  42.65], zoom: 6.6,  prog: 1, glow: 2 },  // 3 sea crossing → Carrara
-    ],
-  };
-
   // On the wide layout the four accounts sit in the right half of the screen,
   // over the map — the column starts at about 51% of it. A state whose subject
   // is a mark rather than a whole ocean has to keep that mark clear of them, so
@@ -2384,39 +2416,61 @@ document.querySelectorAll('.facts').forEach((facts) => {
   // column to dodge there and the framing stays as it was.
   const WIDE = window.matchMedia('(min-width: 901px)').matches;
 
-  const SCULPTURE = {
+  // The sculpture itself, not the city centre: OSM node 7147230422 (Max Bill,
+  // 1986, granite, 4.5 m, 80 t) at Taunusanlage 12. Where the chapter starts,
+  // with the commission, and where it ends.
+  const FRANKFURT = [8.667519, 50.113137];
+  // The Sculpture Trip's own marks: the stops from the port of Carrara on.
+  const TRIP = [4, 5, 6, 7, 8, 9, 10, 11];
+
+  const MAKING = {
     containerId: 'globeMap',
-    sectionId: 'sculpture-trip',
-    // Opens on the whole globe with Italy dead centre; the first stop then
-    // dives six zoom levels down onto Carrara. That descent used to be marked
-    // `fly` so it arced rather than snapping; every leg is arced now — see the
-    // van Wijk curve in makeScrub — so the flag has gone.
-    overview: { center: [10.04, 44.04], zoom: 1.35 },
-    // The Frankfurt stop is the sculpture itself, not the city centre: OSM node
-    // 7147230422 (Max Bill, 1986, granite, 4.5 m, 80 t) at Taunusanlage 12.
-    // Roughly a kilometre from the old placeholder — invisible at zoom 7,
-    // but the final state now lands at street level, where it would show.
+    sectionId: 'making',
+    // The Sculpture Trip: its column of boxes is the clock for the last four
+    // states, and its accounts and dates are what a name on the map gives way to.
+    tripId: 'sculpture-trip',
+    // The layer the camera changes places under, unseen: from the crossing's
+    // last frame to the Sculpture Trip's first, while the workshop covers the map.
+    coverId: 'sculpting',
+    // Opens on the whole globe with Frankfurt dead centre, so the first move is
+    // straight down onto it with nowhere to travel.
+    overview: { center: FRANKFURT, zoom: 1.2 },
     // Every place the route list in the head names, in that order. Each one
     // sits ON the path below rather than near it: five are vertices the path
     // already had (the passage was drawn through the Strait, past Cabo da Roca
     // and up the Channel long before anything marked them), Biscay is the
     // midpoint of the leg that crosses it, and Rhine-Main is the confluence
     // itself — which is why the Rhine leg now bends through Mainz-Kostheim.
+    //
+    // Four more stand ahead of them, for the story before the sculpture
+    // sailed: Frankfurt, where it was commissioned, and the granite's way from
+    // the quarry to the workshop. Frankfurt and Carrara are each here twice,
+    // because each is two moments: the first of a pair is a plain mark, the
+    // second carries the Sculpture Trip's preview. Only one of a pair is ever
+    // shown -- see `show` on the keyframes below.
     stops: [
-      [ 10.040000, 44.040000 ],   // 0 Port of Carrara
-      [ -5.400000, 35.970000 ],   // 1 Gibraltar — the Strait
-      [ -9.600000, 38.800000 ],   // 2 Portugal — west of Cabo da Roca
-      [ -6.500000, 46.260000 ],   // 3 Bay of Biscay
-      [ -1.000000, 50.100000 ],   // 4 English Channel
-      [  4.480000, 51.920000 ],   // 5 Rotterdam
-      [  8.335000, 50.005000 ],   // 6 Rhine-Main — where the Main meets the Rhine
-      [  8.667519, 50.113137 ],   // 7 Frankfurt am Main — the sculpture itself
+      FRANKFURT,                  // 0 Frankfurt am Main — the commission, 1982
+      [  9.100000, 41.050000 ],   // 1 the Scarraciana quarry
+      [  9.190000, 41.240000 ],   // 2 Santa Teresa Gallura — the port the block left from
+      [ 10.040000, 44.040000 ],   // 3 Marina di Carrara — the block arrives
+      [ 10.040000, 44.040000 ],   // 4 Port of Carrara
+      [ -5.400000, 35.970000 ],   // 5 Gibraltar — the Strait
+      [ -9.600000, 38.800000 ],   // 6 Portugal — west of Cabo da Roca
+      [ -6.500000, 46.260000 ],   // 7 Bay of Biscay
+      [ -1.000000, 50.100000 ],   // 8 English Channel
+      [  4.480000, 51.920000 ],   // 9 Rotterdam
+      [  8.335000, 50.005000 ],   // 10 Rhine-Main — where the Main meets the Rhine
+      FRANKFURT,                  // 11 Frankfurt am Main — the sculpture itself
     ],
     // `at` is the side of the mark the name hangs off, so no label lies over
     // the route: at sea they sit on the open-water side, ashore they clear
     // the river. Order is priority order only in the sense that the culling
     // below sorts by distance to the centre of the frame, not by this list.
     labels: [
+      { text: 'Frankfurt am Main',    at: 'left'  },
+      { text: 'Quarry Scarraciana',   at: 'left'  },
+      { text: 'Santa Teresa Gallura', at: 'right' },
+      { text: 'Marina di Carrara',    at: 'left'  },
       { text: 'Port of Carrara',   at: 'left'   },
       { text: 'Gibraltar',         at: 'top'    },
       // `region` is a stretch of the passage rather than a place the ship tied
@@ -2443,6 +2497,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
     // beat. It is seeded at this same PREVIEW size (see the closing reveal), so
     // what enlarges is the preview itself rather than something new arriving.
     photos: [
+      null,                                   // 0 Frankfurt, 1982 — a plain mark
+      null,                                   // 1 the quarry
+      null,                                   // 2 Santa Teresa Gallura
+      null,                                   // 3 Marina di Carrara, the arrival
       { src: './assets/_journey/3%20sculpture%20trip/IMG_8441.jpeg',
         alt: 'Continuity mounted into its steel transport frame in the Carrara yard' },
       // The only moving plate, and the only leg with nothing else to show: two
@@ -2450,9 +2508,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // aboard photographed. Muted and looping, like the plate it replaces.
       { src: './assets/_journey/3%20sculpture%20trip/6749362-hd_1920_1080_24fps.mp4',
         video: true, alt: 'Open water' },
-      null,                                   // 2 Portugal — a region
-      null,                                   // 3 Bay of Biscay — a region
-      null,                                   // 4 English Channel — a region
+      null,                                   // 6 Portugal — a region
+      null,                                   // 7 Bay of Biscay — a region
+      null,                                   // 8 English Channel — a region
       { src: './assets/_journey/3%20sculpture%20trip/IMG_8446.jpeg',
         alt: 'The crate lifted out of the sea freighter in Rotterdam' },
       { src: './assets/_journey/3%20sculpture%20trip/IMG_8443.jpeg',
@@ -2474,33 +2532,41 @@ document.querySelectorAll('.facts').forEach((facts) => {
     // it is not in the photos layer, so its size has to be looked up where the
     // reveal writes it. Without this the name is measured off the tile the
     // reveal has already outgrown and ends up under the picture.
-    revealFor: 7,
+    revealFor: 11,
     revealId: 'mapReveal',
     // One segment per leg between two named places, so the route turns over a
     // leg at a time rather than an ocean at a time. Each begins on the stop the
     // one before ended on, which is what keeps the drawn line continuous.
+    //
+    // The granite's way comes first and is one leg, quarry to workshop, so it
+    // draws at one pace along its length rather than spending half its scroll
+    // on the twenty kilometres of road to the port.
     segments: [
-      [ // 0 Carrara → Gibraltar (the Med)
+      [ // 0 the quarry → Santa Teresa Gallura → Marina di Carrara (road, then the Tyrrhenian)
+        [9.10, 41.05], [9.15, 41.10], [9.18, 41.18], [9.19, 41.24],
+        [9.45, 41.80], [9.65, 42.40], [9.85, 43.10], [10.00, 43.60], [10.04, 44.04],
+      ],
+      [ // 1 Carrara → Gibraltar (the Med)
         [10.04, 44.04], [10.00, 43.30], [9.50, 42.20], [9.20, 41.30], [8.20, 40.20],
         [5.50, 38.80], [0.00, 37.00], [-5.40, 35.97],
       ],
-      [ // 1 Gibraltar → Portugal (out of the Strait, up to Cabo da Roca)
+      [ // 2 Gibraltar → Portugal (out of the Strait, up to Cabo da Roca)
         [-5.40, 35.97], [-7.20, 36.30], [-9.40, 37.00], [-9.60, 38.80],
       ],
-      [ // 2 Portugal → Bay of Biscay (the Portuguese coast, then Finisterre)
+      [ // 3 Portugal → Bay of Biscay (the Portuguese coast, then Finisterre)
         [-9.60, 38.80], [-9.50, 41.00], [-9.30, 42.90], [-7.20, 45.00], [-6.50, 46.26],
       ],
-      [ // 3 Bay of Biscay → English Channel
+      [ // 4 Bay of Biscay → English Channel
         [-6.50, 46.26], [-5.80, 47.50], [-3.00, 49.40], [-1.00, 50.10],
       ],
-      [ // 4 English Channel → Rotterdam (the Channel and the North Sea)
+      [ // 5 English Channel → Rotterdam (the Channel and the North Sea)
         [-1.00, 50.10], [1.50, 50.95], [3.20, 51.55], [4.10, 51.98], [4.48, 51.92],
       ],
-      [ // 5 Rotterdam → Rhine-Main (down the Rhine to the confluence)
+      [ // 6 Rotterdam → Rhine-Main (down the Rhine to the confluence)
         [4.48, 51.92], [5.30, 51.60], [6.10, 51.30], [6.95, 50.95], [7.00, 50.70],
         [7.60, 50.36], [7.90, 49.98], [8.335, 50.005],
       ],
-      [ // 6 Rhine-Main → Frankfurt (up the Main)
+      [ // 7 Rhine-Main → Frankfurt (up the Main)
         [8.335, 50.005], [8.50, 50.09], [8.667519, 50.113137],
       ],
     ],
@@ -2509,6 +2575,32 @@ document.querySelectorAll('.facts').forEach((facts) => {
     // midpoint. That is the whole point: a segment turns from the unvisited blue
     // to the visited purple while the camera still has it on screen, one leg at
     // a time, instead of a whole ocean changing hands off-screen mid-move.
+    //
+    // `show` is which marks stand on the map at a keyframe -- indexes into
+    // `stops`. It is step-valued, like the glow, and changes hands with it at
+    // the middle of a move.
+    //
+    // The chapter's first three moves, each made in a .making-window, which
+    // `win` names: the camera leaves the keyframe before as that window opens
+    // and has reached this one a little before the next layer comes up over it.
+    opening: [
+      // Down onto Frankfurt, the city and the Main in frame, far enough out
+      // that the street-level landing at the end of the chapter is still a
+      // different place to arrive.
+      { win: 'open',     center: FRANKFURT,     zoom: 10,  prog: 0, glow: 0, show: [0] },
+      // Out and down again onto Sardinia: the whole island, the quarry marked
+      // in its north-east corner.
+      { win: 'sardinia', center: [9.10, 40.25], zoom: 6.5, prog: 0, glow: 1, show: [1] },
+      // North with the stone at the same height -- a pan, not a zoom -- far
+      // enough that the quarry is still in frame at the bottom when Marina di
+      // Carrara comes in at the top. The route draws as the camera goes, and
+      // stops a hair short of done so the leg stays the blue of one under way
+      // for as long as it is on screen.
+      { win: 'crossing', center: [9.70, 42.55], zoom: 6.5, prog: 0.999, glow: 3, show: [1, 2, 3] },
+    ],
+    // The Sculpture Trip's four states, cued by its column of boxes. The first
+    // is reached unseen, under the workshop, so the map comes back already on
+    // the Italian mainland.
     states: [
       // Pushed east so Carrara rides the left third of the screen, for the same
       // reason state 3 below is pushed east: on the wide layout the four
@@ -2523,16 +2615,16 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // gutter with the chapter rail.
       // The narrow layout puts the accounts on their own ground below the map,
       // so there is nothing there to dodge and the framing stays as it was.
-      { center: WIDE ? [11.90, 43.9] : [10.0, 43.9], zoom: 6.6, prog: 0, glow: 0 },   // 1 Carrara — the Med still ahead
+      { center: WIDE ? [11.90, 43.9] : [10.0, 43.9], zoom: 6.6, prog: 1, glow: 4, show: TRIP },   // 1 Carrara — the Med still ahead
       // The pull-back from Carrara is back-loaded — the Strait is still off the
       // bottom of the screen at half way — so only the first leg turns over on
       // this move, and it turns as the wide view lands.
-      { center: [-3, 45],     zoom: 3.5, prog: 1, glow: -1 },  // 2 Atlantic — the Med behind
+      { center: [-3, 45],     zoom: 3.5, prog: 2, glow: -1, show: TRIP },  // 2 Atlantic — the Med behind
       // 3 Rotterdam → Rhine. Far enough in that Frankfurt stands off Rhine-Main
       // as its own mark with its own name — below about zoom 6 the two are a
       // single smudge and only the one gets named — and far enough east that
       // both stay left of the accounts.
-      { center: WIDE ? [9.59, 50.7] : [6.0, 50.7], zoom: WIDE ? 6.0 : 5.6, prog: 6, glow: -1 },
+      { center: WIDE ? [9.59, 50.7] : [6.0, 50.7], zoom: WIDE ? 6.0 : 5.6, prog: 7, glow: -1, show: TRIP },
       // Lands on the sculpture at street level, centred exactly on it — the
       // captions float over the map rather than sitting beside it, so there is
       // no column to steer clear of. (The old 0.13 deg offset was framing for
@@ -2541,7 +2633,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // Deliberately past the end: `prog` is clamped to the segment count, so
       // overshooting lands the last leg half way down the dive, while the Main
       // is still on screen, rather than at street level where nothing of it is.
-      { center: [8.667519, 50.113137], zoom: 18, prog: 8, glow: 7 },  // 4 Frankfurt · Taunusanlage 12
+      { center: FRANKFURT, zoom: 18, prog: 9, glow: 11, show: TRIP },  // 4 Frankfurt · Taunusanlage 12
     ],
   };
 
@@ -2598,6 +2690,21 @@ document.querySelectorAll('.facts').forEach((facts) => {
     let updateLabels = () => {};
     let stopPhotos = null;    // the previews standing on the marks, if this map has any
     let glowIndex = -1;        // which stop is pulsing; its name stands further off
+    // The marks standing on the map just now, by index into cfg.stops, or null
+    // for all of them. A keyframe says which (`show`): each stretch of the
+    // chapter has its own, so the bank's Frankfurt is not also the sculpture's,
+    // and nothing of the sea passage is on the map while the stone is still in
+    // the quarry.
+    let shown = null;
+    const isShown = (i) => !shown || shown.has(i);
+    const dotFilter = () => ['all', ['!', ['get', 'region']], ['!', ['get', 'photo']],
+                             shown ? ['in', ['get', 'i'], ['literal', [...shown]]] : true];
+    function applyShow(list) {
+      shown = list ? new Set(list) : null;
+      if (map.getLayer('stop-dot')) map.setFilter('stop-dot', dotFilter());
+      if (stopPhotos) stopPhotos.update();
+      updateLabels();
+    }
 
     // Nothing is drawn on the opening globe. At the overview the whole passage
     // is a scribble a thumbnail wide laid over a hemisphere, and the marks on it
@@ -2612,11 +2719,12 @@ document.querySelectorAll('.facts').forEach((facts) => {
     // frame. The two DOM layers read the same numbers and do the same fade by
     // hand, there being no style expression to hang it on.
     //
-    // It never comes into play on the Granite Trip, which opens at zoom 5 and
-    // only goes deeper: that map is inside its island from the first frame.
+    // It comes into play once more, at the chapter's opening: the globe is
+    // bare, and Frankfurt's mark and name come up as the camera drops onto it.
     const FADE_IN = 2.2, FADE_FULL = 3.2;
     const zoomFade = (full) => ['interpolate', ['linear'], ['zoom'], FADE_IN, 0, FADE_FULL, full];
     let currentState = { center: cfg.overview.center, zoom: cfg.overview.zoom, glow: -1 };
+    let mapSeen = true;        // whether anything of the map is on screen; see makeScrub
 
     // How much of the route is behind the ship, in whole segments: everything
     // below it is the visited purple, the one at it is the unvisited blue, and
@@ -2756,37 +2864,86 @@ document.querySelectorAll('.facts').forEach((facts) => {
         };
       }
 
-      // The track: the overview, then one keyframe per narrative stop. Its
-      // anchors are the very boxes the photographs are timed from, so the globe
-      // and the pictures are in step by construction rather than by tuning.
-      const keys = [{ center: cfg.overview.center, zoom: cfg.overview.zoom, prog: 0, glow: -1 }]
-        .concat(cfg.states);
-      const stopsEl = section.querySelector('.journey-stops');
-      const boxes = [...section.querySelectorAll('.stop[data-stop], .stop-lead[data-lead-for]')];
-      // Each keyframe owns a span, not a point. Two of the four states are cued by
-      // a pair of boxes -- the lead plate and the stop that follows it -- and the
-      // stretch between a pair is where the camera stands still today: state 3's
-      // pair brackets the four accounts, which is the one place in the section
-      // the reader is reading rather than looking. Interpolating straight from
-      // one state's box to the next would drag the globe across that, so a state
-      // is HELD from its first box to its last and only travels in between.
-      let holds = [], legs = [], base = NaN, vh = -1, vw = -1, idx = -1;
+      // The track: the overview, the chapter's three opening moves, then one
+      // keyframe per stop of the Sculpture Trip.
+      const keys = [{ center: cfg.overview.center, zoom: cfg.overview.zoom, prog: 0, glow: -1, show: [] }]
+        .concat(cfg.opening, cfg.states);
+      const tripAt = 1 + cfg.opening.length;       // the Sculpture Trip's first state
+      const trip = document.getElementById(cfg.tripId);
+      const cover = document.getElementById(cfg.coverId);
+      const windows = {};
+      section.querySelectorAll('[data-making-window]').forEach((el) => { windows[el.dataset.makingWindow] = el; });
+      // The Sculpture Trip's anchors are the very boxes the photographs were
+      // timed from, so the globe and the accounts are in step by construction
+      // rather than by tuning.
+      const stopsEl = trip.querySelector('.journey-stops');
+      const boxes = [...trip.querySelectorAll('.stop[data-stop], .stop-lead[data-lead-for]')];
+      // How a window is spent, in screens. The layer above has to have cleared
+      // LEAD of the screen before the camera leaves the keyframe it was parked
+      // on, so the reader sees where they were before being taken somewhere
+      // else; and the camera has landed REST before the next layer's top edge
+      // comes up from the bottom, so that layer arrives over a still map. The
+      // opening's window has its head in it, and the globe holds for HEAD of a
+      // screen while that is read.
+      const LEAD = 0.45, REST = 0.15, HEAD = 0.2;
+      // Each keyframe owns a span, not a point. Two of the Sculpture Trip's
+      // four states are cued by a pair of boxes -- the lead plate and the stop
+      // that follows it -- and the stretch between a pair is where the camera
+      // stands still: state 3's pair brackets the four accounts, which is the
+      // one place in the section the reader is reading rather than looking.
+      // Interpolating straight from one state's box to the next would drag the
+      // globe across that, so a state is HELD from its first box to its last
+      // and only travels in between. An opening keyframe is held from landing
+      // in its own window until the next window opens, which is the whole of
+      // the layer between them.
+      let holds = [], legs = [], seen = [], base = NaN, vh = -1, vw = -1, idx = -1;
+      let at0 = NaN, at1 = NaN, atZ = NaN;          // the camera as last written
+      let atScroll = NaN;                           // and the scroll offset it was written at
 
       function measure() {
         const s = window.scrollY;
         vh = window.innerHeight; vw = window.innerWidth;
         // The scroll offset at which a box sits in the middle of the screen -- the
-        // same probe the photographs and the chapter rail are read against.
+        // same probe the chapter rail is read against.
         const mid = (el) => { const r = el.getBoundingClientRect(); return r.top + s + r.height / 2 - vh / 2; };
-        // The overview is held through the header and the column's own lead-in;
-        // the descent begins where the photographs do.
-        const stopsTop = stopsEl.getBoundingClientRect().top + s;
-        base = stopsTop;
-        holds = [[stopsTop, stopsTop]];
+        const span = (el) => { const r = el.getBoundingClientRect(); return [r.top + s, r.bottom + s]; };
+        base = stopsEl.getBoundingClientRect().top + s;
+        holds = [[-Infinity, -Infinity]];
+        seen = [];
         for (let i = 1; i < keys.length; i++) {
-          const own = boxes.filter((el) => +(el.dataset.stop || el.dataset.leadFor) === i);
-          if (!own.length) { const a = holds[i - 1][1] + vh; holds.push([a, a]); continue; }
-          holds.push([mid(own[0]), mid(own[own.length - 1])]);
+          const k = keys[i], el = k.win && windows[k.win];
+          if (el) {
+            // A move made in a window: the keyframe before is let go as the
+            // window opens, and this one is reached before it closes.
+            const [top, bottom] = span(el);
+            const from = k.win === 'open' ? top + HEAD * vh : top - LEAD * vh;
+            holds[i - 1][1] = from;
+            const to = Math.max(from + 1, bottom - vh - REST * vh);
+            holds.push([to, to]);
+            // The map is in sight from the window's top edge entering at the
+            // foot of the screen until its bottom edge leaves at the top.
+            seen.push([top - vh, bottom]);
+            continue;
+          }
+          if (i === tripAt && cover) {
+            // The change of place nobody sees: half way through the layer that
+            // covers the map, the camera is simply put on the Sculpture Trip's
+            // first state, and held there until that state's own box lets it go.
+            const [top, bottom] = span(cover);
+            const under = (top + Math.max(top, bottom - vh)) / 2;
+            holds[i - 1][1] = under;
+            holds.push([under + 1, under + 1]);
+            // And from the foot of that layer on, the map is never covered again.
+            seen.push([bottom - vh, Infinity]);
+          }
+          const n = i - tripAt + 1;
+          const own = boxes.filter((b) => +(b.dataset.stop || b.dataset.leadFor) === n);
+          if (!own.length) {
+            if (!holds[i]) { const a = holds[i - 1][1] + vh; holds.push([a, a]); }
+            continue;
+          }
+          if (holds[i]) holds[i][1] = mid(own[own.length - 1]);
+          else holds.push([mid(own[0]), mid(own[own.length - 1])]);
         }
         // Strictly increasing, or a leg has a zero span to divide by.
         for (let i = 0; i < holds.length; i++) {
@@ -2800,8 +2957,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
 
       function apply(scrollTop) {
         if (!started) return;
-        // The track is held as absolute document offsets, and this section's
-        // absolute position is not fixed: the fluid grid above it is authored at
+        // The track is held as absolute document offsets, and the chapter's
+        // parts do not keep theirs: the workshop's fluid grid is authored at
         // a placeholder height and rewritten from its own scroll-dependent
         // measurements, so #sculpture-trip genuinely sits at a different document
         // offset on the way down than on the way back up. A track cached against
@@ -2837,17 +2994,36 @@ document.querySelectorAll('.facts').forEach((facts) => {
             prog = keys[i].prog + (keys[i + 1].prog - keys[i].prog) * t;
           }
         }
-        map.jumpTo({ center: cam.center, zoom: cam.zoom });
+        // Most of the chapter the camera is parked, much of that under a layer
+        // that covers the map entirely. It is written only when it has moved,
+        // so a parked map is not redrawn sixty times a second for nobody.
+        const moved = cam.center[0] !== at0 || cam.center[1] !== at1 || cam.zoom !== atZ;
+        if (moved) {
+          at0 = cam.center[0]; at1 = cam.center[1]; atZ = cam.zoom;
+          map.jumpTo({ center: cam.center, zoom: cam.zoom });
+        }
         applyRoute(prog);
+        mapSeen = seen.some((r) => scrollTop >= r[0] && scrollTop <= r[1]);
+        // The names and previews are placed on the map's `move`, which a parked
+        // camera no longer fires -- but what they give way to still moves with
+        // the page: the accounts and the dates scroll over a still map, and the
+        // closing reveal grows on one. So while the map is in sight and the
+        // page has moved under a parked camera, they are placed by hand.
+        if (!moved && mapSeen && scrollTop !== atScroll) {
+          if (stopPhotos) stopPhotos.update();
+          updateLabels();
+        }
+        atScroll = scrollTop;
         if (want !== idx) {
           idx = want;
           const k = keys[want];
           currentState = { center: k.center, zoom: k.zoom, glow: k.glow };
+          applyShow(k.show);
           applyGlow(k.glow);
         }
       }
 
-      return { apply, invalidate: () => { base = NaN; } };
+      return { apply, invalidate: () => { base = NaN; at0 = NaN; } };
     }
 
     function frame(ts) {
@@ -2859,7 +3035,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // the loop is already running for exactly as long as the section is on
       // screen, which is exactly as long as the camera matters.
       scrub.apply(window.scrollY);
-      if (currentState.glow >= 0 && !reduceMotion) {
+      // The active mark breathes -- but not under a layer that covers the map.
+      if (currentState.glow >= 0 && !reduceMotion && mapSeen) {
         map.setPaintProperty('stop-glow', 'circle-radius', 16 + Math.sin(ts / 280) * 3);
       }
     }
@@ -2971,7 +3148,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
         // would cover each other — can only be asked of the whole set.
         const live = [];
         items.forEach(it => {
-          let hidden = k <= 0 || (it.reveal && handedOver);
+          let hidden = k <= 0 || (it.reveal && handedOver) || !isShown(it.i);
           if (!hidden) {
             try {
               hidden = map.transform.isLocationOccluded(
@@ -3150,10 +3327,13 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // in the column left to dodge is the text — the tiles are handled by
       // photoRects below, off the numbers the layer has just written rather
       // than off the DOM.
-      const OBSTACLES = '#' + cfg.sectionId + ' .stop-cap, '
+      const OBSTACLES = '#' + cfg.tripId + ' .stop-cap, '
+                      // The sub-chapter's own head comes up over the map too,
+                      // now that the map is there before it.
+                      + '#' + cfg.tripId + ' .sub-num, #' + cfg.tripId + ' .sub-title, '
                       // The dates ride the top of the screen over this map for
                       // the whole sub-chapter, so a name has to clear them too.
-                      + '#' + cfg.sectionId + ' > .sub-dates';
+                      + '#' + cfg.tripId + ' > .sub-dates';
       function obstacles(rect) {
         const out = [];
         document.querySelectorAll(OBSTACLES).forEach(node => {
@@ -3200,7 +3380,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
 
         const live = [];
         items.forEach(it => {
-          let hidden = false;
+          let hidden = !isShown(it.i);
           // A name goes with its mark. Where the mark is a preview, the preview
           // may have stood down this frame for covering one nearer the middle
           // of the frame — and since a stop carrying a preview has no dot drawn
@@ -3293,7 +3473,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // opens on it at the very end.
       map.addLayer({
         id: 'stop-dot', type: 'circle', source: 'stops',
-        filter: ['all', ['!', ['get', 'region']], ['!', ['get', 'photo']]],
+        filter: dotFilter(),
         paint: {
           'circle-radius': 8, 'circle-color': '#ffffff',
           'circle-opacity': zoomFade(1),
@@ -3368,8 +3548,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
 
   function initJourney() {
     if (!window.maplibregl) { window.addEventListener('load', initJourney, { once: true }); return; }
-    buildJourneyGlobe(GRANITE);
-    buildJourneyGlobe(SCULPTURE);
+    buildJourneyGlobe(MAKING);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initJourney);
   else initJourney();
@@ -3400,9 +3579,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
 // foot reaches the viewport floor, so the reveal simply claims the last
 // screenful of scroll before that release.
 (() => {
-  const wrap   = document.querySelector('#sculpture-trip .journey-map-wrap');
+  const wrap   = document.getElementById('makingMap');
   const stops  = document.querySelector('#sculpture-trip .journey-stops');
-  const mapEl  = document.querySelector('#sculpture-trip .journey-map');
+  const mapEl  = wrap && wrap.querySelector('.journey-map');
   const reveal = document.getElementById('mapReveal');
   const cap    = document.getElementById('mapRevealCap');
   if (!wrap || !stops || !mapEl || !reveal || !cap) return;
@@ -3550,9 +3729,13 @@ document.querySelectorAll('.facts').forEach((facts) => {
   const SELECTOR = '[style*="background-image"], figure > img, img.sg-tile, '
                  + '.map-stop-photo > img, .map-stop-photo > video';
 
-  // Every visual image in the journey section, in document order
+  // Every visual image in the journey section, in document order -- and then
+  // the previews standing on the chapter's map, which is pinned behind the
+  // whole chapter and so sits outside this section; they belong to the
+  // Sculpture Trip, the journey's last part, and close the deck as they did.
+  const MAP_TILES = '#makingMap .map-stop-photo > img, #makingMap .map-stop-photo > video';
   function collect() {
-    return [...journey.querySelectorAll(SELECTOR)]
+    return [...journey.querySelectorAll(SELECTOR), ...document.querySelectorAll(MAP_TILES)]
       .map(el => ({ el, url: urlFromEl(el) }))
       .filter(x => x.url);
   }
@@ -3691,14 +3874,14 @@ document.querySelectorAll('.facts').forEach((facts) => {
   // few words; where; when. Placeholders until the captions are written.
   const TBD = ['Short description of what is happening', 'Location', 'Date'];
   const CAPTIONS = {
-    // 5.1 Granite Trip
+    // 3.3 Granite Trip
     'IMG_1791.jpeg': TBD,
     'IMG_1792.jpeg': TBD,
     'IMG_1793.jpeg': TBD,
     'IMG_1796.jpeg': TBD,
     'IMG_1794.jpeg': TBD,
     'IMG_1790.jpeg': TBD,
-    // 5.2 Sculpting
+    // 3.4 Sculpting
     'J-1.jpg': TBD,
     'J-2.jpg': TBD,
     'J-3.jpg': TBD,
@@ -3707,7 +3890,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     'J-6.jpg': TBD,
     'J-7.jpg': TBD,
     'J-8.jpg': TBD,
-    // 5.3 Sculpture Trip -- the photographs standing on the globe's marks
+    // 3.5 Sculpture Trip -- the photographs standing on the globe's marks
     'IMG_8441.jpeg': TBD,
     '6749362-hd_1920_1080_24fps.mp4': TBD,
     'IMG_8446.jpeg': TBD,
@@ -3861,7 +4044,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
 
   // The squares arrive with the first photograph across the full measure --
   // the quarry at Scarraciana -- riding up with its top edge until they reach
-  // their place, and stay to the end of 5.3. The sticky dock is let down into
+  // their place, and stay to the end of 3.5. The sticky dock is let down into
   // the section to that photograph's top (--jg-drop): measured, since the
   // prose above it sets how far down it stands, and measured again whenever
   // the section changes height -- fonts arriving, a film opening, the width
@@ -5596,19 +5779,23 @@ if (document.readyState === 'loading') {
       <li><button class="lang-opt" type="button" lang="es" aria-label="Español" aria-current="false"><span class="lang-fold"><span>Es</span></span><span class="lang-fold"><span class="lang-rest">pañol</span></span></button></li>
     </ul>
   </div>
-  <button class="tts-prev" type="button" aria-label="Previous paragraph">
+  <!-- The read-aloud transport, hidden for now: the play button is the only
+       way into reading, so with it gone the language menu stands alone in the
+       corner, and the films still play by themselves. Drop the hidden
+       attribute from these four buttons to bring it back. -->
+  <button class="tts-prev" type="button" aria-label="Previous paragraph" hidden>
     <span class="tts-icon" aria-hidden="true"></span>
   </button>
-  <button class="tts-toggle" type="button" aria-label="Read page aloud" aria-pressed="false" data-state="idle">
+  <button class="tts-toggle" type="button" aria-label="Read page aloud" aria-pressed="false" data-state="idle" hidden>
     <span class="tts-icon" aria-hidden="true"></span>
   </button>
-  <button class="tts-next" type="button" aria-label="Next paragraph">
+  <button class="tts-next" type="button" aria-label="Next paragraph" hidden>
     <span class="tts-icon" aria-hidden="true"></span>
   </button>
   <!-- Leaves reading mode altogether, which until now only Esc could do -- and
        Esc is not a key anyone finds without being told. Revealed with the
        paragraph jumps, since there is nothing to leave until playback starts. -->
-  <button class="tts-exit" type="button" aria-label="Exit read aloud">
+  <button class="tts-exit" type="button" aria-label="Exit read aloud" hidden>
     <span class="tts-icon" aria-hidden="true"></span>
   </button>
 </div>

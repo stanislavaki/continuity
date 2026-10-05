@@ -384,10 +384,10 @@ body.light .menu-btn { color: #000; }
    CHAPTER RAIL — the page's contents. Below 901px the rail is
    hidden and the + button opens its list instead.
 
-   Closed, it is a map of the page: six 4px strokes stacked end
+   Closed, it is a map of the page: four 4px strokes stacked end
    to end down the left gutter, about the viewport's centre, one per
    chapter and each as tall as its chapter is long to scroll. The
-   journey's is cut by 1px into its three sub-chapters, to the
+   making's is cut by 1px into its five sub-chapters, to the
    same scale. Chapters already read are inked, chapters still
    ahead muted, and the one you are in fills top to bottom as you
    move through it. So the rail carries three readings at once —
@@ -601,8 +601,8 @@ body.light .crail-panel {
   cursor: pointer;              /* the hand, as on the rail */
 }
 /* The number, in a lane between the stroke and the title exactly as wide as the
-   widest of them — a sub-chapter's 5.1, which measures 1.627em in Struve at
-   this weight and tracking (the figures are tabular, so 5.2 and 5.3 match) — so
+   widest of them — a sub-chapter's 3.3, which measures 1.627em in Struve at
+   this weight and tracking (the figures are tabular, so 3.4 and 3.5 match) — so
    every title starts on the same x, one lead past the widest number, whether
    its own number shows or not. It shows for the part you are in, and for the
    others only while they are hovered — the pointer on the link or on its part
@@ -1130,9 +1130,6 @@ section { position: relative; }
   position: relative;
   overflow: hidden;
 }
-/* Ch5 runs straight into the Journey sub-chapters, which bring their own top
-   padding — so it gives up its own foot rather than stacking two gaps. */
-#ch5 { padding-bottom: 0; }
 .chapter-head {
   /* Queried by .chapter-num below, which sizes itself to one of these columns.
      Read from the head's own inline size rather than 100vw so that a scrollbar
@@ -2012,6 +2009,9 @@ section { position: relative; }
 .tts-prev   { grid-area: 2 / 3; }
 .tts-next   { grid-area: 2 / 4; }
 .tts-exit   { grid-area: 1 / 2; }
+/* A control given the hidden attribute goes, whatever display its own rule
+   sets -- the transport is hidden this way for now, see the markup. */
+.tts-controls [hidden] { display: none; }
 body.dark  .tts-controls { color: #fff; }
 body.light .tts-controls { color: #000; }
 /* The play triangle rides at the end of the language menu: centred on its
@@ -2786,8 +2786,98 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .db-portrait { width: 100%; margin: 0 0 28px; }
 }
 
-/* Journey · sticky map + scrolling stops */
-.journey { --journey-pad: 140px; padding: var(--journey-pad) 0 0; background: var(--black); color: #fff; }
+/* ============================================================
+   THE STORY OF THE MAKING — one chapter on one map.
+
+   .making wraps the chapter. Its first child, .making-map, is the map: sticky
+   for the whole of the wrapper and giving its own height back with a negative
+   margin, so everything after it in the wrapper lies over it. What comes
+   after is the story, in layers. A part with a ground of its own (the bank's
+   black, Stroobant's paper, the granite's black, the workshop's ochre) covers
+   the map as it passes; a .making-window has no ground and nothing in it, so
+   the map shows for as long as it takes to scroll, and the camera makes its
+   move there -- see the track in the journey script. The Sculpture Trip has
+   no ground either: its accounts ride on the map itself.
+
+   Nothing here is given a z-index: the map comes first in the wrapper and the
+   layers after it are positioned, so they paint over it in source order, and
+   none of them becomes a stacking context that would trap the gallery's dock
+   or the films under the page's fixed controls.
+   ============================================================ */
+/* --preview-w: the one size every preview on the map is cut to -- the four
+   photographs standing on the stops, and the Walk-around scene that opens on
+   Frankfurt and grows out of it to close the chapter. Held as a token so the
+   closing reveal starts at exactly the size its neighbours sit at. */
+.making { position: relative; background: var(--black); --preview-w: 70px; }
+.journey-map-wrap.making-map {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  margin-bottom: -100vh;
+  display: block;
+  z-index: 0;
+  background: radial-gradient(circle at 50% 46%, #0a1426 0%, #060a14 52%, #02040a 100%);
+  overflow: hidden;
+}
+.making-map .journey-map {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  clip-path: none;
+  position: relative;
+  z-index: 1;
+  /* Driven by the closing reveal, and multiplied by the raster's own shading
+     (a raster-opacity on the satellite layer, so MapLibre's own drawing keeps
+     the white it is given): the whole satellite view, attribution included,
+     dissolves as the photograph takes over. */
+  opacity: var(--map-fade, 1);
+}
+.making-map .journey-map .map-bg { display: none; }
+/* A window: no ground, so the map shows. Its height is the length of the
+   camera's move -- the move starts once the layer above has cleared about half
+   the screen and is over a little before the next layer comes up (see
+   WINDOW in the journey script), so 220vh leaves about a screen and a half of
+   scrolling for it. The section's own black is taken off, and a press goes
+   through to the map. */
+.making-window {
+  display: block;
+  height: 220vh;
+  background: none;
+  pointer-events: none;
+}
+/* The chapter's opening is a window with the chapter's head in it: the title
+   stands over the whole globe, and goes up as the globe comes down onto
+   Frankfurt. Taller than the others by the screen the head is read on. */
+.making-open {
+  height: auto;
+  min-height: 290vh;
+  overflow: visible;
+  padding-bottom: 0;
+}
+/* A sub-chapter's head on a ground of its own: 3.1 on the bank's black, 3.2 on
+   Stroobant's paper. Set as the journey's sub-heads are (.journey-sub
+   .sub-head), with the chapter's 140px over it. */
+/* A flow root, so the margin under the head stays inside the section's ground
+   instead of collapsing out of it and opening a strip of map before the text. */
+.making-head { padding: 140px 0 0; display: flow-root; }
+.making-head .journey-sub { margin-bottom: 0; }
+/* The dates under a head are sticky in the journey, where one sub-chapter is
+   one box; here the head is a section of its own, so the line simply stands
+   under the title. */
+.making-head .journey-sub > .sub-dates { position: static; }
+/* With no dates under it, the head keeps the same room before the text. */
+.making-head .sub-head:last-child { margin-bottom: 104px; }
+/* .sub-title is set in white for the dark journey; on paper it follows the ink. */
+.making-head.paper-section .sub-title { color: inherit; }
+
+/* Journey · a sheet over the chapter's map. No ground of its own: the Granite
+   Trip and Sculpting bring theirs (see #granite-trip::before, #sculpting::before)
+   and the crossing's window and the Sculpture Trip let the map through. The
+   sheet and its container take no presses, so one on the map between or under
+   them reaches the previews standing on it; the sub-chapters take theirs back. */
+.journey { --journey-pad: 140px; padding: var(--journey-pad) 0 0; background: none; color: #fff; pointer-events: none; }
+.journey > .container > * { pointer-events: auto; }
+.journey > .container > .making-window { pointer-events: none; }
 .journey-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3047,7 +3137,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .journey-photo-measure img,
 .journey-photo-bleed img { display: block; width: 100%; height: auto; }
 
-/* The place names under the photographs. They are set as 5.2's gallery notes
+/* The place names under the photographs. They are set as 3.4's gallery notes
    are — the type spec below is shared rather than repeated, so a caption reads
    the same wherever in the journey it appears. Only the air above it belongs
    here, since these sit in the page flow and those are placed absolutely. */
@@ -3063,7 +3153,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    column 1, where the measure does.
    Black rather than the section's white: the photograph is a scan of a printed
    spread and the sky behind the line is near-paper, which white would be lost
-   on entirely. The one caption in 5.1 that is not on the near-black takes the
+   on entirely. The one caption in 3.3 that is not on the near-black takes the
    ink that ground asks for. */
 .journey-photo-bleed { position: relative; }
 .journey-cap--over {
@@ -3446,7 +3536,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* The route reads as a descent rather than a line: one place to a row, with the
    arrow turned to match. The arrows are drawn between the rows rather than
    written into the sentence, so a route is only its places and the punctuation
-   is the stylesheet's business — which is what lets 5.2, a route of one place,
+   is the stylesheet's business — which is what lets 3.4, a route of one place,
    sit there without a dangling arrow after it. */
 .sub-route {
   display: flex;
@@ -3455,10 +3545,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 /* Every place in the journey opens on the same mark — a dot in the section's
    ink, beating slowly so it reads as a position being held rather than as a
-   bullet. One rule serves 5.2's route, which names its place in the head, and
-   5.1's captions, which name theirs under the photographs. currentColor for
+   bullet. One rule serves 3.4's route, which names its place in the head, and
+   3.3's captions, which name theirs under the photographs. currentColor for
    the reason the arrows below give: the mark has to sit on the journey's
-   near-black and on 5.2's ochre alike. */
+   near-black and on 3.4's ochre alike. */
 .sub-route::before,
 .journey-cap::before {
   content: '';
@@ -3471,14 +3561,14 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
      the dot belongs to the first place rather than sitting between things. */
   margin: 0 auto 14px;
 }
-/* Only the route moves, and here it is worked rather than beaten. 5.2 is the
+/* Only the route moves, and here it is worked rather than beaten. 3.4 is the
    one place on the journey where the stone is cut, so its mark is the one that
    changes shape: a circle drawn out into a squared block, then into a solid
    with three corners, then back, every edge left soft because granite taken
    down by diamond chain comes away in curves, not facets.
    Seven seconds a cycle — slow enough to read as work being done, quick
    enough that a form comes and goes while the head is still on screen.
-   The captions in 5.1 name places the stone only passed through, so theirs
+   The captions in 3.3 name places the stone only passed through, so theirs
    stand still, at the size this one opens on. */
 .sub-route::before {
   /* The channel the pin stop cuts through the mark. It is a mask rather than a
@@ -3535,7 +3625,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 /* The route is centred and its mark centres with it; the captions are ranged
    left, so theirs sits on the same edge the name starts from.
-   And in 5.1 the mark is the drawn pin rather than a dot. 5.2's mark keeps the
+   And in 3.3 the mark is the drawn pin rather than a dot. 3.4's mark keeps the
    dot, because it is the one that gets worked — it becomes the pin in the
    middle of its cycle and has to start from something that is not one. Here
    the place is simply named, so the sign is simply given.
@@ -3707,7 +3797,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    head has gone up past it until the sub-chapter itself ends, naming the span
    of time you are looking at for exactly as long as you are looking at it.
 
-   pointer-events: none because for 5.3 it rides over a full-bleed map, and
+   pointer-events: none because for 3.5 it rides over a full-bleed map, and
    nothing that is only a label should take a press away from what is under it.
    The z-index clears that map (0) and the photographs riding over it (1). */
 .journey-sub > .sub-dates {
@@ -3723,8 +3813,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   pointer-events: none;
 }
 /* No sub-chapter puts a ground under its date. A band is only invisible while
-   nothing is passing beneath it, and something always is: in 5.1 it cut a hard
-   black edge across the photographs, in 5.2 an ochre one, and in 5.3 it would
+   nothing is passing beneath it, and something always is: in 3.3 it cut a hard
+   black edge across the photographs, in 3.4 an ochre one, and in 3.5 it would
    sit on the satellite plate as a rectangle. The line rides what it rides. */
 
 /* Per-stop diary list */
@@ -3830,10 +3920,23 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    The ground is Bill's own ochre, the amber of the painted triangle. The ink
    stays the .light-section black: on this amber that is still ~9.7:1, where
    white would be 2.2:1. */
-/* The room starts straight off the granite trip's closing bleed image — no
-   black gap between the two sub-chapters, since the room's own padding is
-   what opens the space. */
-.journey-sub:has(+ #sculpting) { margin-bottom: 0; }
+/* The Granite Trip closes on its bleed image and the map comes up straight
+   off it (the crossing's window), so it carries no margin under it; the
+   workshop's room then comes up over the map on its own ochre. */
+#granite-trip { position: relative; isolation: isolate; margin-bottom: 0; }
+#granite-trip::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  /* Up over the journey's own top padding, so the black starts where
+     Stroobant's paper stops and nothing of the map shows between them. */
+  top: calc(-1 * var(--journey-pad));
+  bottom: 0;
+  /* Same scrollbar-aware full-bleed measure as .journey-photo-bleed. */
+  left: calc(50% - (100vw - var(--sbw, 0px)) / 2);
+  width: calc(100vw - var(--sbw, 0px));
+  background: var(--black);
+}
 #sculpting {
   position: relative;
   isolation: isolate;
@@ -3988,13 +4091,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   max-width: 60ch;
 }
 
-/* Sculpture Trip · full-bleed sticky map with photos overlaid on an 8-col grid */
-/* The one size every preview on this map is cut to — the four photographs
-   standing on the stops, and the Walk-around scene that opens on Frankfurt and
-   grows out of it to close the section. Held as a token so the closing reveal
-   starts at exactly the size its neighbours sit at, rather than at a number
-   that merely looks similar. */
-#sculpture-trip { --preview-w: 70px; }
+/* Sculpture Trip · its accounts overlaid on the chapter's map, on an 8-col grid.
+   The sub-chapter has no ground and takes no presses of its own, so the
+   previews on the map under it can be pressed; the accounts take theirs back
+   (.stop-caps). */
+#sculpture-trip { pointer-events: none; }
 #sculpture-trip .journey-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -4002,40 +4103,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   column-gap: 0;
   position: relative;
 }
-#sculpture-trip .journey-map-wrap {
-  grid-column: 1;
-  grid-row: 1;
-  align-self: start;
-  position: sticky;
-  top: 0;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  height: 100vh;
-  display: block;
-  z-index: 0;
-  background: radial-gradient(circle at 50% 46%, #0a1426 0%, #060a14 52%, #02040a 100%);
-  overflow: hidden;
-}
-#sculpture-trip .journey-map {
-  width: 100%;
-  height: 100%;
-  aspect-ratio: auto;
-  clip-path: none;
-  position: relative;
-  z-index: 1;
-}
-#sculpture-trip .journey-map .map-bg { display: none; }
-/* The shading that kept the text and the pinned photographs dominant used to
-   sit here, on the canvas. It took the route and the stop marks down with the
-   imagery, which is why a white mark read as grey beside its own white name.
-   It is a raster-opacity on the satellite layer now (see the style in the
-   journey globes script), so it falls on the imagery alone and MapLibre's own
-   drawing keeps the white it is given. The attribution was never dimmed. */
-/* Driven by the closing reveal, and multiplied by the raster's own shading:
-   the whole satellite view (attribution included) dissolves as the photograph
-   takes over. */
-#sculpture-trip .journey-map { opacity: var(--map-fade, 1); }
 
 /* Closing reveal — the Walk-around scene, pinned to the map's centre point,
    which is the sculpture's real coordinate, and which is where the camera has
@@ -4053,7 +4120,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    Width is set in px by script rather than scaled with a transform, so the
    image re-samples sharp at every step instead of being a 10px bitmap blown
    up. */
-#sculpture-trip .map-reveal {
+.making-map .map-reveal {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -4074,7 +4141,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 
 /* Title card under the turning sculpture, naming the chapter it hands off to. */
-#sculpture-trip .map-reveal-cap {
+.making-map .map-reveal-cap {
   position: absolute;
   left: 0;
   right: 0;
@@ -4123,10 +4190,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   row-gap: 0;
   z-index: 1;
   position: relative;
-  /* The map is sticky inside this grid, so it stays pinned for exactly as long
-     as this column keeps scrolling. The tail is therefore the whole closing
-     act: once the last caption has cleared, the map holds alone for a scroll,
-     then the reveal plays out over the screenful before the pin releases. */
+  /* The map is pinned for the whole chapter, and this column is the chapter's
+     last, so the pin lets go as its foot reaches the bottom of the screen. The
+     tail is therefore the whole closing act: once the last caption has
+     cleared, the map holds alone for a scroll, then the reveal plays out over
+     the screenful before the pin releases. */
   padding: 95vh 0 340vh;
   pointer-events: none;
 }
@@ -4554,9 +4622,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    between two article bodies; the grid's row gap stands it off the text on either
    side, at any width, with no breakout to work out. */
 .article-grid > .video-measure { grid-column: 1 / -1; }
-/* That section now ends on text rather than on the film, straight into the next
-   chapter, so it closes with the room the Deutsche Bank body closes with. */
-.making-body:has(+ section.chapter) { padding-bottom: 120px; }
+/* That section now ends on text rather than on the film, straight into the
+   Granite Trip, so it closes with the room the Deutsche Bank body closes with. */
+.making-body:has(+ section.journey) { padding-bottom: 120px; }
 
 /* Pull-quote bands -----------------------------------------------------
    Each quote gets its own full-width section, grounded in the colour the
@@ -4674,7 +4742,7 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   }
 }
 
-/* Chapter 4's body runs as two sections so the Stroobant pull-quote can sit
+/* Stroobant's body (3.2) runs as two sections so his pull-quote can sit
    between them at full width. Padding stays here rather than inline so the
    band adjacency rules above outrank it and own the space on both sides. */
 .making-body { padding: 0; }
@@ -4882,7 +4950,7 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
    measure, the quarry (--jg-drop, measured by the gallery script; the
    section's top edge until it has): it comes up from the bottom of the screen
    with that photograph's top edge, stops at the middle of the screen, stays
-   there through the whole journey and leaves with the end of 5.3. The dock is the button's height,
+   there through the whole journey and leaves with the end of 3.5. The dock is the button's height,
    lets the pointer through everywhere but the button, and stands over the
    map and the photographs, under the rail's list. Its place is given back by
    the container after it rather than by the dock's own margin: a sticky box
