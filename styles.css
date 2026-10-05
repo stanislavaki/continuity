@@ -601,8 +601,8 @@ body.light .crail-panel {
   cursor: pointer;              /* the hand, as on the rail */
 }
 /* The number, in a lane between the stroke and the title exactly as wide as the
-   widest of them — a sub-chapter's 3.3, which measures 1.627em in Struve at
-   this weight and tracking (the figures are tabular, so 3.4 and 3.5 match) — so
+   widest of them — a sub-chapter's 4.3, which measures 1.627em in Struve at
+   this weight and tracking (the figures are tabular, so 4.4 and 4.5 match) — so
    every title starts on the same x, one lead past the widest number, whether
    its own number shows or not. It shows for the part you are in, and for the
    others only while they are hovered — the pointer on the link or on its part
@@ -2703,6 +2703,101 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .narr-film { grid-template-columns: minmax(0, 1fr); }
   .narr-film-fold--still, .narr-film-fold--reel { grid-column: 1; }
 }
+
+/* Letters as a pile (.doc-deck). Laid out on the page's eight columns out of
+   the body's four, as the films are, with the pile on columns 3-6. The sheets
+   are stacked in one cell; the script lays each at its own slight angle and a
+   few pixels off true, orders them, and shuffles them when the pile is
+   pressed. Each casts its own shadow, so the edges peeking out from under the
+   top sheet read as more paper rather than as a frame. */
+.doc-deck {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+  margin: 1.2em 0 0;
+}
+.article-grid > .article-body .doc-deck {
+  margin-left: calc(-100% - var(--col-gap));
+  width: calc(200% + var(--col-gap));
+}
+.article-body .doc-deck + p { margin-top: 1.2em; }
+/* The pile is the button. Room is left round it for the corners the angles
+   push out and for the shadows, so the paragraphs either side keep their
+   distance from the paper rather than from an invisible box. */
+.doc-deck-stage {
+  grid-column: 3 / 7;
+  grid-row: 1;
+  display: grid;
+  padding: 0;
+  margin: 12px 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.doc-deck-stage:focus { outline: none; }
+.doc-deck-stage:focus-visible { outline: 2px solid currentColor; outline-offset: 16px; }
+.doc-deck-page {
+  grid-area: 1 / 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #fff;
+  /* A close contact shadow and a soft one further out, in a deep blue rather
+     than black, so on the bank's ground they read as shade, not as soot. */
+  box-shadow: 0 1px 2px rgba(0, 6, 60, .28), 0 10px 28px rgba(0, 6, 60, .32);
+  /* Only the lift on hover is a transition; the shuffle is the script's. */
+  transition: translate .2s ease, box-shadow .2s ease;
+}
+/* The top sheet comes up a little under the pointer, the one hint that the
+   pile can be pressed now that there are no arrows. */
+.doc-deck-stage:hover .doc-deck-page.is-top {
+  translate: 0 -4px;
+  box-shadow: 0 2px 4px rgba(0, 6, 60, .26), 0 16px 36px rgba(0, 6, 60, .36);
+}
+@media (prefers-reduced-motion: reduce) {
+  .doc-deck-page { transition: none; }
+}
+/* The caption, set as the figure captions of the Topology of Continuity study
+   (topology-of-continuity.beta-mrdn.world) are: Space Mono at 12 on 18 in a
+   soft tone, led by an italic serif label in the full ink, 1.15em and 4px.
+   There the tones are a warm grey and a warm white on black; on the bank's
+   blue they are white at 72% (6.8:1, well clear of AA at this size) and white.
+   It stands to the right of the pile in columns 7-8, level with its middle,
+   where a tilted sheet's side is no further out than its few pixels off true,
+   so the column gap keeps the type clear of the paper. */
+.doc-deck-cap {
+  grid-column: 7 / 9;
+  grid-row: 1;
+  align-self: center;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  font-feature-settings: "onum", "pnum";
+  text-rendering: optimizeLegibility;
+  overflow-wrap: anywhere;
+  color: rgba(255, 255, 255, .72);
+}
+.doc-deck-cap .fig-label {
+  font-family: "Martina Plantijn", Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: calc(1.15em + 4px);
+  line-height: 1;
+  color: #fff;
+}
+@media (max-width: 900px) {
+  /* One column: the pile across the measure, a little in from its edges so the
+     corners the angles push out stay inside the gutters, and the caption under
+     it. */
+  .article-grid > .article-body .doc-deck { margin-left: 0; width: 100%; }
+  .doc-deck { grid-template-columns: minmax(0, 1fr); }
+  .doc-deck-stage { grid-column: 1; margin: 12px 4%; }
+  .doc-deck-cap { grid-column: 1; grid-row: 2; align-self: start; margin: 8px 4% 0; }
+}
 @media (prefers-reduced-motion: reduce) {
   .narr-film, .narr-film-fold, .narr-film-play, .narr-film-toggle, .narr-film-glyph,
   .narr-film-collapse, .narr-film-corner, .narr-film-full, .narr-film-time, .narr-film-time-track,
@@ -2755,7 +2850,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* Zapp portrait + its lead-in. The anchor breaks out of .article-body's
    right-half column (grid-column 3/5) to the full 8-column measure, then
    restates that measure as its own 8 tracks so the two children can be placed
-   on real page columns: the paragraph takes 1–5, the portrait 6–8.
+   on real page columns: the portrait takes 5–7, its left edge on the text
+   column's above it, and a paragraph, if one is set beside it, 1–4.
    `align-items: end` is what sits them on a shared baseline at the foot. */
 .db-zapp-anchor {
   /* .article-body spans grid-column 3/5 of a 4-col grid = 4 page columns +
@@ -2768,9 +2864,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   column-gap: var(--col-gap);
   align-items: end;
 }
-.db-zapp-anchor > p { grid-column: 1 / 6; margin: 0; }
+.db-zapp-anchor > p { grid-column: 1 / 5; margin: 0; }
 .db-portrait {
-  grid-column: 6 / 9;
+  grid-column: 5 / 8;
   width: 100%;
   margin: 0;
 }
@@ -2854,7 +2950,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   overflow: visible;
   padding-bottom: 0;
 }
-/* A sub-chapter's head on a ground of its own: 3.1 on the bank's black, 3.2 on
+/* A sub-chapter's head on a ground of its own: 4.1 on the bank's black, 4.2 on
    Stroobant's paper. Set as the journey's sub-heads are (.journey-sub
    .sub-head), with the chapter's 140px over it. */
 /* A flow root, so the margin under the head stays inside the section's ground
@@ -3137,7 +3233,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .journey-photo-measure img,
 .journey-photo-bleed img { display: block; width: 100%; height: auto; }
 
-/* The place names under the photographs. They are set as 3.4's gallery notes
+/* The place names under the photographs. They are set as 4.4's gallery notes
    are — the type spec below is shared rather than repeated, so a caption reads
    the same wherever in the journey it appears. Only the air above it belongs
    here, since these sit in the page flow and those are placed absolutely. */
@@ -3153,7 +3249,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    column 1, where the measure does.
    Black rather than the section's white: the photograph is a scan of a printed
    spread and the sky behind the line is near-paper, which white would be lost
-   on entirely. The one caption in 3.3 that is not on the near-black takes the
+   on entirely. The one caption in 4.3 that is not on the near-black takes the
    ink that ground asks for. */
 .journey-photo-bleed { position: relative; }
 .journey-cap--over {
@@ -3536,7 +3632,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* The route reads as a descent rather than a line: one place to a row, with the
    arrow turned to match. The arrows are drawn between the rows rather than
    written into the sentence, so a route is only its places and the punctuation
-   is the stylesheet's business — which is what lets 3.4, a route of one place,
+   is the stylesheet's business — which is what lets 4.4, a route of one place,
    sit there without a dangling arrow after it. */
 .sub-route {
   display: flex;
@@ -3545,10 +3641,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 /* Every place in the journey opens on the same mark — a dot in the section's
    ink, beating slowly so it reads as a position being held rather than as a
-   bullet. One rule serves 3.4's route, which names its place in the head, and
-   3.3's captions, which name theirs under the photographs. currentColor for
+   bullet. One rule serves 4.4's route, which names its place in the head, and
+   4.3's captions, which name theirs under the photographs. currentColor for
    the reason the arrows below give: the mark has to sit on the journey's
-   near-black and on 3.4's ochre alike. */
+   near-black and on 4.4's ochre alike. */
 .sub-route::before,
 .journey-cap::before {
   content: '';
@@ -3561,14 +3657,14 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
      the dot belongs to the first place rather than sitting between things. */
   margin: 0 auto 14px;
 }
-/* Only the route moves, and here it is worked rather than beaten. 3.4 is the
+/* Only the route moves, and here it is worked rather than beaten. 4.4 is the
    one place on the journey where the stone is cut, so its mark is the one that
    changes shape: a circle drawn out into a squared block, then into a solid
    with three corners, then back, every edge left soft because granite taken
    down by diamond chain comes away in curves, not facets.
    Seven seconds a cycle — slow enough to read as work being done, quick
    enough that a form comes and goes while the head is still on screen.
-   The captions in 3.3 name places the stone only passed through, so theirs
+   The captions in 4.3 name places the stone only passed through, so theirs
    stand still, at the size this one opens on. */
 .sub-route::before {
   /* The channel the pin stop cuts through the mark. It is a mask rather than a
@@ -3625,7 +3721,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 /* The route is centred and its mark centres with it; the captions are ranged
    left, so theirs sits on the same edge the name starts from.
-   And in 3.3 the mark is the drawn pin rather than a dot. 3.4's mark keeps the
+   And in 4.3 the mark is the drawn pin rather than a dot. 4.4's mark keeps the
    dot, because it is the one that gets worked — it becomes the pin in the
    middle of its cycle and has to start from something that is not one. Here
    the place is simply named, so the sign is simply given.
@@ -3797,7 +3893,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    head has gone up past it until the sub-chapter itself ends, naming the span
    of time you are looking at for exactly as long as you are looking at it.
 
-   pointer-events: none because for 3.5 it rides over a full-bleed map, and
+   pointer-events: none because for 4.5 it rides over a full-bleed map, and
    nothing that is only a label should take a press away from what is under it.
    The z-index clears that map (0) and the photographs riding over it (1). */
 .journey-sub > .sub-dates {
@@ -3813,8 +3909,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   pointer-events: none;
 }
 /* No sub-chapter puts a ground under its date. A band is only invisible while
-   nothing is passing beneath it, and something always is: in 3.3 it cut a hard
-   black edge across the photographs, in 3.4 an ochre one, and in 3.5 it would
+   nothing is passing beneath it, and something always is: in 4.3 it cut a hard
+   black edge across the photographs, in 4.4 an ochre one, and in 4.5 it would
    sit on the satellite plate as a rectangle. The line rides what it rides. */
 
 /* Per-stop diary list */
@@ -4618,12 +4714,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .bg-wipe-rect { width: 1340px; transition: none; }
 }
 
-/* The making film, across the article grid's full measure -- page columns 1-8 --
-   between two article bodies; the grid's row gap stands it off the text on either
-   side, at any width, with no breakout to work out. */
-.article-grid > .video-measure { grid-column: 1 / -1; }
-/* That section now ends on text rather than on the film, straight into the
-   Granite Trip, so it closes with the room the Deutsche Bank body closes with. */
+/* Stroobant's second section ends on text, straight into the Granite Trip, so it
+   closes with the room the Deutsche Bank body closes with. */
 .making-body:has(+ section.journey) { padding-bottom: 120px; }
 
 /* Pull-quote bands -----------------------------------------------------
@@ -4742,7 +4834,7 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   }
 }
 
-/* Stroobant's body (3.2) runs as two sections so his pull-quote can sit
+/* Stroobant's body (4.2) runs as two sections so his pull-quote can sit
    between them at full width. Padding stays here rather than inline so the
    band adjacency rules above outrank it and own the space on both sides. */
 .making-body { padding: 0; }
@@ -4950,7 +5042,7 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
    measure, the quarry (--jg-drop, measured by the gallery script; the
    section's top edge until it has): it comes up from the bottom of the screen
    with that photograph's top edge, stops at the middle of the screen, stays
-   there through the whole journey and leaves with the end of 3.5. The dock is the button's height,
+   there through the whole journey and leaves with the end of 4.5. The dock is the button's height,
    lets the pointer through everywhere but the button, and stands over the
    map and the photographs, under the rail's list. Its place is given back by
    the container after it rather than by the dock's own margin: a sticky box
