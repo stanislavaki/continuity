@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=229" />
+<link rel="stylesheet" href="styles.css?v=235" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -5565,6 +5565,19 @@ if (document.readyState === 'loading') {
   // The field's tallest column stands FIELD_TOP down from the plot's top, and
   // the Ulm School's name INSET in from its block's corner.
   const FIELD_TOP = 8, INSET = 8;
+  // One work runs through the rest: the endless ribbon of 1935, which Bill
+  // took up again in version after version, in the Continuity of 1947 and of
+  // Frankfurt, and in the endless surfaces between, until the last version was
+  // approved the year after he died. The catalogue's titles say which works
+  // those are. A hatched band BAND_H tall cuts through the field BAND_Z over
+  // its foot, from the first of them to the last, each one a solid stretch of
+  // it over its own years and drawn nowhere else; the marks of those years
+  // keep clear of it, under it or over it, so it runs through the columns
+  // unbroken. Under the pointer, or pressed, it holds the field back.
+  const LOOP = /unendlich|endless|kontinuit|continuity|schleife/i;
+  // They are all sculptures, and the band is drawn in sculpture's red.
+  const BAND_H = 40, BAND_Z = 140, LOOP_RED = '#E41802';
+  const hue = (w, domains) => LOOP.test(w[2]) ? LOOP_RED : domains[w[1]].color;
 
   // Colour arithmetic, for type set in or on a domain's colour. The marks take
   // the colour as it is, however little it stands off the black -- the
@@ -5611,6 +5624,7 @@ if (document.readyState === 'loading') {
   // A pressed label filters the field to its own domain until it is pressed
   // again. It outlives a redraw, so a resize keeps the reader where they were.
   let pinned = null;
+  let loopPinned = false;      // the band pressed: the same, for its works
 
   // The type inside the SVG is set in the plot's own units, which scale with
   // the figure -- so to keep the axis at the size the readout is set at, the
@@ -5668,12 +5682,15 @@ if (document.readyState === 'loading') {
       return ys;
     };
     const load = new Map();
-    works.forEach(w => yearsOf1(w).forEach(y => load.set(y, (load.get(y) || 0) + natural(w) + VGAP)));
+    // The band's works are drawn on the band and nowhere else, so the field
+    // is laid out without them.
+    const inField = works.filter(w => !LOOP.test(w[2]));
+    inField.forEach(w => yearsOf1(w).forEach(y => load.set(y, (load.get(y) || 0) + natural(w) + VGAP)));
     const scale = new Map([...load].map(([y, l]) => [y, Math.min(SWELL, YEAR_H * working(y) / l)]));
     const thick = w => Math.min(MAX_T, Math.max(PX, natural(w) * Math.min(...yearsOf1(w).map(y => scale.get(y)))));
     // The widest a mark may stand in one year: its column, less YEAR_AIR.
     const YEAR_W = step - YEAR_AIR;
-    const marks = works.map(w => {
+    const marks = inField.map(w => {
       const h = LINES ? thick(w) : SIDE;
       const c = colX(w[0]);
       const half = Math.min(h, YEAR_W) / 2;
@@ -5699,13 +5716,24 @@ if (document.readyState === 'loading') {
     // on another mark of its own, so those are the only heights tried.
     marks.sort((a, b) => a.w[1] - b.w[1] || a.w[0] - b.w[0] || b.h - a.h ||
                          (b.x1 - b.x0) - (a.x1 - a.x0));
+    // The band is in the way of them all: a mark over any of its years either
+    // fits whole under it or rests on it or higher.
+    const loopWorks = works.filter(w => LOOP.test(w[2]));
+    const l0 = Math.min(...loopWorks.map(w => w[0]));
+    const l1 = Math.max(...loopWorks.map(w => w[4]));
+    const yearX = y => X0 + (y - y0) * step;
+    const crosses = m => m.x0 < yearX(l1 + 1) + HGAP && yearX(l0) < m.x1 + HGAP;
+    const OVER = BAND_Z + BAND_H + VGAP;
     const placed = [];
     marks.forEach(m => {
       const near = placed.filter(o => m.x0 < o.x1 + HGAP && o.x0 < m.x1 + HGAP);
       const own = near.filter(o => o.w[1] === m.w[1]);
       const floor = near.reduce((f, o) => o.w[1] === m.w[1] ? f : Math.max(f, o.z + o.h + VGAP), 0);
-      const rests = [floor, ...own.map(o => o.z + o.h + VGAP).filter(z => z > floor)].sort((a, b) => a - b);
-      m.z = rests.find(z => own.every(o => z + m.h + VGAP <= o.z || z >= o.z + o.h + VGAP));
+      const cut = crosses(m);
+      const rests = [floor, ...own.map(o => o.z + o.h + VGAP), ...(cut ? [OVER] : [])]
+        .filter(z => z >= floor).sort((a, b) => a - b);
+      m.z = rests.find(z => own.every(o => z + m.h + VGAP <= o.z || z >= o.z + o.h + VGAP) &&
+                            (!cut || z + m.h + VGAP <= BAND_Z || z >= OVER));
       placed.push(m);
     });
     const fieldH = Math.max(...marks.map(m => m.z + m.h));
@@ -5740,7 +5768,8 @@ if (document.readyState === 'loading') {
       const w = Math.max(DEV, snap(m.x1) - x), h = Math.max(DEV, snap(m.cy + m.h / 2) - y);
       m.box = [x, y, w, h];
       dots[m.w[1]].push('<rect x="' + x.toFixed(2) + '" y="' + y.toFixed(2) +
-        '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '"/>');
+        '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '"' +
+        (LOOP.test(m.w[2]) ? ' fill="' + LOOP_RED + '"' : '') + '/>');
       // The blocks in INLAYS carry an image. The work this page is about
       // carries the sculpture itself -- the folded band chapter one draws it
       // as, white straight on its own red block. The image is
@@ -5762,6 +5791,47 @@ if (document.readyState === 'loading') {
           '" preserveAspectRatio="' + inlay.fit + ' meet" pointer-events="none"/>');
       }
     });
+
+    // The band: hatched from the first year of the first of its works to the
+    // last year of the last, and each work a solid stretch of it over its own
+    // years -- the only place it is drawn. Works whose years run into one
+    // another share the band's height between them, one lane each, the
+    // weightiest lowest; a work alone in its years takes the whole height.
+    // The Kontinuität of Frankfurt carries its image here as it did in the field.
+    const loops = loopWorks.map(w => ({ w })).sort((a, b) => a.w[0] - b.w[0] || b.w[5] - a.w[5]);
+    let group = [], reach = -Infinity;
+    const lanes = () => group.forEach(o => { o.of = Math.max(...group.map(g => g.lane)) + 1; });
+    loops.forEach(o => {
+      if (o.w[0] > reach) { lanes(); group = []; }
+      const taken = group.filter(g => g.w[4] >= o.w[0]).map(g => g.lane);
+      o.lane = 0;
+      while (taken.includes(o.lane)) o.lane++;
+      group.push(o);
+      reach = Math.max(reach, o.w[4]);
+    });
+    lanes();
+    const bandY = snap(BASE - BAND_Z - BAND_H);
+    let band = '<g class="bg-band" id="bgBand"><rect class="bg-band-bar" x="' + snap(yearX(l0)).toFixed(2) +
+      '" y="' + bandY.toFixed(2) + '" width="' + (snap(yearX(l1 + 1)) - snap(yearX(l0))).toFixed(2) +
+      '" height="' + BAND_H + '" fill="url(#bgHatch)"/>';
+    loops.forEach(o => {
+      const x = snap(yearX(o.w[0]) + 1), w = Math.max(DEV, snap(yearX(o.w[4] + 1) - 1) - x);
+      const y1 = snap(bandY + BAND_H - o.lane * BAND_H / o.of);
+      const y = snap(bandY + BAND_H - (o.lane + 1) * BAND_H / o.of) + (o.lane + 1 < o.of ? Math.max(DEV, snap(1)) : 0);
+      const h = Math.max(DEV, y1 - y);
+      o.box = [x, y, w, h];
+      band += '<rect class="bg-band-tick" x="' + x.toFixed(2) + '" y="' + y.toFixed(2) +
+        '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '" fill="' + LOOP_RED + '"/>';
+      const inlay = INLAYS.find(i => o.w[0] === i.year && o.w[2] === i.title);
+      if (inlay) {
+        const [ix, iy, iw, ih] = inlay.box(x, y, w, h);
+        band += '<image class="bg-inlay" href="' + inlay.src + '" x="' + ix.toFixed(2) + '" y="' +
+          iy.toFixed(2) + '" width="' + iw.toFixed(2) + '" height="' + ih.toFixed(2) +
+          '" preserveAspectRatio="' + inlay.fit + ' meet" pointer-events="none"/>';
+      }
+    });
+    band += '<rect class="bg-band-pad" x="' + yearX(l0).toFixed(2) + '" y="' + bandY.toFixed(2) +
+      '" width="' + (yearX(l1 + 1) - yearX(l0)).toFixed(2) + '" height="' + BAND_H + '"/></g>';
 
     // Decade guides, and under the field's foot the year they mark with Bill's
     // own age beneath it -- the second row turns the timeline into a life, so a
@@ -5787,7 +5857,7 @@ if (document.readyState === 'loading') {
       field += '<g class="bg-dots" data-dom="' + i + '" fill="' + d.color + '">' +
                dots[i].join('') + '</g>';
     });
-    field += '<rect class="bg-hit" id="bgHit" height="' + (SIDE + 6) + '"/></g>';
+    field += band + '<rect class="bg-hit" id="bgHit" height="' + (SIDE + 6) + '"/></g>';
 
     plot.innerHTML =
       '<svg viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="' +
@@ -5798,7 +5868,9 @@ if (document.readyState === 'loading') {
       // The field arrives through this mask, as a wipe across the years -- see
       // .bg-wipe-rect.
       '<defs><mask id="bgWipe" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">' +
-      '<rect class="bg-wipe-rect" x="0" y="0" height="' + H + '" fill="#fff"/></mask></defs>' +
+      '<rect class="bg-wipe-rect" x="0" y="0" height="' + H + '" fill="#fff"/></mask>' +
+      '<pattern id="bgHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
+      '<line class="bg-hatch" x1="3" y1="0" x2="3" y2="6"/></pattern></defs>' +
       field + '</svg>';
 
     plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
@@ -5807,7 +5879,9 @@ if (document.readyState === 'loading') {
     const hit = plot.querySelector('#bgHit');
     const keyBtns = keysEl.querySelectorAll('.bg-key');
     const runs = plot.querySelectorAll('.bg-dots');
+    const bandEl = plot.querySelector('#bgBand');
     let pointed = null;                        // the mark under the pointer
+    let loopHeld = false, loopAt = null;       // the band under the pointer, and which of its works
 
     // At rest the readout states the encoding and nothing else: what a mark
     // is, then what its two dimensions mean, each part on two of the page's
@@ -5821,9 +5895,23 @@ if (document.readyState === 'loading') {
     // every other domain's marks are gone rather than held back, so the field
     // answers only for the one domain left in it. The readout follows: the
     // work under the pointer, else the domain asked for, else the encoding.
+    // The band outranks none of it: a work or a label under the pointer still
+    // has the readout, and otherwise the band names the work at the year under
+    // the pointer, or counts its works.
     function paint() {
       const asked = held ?? pinned;
       const lit = asked ?? (pointed ? pointed.w[1] : null);
+      // The band is sculpture's, and goes the way sculpture's marks go: out of
+      // the field under another domain's filter, held back while another
+      // domain is lit.
+      const scu = domains.findIndex(d => d.key === 'sculpture');
+      const bandOff = pinned !== null && scu !== asked;
+      const bandDim = pinned === null && lit !== null && scu !== lit;
+      const loop = !bandOff && !bandDim && (loopHeld || loopPinned);
+      svg.classList.toggle('inf-on', loop);
+      bandEl.classList.toggle('on', loopPinned);
+      bandEl.classList.toggle('off', bandOff);
+      bandEl.classList.toggle('dim', bandDim);
       runs.forEach(g => {
         const d = +g.dataset.dom;
         g.classList.toggle('off', pinned !== null && d !== asked);
@@ -5833,10 +5921,16 @@ if (document.readyState === 'loading') {
         k.classList.toggle('dim', lit !== null && +k.dataset.dom !== lit);
       });
       keyBtns.forEach(k => k.setAttribute('aria-pressed', +k.dataset.dom === pinned ? 'true' : 'false'));
-      hit.classList.toggle('on', !!pointed && held === null);
-      const rest = !(pointed && held === null) && asked === null;
+      hit.classList.toggle('on', held === null && (!!pointed || (loop && !!loopAt)));
+      const rest = !(pointed && held === null) && asked === null && !loop;
       if (pointed && held === null) say(pointed.w);
       else if (asked !== null) sum(asked);
+      else if (loop && loopAt) say(loopAt.w);
+      else if (loop) {
+        read.style.color = '';
+        read.innerHTML = '<b>' + dates(l0, l1) + '</b><span class="rd-title">one idea for sixty years: ' +
+          loops.length + ' works, from the first endless ribbon to the last</span>';
+      }
       else { read.innerHTML = REST; read.style.color = ''; }
       read.classList.toggle('is-rest', rest);
     }
@@ -5845,7 +5939,7 @@ if (document.readyState === 'loading') {
     // the keys, so the line says which one it belongs to by taking its colour
     // rather than by repeating its name.
     function say(work) {
-      read.style.color = legible(domains[work[1]].color);
+      read.style.color = legible(hue(work, domains));
       read.innerHTML = '<b>' + dates(work[0], work[4]) + '</b><span class="rd-title">' +
         esc(work[2]) + '</span>';
     }
@@ -5891,7 +5985,7 @@ if (document.readyState === 'loading') {
         hit.setAttribute('y', (by - 3).toFixed(2));
         hit.setAttribute('width', (bw + 6).toFixed(2));
         hit.setAttribute('height', (bh + 6).toFixed(2));
-        hit.setAttribute('stroke', domains[m.w[1]].color);
+        hit.setAttribute('stroke', hue(m.w, domains));
       }
       paint();
     });
@@ -5899,6 +5993,30 @@ if (document.readyState === 'loading') {
       if (held !== null) return;
       pointed = null; paint();
     });
+
+    // The band: under the pointer it holds the field back and names whichever
+    // of its works the pointer is on, outlined as a mark in the field is -- each
+    // answering for its own lane and years; between works it says what the band is.
+    // Pressed, it keeps the field held back until it is pressed again.
+    bandEl.addEventListener('pointermove', ev => {
+      const r = svg.getBoundingClientRect(), k = W / r.width;
+      const ux = (ev.clientX - r.left) * k, uy = (ev.clientY - r.top) * k;
+      const o = loops.find(o => ux >= o.box[0] - 1 && ux <= o.box[0] + o.box[2] + 1 &&
+                                uy >= o.box[1] - 1 && uy <= o.box[1] + o.box[3] + 1) || null;
+      if (loopHeld && o === loopAt) return;
+      loopHeld = true; loopAt = o;
+      if (o) {
+        const [bx, by, bw, bh] = o.box;
+        hit.setAttribute('x', (bx - 3).toFixed(2));
+        hit.setAttribute('y', (by - 3).toFixed(2));
+        hit.setAttribute('width', (bw + 6).toFixed(2));
+        hit.setAttribute('height', (bh + 6).toFixed(2));
+        hit.setAttribute('stroke', '#fff');
+      }
+      paint();
+    });
+    bandEl.addEventListener('pointerleave', () => { loopHeld = false; loopAt = null; paint(); });
+    bandEl.addEventListener('click', () => { loopPinned = !loopPinned; paint(); });
 
     // A press toggles the filter: pressing a key filters the field to its domain, pressing it again lets every domain
     // back, and pressing another moves the filter there. The names are

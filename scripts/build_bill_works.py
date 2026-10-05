@@ -57,7 +57,7 @@ TYPO_DEFAULT = os.path.expanduser('~/Downloads/works_extracted_v5 (1).xlsx')
 # sculpture keeps the red it has always had. The three smallest are chosen to
 # be told apart at a glance rather than ranked: architecture orange, drawings
 # a light sky blue, well clear of graphic design's dark one, product design a
-# pale red, lighter and softer than sculpture's. All
+# green, the one colour nothing else in the field comes near. All
 # three stand well off the black, so a handful of their marks still reads.
 # Measured against #050505:
 #
@@ -66,7 +66,7 @@ TYPO_DEFAULT = os.path.expanduser('~/Downloads/works_extracted_v5 (1).xlsx')
 #     111  sculpture    #E41802   4.30:1
 #      23  drawings     #6CCBFF  11.28:1
 #      20  architecture #FE8C01   8.70:1
-#      16  product      #FF9E9E  10.32:1
+#      16  product      #5FD46B  10.6:1
 #
 # The two darkest are below 3:1 on purpose, as marks; where the page sets type
 # in a domain's colour it lifts a colour that dark until the type can be read.
@@ -76,7 +76,7 @@ DOMAINS = [
     ('sculpture',    'sculpture',                 '#E41802'),
     ('drawing',      'drawings',                  '#6CCBFF'),
     ('architecture', 'architecture',              '#FE8C01'),
-    ('product',      'product design',            '#FF9E9E'),
+    ('product',      'product design',            '#5FD46B'),
 ]
 IDX = {k: i for i, (k, _, _) in enumerate(DOMAINS)}
 
@@ -116,6 +116,14 @@ IN_FLEISCHMANN = [
 # one left out. (Its 1949 Pevsner, Vantongerloo and Bill poster is listed twice
 # too, and both entries are already in IN_FLEISCHMANN.)
 TWICE = [(1960, 'Poster for the exhibition Dokumentation über Marcel Duchamp')]
+# Titles the art set gets wrong, by year and the title as it stands there, and
+# what they should say. The Endless Ribbon shown in 1942 is version III --
+# version II of 1937, sawn apart, shortened to 150 cm and given a lenticular
+# cross-section -- where the art set repeats "Version II".
+RETITLED = {
+    (1942, 'sculpture: «die unendliche schleife» Version II'):
+        'sculpture: «die unendliche schleife» Version III',
+}
 
 
 def sort_row(domain, row):
@@ -460,6 +468,8 @@ def main():
         if any(y == int(year) and title.startswith(t) for y, t in TWICE):
             dropped['listed twice in the art set'] += 1
             continue
+        if (int(year), title) in RETITLED:
+            row = dict(row, Title=RETITLED[(int(year), title)])
         tier = art_tier(domain, row, int(year))
         works.append([int(year), IDX[domain], clean(row.get('Title')), tier,
                       year_range(row.get('Year'), int(year)), art_weight(domain, row, tier)])

@@ -4540,9 +4540,21 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* One mark to a work, square at the corners, its edges on whole pixels -- the
    script snaps them there, and this keeps the browser from blurring them. */
 .bg-dots rect { shape-rendering: crispEdges; }
-.bg-hit { fill: none; stroke: #fff; stroke-width: 1.5; opacity: 0; transition: opacity 0.15s ease; }
+.bg-hit { pointer-events: none; fill: none; stroke: #fff; stroke-width: 1.5; opacity: 0; transition: opacity 0.15s ease; }
 .bg-hit.on { opacity: 1; }
 
+/* The band through the field: the endless ribbon and what came of it, hatched
+   over the years Bill kept at it and solid over the years of each work. Under
+   the pointer or pressed it holds every domain back. Its works are drawn on
+   it and nowhere else. */
+.bg-hatch { stroke: #fff; stroke-width: 1.5; stroke-opacity: 0.55; }
+.bg-band { cursor: pointer; transition: opacity 0.4s ease; }
+.bg-band.dim { opacity: 0.1; }
+.bg-band.off { opacity: 0; pointer-events: none; }
+.bg-band-tick { shape-rendering: crispEdges; }
+.bg-band-pad { fill: transparent; }
+.bg-band.on .bg-hatch { stroke-opacity: 1; }
+.inf-on .bg-dots { opacity: 0.1; }
 /* Focus: one domain lit, the rest held back far enough to read through. A
    filter goes further and takes the rest out of the field altogether. */
 .bg-dots.dim { opacity: 0.1; }
