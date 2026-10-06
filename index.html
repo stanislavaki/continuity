@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=235" />
+<link rel="stylesheet" href="styles.css?v=240" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -45,9 +45,10 @@
     <span class="crail-bar" aria-hidden="true">
       <span class="crail-seg"><span class="crail-fill"></span></span>
       <span class="crail-seg" data-crail-from="stroobant"><span class="crail-fill"></span></span>
-      <span class="crail-seg" data-crail-from="granite-trip"><span class="crail-fill"></span></span>
       <span class="crail-seg" data-crail-from="sculpting"><span class="crail-fill"></span></span>
       <span class="crail-seg" data-crail-from="sculpture-trip"><span class="crail-fill"></span></span>
+      <span class="crail-seg" data-crail-from="rotterdam-frankfurt"><span class="crail-fill"></span></span>
+      <span class="crail-seg" data-crail-from="frankfurt"><span class="crail-fill"></span></span>
     </span>
   </button>
 
@@ -56,23 +57,24 @@
       <!-- Laid out on the rail's own measure and built as the rail is, so each
            title stands level with its part of the rail — see .crail-nav. A row
            per bar and a link per part: the making's bar is cut at its
-           sub-chapters, so its row holds five separate items, each linking to
+           sub-chapters, so its row holds six separate items, each linking to
            its own sub-chapter (the first to the chapter's opening, which it
            starts with). A link's number shows for the part you are in,
            and for the others only while the pointer is on them. Below 901px,
            where the + button opens this list without the rail, the making's
-           title stands once over its five sub-chapters, unnumbered, and they
+           title stands once over its six sub-chapters, unnumbered, and they
            drop it — see .crail-chapter. -->
-      <div class="crail-row"><a href="#top" class="crail-link" style="--i:0" data-crail-close><span class="crail-num" aria-hidden="true">1</span><span class="crail-txt" data-i18n="nav.intro">Intro</span></a></div>
-      <div class="crail-row"><a href="#ch1" class="crail-link" style="--i:1" data-crail-close><span class="crail-num" aria-hidden="true">2</span><span class="crail-txt">Max Bill</span></a></div>
+      <div class="crail-row"><a href="#top" class="crail-link" style="--i:0" data-crail-close><span class="crail-num" aria-hidden="true">1</span><span class="crail-txt" data-i18n="nav.hero">Hero: the sculpture</span></a></div>
+      <div class="crail-row"><a href="#ch1" class="crail-link" style="--i:1" data-crail-close><span class="crail-num" aria-hidden="true">2</span><span class="crail-txt" data-i18n="nav.artist">The artist: Max Bill</span></a></div>
       <div class="crail-row"><a href="#ch2" class="crail-link" style="--i:2" data-crail-close><span class="crail-num" aria-hidden="true">3</span><span class="crail-txt" data-i18n="nav.math">Kontinuität = an infinity loop?</span></a></div>
       <div class="crail-row">
         <a href="#ch3" class="crail-link crail-chapter" style="--i:3" data-crail-close><span class="crail-num" aria-hidden="true"></span><span class="crail-txt" data-i18n="nav.making">The story of the making</span></a>
-        <a href="#ch3" class="crail-link" style="--i:4" data-crail-close><span class="crail-num" aria-hidden="true">4</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span>Deutsche Bank</span></span></a>
-        <a href="#stroobant" class="crail-link" style="--i:5" data-crail-close><span class="crail-num" aria-hidden="true">5</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span>Dominique Stroobant</span></span></a>
-        <a href="#granite-trip" class="crail-link" style="--i:6" data-crail-close><span class="crail-num" aria-hidden="true">6</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.granite-trip">Granite Trip</span></span></a>
-        <a href="#sculpting" class="crail-link" style="--i:7" data-crail-close><span class="crail-num" aria-hidden="true">7</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.sculpting">Sculpting</span></span></a>
-        <a href="#sculpture-trip" class="crail-link" style="--i:8" data-crail-close><span class="crail-num" aria-hidden="true">8</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.sculpture-trip">Sculpture Trip</span></span></a>
+        <a href="#ch3" class="crail-link" style="--i:4" data-crail-close><span class="crail-num" aria-hidden="true">4.1</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.frankfurt-germany">Frankfurt, Germany</span></span></a>
+        <a href="#stroobant" class="crail-link" style="--i:5" data-crail-close><span class="crail-num" aria-hidden="true">4.2</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.sardinia-italy">Sardinia, Italy</span></span></a>
+        <a href="#sculpting" class="crail-link" style="--i:6" data-crail-close><span class="crail-num" aria-hidden="true">4.3</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.carrara-workshop">Carrara, workshop</span></span></a>
+        <a href="#sculpture-trip" class="crail-link" style="--i:7" data-crail-close><span class="crail-num" aria-hidden="true">4.4</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.gibraltar-rotterdam">Transport: Gibraltar → Rotterdam</span></span></a>
+        <a href="#rotterdam-frankfurt" class="crail-link" style="--i:8" data-crail-close><span class="crail-num" aria-hidden="true">4.5</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.rotterdam-frankfurt">Rotterdam → Frankfurt</span></span></a>
+        <a href="#frankfurt" class="crail-link" style="--i:9" data-crail-close><span class="crail-num" aria-hidden="true">4.6</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.frankfurt">Frankfurt</span></span></a>
       </div>
     </nav>
   </div>
@@ -234,12 +236,12 @@
     </div>
   </section>
 
-  <!-- CHAPTER 2 · Max Bill -->
+  <!-- CHAPTER 2 · The artist: Max Bill -->
   <section class="chapter light-section" id="ch1" style="padding-bottom:70px;">
     <div class="container">
       <div class="chapter-head" style="margin-bottom:40px;">
         <div class="chapter-num">2</div>
-        <h2 class="chapter-title">Max Bill</h2>
+        <h2 class="chapter-title">The artist: Max Bill</h2>
       </div>
     </div>
   </section>
@@ -422,20 +424,21 @@
   </section>
 
   <!-- CHAPTER 4 · The story of the making
-       One chapter where there were three (Deutsche Bank, Dominique Stroobant,
-       the journey), told on one map. The map is pinned behind the whole
+       Told by place and year, on one map. The map is pinned behind the whole
        chapter and the story passes over it in layers: each part comes up over
        the map on a ground of its own, and when it has gone by the map is there
        again and the camera moves on to where the next part happens.
 
+         4, the title          (black, alone)
          the globe            -> down onto Frankfurt
-         4 Deutsche Bank       (black)
+         4.1 Frankfurt, Germany, 1982     the bank (black)
          Frankfurt            -> out, and down onto Sardinia
-         5 Dominique Stroobant (paper)
-         6 Granite Trip        (black)
+         4.2 Sardinia, Italy, 1983        Stroobant (paper), the granite (black)
          Sardinia             -> north with the route to Marina di Carrara
-         7 Sculpting           (white)
-         8 Sculpture Trip      (on the map itself, to Rotterdam and Frankfurt)
+         4.3 Carrara, workshop, 1983-1986 (white)
+         4.4 Transport: Gibraltar -> Rotterdam, 1986  } on the map itself,
+         4.5 Rotterdam -> Frankfurt, 1986             } heads and accounts in
+         4.6 Frankfurt, 1986 / 2026                   } one column
 
        The stretches where the map shows are .making-window: empty, and as tall
        as the camera's move needs to be scrolled through. -->
@@ -451,27 +454,31 @@
       <p class="map-reveal-cap" id="mapRevealCap" aria-hidden="true">Walk around&nbsp;— a Gaussian splatting scene</p>
     </aside>
 
-    <!-- The chapter opens on the whole globe, its title over it; scrolled on,
-         the globe comes down onto Frankfurt, and only then does 4, Deutsche Bank, arrive. -->
-    <section class="chapter dark-section making-window making-open" id="ch3" data-making-window="open">
+    <!-- The chapter opens on its number and title, alone on the black and
+         standing in the middle of the screen. Scrolled on, the black goes up
+         and the whole globe comes in under it; then the globe comes down onto
+         Frankfurt, and only then does 4.1 arrive. -->
+    <section class="chapter dark-section making-title" id="ch3">
       <div class="container">
         <div class="chapter-head">
+          <div class="chapter-num">4</div>
           <h2 class="chapter-title">The story of the making</h2>
         </div>
       </div>
     </section>
+    <section class="dark-section making-window making-open" data-making-window="open" aria-hidden="true"></section>
 
-    <!-- 4 · Deutsche Bank: Frankfurt, 1982 -->
+    <!-- 4.1 · Frankfurt, Germany, 1982: the commission, Deutsche Bank -->
     <section class="dark-section db-section making-head" id="deutsche-bank">
       <div class="container">
         <div class="journey-sub">
           <header class="sub-head">
-            <div class="sub-num">4</div>
+            <div class="sub-num">4.1</div>
             <div class="sub-head-text">
-              <h3 class="sub-title">Deutsche Bank</h3>
+              <h3 class="sub-title">Frankfurt, Germany</h3>
             </div>
           </header>
-          <p class="sub-dates">Frankfurt am Main, 1982</p>
+          <p class="sub-dates">1982</p>
         </div>
       </div>
     </section>
@@ -575,16 +582,18 @@
          pulls out and comes down onto Sardinia. -->
     <section class="dark-section making-window" data-making-window="sardinia" aria-hidden="true"></section>
 
-    <!-- 5 · Dominique Stroobant: the story in Sardinia starts with him -->
+    <!-- 4.2 · Sardinia, Italy, 1983: the camera is on the island, and the
+         story there starts with Dominique Stroobant -->
     <section class="paper-section making-head" id="stroobant" style="color:#000;background:#fff;">
       <div class="container">
         <div class="journey-sub">
           <header class="sub-head">
-            <div class="sub-num">5</div>
+            <div class="sub-num">4.2</div>
             <div class="sub-head-text">
-              <h3 class="sub-title">Dominique Stroobant</h3>
+              <h3 class="sub-title">Sardinia, Italy</h3>
             </div>
           </header>
+          <p class="sub-dates">1983</p>
         </div>
       </div>
     </section>
@@ -631,11 +640,12 @@
       </div>
     </section>
 
-    <!-- The journey: Granite Trip, Sculpting, Sculpture Trip. Its ground is the
+    <!-- The journey: the granite (4.2, continued), the workshop (4.3) and the
+         transport (4.4-4.6). Its ground is the
          chapter's map rather than a black of its own, so the section is a sheet
          that lets the map through wherever a sub-chapter does not cover it:
          between the granite's crossing and the workshop, and all through the
-         Sculpture Trip, whose accounts ride straight on the map. -->
+         transport, whose accounts ride straight on the map. -->
     <section class="journey dark-section" id="journey">
       <!-- The gallery's button: four squares on the middle of the screen's
            right edge, arriving with the quarry, the first photograph across the
@@ -651,19 +661,12 @@
       </div>
       <div class="container">
 
-        <!-- ============== SUB-CHAPTER 1 · GRANITE TRIP ==============
-             No map here: photographs run down the left half, the account down
-             the right, on the same 4-column article grid the chapters above use. -->
+        <!-- ============== 4.2, CONTINUED · THE GRANITE ==============
+             No head of its own: the granite goes on from Stroobant's paper,
+             under 4.2's. No map here: photographs run down the left half, the
+             account down the right, on the same 4-column article grid the
+             chapters above use. -->
         <div class="journey-sub" id="granite-trip">
-          <header class="sub-head">
-            <div class="sub-num">6</div>
-            <div class="sub-head-text">
-              <h3 class="sub-title">Granite Trip</h3>
-            </div>
-          </header>
-
-          <p class="sub-dates">October 1983&nbsp;— February 1984</p>
-
           <div class="article-grid">
             <!-- Lead paragraphs, above the opening image. -->
             <div class="article-body granite-lead">
@@ -758,20 +761,19 @@
              map's track in the journey script. -->
         <div class="making-window" data-making-window="crossing" aria-hidden="true"></div>
 
-        <!-- ============== SUB-CHAPTER 2 · SCULPTING ============== -->
+        <!-- ============== 4.3 · CARRARA, WORKSHOP ============== -->
         <!-- The one lit room in the chapter: white ground, black ink. A
              <section> rather than a <div> so the scroll handler that themes the
              header and cursor sees it and flips them to their light state. -->
         <section class="journey-sub light-section" id="sculpting">
           <header class="sub-head">
-            <div class="sub-num">7</div>
+            <div class="sub-num">4.3</div>
             <div class="sub-head-text">
-              <h3 class="sub-title">Sculpting</h3>
-              <p class="sub-route"><span>Marina di Carrara</span></p>
+              <h3 class="sub-title">Carrara, workshop</h3>
             </div>
           </header>
 
-          <p class="sub-dates">February 1984&nbsp;— June 1986</p>
+          <p class="sub-dates">1983–1986</p>
 
           <!-- Intro sits in the right half, on the same article grid as the
                body text elsewhere. The numbered list below keeps its own
@@ -814,16 +816,20 @@
           </div>
         </section>
 
-        <!-- ============== SUB-CHAPTER 3 · SCULPTURE TRIP ============== -->
+        <!-- ============== 4.4-4.6 · THE TRANSPORT ==============
+             Three sub-chapters in one, because the camera's clock is one
+             column: 4.4's head opens it, and 4.5's and 4.6's stand in the
+             column itself, each set against the move to its own place -- see
+             .trip-part. -->
         <div class="journey-sub" id="sculpture-trip">
           <header class="sub-head">
-            <div class="sub-num">8</div>
+            <div class="sub-num">4.4</div>
             <div class="sub-head-text">
-              <h3 class="sub-title">Sculpture Trip</h3>
+              <h3 class="sub-title">Transport: Gibraltar → Rotterdam</h3>
             </div>
           </header>
 
-          <p class="sub-dates">August&nbsp;— September 1986</p>
+          <p class="sub-dates">1986</p>
 
           <div class="journey-grid">
             <!-- The map these ride over is the chapter's own, pinned behind the
@@ -847,27 +853,48 @@
                    script: there is nothing left to read back and pin. -->
               <article class="stop" data-stop="1"></article>
 
-              <!-- The four accounts read as one passage rather than a caption
+              <!-- 4.4's two accounts read as one passage rather than a caption
                    apiece: the stops are marks on a globe now, so there is nothing
                    in the column for a caption to sit beside. They pass directly
                    after the first stop — the loading in Carrara — which is where
-                   the reader has just been told what they are looking at and has
-                   the whole passage still ahead of them. Source order follows the
-                   column, so this sits here and not at the end. -->
+                   the reader has just been told what they are looking at. Source
+                   order follows the column, so this sits here and not at the end.
+                   4.5's and 4.6's accounts come under their own heads, further
+                   down. -->
               <div class="stop-caps">
               <p class="stop-cap" data-cap-for="1">Between 4 and 8 August 1986, the finished <strong>Continuity</strong> was mounted into a sturdy steel transport frame in Carrara and loaded onto the cargo ship <strong>MV Kupari</strong>.</p>
               <p class="stop-cap" data-cap-for="2">The Kupari sailed via the <strong>Strait of Gibraltar</strong>, west of Portugal, across the <strong>Bay of Biscay</strong> and through the <strong>English Channel</strong> to the North Sea&nbsp;— a 2,800 km open-water passage taking just over two weeks.</p>
-              <p class="stop-cap" data-cap-for="3">After unloading in <strong>Rotterdam</strong>, the sculpture was transferred to a river barge and pushed up the <strong>Rhine</strong> and <strong>Main</strong> rivers toward the German interior.</p>
-              <p class="stop-cap" data-cap-for="4">In Frankfurt, a <strong>Colonia crane</strong> moved from the Osthafen to Taunusanlage 12 lifted the 80-tonne sculpture above the trees and into place beside the Deutsche Bank towers the following morning.</p>
               </div>
 
 
               <article class="stop" data-stop="2"></article>
 
+              <!-- 4.5 · Rotterdam → Frankfurt -->
+              <div class="trip-part" id="rotterdam-frankfurt" data-part="5">
+                <header class="sub-head">
+                  <div class="sub-num">4.5</div>
+                  <div class="sub-head-text">
+                    <h3 class="sub-title">Rotterdam → Frankfurt</h3>
+                  </div>
+                </header>
+                <p class="sub-dates">1986</p>
+              </div>
               <figure class="stop-lead" data-lead-for="3"></figure>
+              <p class="stop-cap" data-cap-for="3">After unloading in <strong>Rotterdam</strong>, the sculpture was transferred to a river barge and pushed up the <strong>Rhine</strong> and <strong>Main</strong> rivers toward the German interior.</p>
               <article class="stop" data-stop="3"></article>
 
+              <!-- 4.6 · Frankfurt -->
+              <div class="trip-part" id="frankfurt" data-part="6">
+                <header class="sub-head">
+                  <div class="sub-num">4.6</div>
+                  <div class="sub-head-text">
+                    <h3 class="sub-title">Frankfurt</h3>
+                  </div>
+                </header>
+                <p class="sub-dates">1986 / 2026</p>
+              </div>
               <figure class="stop-lead" data-lead-for="4"></figure>
+              <p class="stop-cap" data-cap-for="4">In Frankfurt, a <strong>Colonia crane</strong> moved from the Osthafen to Taunusanlage 12 lifted the 80-tonne sculpture above the trees and into place beside the Deutsche Bank towers the following morning.</p>
               <article class="stop" data-stop="4"></article>
 
             </div>
@@ -1082,32 +1109,44 @@ const I18N = {
   de: {
     'lang.label': 'Sprache',
     'nav.contents': 'Inhalt',
-    'nav.intro': 'Einführung',
+    'nav.hero': 'Held: die Skulptur',
+    'nav.artist': 'Der Künstler: Max Bill',
     'nav.math': 'Kontinuität = eine unendliche Schleife?',
     'nav.making': 'Die Geschichte der Entstehung',
-    'nav.granite-trip': 'Granittransport',
-    'nav.sculpting': 'Bildhauerei',
-    'nav.sculpture-trip': 'Skulpturentransport',
+    'nav.frankfurt-germany': 'Frankfurt, Deutschland',
+    'nav.sardinia-italy': 'Sardinien, Italien',
+    'nav.carrara-workshop': 'Carrara, Werkstatt',
+    'nav.gibraltar-rotterdam': 'Transport: Gibraltar → Rotterdam',
+    'nav.rotterdam-frankfurt': 'Rotterdam → Frankfurt',
+    'nav.frankfurt': 'Frankfurt',
   },
   it: {
     'lang.label': 'Lingua',
     'nav.contents': 'Indice',
-    'nav.intro': 'Introduzione',
+    'nav.hero': 'Eroe: la scultura',
+    'nav.artist': 'L’artista: Max Bill',
     'nav.math': 'Kontinuität = un nastro senza fine?',
     'nav.making': 'La storia della realizzazione',
-    'nav.granite-trip': 'Il trasporto del granito',
-    'nav.sculpting': 'La lavorazione',
-    'nav.sculpture-trip': 'Il trasporto della scultura',
+    'nav.frankfurt-germany': 'Francoforte, Germania',
+    'nav.sardinia-italy': 'Sardegna, Italia',
+    'nav.carrara-workshop': 'Carrara, laboratorio',
+    'nav.gibraltar-rotterdam': 'Trasporto: Gibilterra → Rotterdam',
+    'nav.rotterdam-frankfurt': 'Rotterdam → Francoforte',
+    'nav.frankfurt': 'Francoforte',
   },
   es: {
     'lang.label': 'Idioma',
     'nav.contents': 'Índice',
-    'nav.intro': 'Introducción',
+    'nav.hero': 'Héroe: la escultura',
+    'nav.artist': 'El artista: Max Bill',
     'nav.math': '¿Kontinuität = una cinta sin fin?',
     'nav.making': 'La historia de la realización',
-    'nav.granite-trip': 'El transporte del granito',
-    'nav.sculpting': 'El tallado',
-    'nav.sculpture-trip': 'El transporte de la escultura',
+    'nav.frankfurt-germany': 'Fráncfort, Alemania',
+    'nav.sardinia-italy': 'Cerdeña, Italia',
+    'nav.carrara-workshop': 'Carrara, taller',
+    'nav.gibraltar-rotterdam': 'Transporte: Gibraltar → Róterdam',
+    'nav.rotterdam-frankfurt': 'Róterdam → Fráncfort',
+    'nav.frankfurt': 'Fráncfort',
   },
 };
 
@@ -1221,6 +1260,10 @@ function crailInit() {
   return {
     rail, panel,
     ids: ['top', 'ch1', 'ch2', 'ch3'],
+    // How far apart the open list's titles stand at the least, in their own
+    // size: clear of one another, a quarter of the type apart -- about what
+    // they leave one another where they have room. See crailShares().
+    pitch: 1.25,
     bars,
     // The parts the strokes are drawn in, in page order, with the fill each
     // carries and the chapter each belongs to.
@@ -1290,26 +1333,47 @@ function crailPaint(st) {
   st.links.forEach((a, n) => a.classList.toggle('is-hover', n === pointed));
 }
 
-// ---- Type to fit -----------------------------------------------------------
+// ---- Room for every title -------------------------------------------------
 // The open list stands each title level with its part of the rail, so two
-// titles are only as far apart as their parts' centres, and the nearest two can
-// be closer than the type ramp is tall. The type is held to 90% of that
-// spacing, which keeps a descender in one title clear of the capitals in the
-// next. Read off the parts themselves: the links' boxes are laid out to match.
-function crailFit(st) {
-  let pitch = Infinity;
-  let prev = null;
-  for (const g of st.segs) {
-    const r = g.getBoundingClientRect();
-    const mid = r.top + r.height / 2;
-    if (prev !== null) pitch = Math.min(pitch, mid - prev);
-    prev = mid;
+// titles are only as far apart as their parts' centres. crailShares() draws no
+// part shorter than the titles' pitch, so that is always far enough -- except
+// on a window too short to give every part that much, where the parts are
+// squeezed below it. The type keeps its size even then; a title that would
+// crowd its neighbour is moved off its part instead, by as little as it can
+// be. Crowded titles are set as a run at the pitch, and each run is centred on
+// the middles of the parts it stands for, so it stays as near them as it can.
+// A title with room stays level with its part. Read off the parts themselves:
+// the links' boxes are laid out to match, and --shift moves a link off its box.
+function crailSpread(st) {
+  const want = st.segs.map(g => { const r = g.getBoundingClientRect(); return r.height ? r.top + r.height / 2 : NaN; });
+  // Nothing to stand level with while the rail is not laid out (display: none
+  // on narrow screens), where the list is a plain column.
+  if (want.some(Number.isNaN)) {
+    st.links.forEach(a => a.style.removeProperty('--shift'));
+    return;
   }
-  // Nothing to fit to while the rail is not laid out (display: none on narrow
-  // screens), and a 0px type written then would outlast it.
-  if (Number.isFinite(pitch) && pitch > 0) {
-    st.nav.style.setProperty('--crail-fit', (pitch * 0.9).toFixed(1) + 'px');
-  }
+  const pitch = parseFloat(getComputedStyle(st.links[0]).fontSize) * st.pitch;
+  // Runs of titles set at that pitch, merged as they meet. A run's `sum` is
+  // what its first title's centre would be for each title in it, if that one
+  // stood on its own part, added up: over `n`, the run's first centre.
+  const runs = [];
+  want.forEach((y, i) => {
+    runs.push({ first: i, n: 1, sum: y });
+    for (;;) {
+      const b = runs[runs.length - 1], a = runs[runs.length - 2];
+      if (!a || a.sum / a.n + a.n * pitch <= b.sum / b.n) break;
+      a.sum += b.sum - b.n * a.n * pitch;
+      a.n += b.n;
+      runs.pop();
+    }
+  });
+  runs.forEach(r => {
+    const top = r.sum / r.n;
+    for (let k = 0; k < r.n; k++) {
+      const i = r.first + k;
+      st.links[i].style.setProperty('--shift', (top + k * pitch - want[i]).toFixed(1) + 'px');
+    }
+  });
 }
 
 // Chapter tops are measured from the viewport, not offsetTop: the making's journey
@@ -1333,22 +1397,51 @@ function crailMeasure(st, docH) {
     g.dataset.crailFrom ? topOf(g.dataset.crailFrom) : st.tops[st.segBar[n]]);
   const foot = document.querySelector('.site-footer');
   st.end = foot ? Math.round(foot.getBoundingClientRect().top + s) : docH;
-  // The open list's rows and links take the same figures as the bars and parts
-  // they stand for, which is what sets each title level with its part of the
+  // What each part is drawn at, and each bar as the sum of its parts. The open
+  // list's rows and links take the same figures as the bars and parts they
+  // stand for, which is what sets each title level with its part of the
   // stroke — see .crail-nav.
+  const px = crailShares(st, st.segs.map((g, n) => crailLen(st.segTops, n, st.end)));
+  st.segs.forEach((g, n) => {
+    for (const el of [g, st.links[n]]) if (el) el.style.setProperty('--len', px[n].toFixed(2));
+  });
   st.bars.forEach((b, i) => {
-    const len = crailLen(st.tops, i, st.end);
+    const len = px.reduce((sum, v, n) => (st.segBar[n] === i ? sum + v : sum), 0);
     for (const el of [b, st.rows[i]]) {
       if (!el) continue;
-      el.style.setProperty('--len', len);
+      el.style.setProperty('--len', len.toFixed(2));
       el.style.setProperty('--parts', b.children.length);
     }
   });
-  st.segs.forEach((g, n) => {
-    const len = crailLen(st.segTops, n, st.end);
-    for (const el of [g, st.links[n]]) if (el) el.style.setProperty('--len', len);
-  });
   st.docH = docH;
+}
+
+// How long each part of the rail is drawn, in px: to scale with its length to
+// scroll, except that none is drawn shorter than the open list's titles are
+// spaced. A title stands level with the middle of its part, so a part that
+// long has room in front of it for its own title whatever its neighbours are
+// -- 4.5, the Rhine, is a screen or two of a page some sixty long, and drawn
+// to scale it would be a few pixels, its title pushed off it by the titles
+// either side. A part that would be shorter is held at that length, and the
+// rest share what is left to scale, so a short part costs its neighbours a
+// little of their length rather than its title its place.
+function crailShares(st, lens) {
+  const cs = getComputedStyle(st.rail);
+  const cut = parseFloat(getComputedStyle(st.bars[0]).rowGap) || 0;
+  const room = parseFloat(cs.height)
+    - (st.bars.length - 1) * (parseFloat(cs.rowGap) || 0)
+    - (st.segs.length - st.bars.length) * cut;
+  const least = parseFloat(getComputedStyle(st.links[0]).fontSize) * st.pitch;
+  if (!(room > 0) || !(least > 0)) return lens.slice();
+  const held = lens.map(() => false);
+  for (;;) {
+    let free = room, rest = 0;
+    lens.forEach((l, n) => { if (held[n]) free -= least; else rest += l; });
+    const k = rest > 0 ? Math.max(0, free) / rest : 0;
+    let more = false;
+    lens.forEach((l, n) => { if (!held[n] && l > 0 && l * k < least) { held[n] = true; more = true; } });
+    if (!more) return lens.map((l, n) => (held[n] ? least : l * k));
+  }
 }
 
 // Where span i of a run of start offsets stops: the next one's start, or — for
@@ -1374,8 +1467,8 @@ function crailSync(scrollTop, docH) {
   // onScroll() has already read it.
   if (st.docH !== docH) {
     crailMeasure(st, docH);
-    // An open list is laid out on those figures, so its type is fitted again.
-    if (st.panel.classList.contains('is-open')) crailFit(st);
+    // An open list is laid out on those figures, so its titles are spread again.
+    if (st.panel.classList.contains('is-open')) crailSpread(st);
   }
 
   // Read at the viewport's midpoint, the same probe the body theme uses, so the
@@ -1427,7 +1520,7 @@ function crailSync(scrollTop, docH) {
     // the pointer leave.
     if (!open) st.itemHover = null;
     crailPaint(st);
-    if (open) crailFit(st);
+    if (open) crailSpread(st);
   }
   const crailClose = () => crailOpen(false);
 
@@ -1542,12 +1635,12 @@ function crailSync(scrollTop, docH) {
   // Chapter tops and lengths shift with the layout, and the rail's own first
   // paint needs a measured pass — onScroll() re-measures whenever the document
   // height moves. The rail's length follows the viewport's height, so an open
-  // list has its type fitted again.
+  // list has its titles spread again.
   window.addEventListener('resize', () => {
     st.docH = -1;
     onScroll();
     crailPaint(st);
-    if (panel.classList.contains('is-open')) crailFit(st);
+    if (panel.classList.contains('is-open')) crailSpread(st);
   });
   onScroll();
   crailPaint(st);
@@ -3082,8 +3175,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
       // on, so the reader sees where they were before being taken somewhere
       // else; and the camera has landed REST before the next layer's top edge
       // comes up from the bottom, so that layer arrives over a still map. The
-      // opening's window has its head in it, and the globe holds for HEAD of a
-      // screen while that is read.
+      // opening's window comes up under the chapter's title, which stands on
+      // its own black, so the camera does not wait on a layer clearing: the
+      // globe is held whole for HEAD of a screen once the black has gone.
       const LEAD = 0.45, REST = 0.15, HEAD = 0.2;
       // Each keyframe owns a span, not a point. Two of the Sculpture Trip's
       // four states are cued by a pair of boxes -- the lead plate and the stop
@@ -3530,9 +3624,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
                       // The sub-chapter's own head comes up over the map too,
                       // now that the map is there before it.
                       + '#' + cfg.tripId + ' .sub-num, #' + cfg.tripId + ' .sub-title, '
-                      // The dates ride the top of the screen over this map for
-                      // the whole sub-chapter, so a name has to clear them too.
-                      + '#' + cfg.tripId + ' > .sub-dates';
+                      // So do the dates under them -- 4.4's, 4.5's and 4.6's.
+                      + '#' + cfg.tripId + ' .sub-dates';
       function obstacles(rect) {
         const out = [];
         document.querySelectorAll(OBSTACLES).forEach(node => {

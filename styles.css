@@ -8,6 +8,11 @@
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
+  /* Everything but the Arrows block (U+2190-21FF). Struve draws its arrows
+     with a bar across the tail, so they read as "maps to" rather than as an
+     arrow; left out here, an arrow is set in the next face in the stack that
+     has one -- Arial, Helvetica having none -- and looks like an arrow. */
+  unicode-range: U+0000-218F, U+2200-10FFFF;
 }
 
 :root {
@@ -35,15 +40,17 @@
   --maxw: 1440px;
   --gutter: clamp(20px, 3vw, 48px);
   --col-gap: clamp(12px, 1.875vw, 30px);
-  /* How far the chapter rail's 4px strokes widen under the pointer: 2.775
-     times, to about 11px. Held here rather than in crailPaint() because
+  /* How far the chapter rail's 3px strokes widen under the pointer: 2.775
+     times, to about 8px. Held here rather than in crailPaint() because
      --rail-x below has to clear it. */
   --crail-swell: 2.775;
   /* The left edge the fixed controls in the margin share on desktop: the
      chapter rail's strokes and the language menu's letters. Out in the margin,
      so they stand clear of text set flush on the grid's first column -- a
      pull-quote's author, an article's byline -- rather than over it: a stroke
-     at its widest, under the pointer, still ends 4px short of the gutter. */
+     at its widest, under the pointer, still ends 4px short of the gutter.
+     Worked out on the 4px the strokes used to be, so the rail keeps its place
+     now they are 3px and ends a little further short. */
   --rail-x: calc(var(--gutter) - 4px - 4px * var(--crail-swell));
   /* The bottom-left corner, on equal insets: where the language menu's two
      letters stand with the read-aloud play button beside them -- their left
@@ -271,11 +278,8 @@ body.light .menu-btn { color: #000; }
    the font size), in em so they hold at any size. */
 #ch1 .chapter-num              { margin-left: -0.068em; }  /* 2 */
 #ch2 .chapter-num              { margin-left: -0.062em; }  /* 3 */
-#deutsche-bank .sub-num        { margin-left: -0.026em; }  /* 4 */
-#stroobant .sub-num            { margin-left: -0.064em; }  /* 5 */
-#granite-trip .sub-num         { margin-left: -0.077em; }  /* 6 */
-#sculpting .sub-num            { margin-left: -0.052em; }  /* 7 */
-#sculpture-trip .sub-num       { margin-left: -0.056em; }  /* 8 */
+#ch3 .chapter-num              { margin-left: -0.026em; }  /* 4 */
+.making .sub-num               { margin-left: -0.026em; }  /* 4.1 to 4.6, all on a 4 */
 #ch2 .chapter-head { margin-bottom: 0; }
 #ch2 .math-body { margin-top: 200px; }
 .scroll-video-sticky {
@@ -392,10 +396,10 @@ body.light .menu-btn { color: #000; }
    CHAPTER RAIL — the page's contents. Below 901px the rail is
    hidden and the + button opens its list instead.
 
-   Closed, it is a map of the page: four 4px strokes stacked end
+   Closed, it is a map of the page: four 3px strokes stacked end
    to end down the left gutter, about the viewport's centre, one per
    chapter and each as tall as its chapter is long to scroll. The
-   making's is cut by 1px into its five sub-chapters, to the
+   making's is cut by 1px into its six sub-chapters, to the
    same scale. Chapters already read are inked, chapters still
    ahead muted, and the one you are in fills top to bottom as you
    move through it. So the rail carries three readings at once —
@@ -410,7 +414,8 @@ body.light .menu-btn { color: #000; }
    ============================================================ */
 /* The rail's measure, shared with the list it opens, which is laid out on it —
    see .crail-nav. --crail-h is the rail's whole length, strokes and gaps
-   together, held to 60% of the viewport on a short window. The strokes share
+   together, held to 80% of the viewport on a short window. Tall enough that
+   every title in the open list has room in front of its own part. The strokes share
    what the gaps leave in proportion to their chapters — see .crail-bar — so it
    is the one number that sets the scale of the map. --crail-gap stands between
    chapters, --crail-cut between the parts of a stroke that is cut.
@@ -418,7 +423,7 @@ body.light .menu-btn { color: #000; }
    to the optical one: set dead centre it reads low, so it splits the height it
    leaves free 45 above to 55 below. */
 .crail, .crail-panel {
-  --crail-h: min(400px, 60vh);
+  --crail-h: min(720px, 80vh);
   --crail-gap: 8px;
   --crail-cut: 1px;
   --crail-lift: calc((100vh - var(--crail-h)) * 0.05);
@@ -439,7 +444,7 @@ body.light .menu-btn { color: #000; }
   flex-direction: column;
   align-items: flex-start;
   gap: var(--crail-gap);
-  /* The strokes are 4px wide, so the button itself is nearly unhittable.
+  /* The strokes are 3px wide, so the button itself is nearly unhittable.
      Padding grows the target without moving them off the gutter: 10px out into
      the empty margin on the left, 12px on the right. No further than that into
      the column: this box is invisible but still swallows clicks, and in the
@@ -455,8 +460,10 @@ body.light .menu-btn { color: #000; }
   transition: opacity .3s ease, transform .5s cubic-bezier(.22, 1, .36, 1);
 }
 /* Each stroke's length is data: crailMeasure() sets --len to its chapter's
-   scroll length in px, and flex hands out the height the gaps leave in
-   proportion to those lengths. So the rail stays to scale at any --crail-h.
+   share of the rail in px -- its scroll length to scale, except that no part
+   is drawn shorter than the open list's titles are spaced (crailShares()) --
+   and flex hands out the height the gaps leave in proportion to those
+   lengths. So the rail stays to scale at any --crail-h.
    New proportions, when the layout moves the chapters, are taken at once
    rather than eased: the open list's rows are laid out on the same figures, and
    a bar still easing would stand off its title while it ran.
@@ -474,13 +481,13 @@ body.light .menu-btn { color: #000; }
   display: flex;
   flex-direction: column;
   gap: var(--crail-cut);
-  width: 4px;
+  width: 3px;
   flex: var(--len, 1) 1 calc((var(--parts, 1) - 1) * var(--crail-cut));
 }
 .crail-seg {
   position: relative;
   flex: var(--len, 1) 1 0px;
-  min-height: 4px;            /* a part too short to draw still shows, as a dot */
+  min-height: 3px;            /* a part too short to draw still shows, as a dot */
   overflow: hidden;
   transform: scaleX(calc(1 + var(--k, 0) * (var(--crail-swell) - 1)));
   transform-origin: left center;
@@ -526,8 +533,8 @@ body.light .crail-fill { background: #000; }
   justify-content: flex-start;
   padding: var(--gutter);
   /* The list starts clear of the strokes, and moves with them: past --rail-x,
-     the 4px stroke and two leads. */
-  padding-left: calc(var(--rail-x) + 4px + var(--crail-lead) * 2);
+     the 3px stroke and two leads. */
+  padding-left: calc(var(--rail-x) + 3px + var(--crail-lead) * 2);
   backdrop-filter: blur(22px);
   opacity: 0;
   visibility: hidden;
@@ -570,13 +577,15 @@ body.light .crail-panel {
    crailMeasure() sets the same --len and --parts on each pair. So every link's
    box spans its part of the stroke, and the title centred in it stands level
    with the middle of that part; the titles keep the chapters' proportions
-   rather than an even rhythm. Nothing here scrolls or wraps: the rail is never
-   taller than the viewport, and a title too long for the measure runs on to the
-   right rather than onto a second line that would lift it off its part. */
+   rather than an even rhythm. No part is drawn too short for its title
+   (crailShares()); on a window too short even for that, a crowded title is
+   moved off its part, by as little as it can be, rather than the type being
+   made smaller -- see crailSpread(). Nothing here scrolls or wraps:
+   the rail is never taller than the viewport, and a title too long for the
+   measure runs on to the right rather than onto a second line that would lift
+   it off its part. */
 .crail-nav {
-  /* The type ramp, held under the spacing of the two nearest rows — see
-     crailFit(). */
-  --crail-type: min(clamp(22px, 2.2vw, 36px), var(--crail-fit, 36px));
+  --crail-type: clamp(22px, 2.2vw, 36px);
   position: relative;
   top: calc(var(--crail-lift) * -1);   /* raised with the rail — see .crail */
   display: flex;
@@ -607,17 +616,20 @@ body.light .crail-panel {
   line-height: 1.15;
   white-space: nowrap;
   cursor: pointer;              /* the hand, as on the rail */
+  /* Off its part, where crailSpread() has had to move it. A translate rather
+     than a transform, which the entrance below has. */
+  translate: 0 var(--shift, 0px);
 }
 /* The number, in a lane between the stroke and the title exactly as wide as the
-   widest of them -- every number is a single figure now, and the figures are
-   tabular, so each measures 0.65em in Struve at this weight and tracking -- so
-   every title starts on the same x, one lead past the number, whether its own
-   number shows or not. It shows for the part you are in, and for the others
+   widest of them -- a sub-chapter's 4.3, which measures 1.627em in Struve at
+   this weight and tracking (the figures are tabular, so 4.1 to 4.6 match) -- so
+   every title starts on the same x, one lead past the widest number, whether
+   its own number shows or not. It shows for the part you are in, and for the others
    only while they are hovered -- the pointer on the link or on its part of the
    rail, which crailPaint() marks .is-hover -- or the keyboard is on the link. */
 .crail-num {
   flex: none;
-  width: 0.65em;
+  width: 1.63em;
   font-variant-numeric: tabular-nums;
   opacity: 0;
   transition: opacity .25s ease;
@@ -712,11 +724,12 @@ body:has(.jg.is-open) .tts-controls {
     align-items: baseline;
     padding: 10px 0;            /* a line and its padding make a 45px target */
     white-space: normal;
+    translate: none;            /* a plain column: no part to stand off */
   }
   .crail-num { opacity: 1; }
-  /* The journey's three sub-chapters under their chapter's title, set once and
+  /* The making's six sub-chapters under their chapter's title, set once and
      unnumbered, rather than each opening on it. The title links to the
-     chapter's head, and is inked while you are in any of the three. */
+     chapter's head, and is inked while you are in any of the six. */
   .crail-chapter { display: flex; }
   .crail-pre { display: none; }
   body.dark  .crail-row:has(.crail-link.is-active) .crail-chapter { color: #fff; }
@@ -2998,15 +3011,25 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   background: none;
   pointer-events: none;
 }
-/* The chapter's opening is a window with the chapter's head in it: the title
-   stands over the whole globe, and goes up as the globe comes down onto
-   Frankfurt. Taller than the others by the screen the head is read on. */
-.making-open {
-  height: auto;
-  min-height: 290vh;
-  overflow: visible;
-  padding-bottom: 0;
+/* The chapter's opening: its number and title alone on the black, a screen
+   tall and standing in the middle of it, over the map, so the globe is not
+   there yet. Scrolled on, the black goes up and the globe comes in from under
+   it. */
+.making-title {
+  min-height: 100vh;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
+/* The full measure, as in any other chapter: a flex item with auto margins
+   would otherwise shrink to its content and break the title over four lines. */
+.making-title > .container { width: 100%; }
+.making-title .chapter-head { margin-bottom: 0; }
+/* Then the window the globe comes down onto Frankfurt in. Taller than the
+   others: the globe is held whole a while before it moves -- HEAD in the
+   journey script -- and the move itself is as long as theirs. */
+.making-open { height: 290vh; }
 /* A sub-chapter's head on a ground of its own: Deutsche Bank on the bank's black, Stroobant on
    Stroobant's paper. Set as the journey's sub-heads are (.journey-sub
    .sub-head), with the chapter's 140px over it. */
@@ -3018,8 +3041,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    one box; here the head is a section of its own, so the line simply stands
    under the title. */
 .making-head .journey-sub > .sub-dates { position: static; }
-/* With no dates under it, the head keeps the same room before the text. */
-.making-head .sub-head:last-child { margin-bottom: 104px; }
 /* .sub-title is set in white for the dark journey; on paper it follows the ink. */
 .making-head.paper-section .sub-title { color: inherit; }
 
@@ -3643,16 +3664,25 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   line-height: 1.35;
   letter-spacing: -0.005em;
 }
-/* Set as the chapter numbers are: the same face, weight, size, leading and
-   tracking, in the same column of the same four-track head. The parts are
-   numbered on from the chapters in whole numbers, so a part's figure is a
-   chapter's: its ink fills exactly one column of the head. */
+/* Set as the chapter numbers are: the same face, weight, leading and tracking,
+   in the same column of the same four-track head.
+   The size is the one place it parts company with them. .chapter-num derives
+   its size from the head, so the numeral's ink fills exactly one column; this
+   is set outright instead, because a three-character number filling a column
+   came out larger than the head wanted. It falls back to the derived figure
+   only when the head is too narrow to hold 216px -- so the number is a fixed
+   size on any real desktop and starts scaling once the column can no longer
+   carry it. */
 .sub-num {
   font-family: var(--sans);
   font-weight: 500;
-  font-size: calc((100cqw - 3 * var(--col-gap)) / 4 / 0.468);
+  font-size: min(216px, calc((100cqw - 3 * var(--col-gap)) / 4 / 1.27 * 1.36));
   line-height: 0.85;
-  letter-spacing: -0.04em;
+  /* Tighter than the chapter numeral's -0.04em: three characters set at this
+     size leave the pair of digits floating apart, and the point of the figure
+     is that it reads as one mark. In em, so it keeps its proportion as the
+     container query resizes the head. */
+  letter-spacing: -0.1em;
   grid-column: 2 / 3;
   justify-self: start;
   text-align: left;
@@ -4232,6 +4262,30 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   color: #fff;
 }
 #sculpture-trip .stop-cap strong { font-weight: 700; }
+
+/* 4.5 and 4.6 in the column. The transport is three sub-chapters on one clock,
+   so their heads stand in the column itself rather than opening boxes of their
+   own. Each shares its row with the lead box that brings the camera to its
+   place and sits at the foot of it, so it passes the middle of the screen as
+   the camera lands there -- on the Rhine for 4.5, on the sculpture for 4.6 --
+   and, sharing the row, adds nothing to the scroll: every beat lands where it
+   did. The account follows in the row after, in the right half where 4.4's
+   pair stands; the camera holds while it is read. */
+#sculpture-trip .trip-part { grid-column: 1 / -1; align-self: end; }
+#sculpture-trip .trip-part[data-part="5"] { grid-row: 5; }
+#sculpture-trip .trip-part[data-part="6"] { grid-row: 8; }
+#sculpture-trip .journey-stops > .stop-cap { grid-column: 5 / span 4; }
+#sculpture-trip .stop-cap[data-cap-for="3"] { grid-row: 6; }
+#sculpture-trip .stop-cap[data-cap-for="4"] { grid-row: 9; }
+/* The three sub-chapters share one box, so none of their dates can ride the
+   top of the screen to its own end, as the workshop's does: each stands under
+   its title, as 4.1's and 4.2's do. */
+#sculpture-trip > .sub-dates { position: static; }
+#sculpture-trip .trip-part > .sub-dates {
+  padding: 24px 0 12px;
+  margin: 0 0 68px;
+  text-align: center;
+}
 @media (max-width: 900px) {
   #sculpture-trip .journey-stops {
     grid-template-columns: 1fr;
@@ -4259,7 +4313,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
      clearance is a fixed count of screens: 330/410px at 900, 140/140 at 375,
      and at 320×700, where 814px of text has to pass a 700px screen, 120px
      before and 50px after. Thin at the bottom end, but never crossed. */
-  #sculpture-trip .stop-caps { grid-column: 1; }
+  #sculpture-trip .stop-caps,
+  #sculpture-trip .journey-stops > .stop-cap { grid-column: 1; }
   #sculpture-trip .map-meta {
     left: 12px;
     right: 12px;
