@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=269" />
+<link rel="stylesheet" href="styles.css?v=278" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -53,8 +53,8 @@
            per bar and a link per part. A link's number shows for the part you
            are in, and for the others only while the pointer is on them. -->
       <div class="crail-row"><a href="#top" class="crail-link" style="--i:0" data-crail-close><span class="crail-num" aria-hidden="true">1</span><span class="crail-txt" data-i18n="nav.hero">Hero: the sculpture</span></a></div>
-      <div class="crail-row"><a href="#ch1" class="crail-link" style="--i:1" data-crail-close><span class="crail-num" aria-hidden="true">2</span><span class="crail-txt" data-i18n="nav.artist">The artist: Max Bill</span></a></div>
-      <div class="crail-row"><a href="#ch2" class="crail-link" style="--i:2" data-crail-close><span class="crail-num" aria-hidden="true">3</span><span class="crail-txt" data-i18n="nav.math">Kontinuität = an infinity loop?</span></a></div>
+      <div class="crail-row"><a href="#ch1" class="crail-link" style="--i:1" data-crail-close><span class="crail-num" aria-hidden="true">2</span><span class="crail-txt">Max Bill</span></a></div>
+      <div class="crail-row"><a href="#ch2" class="crail-link" style="--i:2" data-crail-close><span class="crail-num" aria-hidden="true">3</span><span class="crail-txt" data-i18n="nav.math">No beginning, no end</span></a></div>
       <div class="crail-row"><a href="#ch3" class="crail-link" style="--i:3" data-crail-close><span class="crail-num" aria-hidden="true">4</span><span class="crail-txt" data-i18n="nav.making">The story of the making</span></a></div>
     </nav>
   </div>
@@ -141,46 +141,54 @@
 
     <!-- INTRO · facts rail. The sticky sculpture pins across this whole block,
          so lengthening the rail is what keeps it fixed longer. The facts are
-         ordinary flow content on the 8-column grid — cols 1–2 or 7–8 per
-         fact — so they ride past the sculpture on either side rather than
-         floating over it. Artist comes first, from col 6, with his dates
-         under the name; then Title on cols 2–3, Years from col 5, Material
-         and Height on cols 2–3, Height across the stone from the comparison
-         drawn for it (the stone rules, above), Weight on cols 7–8, and Chief
-         of production back on
-         cols 2–3, his name over two lines as Material's is. Place closes the
-         facts in the tail. -->
+         ordinary flow content on the 8-column grid. Each rides up past the
+         stone and, near the top, shrinks and stops in the dock, so the seven
+         gather into one row across the top of the screen and leave with the
+         stone (see the facts dock script). They come in the order the row
+         reads -- Artist, Title, Years, Chief of production, Material, Height,
+         Weight -- and the row runs from column 2 with the same gap between
+         each, so each fact rides up with its first letter where it will stand
+         in the row and never moves across. The artist's dates stand
+         under his name; the chief of production's name and Material's figure
+         run to two lines; Height has the comparison drawn for it across the
+         stone (the stone rules, above). Place closes the facts in the tail. -->
     <section class="intro dark-section" id="introFacts">
+      <!-- The dock: the row the facts stop in. Empty here; the facts dock
+           script sets a copy of each fact's figure in it, in order, and
+           shows it once the fact has risen to it. -->
+      <div class="facts-dock" aria-hidden="true">
+        <div class="container"><div class="facts-dock-row"></div></div>
+      </div>
       <div class="container">
         <div class="facts-rail">
-          <div class="rail-fact rail-fact--six reveal">
+          <div class="rail-fact reveal">
             <span class="rail-key">Artist</span>
-            <span class="rail-val">Max Bill</span>
+            <span class="rail-val">M<span class="kern-open">a</span>x Bill</span>
             <span class="rail-note">1908–1994</span>
           </div>
-          <div class="rail-fact rail-fact--left reveal">
+          <div class="rail-fact reveal">
             <span class="rail-key">Title</span>
             <span class="rail-val">Kontinuität <span class="keep-case">II</span></span>
           </div>
-          <div class="rail-fact rail-fact--five reveal">
+          <div class="rail-fact reveal">
             <span class="rail-key">Years</span>
             <span class="rail-val">1983–86</span>
           </div>
-          <div class="rail-fact rail-fact--left reveal">
+          <div class="rail-fact reveal">
+            <span class="rail-key">Chief of production</span>
+            <span class="rail-val rail-val--stacked">Dominique<br>Stroobant</span>
+          </div>
+          <div class="rail-fact reveal">
             <span class="rail-key">Material</span>
             <span class="rail-val rail-val--stacked">Sardinian<br>granite</span>
           </div>
-          <div class="rail-fact rail-fact--left reveal" data-rule="height">
+          <div class="rail-fact reveal" data-rule="height">
             <span class="rail-key">Height</span>
             <span class="rail-val">4.5 m</span>
           </div>
-          <div class="rail-fact rail-fact--right reveal">
+          <div class="rail-fact reveal">
             <span class="rail-key">Weight</span>
             <span class="rail-val">80 t</span>
-          </div>
-          <div class="rail-fact rail-fact--left reveal">
-            <span class="rail-key">Chief of production</span>
-            <span class="rail-val rail-val--stacked">Dominique<br>Stroobant</span>
           </div>
         </div>
         </div>
@@ -236,12 +244,12 @@
     </div>
   </section>
 
-  <!-- CHAPTER 2 · The artist: Max Bill -->
+  <!-- CHAPTER 2 · Max Bill, the artist -->
   <section class="chapter light-section" id="ch1" style="padding-bottom:70px;">
     <div class="container">
       <div class="chapter-head" style="margin-bottom:40px;">
         <div class="chapter-num">2</div>
-        <h2 class="chapter-title">The artist: Max Bill</h2>
+        <h2 class="chapter-title">Max Bill</h2>
       </div>
     </div>
   </section>
@@ -343,7 +351,7 @@
     </div>
   </section>
 
-  <!-- CHAPTER 3 · Kontinuität = an infinity loop? The mathematics of the sculpture -->
+  <!-- CHAPTER 3 · No beginning, no end. The mathematics of the sculpture -->
   <section class="chapter math" id="ch2">
     <!-- The project's own 8-column grid, drawn rather than implied: this is the
          chapter about how the sculpture was measured, so the measure the page
@@ -356,7 +364,7 @@
     <div class="container">
       <div class="chapter-head">
         <div class="chapter-num">3</div>
-        <h2 class="chapter-title" data-narr="ch5-title">Kontinuität = an infinity loop?</h2>
+        <h2 class="chapter-title" data-narr="ch5-title">No beginning, no end</h2>
       </div>
 
       <div class="scroll-video-sticky">
@@ -1109,8 +1117,7 @@ const I18N = {
     'lang.label': 'Sprache',
     'nav.contents': 'Inhalt',
     'nav.hero': 'Held: die Skulptur',
-    'nav.artist': 'Der Künstler: Max Bill',
-    'nav.math': 'Kontinuität = eine unendliche Schleife?',
+    'nav.math': 'Kein Anfang, kein Ende',
     'nav.making': 'Die Geschichte der Entstehung',
     'nav.frankfurt-germany': 'Frankfurt, Deutschland',
     'nav.sardinia-italy': 'Sardinien, Italien',
@@ -1123,8 +1130,7 @@ const I18N = {
     'lang.label': 'Lingua',
     'nav.contents': 'Indice',
     'nav.hero': 'Eroe: la scultura',
-    'nav.artist': 'L’artista: Max Bill',
-    'nav.math': 'Kontinuität = un nastro senza fine?',
+    'nav.math': 'Nessun inizio, nessuna fine',
     'nav.making': 'La storia della realizzazione',
     'nav.frankfurt-germany': 'Francoforte, Germania',
     'nav.sardinia-italy': 'Sardegna, Italia',
@@ -1137,8 +1143,7 @@ const I18N = {
     'lang.label': 'Idioma',
     'nav.contents': 'Índice',
     'nav.hero': 'Héroe: la escultura',
-    'nav.artist': 'El artista: Max Bill',
-    'nav.math': '¿Kontinuität = una cinta sin fin?',
+    'nav.math': 'Ni principio ni fin',
     'nav.making': 'La historia de la realización',
     'nav.frankfurt-germany': 'Fráncfort, Alemania',
     'nav.sardinia-italy': 'Cerdeña, Italia',
@@ -2796,6 +2801,125 @@ document.querySelectorAll('.facts').forEach((facts) => {
   align();
 })();
 
+// The facts' dock. The row the intro's seven facts stop in is set as the
+// works graph's names are, one after another with the same gap between each,
+// here from column 2 to the end of column 7, as far in from either edge of
+// the measure, and every fact rides up beside the stone standing where
+// it will stop in that row: this reads where each copy falls in the row and
+// moves its fact there (--fact-x). From --dock-from of the window up a fact
+// shrinks where it stands, toward its own top left corner, so it never moves
+// across: by the dock's line it is the size of the names, and there it stops.
+// The stopping is the dock's, which is sticky: its copy of the fact, in the
+// same place and at that size, is shown the moment the fact reaches the line,
+// and the fact itself hidden, so the seven gather into one row across the top
+// of the screen and leave with the stone. Going back up hands each one back
+// to its fact.
+//
+// The shrink is a transform, so nothing in the rail moves for it, and the
+// stone rules still read the figure where it is drawn. It is eased in and out:
+// a fact sets off gently and settles into the row. On the way its tracking
+// goes from the figures' to the names', so it arrives set as its copy is. The
+// label over a fact and the note under the artist's name are not kept: they
+// fade out over the first half of the shrink. A figure too wide to stand
+// whole between where it stands and the edge of the measure at full size
+// would start as large as does fit. Below 901px the facts run full width, one
+// over another, and are left as they are.
+(() => {
+  const rail = document.querySelector('.intro .facts-rail');
+  const row = document.querySelector('.facts-dock-row');
+  if (!rail || !row) return;
+  const narrow = window.matchMedia('(max-width: 900px)');
+  const facts = [...rail.querySelectorAll('.rail-fact')].map((fact) => {
+    const val = fact.querySelector('.rail-val');
+    if (!val) return null;
+    const copy = document.createElement('span');
+    copy.className = 'facts-dock-val';
+    copy.innerHTML = val.innerHTML;
+    row.appendChild(copy);
+    return { fact, val, copy, extras: [...fact.querySelectorAll('.rail-key, .rail-note')] };
+  }).filter(Boolean);
+  if (!facts.length) return;
+
+  // Where a box is laid out in the rail, by layout alone: neither the shrink
+  // nor a fact still sliding in on its .reveal is counted.
+  const offsetIn = (el) => {
+    let x = 0, y = 0;
+    for (let e = el; e && e !== rail; e = e.offsetParent) { x += e.offsetLeft; y += e.offsetTop; }
+    return { x, y };
+  };
+  const ease = (t) => t * t * (3 - 2 * t);
+  let from = 0.5;
+
+  const reset = () => facts.forEach((f) => {
+    f.fact.style.removeProperty('--fact-x');
+    f.val.style.transform = f.val.style.letterSpacing = f.val.style.visibility = '';
+    f.extras.forEach((el) => { el.style.opacity = ''; });
+    f.copy.classList.remove('is-docked');
+    f.t = f.docked = undefined;
+  });
+
+  const update = () => {
+    if (narrow.matches) return;
+    const railTop = rail.getBoundingClientRect().top;
+    const line = row.getBoundingClientRect().top;
+    const start = window.innerHeight * from;
+    facts.forEach((f) => {
+      const top = railTop + f.top;
+      const t = Math.min(1, Math.max(0, (start - top) / (start - line)));
+      const docked = top <= line;
+      if (t === f.t && docked === f.docked) return;
+      f.t = t;
+      f.docked = docked;
+      const e = ease(t);
+      const scale = f.start + (f.end - f.start) * e;
+      f.val.style.transform = scale === 1 ? '' : 'scale(' + scale.toFixed(4) + ')';
+      f.val.style.letterSpacing = (f.trackFrom + (f.trackTo - f.trackFrom) * e).toFixed(4) + 'em';
+      f.val.style.visibility = docked ? 'hidden' : '';
+      f.copy.classList.toggle('is-docked', docked);
+      f.extras.forEach((el) => { el.style.opacity = t ? Math.max(0, 1 - 2 * t).toFixed(3) : ''; });
+    });
+  };
+
+  // Read with every fact at rest. The copies first, each set with its fact's
+  // leading, so the row stands as it will; then each fact moved to where its
+  // copy stands, and read there: its size and tracking, the copy's, how wide
+  // it is set, and where it stands in the rail.
+  const measure = () => {
+    reset();
+    if (narrow.matches) return;
+    from = parseFloat(getComputedStyle(rail).getPropertyValue('--dock-from')) || 0.5;
+    facts.forEach((f) => {
+      const cs = getComputedStyle(f.val);
+      f.copy.style.lineHeight = (parseFloat(cs.lineHeight) / parseFloat(cs.fontSize)).toFixed(4);
+    });
+    const origin = rail.getBoundingClientRect().left;
+    const xs = facts.map((f) => f.copy.getBoundingClientRect().left - origin);
+    facts.forEach((f, i) => f.fact.style.setProperty('--fact-x', xs[i].toFixed(2) + 'px'));
+    facts.forEach((f) => {
+      const cs = getComputedStyle(f.val);
+      const size = parseFloat(cs.fontSize);
+      const ds = getComputedStyle(f.copy);
+      const dockSize = parseFloat(ds.fontSize);
+      f.trackFrom = parseFloat(cs.letterSpacing) / size || 0;
+      f.trackTo = parseFloat(ds.letterSpacing) / dockSize || 0;
+      f.end = dockSize / size;
+      const set = document.createRange();
+      set.selectNodeContents(f.val);
+      const at = offsetIn(f.val);
+      const room = rail.clientWidth - at.x;
+      f.start = Math.max(f.end, Math.min(1, room / set.getBoundingClientRect().width));
+      f.top = at.y;
+    });
+    update();
+  };
+
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', measure);
+  narrow.addEventListener('change', measure);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+  measure();
+})();
+
 // Bill's portrait caption, on page columns 2-3 under the portrait, stands with
 // its first line on the baseline of the first line of the text beside it, as
 // the letters' caption does: out of the flow, hung from the portrait's foot by
@@ -3998,11 +4122,12 @@ document.querySelectorAll('.facts').forEach((facts) => {
   }
 
   // The globe beside Place, in the intro's closing facts: the same globe, whole,
-  // centred on the sculpture's Frankfurt as the making chapter opens on it, and
-  // turning slowly as the Earth does, west to east -- a turn every TURN seconds,
-  // so the surface drifts right and Frankfurt comes back to the centre once a
-  // turn. It turns only while it is on screen, from Frankfurt, and not at all
-  // for a reader who has asked for less motion. Its imagery shows whole, not
+  // centred on the sculpture's Frankfurt as the making chapter opens on it. As
+  // it comes into view it makes one whole turn, west to east as the Earth turns
+  // -- the surface drifting right -- over SPIN milliseconds, slowing to rest
+  // with Frankfurt in the middle. It turns again each time it comes back into
+  // view after leaving it, and not at all for a reader who has asked for less
+  // motion. Its imagery shows whole, not
   // shaded down as the making chapter's is behind its text. Nothing is drawn on it, as
   // nothing is on that opening globe, and it carries no attribution control
   // (the user asked for the box gone; the making chapter's map still credits
@@ -4033,7 +4158,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     const val = fact.querySelector('.rail-val');
     const FILL = 0.86;
     const OVERSHOOT = 0.04;
-    const TURN = 180;
+    const SPIN = 3600;
     const narrow = window.matchMedia('(max-width: 900px)');
     const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let map = null;
@@ -4076,12 +4201,15 @@ document.querySelectorAll('.facts').forEach((facts) => {
       if (map) { map.resize(); map.setZoom(fitZoom()); }
     }
 
-    let lng = FRANKFURT[0], last = 0, raf = 0;
+    // From a whole turn east of Frankfurt back to it, eased out: the centre
+    // moves west, so the surface moves east, quickly at first and settling.
+    let start = 0, raf = 0, armed = true;
     const spin = (now) => {
-      if (last) lng = ((lng - 360 * (now - last) / 1000 / TURN) + 540) % 360 - 180;
-      last = now;
-      map.jumpTo({ center: [lng, FRANKFURT[1]] });
-      raf = requestAnimationFrame(spin);
+      if (!start) start = now;
+      const t = Math.min(1, (now - start) / SPIN);
+      const turn = 360 * Math.pow(1 - t, 3);
+      map.jumpTo({ center: [((FRANKFURT[0] + turn) + 540) % 360 - 180, FRANKFURT[1]] });
+      raf = t < 1 ? requestAnimationFrame(spin) : 0;
     };
 
     // The stylesheet's shading over the disc takes the same FILL.
@@ -4104,10 +4232,16 @@ document.querySelectorAll('.facts').forEach((facts) => {
         try { map.setProjection({ type: 'globe' }); } catch (e) {}
         try { map.setSky(GLOBE_SKY); } catch (e) {}
       });
-      if (!still) new IntersectionObserver(es => {
-        if (es.some(e => e.isIntersecting)) { if (!raf) { last = 0; raf = requestAnimationFrame(spin); } }
-        else { cancelAnimationFrame(raf); raf = 0; }
-      }).observe(container);
+      // It turns once most of it is in view, and is armed again only once it
+      // has gone out of view altogether.
+      if (!still) new IntersectionObserver(es => es.forEach((e) => {
+        if (e.intersectionRatio >= 0.6 && armed) {
+          armed = false;
+          cancelAnimationFrame(raf);
+          start = 0;
+          raf = requestAnimationFrame(spin);
+        } else if (!e.isIntersecting) armed = true;
+      }), { threshold: [0, 0.6] }).observe(container);
     }, { rootMargin: '600px 0px' });
     io.observe(container);
     window.addEventListener('resize', place, { passive: true });

@@ -1179,6 +1179,9 @@ section { position: relative; }
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.02;
+  /* In lower case, as the hero's title and the facts are; the words keep
+     their capitals in the markup. */
+  text-transform: lowercase;
   text-align: center;
   grid-column: 1 / -1;
   max-width: 1200px;
@@ -1197,9 +1200,8 @@ section { position: relative; }
 
 /* Intro facts rail ------------------------------------------------------
    Supplies the scroll length that holds the sticky sculpture fixed, and
-   carries the facts past it one at a time. Cols 1–2 and 7–8 are the two
-   strips of the 8-column grid that stay clear of the sculpture at its
-   centred min(54vw, 672px) width, so nothing overlaps the object. */
+   carries the facts past it one at a time, each standing where it will stop
+   in the dock's row, over the stone where that crosses it. */
 .facts-rail {
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
@@ -1210,36 +1212,35 @@ section { position: relative; }
   row-gap: 80vh;
   /* The lead-in before the first fact; the section has no opening paragraph
      to carry it now (its first sentence runs across the hero instead). The
-     tail holds the stone a while after Chief of production, its last fact,
-     so the fact has ridden past before the stone moves off. */
+     tail holds the stone a while after Weight, its last fact, so the fact
+     has ridden past before the stone moves off. */
   padding: 42vh 0 80vh;
   position: relative;
   z-index: 6;
+  /* Where a fact sets off for the dock: as its figure's top rises past this
+     share of the window, measured from the top -- a third of the way down
+     (see the facts dock script). */
+  --dock-from: 0.333;
 }
 .rail-fact {
   padding-top: 14px;
 }
-.rail-fact--left  { grid-column: 2 / 4; }
-.rail-fact--right { grid-column: 7 / 9; }
 /* Place: starts at column 5 and runs to the edge. It crosses the sculpture's
    centre line, so it is placed last, where the sculpture has already unpinned
    and scrolled up out of its way. */
 .rail-fact--wide  { grid-column: 5 / 9; }
-/* Architect: from column 6, over the stone's right half -- the first fact, so
-   it opens the passage on the stone rather than beside it. */
-.rail-fact--six   { grid-column: 6 / 9; }
-/* Years: from column 5, just right of the stone's centre line, running on to
-   the edge; its figure scales with the columns, so it fits there at any width. */
-.rail-fact--five  { grid-column: 5 / 9; }
-/* One fact per row — without explicit rows the two narrow strips would pack
-   side by side into the same row. */
-.rail-fact:nth-child(1) { grid-row: 1; }
-.rail-fact:nth-child(2) { grid-row: 2; }
-.rail-fact:nth-child(3) { grid-row: 3; }
-.rail-fact:nth-child(4) { grid-row: 4; }
-.rail-fact:nth-child(5) { grid-row: 5; }
-.rail-fact:nth-child(6) { grid-row: 6; }
-.rail-fact:nth-child(7) { grid-row: 7; }
+/* The intro's facts, in the order they come and the dock's row reads:
+   Artist, Title, Years, Chief of production, Material, Height and Weight.
+   Each stands with its first letter where it will stop in the row, which the
+   facts dock script reads off the row and sets as --fact-x -- until then on
+   column 2, where the row begins -- and it never moves across: it only
+   shrinks there and stops. A fact runs from there to the edge, so its figure
+   stays one line however far it runs on, and, spanning the rail, each takes a
+   row of its own. */
+.intro .rail-fact {
+  grid-column: 1 / -1;
+  margin-left: var(--fact-x, calc((100% - 7 * var(--col-gap)) / 8 + var(--col-gap)));
+}
 /* Set as the journey's captions are (.journey-cap h5): the sans at 18px and
    600, in full white, so a label over a fact reads like a place named under a
    photograph rather than as a mono tag. */
@@ -1264,11 +1265,13 @@ section { position: relative; }
    to four lines. */
 .intro .rail-val {
   font-size: clamp(60px, 8.7vw, 112px);
-  /* Closer set at this size. */
-  letter-spacing: -0.05em;
-  /* A figure is one word: on one line, running on past its two columns
-     rather than breaking "4.5 m" in two. */
+  /* A figure is one word: on one line, running on past its column rather
+     than breaking "4.5 m" in two. */
   white-space: nowrap;
+  /* It shrinks toward its top left corner on its way to the dock, so its
+     first letter stays where its copy stands in the row and its top on the
+     line it rises to (see the facts dock script). */
+  transform-origin: 0 0;
 }
 /* The facts are set in lower case, labels, names and all, as the hero's title
    is -- but for a roman numeral (.keep-case). The words keep their capitals in
@@ -1277,6 +1280,10 @@ section { position: relative; }
 .facts-rail .rail-val,
 .facts-rail .rail-note { text-transform: lowercase; }
 .facts-rail .keep-case { text-transform: none; }
+/* A letter that sets the next one off from it: the a of "max", whose tail
+   runs into the x's foot at the figures' close tracking. Wherever the name is
+   set -- riding and in the dock's row, which copies it -- in its own size. */
+.kern-open { margin-right: 0.05em; }
 /* Material and the chief of production's name run to two lines, set close so
    they read as one figure. Only here:
    the one-line figures keep their boxes, which the stone rules measure. */
@@ -1291,10 +1298,64 @@ section { position: relative; }
   font-weight: 600;
   letter-spacing: -0.01em;
 }
+/* The dock, the row the facts stop in. A fact rises where it will stand in
+   the row and, nearing the top, shrinks there to the size of the works
+   graph's names (.bg-key: the sans at 700, at 24 of the plot's 1340 units,
+   which is the measure here, tracked -0.02em). On the line those names stand
+   on, 24px down, it stops and stays, so the seven gather into one row across
+   the top, as the names do over the field: one after another with the same
+   gap between each, from column 2 to the end of column 7, so the row stands
+   as far in from either edge of the measure. Nothing is laid behind it:
+   nothing rises
+   into the row but the facts themselves, each where it stops, and their
+   labels have faded by then.
+   The stopping is this box's. It is sticky and runs from that line to the
+   middle of the screen, so it lets go of the top on the same scroll the stone
+   lets go of the middle (.sticky-sculpture, pinned at 50vh), and the row and
+   the stone leave together. The facts' container is pulled up over it, so it
+   takes no room in the flow. The facts dock script sets a copy of each fact
+   here, in order, and shows it the moment the fact itself reaches the line,
+   hiding the fact, so to the eye it is the fact that stops. */
+.intro { --dock-top: 24px; }
+.facts-dock {
+  position: sticky;
+  top: var(--dock-top);
+  height: calc(50vh - var(--dock-top));
+  z-index: 7;
+  pointer-events: none;
+}
+.facts-dock + .container { margin-top: calc(var(--dock-top) - 50vh); }
+/* The names' size is a share of the measure, read off the row's container. */
+.facts-dock > .container { container-type: inline-size; }
+.facts-dock-row {
+  display: flex;
+  align-items: flex-start;
+  /* The gaps share out what the figures leave of the row -- never less than
+     the names' 30px (.bg-names). */
+  justify-content: space-between;
+  column-gap: 30px;
+  /* From column 2 to the end of column 7: one column and its gap in from
+     either side. */
+  padding: 0 calc((100% - 7 * var(--col-gap)) / 8 + var(--col-gap));
+}
+/* Leading is the figure's own, copied by the script, so a fact and its copy
+   set the same lines in the same places. */
+.facts-dock-val {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: calc(100cqw * 24 / 1340);
+  letter-spacing: -0.02em;
+  color: #fff;
+  white-space: nowrap;
+  text-transform: lowercase;
+  visibility: hidden;
+}
+.facts-dock-val .keep-case { text-transform: none; }
+.facts-dock-val.is-docked { visibility: visible; }
 /* Stone rules. Comparisons drawn beside the stone, at its own scale, while a
    fact goes by; the script sets their geometry and switches .is-on, and the
-   fade is the stylesheet's. Each stands across the stone from its fact: the
-   Modulor man from Height. Painted at the sculpture's
+   fade is the stylesheet's. Each stands by its fact: the Modulor man under
+   Height's figure. Painted at the sculpture's
    z-index and after it, so they lie over its drop shadow -- which would
    otherwise dim the lower line -- and under the facts. */
 .stone-rule {
@@ -1340,11 +1401,12 @@ section { position: relative; }
   line-height: 1.25;
 }
 /* Height. Two lines, one on the stone's tip and one under its base. They run
-   from column 2, where the Height fact and its figure start, to the end of
-   column 7, where the Modulor man stands on the lower one: from the figure
-   that names the span to the man it is measured against. */
+   from column 2 to the edge of the measure, under the whole of the Height
+   fact, and the Modulor man stands on the lower one under its figure, with
+   his caption beside him: the figure that names the span over the man it is
+   measured against. */
 .height-rule-span {
-  grid-column: 2 / 8;
+  grid-column: 2 / -1;
   grid-row: 1;
   position: relative;
 }
@@ -1364,12 +1426,14 @@ section { position: relative; }
 .height-rule-span::before { top: var(--rule-top, 0); transform: translateY(-100%); }
 .height-rule-span::after  { top: var(--rule-bottom, 0); }
 /* Le Corbusier's Modulor man, 2.26 m to the raised hand, feet on the base line
-   at the end of column 7. The script sizes him from the span between the lines
-   (4.5 m), so he is drawn at the stone's scale; white through the drawing as a
-   mask, as the journey's pin is. */
+   at the end of column 7: one column and its gap in from the end of the
+   lines, which run on to the edge of the measure (the span holds columns 2 to
+   8, seven columns and six gaps). The script sizes him from the span between
+   the lines (4.5 m), so he is drawn at the stone's scale; white through the
+   drawing as a mask, as the journey's pin is. */
 .height-rule-figure {
   position: absolute;
-  right: 0;
+  right: calc((100% + var(--col-gap)) / 7);
   top: var(--rule-bottom, 0);
   height: var(--figure-h, 0px);
   width: calc(var(--figure-h, 0px) * 445 / 1479);
@@ -1379,11 +1443,12 @@ section { position: relative; }
   mask: url(assets/modulor.svg) no-repeat center / contain;
 }
 /* The lines come up first, as "4.5 m" comes up to the stone's base, and he
-   follows with his caption once the figure is halfway up the stone. Each only
-   hides; shown, the caption keeps .caption's own grey. */
+   follows with his caption once the figure has risen clear of his raised
+   hand, two fifths of the way down from the tip: he stands under it. Each
+   only hides; shown, the caption keeps .caption's own grey. */
 .height-rule {
   --rule-from: 1.15;
-  --figure-from: 0.5;
+  --figure-from: 0.4;
 }
 .height-rule-figure,
 .height-rule .height-rule-caption { transition: opacity .5s ease; }
@@ -1398,8 +1463,10 @@ section { position: relative; }
   transform: translateY(calc(-100% - 10px));
 }
 @media (max-width: 900px) {
-  /* The facts run full width over the stone here, and so do the lines. */
+  /* The facts run full width over the stone here, and so do the lines, with
+     the man at their right end. */
   .height-rule-span { grid-column: 1 / -1; }
+  .height-rule-figure { right: 0; }
   /* Nothing is free beside the figures at this width, so the captions hang
      under the base line instead, under their figures. */
   .stone-rule .caption {
@@ -1470,11 +1537,11 @@ section { position: relative; }
      stone, and only a soft shadow separates it, so the sculpture reads as one
      continuous object rather than being sliced by opaque bands. */
   .facts-rail { row-gap: 48vh; padding: 20vh 0 24vh; }
-  .rail-fact--left,
-  .rail-fact--right,
-  .rail-fact--six,
-  .rail-fact--five,
   .rail-fact--wide { grid-column: 1 / -1; }
+  .intro .rail-fact { margin-left: 0; }
+  /* No row of facts at the top here: they stay where they are as they go by. */
+  .facts-dock { display: none; }
+  .facts-dock + .container { margin-top: 0; }
   /* One column here; the rail's row gap above is for the stone's facts. */
   .facts-rail--tail { row-gap: 0; }
   .facts-rail--tail > .rail-fact { grid-row: auto; }
