@@ -414,8 +414,9 @@ body.light .menu-btn { color: #000; }
    ============================================================ */
 /* The rail's measure, shared with the list it opens, which is laid out on it —
    see .crail-nav. --crail-h is the rail's whole length, strokes and gaps
-   together, held to 80% of the viewport on a short window. Tall enough that
-   every title in the open list has room in front of its own part. The strokes share
+   together, held to 40% of the viewport on a short window: half what it was
+   while the making's stroke was cut into six, now that it is one. Still tall
+   enough that every title in the open list has room in front of its own part. The strokes share
    what the gaps leave in proportion to their chapters — see .crail-bar — so it
    is the one number that sets the scale of the map. --crail-gap stands between
    chapters, --crail-cut between the parts of a stroke that is cut.
@@ -423,7 +424,7 @@ body.light .menu-btn { color: #000; }
    to the optical one: set dead centre it reads low, so it splits the height it
    leaves free 45 above to 55 below. */
 .crail, .crail-panel {
-  --crail-h: min(720px, 80vh);
+  --crail-h: min(360px, 40vh);
   --crail-gap: 8px;
   --crail-cut: 1px;
   --crail-lift: calc((100vh - var(--crail-h)) * 0.05);
@@ -621,15 +622,15 @@ body.light .crail-panel {
   translate: 0 var(--shift, 0px);
 }
 /* The number, in a lane between the stroke and the title exactly as wide as the
-   widest of them -- a sub-chapter's 4.3, which measures 1.627em in Struve at
-   this weight and tracking (the figures are tabular, so 4.1 to 4.6 match) -- so
+   widest of them -- one figure, 0.65em in Struve at this weight and tracking
+   (the figures are tabular, so 1 to 4 match) -- so
    every title starts on the same x, one lead past the widest number, whether
    its own number shows or not. It shows for the part you are in, and for the others
    only while they are hovered -- the pointer on the link or on its part of the
    rail, which crailPaint() marks .is-hover -- or the keyboard is on the link. */
 .crail-num {
   flex: none;
-  width: 1.63em;
+  width: 0.65em;
   font-variant-numeric: tabular-nums;
   opacity: 0;
   transition: opacity .25s ease;
@@ -647,12 +648,6 @@ body.light .crail-link { color: rgba(0, 0, 0, 0.38); }
 body.light .crail-link.is-active,
 body.light .crail-link:hover,
 body.light .crail-link.is-hover { color: #000; }
-/* The journey's title over its sub-chapters, and the prefix they drop for it:
-   only without the rail -- see the narrow screens below. On the rail each
-   sub-chapter keeps its full title, since each stands level with its own part
-   of the stroke. */
-.crail-chapter { display: none; }
-
 /* Rows arrive after the blur, one behind the next, so the list reads as
    settling into place instead of appearing whole. */
 .crail-link {
@@ -727,13 +722,6 @@ body:has(.jg.is-open) .tts-controls {
     translate: none;            /* a plain column: no part to stand off */
   }
   .crail-num { opacity: 1; }
-  /* The making's six sub-chapters under their chapter's title, set once and
-     unnumbered, rather than each opening on it. The title links to the
-     chapter's head, and is inked while you are in any of the six. */
-  .crail-chapter { display: flex; }
-  .crail-pre { display: none; }
-  body.dark  .crail-row:has(.crail-link.is-active) .crail-chapter { color: #fff; }
-  body.light .crail-row:has(.crail-link.is-active) .crail-chapter { color: #000; }
   /* The list has the screen: the read-aloud cluster and the language menu in
      the corner would stand over its first column. Reading goes on. */
   body:has(.crail-panel.is-open) .tts-controls {

@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=241" />
+<link rel="stylesheet" href="styles.css?v=244" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -37,45 +37,25 @@
        + button above opens it.
        Each stroke is drawn in parts, .crail-seg. A bar's first part starts
        with its chapter; any later one starts at its data-crail-from anchor,
-       which is how the making's stroke is cut at its sub-chapters. -->
+       which is how a stroke would be cut at sub-chapters. Every stroke is one
+       part now: the making is listed as a single chapter. -->
   <button class="crail" id="crail" aria-label="Contents" data-i18n-label="nav.contents" aria-expanded="false" aria-controls="crailPanel">
     <span class="crail-bar" aria-hidden="true"><span class="crail-seg"><span class="crail-fill"></span></span></span>
     <span class="crail-bar" aria-hidden="true"><span class="crail-seg"><span class="crail-fill"></span></span></span>
     <span class="crail-bar" aria-hidden="true"><span class="crail-seg"><span class="crail-fill"></span></span></span>
-    <span class="crail-bar" aria-hidden="true">
-      <span class="crail-seg"><span class="crail-fill"></span></span>
-      <span class="crail-seg" data-crail-from="stroobant"><span class="crail-fill"></span></span>
-      <span class="crail-seg" data-crail-from="sculpting"><span class="crail-fill"></span></span>
-      <span class="crail-seg" data-crail-from="sculpture-trip"><span class="crail-fill"></span></span>
-      <span class="crail-seg" data-crail-from="rotterdam-frankfurt"><span class="crail-fill"></span></span>
-      <span class="crail-seg" data-crail-from="frankfurt"><span class="crail-fill"></span></span>
-    </span>
+    <span class="crail-bar" aria-hidden="true"><span class="crail-seg"><span class="crail-fill"></span></span></span>
   </button>
 
   <div class="crail-panel" id="crailPanel" role="dialog" aria-label="Contents" data-i18n-label="nav.contents" aria-hidden="true">
     <nav class="crail-nav">
       <!-- Laid out on the rail's own measure and built as the rail is, so each
            title stands level with its part of the rail — see .crail-nav. A row
-           per bar and a link per part: the making's bar is cut at its
-           sub-chapters, so its row holds six separate items, each linking to
-           its own sub-chapter (the first to the chapter's opening, which it
-           starts with). A link's number shows for the part you are in,
-           and for the others only while the pointer is on them. Below 901px,
-           where the + button opens this list without the rail, the making's
-           title stands once over its six sub-chapters, unnumbered, and they
-           drop it — see .crail-chapter. -->
+           per bar and a link per part. A link's number shows for the part you
+           are in, and for the others only while the pointer is on them. -->
       <div class="crail-row"><a href="#top" class="crail-link" style="--i:0" data-crail-close><span class="crail-num" aria-hidden="true">1</span><span class="crail-txt" data-i18n="nav.hero">Hero: the sculpture</span></a></div>
       <div class="crail-row"><a href="#ch1" class="crail-link" style="--i:1" data-crail-close><span class="crail-num" aria-hidden="true">2</span><span class="crail-txt" data-i18n="nav.artist">The artist: Max Bill</span></a></div>
       <div class="crail-row"><a href="#ch2" class="crail-link" style="--i:2" data-crail-close><span class="crail-num" aria-hidden="true">3</span><span class="crail-txt" data-i18n="nav.math">Kontinuität = an infinity loop?</span></a></div>
-      <div class="crail-row">
-        <a href="#ch3" class="crail-link crail-chapter" style="--i:3" data-crail-close><span class="crail-num" aria-hidden="true"></span><span class="crail-txt" data-i18n="nav.making">The story of the making</span></a>
-        <a href="#ch3" class="crail-link" style="--i:4" data-crail-close><span class="crail-num" aria-hidden="true">4.1</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.frankfurt-germany">Frankfurt, Germany</span></span></a>
-        <a href="#stroobant" class="crail-link" style="--i:5" data-crail-close><span class="crail-num" aria-hidden="true">4.2</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.sardinia-italy">Sardinia, Italy</span></span></a>
-        <a href="#sculpting" class="crail-link" style="--i:6" data-crail-close><span class="crail-num" aria-hidden="true">4.3</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.carrara-workshop">Carrara, workshop</span></span></a>
-        <a href="#sculpture-trip" class="crail-link" style="--i:7" data-crail-close><span class="crail-num" aria-hidden="true">4.4</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.gibraltar-rotterdam">Transport: Gibraltar → Rotterdam</span></span></a>
-        <a href="#rotterdam-frankfurt" class="crail-link" style="--i:8" data-crail-close><span class="crail-num" aria-hidden="true">4.5</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.rotterdam-frankfurt">Rotterdam → Frankfurt</span></span></a>
-        <a href="#frankfurt" class="crail-link" style="--i:9" data-crail-close><span class="crail-num" aria-hidden="true">4.6</span><span class="crail-txt"><span class="crail-pre"><span data-i18n="nav.making">The story of the making</span>: </span><span data-i18n="nav.frankfurt">Frankfurt</span></span></a>
-      </div>
+      <div class="crail-row"><a href="#ch3" class="crail-link" style="--i:3" data-crail-close><span class="crail-num" aria-hidden="true">4</span><span class="crail-txt" data-i18n="nav.making">The story of the making</span></a></div>
     </nav>
   </div>
 
@@ -1273,9 +1253,7 @@ function crailInit() {
     nav: panel.querySelector('.crail-nav'),
     // The open list, built as the rail is: a row per bar, a link per part.
     rows: [...panel.querySelectorAll('.crail-row')],
-    // The journey's chapter title, shown only without the rail, stands for no
-    // part, so it is left out.
-    links: [...panel.querySelectorAll('.crail-link:not(.crail-chapter)')],
+    links: [...panel.querySelectorAll('.crail-link')],
     tops: null,     // chapter start offsets, filled by crailMeasure
     segTops: null,  // part start offsets, likewise
     end: 0,         // where the last chapter stops: the top of the footer
