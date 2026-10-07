@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=262" />
+<link rel="stylesheet" href="styles.css?v=264" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -160,7 +160,7 @@
           </div>
           <div class="rail-fact rail-fact--left reveal">
             <span class="rail-key">Title</span>
-            <span class="rail-val">Kontinuität II</span>
+            <span class="rail-val">Kontinuität <span class="keep-case">II</span></span>
           </div>
           <div class="rail-fact rail-fact--five reveal">
             <span class="rail-key">Years</span>
@@ -2740,6 +2740,41 @@ document.querySelectorAll('.facts').forEach((facts) => {
   window.addEventListener('load', hang);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(hang);
   hang();
+})();
+
+// The facts' labels, at 18px, and their figures, at up to 112, start on the
+// same line of the grid, but a face carries a little air in front of each
+// letter in proportion to its size -- its side bearing -- so a figure's first
+// stroke stands visibly right of its label's. Each label is moved in by the
+// difference between the two first letters' ink, measured off their own faces
+// and sizes, so its first stroke stands over the figure's; the note under the
+// artist's name goes with it. A letter's ink is read off a canvas set in the
+// element's own type: how far right of the pen its outline begins. The text
+// is taken as rendered, in the stylesheet's lower case.
+(() => {
+  const facts = [...document.querySelectorAll('.facts-rail .rail-fact')];
+  if (!facts.length) return;
+  const ctx = document.createElement('canvas').getContext('2d');
+  const ink = (el) => {
+    const ch = (el.innerText || '').trim().charAt(0);
+    if (!ch) return 0;
+    const cs = getComputedStyle(el);
+    ctx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    return -ctx.measureText(ch).actualBoundingBoxLeft;
+  };
+  function align() {
+    facts.forEach(f => {
+      const val = f.querySelector('.rail-val');
+      if (!val) return;
+      const at = ink(val);
+      f.querySelectorAll('.rail-key, .rail-note').forEach(el => {
+        el.style.textIndent = (at - ink(el)).toFixed(2) + 'px';
+      });
+    });
+  }
+  window.addEventListener('resize', align);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(align);
+  align();
 })();
 
 // Bill's portrait caption, on page columns 2-3 under the portrait, stands with

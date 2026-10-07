@@ -1271,6 +1271,13 @@ section { position: relative; }
      rather than breaking "4.5 m" in two. */
   white-space: nowrap;
 }
+/* The facts are set in lower case, labels, names and all, as the hero's title
+   is -- but for a roman numeral (.keep-case). The words keep their capitals in
+   the markup. */
+.facts-rail .rail-key,
+.facts-rail .rail-val,
+.facts-rail .rail-note { text-transform: lowercase; }
+.facts-rail .keep-case { text-transform: none; }
 /* Material and the chief of production's name run to two lines, set close so
    they read as one figure. Only here:
    the one-line figures keep their boxes, which the stone rules measure. */
@@ -1334,11 +1341,11 @@ section { position: relative; }
   line-height: 1.25;
 }
 /* Height. Two lines, one on the stone's tip and one under its base. They run
-   from column 3, where the Height fact's figure ends, to the end of column 7,
-   where the Modulor man stands on the lower one: from the figure that names
-   the span to the man it is measured against. */
+   from column 2, where the Height fact and its figure start, to the end of
+   column 7, where the Modulor man stands on the lower one: from the figure
+   that names the span to the man it is measured against. */
 .height-rule-span {
-  grid-column: 3 / 8;
+  grid-column: 2 / 8;
   grid-row: 1;
   position: relative;
 }
