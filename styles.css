@@ -1229,6 +1229,9 @@ section { position: relative; }
 /* Architect: from column 6, over the stone's right half -- the first fact, so
    it opens the passage on the stone rather than beside it. */
 .rail-fact--six   { grid-column: 6 / 9; }
+/* Years: from column 5, just right of the stone's centre line, running on to
+   the edge; its figure scales with the columns, so it fits there at any width. */
+.rail-fact--five  { grid-column: 5 / 9; }
 /* One fact per row — without explicit rows the two narrow strips would pack
    side by side into the same row. */
 .rail-fact:nth-child(1) { grid-row: 1; }
@@ -1464,6 +1467,7 @@ section { position: relative; }
   .rail-fact--left,
   .rail-fact--right,
   .rail-fact--six,
+  .rail-fact--five,
   .rail-fact--wide { grid-column: 1 / -1; }
   /* One column here; the rail's row gap above is for the stone's facts. */
   .facts-rail--tail { row-gap: 0; }
