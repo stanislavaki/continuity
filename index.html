@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=256" />
+<link rel="stylesheet" href="styles.css?v=261" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -214,13 +214,13 @@
     <div class="container">
       <div class="article-grid">
         <div class="article-body">
-          <p class="article-lead" data-narr="intro-2">Imagine a block of granite of some 200&nbsp;tonnes, freed from a quarry in Sardinia in the 1980s, carved into a work of art and shipped from Carrara around the coast of Europe through the Strait of Gibraltar, then carried up the Rhine and the Main, before finally being installed as a monumental infinity loop in the heart of the financial district of Frankfurt, Germany. At 80&nbsp;tonnes, the finished sculpture has been called the largest granite monolith to be transported since the colossi of ancient Egypt.<sup class="fn-ref" data-fn="1">1</sup> So what was the idea behind it, and what made it possible forty years ago?</p>
+          <p class="article-lead" data-narr="intro-2">Imagine a block of granite of some 200&nbsp;tonnes, freed from a quarry in Sardinia in the 1980s, carved into a work of art and shipped from Carrara around the coast of Europe through the Strait of Gibraltar, then carried up the Rhine and the Main, before finally being installed as a monumental infinity loop in the heart of the financial district of Frankfurt, Germany. <span class="fn-cite" data-fn="1">At 80&nbsp;tonnes, the finished sculpture has been called the largest granite monolith to be transported since the colossi of ancient Egypt.<sup class="fn-ref" data-fn="1">1</sup></span> So what was the idea behind it, and what made it possible forty years ago?</p>
           <div class="fn-note">
             <p data-fn="1"><i class="fig-label">1. </i>Gerd Fischer calls it &ldquo;der gr&ouml;&szlig;te Granitkoloss seit &auml;gyptischer Zeit&rdquo;. Fischer (1999). See also Spies (1986).</p>
             <p data-fn="2"><i class="fig-label">2. </i>Herbert Zapp, &ldquo;Eine Idee und ihre Verwirklichung&rdquo; (speech, 7&nbsp;October 1986), 3.</p>
             <p data-fn="3"><i class="fig-label">3. </i>Angela Thomas, <i>A Subversive Gleam</i> (2022), 558, 561&ndash;562.</p>
           </div>
-          <p>Conceived by the Swiss artist, architect and Bauhaus-trained polymath Max Bill, the sculpture was commissioned by Deutsche Bank in Frankfurt, Germany: the bank decided to approach Bill on 7&nbsp;October 1981, and the contract was signed almost two years later.<sup class="fn-ref" data-fn="2">2</sup> It was then realised over three years of continuous work by an international team of sculptors and stonemasons. Its production was led from a workshop in Carrara, Italy, by Dominique Stroobant, who directed the cutting, shipping and shaping of the granite and coordinated the considerable logistics the piece demanded. It belongs to a line of work that runs through Bill&rsquo;s whole career: from 1935 on, in one experiment after another, he looked for ways to give infinity a form in space.<sup class="fn-ref" data-fn="3">3</sup></p>
+          <p><span class="fn-cite" data-fn="2">Conceived by the Swiss artist, architect and Bauhaus-trained polymath Max Bill, the sculpture was commissioned by Deutsche Bank in Frankfurt, Germany: the bank decided to approach Bill on 7&nbsp;October 1981, and the contract was signed almost two years later.<sup class="fn-ref" data-fn="2">2</sup></span> It was then realised over three years of continuous work by an international team of sculptors and stonemasons. Its production was led from a workshop in Carrara, Italy, by Dominique Stroobant, who directed the cutting, shipping and shaping of the granite and coordinated the considerable logistics the piece demanded. <span class="fn-cite" data-fn="3">It belongs to a line of work that runs through Bill&rsquo;s whole career: from 1935 on, in one experiment after another, he looked for ways to give infinity a form in space.<sup class="fn-ref" data-fn="3">3</sup></span></p>
         </div>
       </div>
     </div>
@@ -2684,6 +2684,15 @@ document.querySelectorAll('.facts').forEach((facts) => {
   const para = notes && notes.nextElementSibling;
   if (!para) return;
   const items = [...notes.querySelectorAll('[data-fn]')];
+  // A note under the pointer lights the sentence that calls it (.fn-cite, the
+  // sentence and its mark) in the page's signal yellow, and comes up in it
+  // itself -- see .fn-cite.
+  items.forEach(p => {
+    const cite = document.querySelector(`.fn-cite[data-fn="${p.dataset.fn}"]`);
+    if (!cite) return;
+    p.addEventListener('pointerenter', () => cite.classList.add('is-cited'));
+    p.addEventListener('pointerleave', () => cite.classList.remove('is-cited'));
+  });
   const baseline = (el) => {
     const probe = document.createElement('span');
     probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';

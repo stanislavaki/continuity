@@ -1765,10 +1765,12 @@ section { position: relative; }
    and breaking out of the body's right half to columns 2-8. The body is four
    columns and three gaps (5-8), so a column is (100% - 3 gaps) / 4: reaching
    back three columns and three gaps comes to 75% + 0.75 gap, and seven columns
-   and six gaps to 175% + 0.75 gap. */
+   and six gaps to 175% + 0.75 gap. It is set in the page's signal red; its
+   note mark takes the same colour at the marks' 60%. */
 .article-body .article-lead {
   margin-left: calc(-75% - 0.75 * var(--col-gap));
   width: calc(175% + 0.75 * var(--col-gap));
+  color: var(--signal-red);
   font-size: var(--quote-size);
   font-weight: 700;
   line-height: 1.043;
@@ -1785,6 +1787,16 @@ section { position: relative; }
   opacity: 0.6;
 }
 .article-body p:not(.article-lead) .fn-ref { font-size: 0.65em; }
+/* The sentence a note is for, and its mark. While its note is under the
+   pointer it turns to the page's signal yellow, in the red opener as in the
+   white paragraph, and the note itself, number and all, comes up from its 72%
+   in the same yellow: the two always light together, in one colour. */
+.fn-cite { transition: color .2s ease; }
+.fn-cite.is-cited { color: var(--signal-yellow); }
+.article-body .fn-note p,
+.article-body .fn-note .fig-label { transition: color .2s ease; }
+.article-body .fn-note p:hover { color: var(--signal-yellow); }
+.article-body .fn-note p:hover .fig-label { color: inherit; }
 /* The intro's notes, set as the letters' caption is (.doc-deck-cap): Space Mono
    at 12 on 18 in white at 72%, each led by an italic serif number in full
    white. They stand on columns 2-3 under the opener, beside the paragraph after
