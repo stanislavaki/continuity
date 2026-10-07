@@ -271,7 +271,7 @@ body.light .menu-btn { color: #000; }
 
 #ch2 { overflow: visible; }
 /* Each numeral's own left side bearing, which is what puts its ink on the
-   column line -- see .chapter-num and .sub-num for the size it pairs with.
+   column line -- see .chapter-num for the size it pairs with.
    One rule a numeral because every digit carries a different bearing: the 4's
    is not half the 6's, so one figure for all would pull the rest out of true.
    Measured off Struve at 500 (canvas measureText, actualBoundingBoxLeft over
@@ -279,7 +279,6 @@ body.light .menu-btn { color: #000; }
 #ch1 .chapter-num              { margin-left: -0.068em; }  /* 2 */
 #ch2 .chapter-num              { margin-left: -0.062em; }  /* 3 */
 #ch3 .chapter-num              { margin-left: -0.026em; }  /* 4 */
-.making .sub-num               { margin-left: -0.026em; }  /* 4.1 to 4.6, all on a 4 */
 #ch2 .chapter-head { margin-bottom: 0; }
 #ch2 .math-body { margin-top: 200px; }
 .scroll-video-sticky {
@@ -1799,27 +1798,37 @@ section { position: relative; }
 }
 .article-body p:not(.article-lead) .fn-ref { font-size: 0.65em; }
 /* The sentence a note is for, and its mark. While its note is under the
-   pointer it turns to the page's signal yellow, in the red opener as in the
-   white paragraph, and the note itself, number and all, comes up from its 72%
-   in the same yellow: the two always light together, in one colour. */
+   pointer it turns to --fn-lit, and the note itself, number and all, comes up
+   in the same colour: the two always light together, in one colour. The
+   colour goes by the ground they stand on: the signal yellow on the dark
+   sections (the intro), Bill's blue on the white and paper ones (chapter 2),
+   where yellow would not read -- 1.4:1 on white, the blue 8.7:1. */
+.fn-cite,
+.fn-note { --fn-lit: var(--signal-yellow); }
+.light-section .fn-cite,
+.light-section .fn-note,
+.paper-section .fn-cite,
+.paper-section .fn-note { --fn-lit: var(--bill-blue); }
 .fn-cite { transition: color .2s ease; }
-.fn-cite.is-cited { color: var(--signal-yellow); }
+.fn-cite.is-cited { color: var(--fn-lit); }
 .article-body .fn-note p,
 .article-body .fn-note .fig-label { transition: color .2s ease; }
-.article-body .fn-note p:hover { color: var(--signal-yellow); }
+.article-body .fn-note p:hover { color: var(--fn-lit); }
 .article-body .fn-note p:hover .fig-label { color: inherit; }
-/* The intro's notes, set as the letters' caption is (.doc-deck-cap): Space Mono
-   at 12 on 18 in white at 72%, each led by an italic serif number in full
-   white. They stand on columns 2-3 under the opener, beside the paragraph after
-   it, whose top they share: a float pulled back out of the body's right half by
-   the opener's own reach, three columns and three gaps, and two columns and a
-   gap wide. Its margin box comes to less than nothing, so the paragraph beside
-   it neither wraps nor moves. It drops by that paragraph's own 1.2em lead, in
-   the body's size, to stand level with it; inside it, the intro notes script
-   drops each note to the line that carries its mark. */
+/* A column of notes, set as the letters' caption is (.doc-deck-cap): Space
+   Mono at 12 on 18 in white at 72% -- black at 60% on a white chapter -- each
+   led by an italic serif number in full ink. It stands on columns 2-3 beside
+   the paragraph after it, whose top it shares: a float pulled back out of the
+   body's right half by three columns and three gaps, and two columns and a gap
+   wide. Its margin box comes to less than nothing, so the paragraph beside it
+   neither wraps nor moves. Between two paragraphs -- the intro's, after the
+   opener -- it drops by the next one's own 1.2em lead, in the body's size, to
+   stand level with it, and that paragraph keeps the lead the column took from
+   it. Inside, the notes script drops each note to the line that carries its
+   mark. */
 .article-body .fn-note {
   float: left;
-  margin: calc(1.2 * clamp(20px, 1.7vw, 26px)) 0 0 calc(-75% - 0.75 * var(--col-gap));
+  margin: 0 0 0 calc(-75% - 0.75 * var(--col-gap));
   width: calc(50% - 0.5 * var(--col-gap));
   font-family: var(--mono);
   font-size: 12px;
@@ -1831,8 +1840,11 @@ section { position: relative; }
   overflow-wrap: anywhere;
   color: rgba(255, 255, 255, .72);
 }
-.article-body .fn-note + p { margin-top: 1.2em; }
+.article-body p + .fn-note { margin-top: calc(1.2 * clamp(20px, 1.7vw, 26px)); }
+.article-body p + .fn-note + p { margin-top: 1.2em; }
 .article-body .fn-note p + p { margin-top: 0.75em; }
+.light-section .article-body .fn-note { color: rgba(0, 0, 0, .6); }
+.light-section .fn-note .fig-label { color: #000; }
 /* A note's number hangs in the margin, so every note's text starts on column
    2, the opener's edge: a box two of its own ems wide set back by its width,
    the number right-aligned in it half an em off the text. The space after the
@@ -1853,7 +1865,9 @@ section { position: relative; }
 }
 @media (max-width: 900px) {
   .article-body .article-lead { margin-left: 0; width: 100%; }
-  /* One column: the note follows the opener in the flow. */
+  /* One column: the notes follow the text they are for, in the flow. */
+  .article-body:has(> .fn-note) { display: flex; flex-direction: column; }
+  .article-body > .fn-note { order: 1; }
   .article-body .fn-note { float: none; margin: 1.2em 0 0; width: auto; }
   /* No margin to hang the numbers in: they run in the line. */
   .fn-note .fig-label { display: inline; width: auto; margin-left: 0; padding-right: 0; }
@@ -3427,24 +3441,12 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 
 /* Journey sub-chapter heads: centred, and without the hairline .sub-head
-   carries by default. Laid out on the same four-track head the chapters use, so
-   the number can take the same column -- see .sub-num. */
+   carries by default. They carry no number: the title opens them. */
 .journey-sub .sub-head {
   border-top: none;
   padding-top: 0;
   text-align: center;
-  /* Queried by .sub-num, which sizes itself to one of these columns. Read from
-     the head's own inline size rather than 100vw so a scrollbar cannot throw
-     the figure out. */
-  container-type: inline-size;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  align-items: start;
-  gap: var(--col-gap);
 }
-/* The title, route and dates keep the full measure and stay centred, as
-   .chapter-title does over the number beside it. */
-.journey-sub .sub-head-text { grid-column: 1 / -1; }
 
 /* Granite Trip: photographs stacked down the left half of the article grid,
    opposite the text column (which keeps its usual grid-column 3/5), plus one
@@ -3786,7 +3788,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
      which keeps them whatever this is set to. */
   margin-bottom: 18px;
 }
-/* The three small lines of the head -- number, route, dates -- are set as body
+/* The small lines of the head -- route, dates -- are set as body
    copy, not as labels: the same face, weight, size, leading and tracking the
    article columns use, so the head speaks in the page's own voice instead of a
    mono caption's. They are set at full strength too, in the ink of the section
@@ -3799,34 +3801,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   font-size: clamp(20px, 1.7vw, 26px);
   line-height: 1.35;
   letter-spacing: -0.005em;
-}
-/* Set as the chapter numbers are: the same face, weight, leading and tracking,
-   in the same column of the same four-track head.
-   The size is the one place it parts company with them. .chapter-num derives
-   its size from the head, so the numeral's ink fills exactly one column; this
-   is set outright instead, because a three-character number filling a column
-   came out larger than the head wanted. It falls back to the derived figure
-   only when the head is too narrow to hold 216px -- so the number is a fixed
-   size on any real desktop and starts scaling once the column can no longer
-   carry it. */
-.sub-num {
-  font-family: var(--sans);
-  font-weight: 500;
-  font-size: min(216px, calc((100cqw - 3 * var(--col-gap)) / 4 / 1.27 * 1.36));
-  line-height: 0.85;
-  /* Tighter than the chapter numeral's -0.04em: three characters set at this
-     size leave the pair of digits floating apart, and the point of the figure
-     is that it reads as one mark. In em, so it keeps its proportion as the
-     container query resizes the head. */
-  letter-spacing: -0.1em;
-  grid-column: 2 / 3;
-  justify-self: start;
-  text-align: left;
-  /* The optical left overhang, in proportion to the size, as .chapter-num;
-     each numeral's own is set with the chapters' (#ch1 .chapter-num). */
-  margin-left: -0.056em;
-  opacity: 0.96;
-  margin-bottom: 24px;
 }
 .sub-head-text { display: block; }
 .sub-title {
@@ -4504,13 +4478,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .journey-facts > div:nth-child(n) { grid-column: 1 / -1; }
   .journey-sub { margin-bottom: 80px; }
   /* 64 + 48 + 24 was 136 here; a quarter is 34, less the dates' own 24. */
-  .sub-head { grid-template-columns: 1fr; gap: 8px; margin-bottom: 10px; }
-  /* Back to the single column with the head. Left at 2 / 3 the number would
-     open implicit tracks beside a one-track grid and drag the head off the
-     measure; the container query keeps sizing it against the head's own width,
-     which is now the full column -- by the chapter numerals' measure, so the
-     two stay one size here too. */
-  .journey-sub .sub-num { grid-column: 1; font-size: calc((100cqw - 3 * var(--col-gap)) / 4 / 0.468); }
+  .sub-head { margin-bottom: 10px; }
   .diary-list li { grid-template-columns: 1fr; gap: 6px; }
   .sg-bookend--narrow { display: block; }
   .sg-bookend--narrow img { grid-column: auto; }
