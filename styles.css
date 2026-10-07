@@ -1413,8 +1413,35 @@ section { position: relative; }
      block — body already paints the same black. */
   background: transparent;
 }
-/* Place alone on the tail's one row, on columns 5-8. */
+/* Place on the tail's one row, on columns 5-8, and the globe beside it from
+   column 2. The script sizes and sets it so its disc stands level with the
+   fact, from the cap height of "Place" to the name's last baseline (see
+   buildPlaceGlobe); this is its box until then. */
 .facts-rail--tail > .rail-fact { grid-row: 1; }
+.place-globe {
+  grid-column: 2 / 4;
+  grid-row: 1;
+  align-self: start;
+  justify-self: start;
+  width: 100%;
+  aspect-ratio: 1;
+  position: relative;
+}
+/* The globe darkens toward its rim, as a lit sphere does: a ring of shade laid
+   over the disc, clear across its middle and falling to seven tenths dark at
+   the edge. The disc is --globe-fill of the box, centred (the script sets it,
+   as it fits the globe's zoom to it); the shade reaches 2px past it, so no
+   bright edge of the globe shows outside it. */
+.place-globe::after {
+  content: "";
+  position: absolute;
+  inset: calc((1 - var(--globe-fill, 0.86)) * 50% - 2px);
+  z-index: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle closest-side,
+    rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, .25) 70%, rgba(0, 0, 0, .7) 100%);
+  pointer-events: none;
+}
 .facts-rail--tail {
   row-gap: 0;
   /* The sticky sculpture carries a -1 x width margin-bottom to pull the hero
@@ -1441,6 +1468,8 @@ section { position: relative; }
   /* One column here; the rail's row gap above is for the stone's facts. */
   .facts-rail--tail { row-gap: 0; }
   .facts-rail--tail > .rail-fact { grid-row: auto; }
+  /* The globe under Place, two fifths of the measure wide, from its left edge. */
+  .place-globe { grid-column: 1 / -1; grid-row: auto; width: 40%; margin-top: 24px; }
   .rail-fact {
     background: none;
     padding: 14px 0 20px;
@@ -1656,7 +1685,45 @@ section { position: relative; }
   column-gap: var(--col-gap);
   align-items: start;
 }
-.article-grid > .article-image { grid-column: 2 / 4; }
+/* Bill's portrait, whole, on page columns 2-7: six columns, centred. It spans
+   the grid's four tracks, the page's eight columns, and is set in by one column
+   and its gap on either side: an eighth of the span and an eighth of a gap. */
+.article-grid > .bill-portrait {
+  grid-column: 1 / -1;
+  position: relative;
+  margin: 0 calc(100% / 8 + var(--col-gap) / 8);
+}
+.bill-portrait img { display: block; width: 100%; height: auto; }
+/* Its caption, set as the letters' is (.doc-deck-cap) in the white page's
+   tones: black at 60% (5.7:1, clear of AA at 12px), led by its number in full
+   black. It stands on page columns 2-3, the portrait's first two of six --
+   a third of its width, less two thirds of a gap -- under it and beside the
+   paragraph after it, its first line on that paragraph's first baseline: out
+   of the flow, hung from the portrait's foot by a drop the script measures
+   (--cap-drop; the fallback is the grid's row gap and a line). */
+.bill-portrait-cap {
+  position: absolute;
+  left: 0;
+  top: calc(100% + var(--cap-drop, 64px));
+  width: calc(100% / 3 - var(--col-gap) * 2 / 3);
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  font-feature-settings: "onum", "pnum";
+  text-rendering: optimizeLegibility;
+  overflow-wrap: anywhere;
+  color: rgba(0, 0, 0, .6);
+}
+.bill-portrait-cap .fig-label {
+  font-family: "Martina Plantijn", Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 1.15em;
+  line-height: 1;
+  color: #000;
+}
 /* Stroobant's photograph, on page columns 2-6. The grid's first three tracks
    are page columns 1-6, six columns and five gaps, so it is set in by one
    column and its gap: a sixth of the span and a sixth of a gap. */
@@ -2947,10 +3014,12 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
     width: 100%;
   }
   /* One track, so everything set on the article grid takes the full measure. */
-  .article-grid > .article-image,
   .article-grid > .making-photo,
   .article-grid > .article-body { grid-column: 1 / -1; }
   .article-grid > .making-photo { margin-left: 0; }
+  /* The portrait takes the measure, its caption under it in the flow. */
+  .article-grid > .bill-portrait { margin: 0; }
+  .bill-portrait-cap { position: static; width: auto; margin: 12px 0 0; }
   .img-strip { grid-template-columns: repeat(2, 1fr); }
   .fact-row { grid-template-columns: 1fr 1fr; }
   .fact-row::before { width: 100%; } /* full-width divider on the stacked mobile layout */
@@ -3464,25 +3533,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* Both align to the top of their own cell, or the shorter one would stretch. */
 .journey-photo-pair figure { align-self: start; }
 .journey-photo-pair img { display: block; width: 100%; height: auto; }
-/* Two photographs set into the Bill chapter's text. The model takes the text
-   column (page columns 5-8), a paragraph's distance from the text on either
-   side. The chair hangs beside it on columns 1-3, 100px higher, the stagger the
-   journey's pairs have: the body is four columns and three gaps, so a column is
-   (100% - 3 gaps) / 4, and columns 1-3 start a body-width and a gap to the left
-   and come to 75% - a quarter gap. On one column the chair simply goes first. */
-.article-body .bill-photos { position: relative; margin-top: 1.2em; }
-.article-body .bill-photos + p { margin-top: 1.2em; }
-.bill-photo { margin: 0; }
-.bill-photo img { display: block; width: 100%; height: auto; }
-.bill-photo--side {
-  position: absolute;
-  top: -100px;
-  left: calc(-100% - var(--col-gap));
-  width: calc(75% - 0.25 * var(--col-gap));
-}
-@media (max-width: 900px) {
-  .bill-photo--side { position: static; width: 100%; margin-bottom: 1.2em; }
-}
 
 .journey-photos { grid-row: 4; }
 .article-grid > .journey-photo-measure ~ .article-body { grid-row: 4; }

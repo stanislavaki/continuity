@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=249" />
+<link rel="stylesheet" href="styles.css?v=256" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -198,6 +198,10 @@
           <span class="rail-key">Place</span>
           <span class="rail-val">Frankfurt am Main, Germany</span>
         </div>
+        <!-- The place on the globe: the making chapter's own globe, whole, with
+             Frankfurt at its centre -- see buildPlaceGlobe in the journey
+             globes script. -->
+        <div class="place-globe reveal" id="placeGlobe" role="img" aria-label="Frankfurt am Main at the centre of the globe"></div>
       </div>
     </div>
   </section>
@@ -244,19 +248,17 @@
   <section class="article light-section" style="padding-top:0;">
     <div class="container">
       <div class="article-grid">
-        <div class="article-image" style="background-image:url('./assets/max-bill-portrait.jpg'); aspect-ratio:4/3;"></div>
+        <!-- Bill's portrait, whole, on page columns 2-7, its caption hung on
+             columns 2-3 beside the text's first line (see the portrait
+             caption script). -->
+        <figure class="bill-portrait">
+          <img src="./assets/max-bill-wire-1960.jpg" alt="Max Bill looking through loops of wire held up in both hands, two of his paintings on the wall behind him, 13 March 1960" width="1194" height="1212" decoding="async">
+          <figcaption class="bill-portrait-cap"><i class="fig-label">Fig. 1.</i> Max Bill at work, 13&nbsp;March 1960. Photo: Prisma by Dukas Presseagentur GmbH / Alamy Stock Photo. Works by Max Bill &copy; ProLitteris, Zurich.</figcaption>
+        </figure>
         <div class="article-body">
           <p data-narr="ch2-1"><strong>Max Bill (1908—1994)</strong> was a great Swiss polymath: architect, industrial and graphic designer, sculptor, painter&nbsp;— and also a prolific writer, scholar, and teacher.</p>
           <p data-narr="ch2-2">He attended the Bauhaus where he was taught by Josef Albers, László Moholy-Nagy, Paul Klee, Wassily Kandinsky and Oskar Schlemmer. Bill remained closely associated with the Bauhaus school and was a key figure in developing and propagating its principles&nbsp;— as a guest lecturer at the Kunstgewerbeschule Zürich, and as a co-founder and first rector of the <strong>Ulm School of Design</strong>.</p>
           <p data-narr="ch2-3">The term <em>concrete art</em> was not Bill&rsquo;s invention. It was coined in 1930 by the Dutch painter <strong>Theo van Doesburg</strong>, founder of De Stijl, in a manifesto published in the single issue of his journal <em>Art Concret</em>. The argument was deliberately contrary: a painting should not <em>abstract</em> from nature, because that leaves it forever secondary to the thing it was drawn from. A plane is a plane, a colour is a colour, and a work built from them is not an abstraction of reality but a concrete reality in its own right. Van Doesburg died the following year, and the idea might have gone with him.</p>
-          <!-- Two photographs of Bill at work in 1951, between van Doesburg's coining
-               of concrete art and Bill's own definition of it. The model runs in the
-               text column at a paragraph's distance from the text on either side; the
-               chair stands beside it on page columns 1-3, starting higher. -->
-          <div class="bill-photos">
-            <figure class="bill-photo bill-photo--side"><img src="./assets/max-bill-chair-1951.jpg" alt="Max Bill bending over the seat shell of a chair, 1951" width="1156" height="1634" loading="lazy" decoding="async"></figure>
-            <figure class="bill-photo"><img src="./assets/max-bill-model-1951.jpg" alt="Max Bill sighting along an architectural model held at eye level, 1951" width="2000" height="1446" loading="lazy" decoding="async"></figure>
-          </div>
           <p data-narr="ch2-4">It was Bill who gave it a second life and a working method. In 1936, in the catalogue for an exhibition at the Kunsthaus Z&uuml;rich, he set out his own definition: concrete design is design that arises of its own accord, following its own laws, without deriving them from natural phenomena or modelling itself on them. Where van Doesburg had written a polemic, Bill proposed a discipline&nbsp;&mdash; mathematics as the generative instrument rather than the decorative one. A progression, a rotation, a division of a surface could be stated as a rule and then simply carried out. This is the sense behind his remark that one can always understand his work, even without liking it: the rule is available for inspection.</p>
         </div>
       </div>
@@ -532,7 +534,7 @@
                    baseline of the first line of the paragraph after them; says
                    what the sheet last tossed across is, the left pile's top until
                    one has been. -->
-              <figcaption class="doc-deck-cap"><i class="fig-label">Fig. 1.</i> <span class="doc-deck-what">Max Bill to Dominique Stroobant, 4 October 1982, with seven photographs of a metal model: about 250 tonnes of light Sardinian granite, worked down to 75.</span></figcaption>
+              <figcaption class="doc-deck-cap"><i class="fig-label">Fig. 2.</i> <span class="doc-deck-what">Max Bill to Dominique Stroobant, 4 October 1982, with seven photographs of a metal model: about 250 tonnes of light Sardinian granite, worked down to 75.</span></figcaption>
               <div class="doc-deck-table">
                 <img class="doc-deck-page" src="./assets/_docs/1982-10-04-bill-to-stroobant-1.jpg" data-cap="Max Bill to Dominique Stroobant, 4 October 1982, with seven photographs of a metal model: about 250 tonnes of light Sardinian granite, worked down to 75." alt="Letter from Max Bill to Dominique Stroobant, 4 October 1982, page 1 of 2" width="1245" height="1759" loading="lazy" decoding="async">
                 <img class="doc-deck-page" src="./assets/_docs/1982-10-04-bill-to-stroobant-2.jpg" data-cap="Page 2: could Bill’s sculpture “22” be ready by the time he comes, for him to drive it back to Zürich?" alt="Letter from Max Bill to Dominique Stroobant, 4 October 1982, page 2 of 2" width="1245" height="1759" loading="lazy" decoding="async" aria-hidden="true">
@@ -2730,6 +2732,36 @@ document.querySelectorAll('.facts').forEach((facts) => {
   hang();
 })();
 
+// Bill's portrait caption, on page columns 2-3 under the portrait, stands with
+// its first line on the baseline of the first line of the text beside it, as
+// the letters' caption does: out of the flow, hung from the portrait's foot by
+// --cap-drop. Below 901px it runs in the flow.
+(() => {
+  const fig = document.querySelector('.bill-portrait');
+  const cap = fig && fig.querySelector('.bill-portrait-cap');
+  const body = fig && fig.nextElementSibling;
+  const para = body && body.querySelector('p');
+  if (!cap || !para) return;
+  const baseline = (el) => {
+    const probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.insertBefore(probe, el.firstChild);
+    const y = probe.getBoundingClientRect().top;
+    probe.remove();
+    return y;
+  };
+  function hang() {
+    if (getComputedStyle(cap).position !== 'absolute') return;
+    const head = baseline(cap) - cap.getBoundingClientRect().top;
+    const drop = baseline(para) - head - fig.getBoundingClientRect().bottom;
+    fig.style.setProperty('--cap-drop', drop.toFixed(1) + 'px');
+  }
+  window.addEventListener('resize', hang);
+  window.addEventListener('load', hang);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(hang);
+  hang();
+})();
+
 // ============================================================================
 // Journey globes — MapLibre GL (globe projection) drawing live Esri World
 // Imagery satellite tiles. Replaces the earlier d3 orthographic + Blue Marble
@@ -2755,6 +2787,34 @@ document.querySelectorAll('.facts').forEach((facts) => {
   // places, not the passage.
   const LINK    = '#0000EE';   // the leg under way
   const VISITED = '#551A8B';   // the legs behind it
+
+  // The globe itself, shared by the making chapter's map and the small one
+  // beside Place in the intro, so the two are one globe: the satellite imagery
+  // on a globe projection over a transparent ground (each map's own box is the
+  // space around it), under a night-blue sky. `shade` is how much of the
+  // imagery shows: the making chapter's map keeps it down to a quarter, behind
+  // its text; the small globe shows it whole.
+  const globeStyle = (shade = 0.24) => ({
+    version: 8,
+    projection: { type: 'globe' },
+    sources: {
+      sat: { type: 'raster', tiles: [ESRI_IMAGERY], tileSize: 256, maxzoom: 19, attribution: ESRI_ATTRIB },
+    },
+    layers: [
+      // Transparent, not near-black: with the canvas no longer held at .4
+      // this layer would otherwise cover the wrap's radial gradient, which
+      // is what the space around the globe has always actually been.
+      { id: 'space', type: 'background', paint: { 'background-color': 'rgba(0,0,0,0)' } },
+      // The shading that used to sit on the canvas lives here now, so it
+      // falls on the satellite imagery alone. The route and the stop marks
+      // draw over it at the full white they are given.
+      { id: 'sat', type: 'raster', source: 'sat', paint: { 'raster-fade-duration': 0, 'raster-opacity': shade } },
+    ],
+  });
+  const GLOBE_SKY = {
+    'sky-color': '#0a1226', 'horizon-color': '#15233c', 'fog-color': '#0a1226',
+    'sky-horizon-blend': 0.5, 'horizon-fog-blend': 0.6, 'fog-ground-blend': 0.7, 'atmosphere-blend': 0.8,
+  };
 
   // On the wide layout the four accounts sit in the right half of the screen,
   // over the map — the column starts at about 51% of it. A state whose subject
@@ -3015,23 +3075,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
       fadeDuration: 0,
       center: cfg.overview.center,
       zoom: cfg.overview.zoom,
-      style: {
-        version: 8,
-        projection: { type: 'globe' },
-        sources: {
-          sat: { type: 'raster', tiles: [ESRI_IMAGERY], tileSize: 256, maxzoom: 19, attribution: ESRI_ATTRIB },
-        },
-        layers: [
-          // Transparent, not near-black: with the canvas no longer held at .4
-          // this layer would otherwise cover the wrap's radial gradient, which
-          // is what the space around the globe has always actually been.
-          { id: 'space', type: 'background', paint: { 'background-color': 'rgba(0,0,0,0)' } },
-          // The shading that used to sit on the canvas lives here now, so it
-          // falls on the satellite imagery alone. The route and the stop marks
-          // draw over it at the full white they are given.
-          { id: 'sat', type: 'raster', source: 'sat', paint: { 'raster-fade-duration': 0, 'raster-opacity': 0.24 } },
-        ],
-      },
+      style: globeStyle(),
     });
 
     let started = false, inView = false, raf = 0;
@@ -3776,12 +3820,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
 
     map.on('style.load', () => {
       try { map.setProjection({ type: 'globe' }); } catch (e) {}
-      try {
-        map.setSky({
-          'sky-color': '#0a1226', 'horizon-color': '#15233c', 'fog-color': '#0a1226',
-          'sky-horizon-blend': 0.5, 'horizon-fog-blend': 0.6, 'fog-ground-blend': 0.7, 'atmosphere-blend': 0.8,
-        });
-      } catch (e) {}
+      try { map.setSky(GLOBE_SKY); } catch (e) {}
 
       // The whole passage used to be drawn the entire time — the legs behind the
       // ship in the visited purple, everything ahead of it in blue — so the
@@ -3894,9 +3933,128 @@ document.querySelectorAll('.facts').forEach((facts) => {
     }, { passive: true });
   }
 
+  // The globe beside Place, in the intro's closing facts: the same globe, whole,
+  // centred on the sculpture's Frankfurt as the making chapter opens on it, and
+  // turning slowly as the Earth does, west to east -- a turn every TURN seconds,
+  // so the surface drifts right and Frankfurt comes back to the centre once a
+  // turn. It turns only while it is on screen, from Frankfurt, and not at all
+  // for a reader who has asked for less motion. Its imagery shows whole, not
+  // shaded down as the making chapter's is behind its text. Nothing is drawn on it, as
+  // nothing is on that opening globe, and it carries no attribution control
+  // (the user asked for the box gone; the making chapter's map still credits
+  // the imagery).
+  //
+  // It stands level with the text beside it: the globe's disc is as tall as
+  // the fact, from the cap height of "Place" to the baseline of the name's
+  // last line, and dropped OVERSHOOT of itself below them, as a round letter
+  // overshoots the baseline -- touching it exactly, a circle looks as if it
+  // floats above the line. Its left edge is on column 2, where the facts and
+  // the opener start. The box around the
+  // disc is FILL larger, for the atmosphere, and set back by the difference.
+  // Its zoom is worked out from the box, so the disc shows FILL of it across.
+  // MapLibre's camera stands 1.5 box-heights from the centre (its default field
+  // of view), so the globe's outline, the tangent from the camera, shows
+  // narrower than the globe is: a globe of radius R shows d tan(asin(R / (d +
+  // R))) across from its centre, and that is solved for R. At zoom 0 a globe
+  // projection's radius is the 512-pixel world's over 2 pi, which MapLibre
+  // enlarges by 1 / cos(latitude) so the scale at the centre matches the
+  // Mercator map's. The map is built only as the facts come near, a second
+  // WebGL map being no small thing to load. Below 901px the globe sits under
+  // Place at the stylesheet's size.
+  function buildPlaceGlobe() {
+    const container = document.getElementById('placeGlobe');
+    const fact = container && container.parentElement.querySelector('.rail-fact--wide');
+    if (!container || !fact) return;
+    const key = fact.querySelector('.rail-key');
+    const val = fact.querySelector('.rail-val');
+    const FILL = 0.86;
+    const OVERSHOOT = 0.04;
+    const TURN = 180;
+    const narrow = window.matchMedia('(max-width: 900px)');
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let map = null;
+
+    const fitZoom = () => {
+      const d = 1.5 * container.clientHeight;
+      const t = container.clientWidth * FILL / 2 / d;
+      const s = t / Math.hypot(1, t);
+      const radius = s * d / (1 - s);
+      return Math.log2(radius / (512 / (2 * Math.PI) / Math.cos(FRANKFURT[1] * Math.PI / 180)));
+    };
+    // A baseline, read off a zero-height inline-block set at the start of the
+    // text, or at its end for the last line's; and a face's cap height, the
+    // height of its H.
+    const baseline = (el, atEnd) => {
+      const probe = document.createElement('span');
+      probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      if (atEnd) el.appendChild(probe); else el.insertBefore(probe, el.firstChild);
+      const y = probe.getBoundingClientRect().top;
+      probe.remove();
+      return y;
+    };
+    const capHeight = (el) => {
+      const cs = getComputedStyle(el);
+      const ctx = document.createElement('canvas').getContext('2d');
+      ctx.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      return ctx.measureText('H').actualBoundingBoxAscent;
+    };
+    function place() {
+      if (narrow.matches) {
+        ['width', 'height', 'margin-left', 'margin-top'].forEach(p => container.style.removeProperty(p));
+      } else {
+        const capTop = baseline(key) - capHeight(key);
+        const disc = baseline(val, true) - capTop;
+        const box = disc / FILL, inset = (box - disc) / 2;
+        container.style.width = container.style.height = box.toFixed(1) + 'px';
+        container.style.marginLeft = (-inset).toFixed(1) + 'px';
+        container.style.marginTop = (capTop + disc * OVERSHOOT - fact.getBoundingClientRect().top - inset).toFixed(1) + 'px';
+      }
+      if (map) { map.resize(); map.setZoom(fitZoom()); }
+    }
+
+    let lng = FRANKFURT[0], last = 0, raf = 0;
+    const spin = (now) => {
+      if (last) lng = ((lng - 360 * (now - last) / 1000 / TURN) + 540) % 360 - 180;
+      last = now;
+      map.jumpTo({ center: [lng, FRANKFURT[1]] });
+      raf = requestAnimationFrame(spin);
+    };
+
+    // The stylesheet's shading over the disc takes the same FILL.
+    container.style.setProperty('--globe-fill', FILL);
+    const io = new IntersectionObserver(entries => {
+      if (!entries.some(e => e.isIntersecting)) return;
+      io.disconnect();
+      place();
+      map = new maplibregl.Map({
+        container,
+        attributionControl: false,
+        interactive: false,
+        fadeDuration: 0,
+        center: FRANKFURT,
+        zoom: fitZoom(),
+        minZoom: -2,
+        style: globeStyle(1),
+      });
+      map.on('style.load', () => {
+        try { map.setProjection({ type: 'globe' }); } catch (e) {}
+        try { map.setSky(GLOBE_SKY); } catch (e) {}
+      });
+      if (!still) new IntersectionObserver(es => {
+        if (es.some(e => e.isIntersecting)) { if (!raf) { last = 0; raf = requestAnimationFrame(spin); } }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }).observe(container);
+    }, { rootMargin: '600px 0px' });
+    io.observe(container);
+    window.addEventListener('resize', place, { passive: true });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+    place();
+  }
+
   function initJourney() {
     if (!window.maplibregl) { window.addEventListener('load', initJourney, { once: true }); return; }
     buildJourneyGlobe(MAKING);
+    buildPlaceGlobe();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initJourney);
   else initJourney();
@@ -5683,7 +5841,10 @@ if (document.readyState === 'loading') {
   const YEAR_AIR = 3;          // what a year-long mark leaves of its column
   const BORN = 1908;           // Max Bill, 1908-1994
   // Two works carry an image in their block, each found by the year it was
-  // begun and its title in the catalogue. `box` says where in the block
+  // begun and its title in the catalogue. They are the works the figure points
+  // to, and in the field the Ulm School's is the only mark that answers the
+  // pointer, with its outline and its line in the readout -- see at(); the
+  // band answers for the Kontinuität and the rest of its works. `box` says where in the block
   // [x, y, w, h] the image may go, and `fit` how it settles there, as SVG's
   // own preserveAspectRatio: it keeps its proportions, as large as the room
   // allows, against the sides `fit` names. The granite Kontinuität in
@@ -5932,6 +6093,7 @@ if (document.readyState === 'loading') {
       // group so it falls back and filters with the rest of them, and it never
       // takes the pointer from the field's own hit-testing.
       const inlay = INLAYS.find(i => m.w[0] === i.year && m.w[2] === i.title);
+      m.called = !!inlay;
       if (inlay) {
         const [ix, iy, iw, ih] = inlay.box(x, y, w, h);
         dots[m.w[1]].push('<image class="bg-inlay" href="' + inlay.src + '" x="' +
@@ -6104,8 +6266,10 @@ if (document.readyState === 'loading') {
     // system cursor, so asking which one is under the pointer would mostly
     // answer none. Each mark answers for its own height and half the air
     // above and below it, so a column is covered without a gap, and for as far
-    // as half a column to either side; the nearest answers. Filtered, only the
-    // marks still drawn can answer.
+    // as half a column to either side; the nearest answers. Only a mark that
+    // carries an image answers at all (INLAYS) -- the Ulm School's, in the
+    // field -- so the pointer passes over the rest without lighting them or
+    // naming them. Filtered, only the marks still drawn can answer.
     function at(ev) {
       const r = svg.getBoundingClientRect();
       const k = W / r.width;
@@ -6114,6 +6278,7 @@ if (document.readyState === 'loading') {
       if (ux < X0 || uz < 0) return null;
       let best = null, off = step / 2;
       marks.forEach(m => {
+        if (!m.called) return;
         if (pinned !== null && m.w[1] !== pinned) return;
         if (uz < m.z - VGAP / 2 || uz > m.z + m.h + VGAP / 2) return;
         const d = Math.max(m.x0 - ux, ux - m.x1, 0);
