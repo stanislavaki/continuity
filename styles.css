@@ -1211,9 +1211,8 @@ section { position: relative; }
   row-gap: 80vh;
   /* The lead-in before the first fact; the section has no opening paragraph
      to carry it now (its first sentence runs across the hero instead). The
-     tail holds the stone a while after Weight, its last fact now (Year has
-     gone down beside Place), so the fact has ridden past before the stone
-     moves off. */
+     tail holds the stone a while after Chief of production, its last fact,
+     so the fact has ridden past before the stone moves off. */
   padding: 42vh 0 80vh;
   position: relative;
   z-index: 6;
@@ -1236,6 +1235,9 @@ section { position: relative; }
 .rail-fact:nth-child(2) { grid-row: 2; }
 .rail-fact:nth-child(3) { grid-row: 3; }
 .rail-fact:nth-child(4) { grid-row: 4; }
+.rail-fact:nth-child(5) { grid-row: 5; }
+.rail-fact:nth-child(6) { grid-row: 6; }
+.rail-fact:nth-child(7) { grid-row: 7; }
 /* Set as the journey's captions are (.journey-cap h5): the sans at 18px and
    600, in full white, so a label over a fact reads like a place named under a
    photograph rather than as a mono tag. */
@@ -1257,7 +1259,7 @@ section { position: relative; }
 }
 /* The figures that ride past the stone, at twice that size, so they hold their
    own beside it. Place keeps the size above: at twice it, its name would run
-   to four lines. Year, down in the tail beside Place, is set as Place is. */
+   to four lines. */
 .intro .rail-val {
   font-size: clamp(60px, 8.7vw, 112px);
   /* Closer set at this size. */
@@ -1266,9 +1268,20 @@ section { position: relative; }
      rather than breaking "4.5 m" in two. */
   white-space: nowrap;
 }
-/* Material runs to two lines, set close so they read as one figure. Only here:
+/* Material and the chief of production's name run to two lines, set close so
+   they read as one figure. Only here:
    the one-line figures keep their boxes, which the stone rules measure. */
 .intro .rail-val--stacked { line-height: 0.8; }
+/* A note under a figure -- the artist's dates under his name -- set as the
+   label over it, which keeps the figure to what fits beside the stone. */
+.rail-note {
+  display: block;
+  margin-top: 12px;
+  font-family: var(--sans);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
 /* Stone rules. Comparisons drawn beside the stone, at its own scale, while a
    fact goes by; the script sets their geometry and switches .is-on, and the
    fade is the stylesheet's. Each stands across the stone from its fact: the
@@ -1400,8 +1413,7 @@ section { position: relative; }
      block — body already paints the same black. */
   background: transparent;
 }
-/* Year and Place share the tail's one row: Year on columns 2-3, as the facts
-   above it are, and Place on 5-8, their tops level. */
+/* Place alone on the tail's one row, on columns 5-8. */
 .facts-rail--tail > .rail-fact { grid-row: 1; }
 .facts-rail--tail {
   row-gap: 0;
@@ -1426,8 +1438,7 @@ section { position: relative; }
   .rail-fact--right,
   .rail-fact--six,
   .rail-fact--wide { grid-column: 1 / -1; }
-  /* One column here, so Year goes over Place, as close as one fact sits under
-     its own label -- the rail's row gap above is for the stone's facts. */
+  /* One column here; the rail's row gap above is for the stone's facts. */
   .facts-rail--tail { row-gap: 0; }
   .facts-rail--tail > .rail-fact { grid-row: auto; }
   .rail-fact {
@@ -1435,7 +1446,8 @@ section { position: relative; }
     padding: 14px 0 20px;
   }
   .rail-key,
-  .rail-val { text-shadow: 0 2px 18px rgba(0,0,0,0.55); }
+  .rail-val,
+  .rail-note { text-shadow: 0 2px 18px rgba(0,0,0,0.55); }
   .rail-key { margin-bottom: 12px; }
 }
 .intro-text {
@@ -1695,8 +1707,66 @@ section { position: relative; }
   line-height: 1.043;
   letter-spacing: -0.7px;
 }
+/* A note mark, small and raised without opening up the leading: a fraction of
+   the opener's size, a larger one of the body's. Grey, at 60%, so it stays
+   out of the sentence's way. */
+.fn-ref {
+  font-size: 0.45em;
+  line-height: 0;
+  vertical-align: super;
+  letter-spacing: normal;
+  opacity: 0.6;
+}
+.article-body p:not(.article-lead) .fn-ref { font-size: 0.65em; }
+/* The intro's notes, set as the letters' caption is (.doc-deck-cap): Space Mono
+   at 12 on 18 in white at 72%, each led by an italic serif number in full
+   white. They stand on columns 2-3 under the opener, beside the paragraph after
+   it, whose top they share: a float pulled back out of the body's right half by
+   the opener's own reach, three columns and three gaps, and two columns and a
+   gap wide. Its margin box comes to less than nothing, so the paragraph beside
+   it neither wraps nor moves. It drops by that paragraph's own 1.2em lead, in
+   the body's size, to stand level with it; inside it, the intro notes script
+   drops each note to the line that carries its mark. */
+.article-body .fn-note {
+  float: left;
+  margin: calc(1.2 * clamp(20px, 1.7vw, 26px)) 0 0 calc(-75% - 0.75 * var(--col-gap));
+  width: calc(50% - 0.5 * var(--col-gap));
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  font-feature-settings: "onum", "pnum";
+  text-rendering: optimizeLegibility;
+  overflow-wrap: anywhere;
+  color: rgba(255, 255, 255, .72);
+}
+.article-body .fn-note + p { margin-top: 1.2em; }
+.article-body .fn-note p + p { margin-top: 0.75em; }
+/* A note's number hangs in the margin, so every note's text starts on column
+   2, the opener's edge: a box two of its own ems wide set back by its width,
+   the number right-aligned in it half an em off the text. The space after the
+   number is inside the box, where it falls away at the line's end; it still
+   separates the two where the box is not set. */
+.fn-note .fig-label {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 2em;
+  margin-left: -2em;
+  padding-right: 0.5em;
+  text-align: right;
+  font-family: "Martina Plantijn", Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 1.15em;
+  line-height: 1;
+  color: #fff;
+}
 @media (max-width: 900px) {
   .article-body .article-lead { margin-left: 0; width: 100%; }
+  /* One column: the note follows the opener in the flow. */
+  .article-body .fn-note { float: none; margin: 1.2em 0 0; width: auto; }
+  /* No margin to hang the numbers in: they run in the line. */
+  .fn-note .fig-label { display: inline; width: auto; margin-left: 0; padding-right: 0; }
 }
 .article-body strong, .math-body strong, .intro-text strong { font-weight: inherit; }
 

@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=244" />
+<link rel="stylesheet" href="styles.css?v=249" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -143,17 +143,27 @@
          so lengthening the rail is what keeps it fixed longer. The facts are
          ordinary flow content on the 8-column grid — cols 1–2 or 7–8 per
          fact — so they ride past the sculpture on either side rather than
-         floating over it. Architect comes first, from col 6, then Material
-         and Height on cols 2–3 as Year is, Height across the stone from the
-         comparison drawn for it (the stone rules, above), and Weight on cols
-         7–8; Place/Year share a row, one per column, so that pair lands on
-         screen together. -->
+         floating over it. Artist comes first, from col 6, with his dates
+         under the name; then Title, Years, Material and Height on cols 2–3,
+         Height across the stone from the comparison drawn for it (the stone
+         rules, above), Weight on cols 7–8, and Chief of production back on
+         cols 2–3, his name over two lines as Material's is. Place closes the
+         facts in the tail. -->
     <section class="intro dark-section" id="introFacts">
       <div class="container">
         <div class="facts-rail">
           <div class="rail-fact rail-fact--six reveal">
-            <span class="rail-key">Architect</span>
+            <span class="rail-key">Artist</span>
             <span class="rail-val">Max Bill</span>
+            <span class="rail-note">(1908–1994)</span>
+          </div>
+          <div class="rail-fact rail-fact--left reveal">
+            <span class="rail-key">Title</span>
+            <span class="rail-val">Kontinuität II</span>
+          </div>
+          <div class="rail-fact rail-fact--left reveal">
+            <span class="rail-key">Years</span>
+            <span class="rail-val">1983–86</span>
           </div>
           <div class="rail-fact rail-fact--left reveal">
             <span class="rail-key">Material</span>
@@ -167,12 +177,16 @@
             <span class="rail-key">Weight</span>
             <span class="rail-val">80 t</span>
           </div>
+          <div class="rail-fact rail-fact--left reveal">
+            <span class="rail-key">Chief of production</span>
+            <span class="rail-val rail-val--stacked">Dominique<br>Stroobant</span>
+          </div>
         </div>
         </div>
     </section>
   </div><!-- /.sticky-group -->
 
-  <!-- Year and Place · the closing facts, side by side on one row. They sit
+  <!-- Place · the closing fact, on the tail's one row. They sit
        outside the sticky group on purpose: Place starts at column 5 and crosses
        the sculpture's centre line, so it can only share the screen once the
        sculpture has unpinned. By then both are in normal flow, so they hold
@@ -180,10 +194,6 @@
   <section class="intro-place dark-section">
     <div class="container">
       <div class="facts-rail facts-rail--tail">
-        <div class="rail-fact rail-fact--left reveal">
-          <span class="rail-key">Year</span>
-          <span class="rail-val">1986</span>
-        </div>
         <div class="rail-fact rail-fact--wide reveal">
           <span class="rail-key">Place</span>
           <span class="rail-val">Frankfurt am Main, Germany</span>
@@ -192,16 +202,21 @@
     </div>
   </section>
 
-  <!-- Intro, continued: the scene-setting paragraph, set large, two paragraphs
-       in the body column under it, and then Max Bill's own account of
-       Continuity in the green band below. -->
+  <!-- Intro, continued: the scene-setting paragraph, set large, its notes on
+       columns 2-3 beside the paragraph in the body column under it, each level
+       with the line that carries its mark (see the intro notes script), and then
+       Max Bill's own account of Continuity in the green band below. -->
   <section class="article dark-section flush-top">
     <div class="container">
       <div class="article-grid">
         <div class="article-body">
-          <p class="article-lead" data-narr="intro-2">Imagine a 200-ton block of granite, extracted from a quarry in Sardinia in the 1980s, carved into a work of art and shipped across the North Atlantic, then transported through Europe via canals and rivers&nbsp;— before finally being installed as a monumental infinity loop in the heart of Frankfurt's financial district. Such an undertaking, combining production and logistics, had not been seen since the transport of colossal sculptures carved from monoliths in ancient Egypt. So what was the idea behind it, and what made it possible forty years ago?</p>
-          <p data-narr="ch1-2">In Continuity, I intended to achieve something similar: a surface, a boundary. Purely theoretically, from a twin band&mdash;one that is twisted one and a half times around itself and fused with another that is twisted only half a turn&mdash;one could obtain a form similar to the &ldquo;endless loop,&rdquo; but with only one surface and one boundary. For reasons unknown to me, this did not come about. Thus Continuity, despite a theoretically different expected result, consists of two parallel, bounded surfaces, composed of infinitely many straight lines.</p>
-          <p>Realised over three years of continuous work, the sculpture was conceived by the Swiss artist, architect and Bauhaus-trained polymath Max Bill. Its production was led on site by Dominique Stroobant, chief of production, who directed the cutting, shaping and assembly of the granite and coordinated the considerable logistics the piece demanded. The commission was completed on a budget of roughly 2.3 million euros in today&rsquo;s terms&nbsp;&mdash; the equivalent of its 1986 cost in Deutsche Marks&nbsp;&mdash; a figure that reflects both the scale of the material and the precision the work required.</p>
+          <p class="article-lead" data-narr="intro-2">Imagine a block of granite of some 200&nbsp;tonnes, freed from a quarry in Sardinia in the 1980s, carved into a work of art and shipped from Carrara around the coast of Europe through the Strait of Gibraltar, then carried up the Rhine and the Main, before finally being installed as a monumental infinity loop in the heart of the financial district of Frankfurt, Germany. At 80&nbsp;tonnes, the finished sculpture has been called the largest granite monolith to be transported since the colossi of ancient Egypt.<sup class="fn-ref" data-fn="1">1</sup> So what was the idea behind it, and what made it possible forty years ago?</p>
+          <div class="fn-note">
+            <p data-fn="1"><i class="fig-label">1. </i>Gerd Fischer calls it &ldquo;der gr&ouml;&szlig;te Granitkoloss seit &auml;gyptischer Zeit&rdquo;. Fischer (1999). See also Spies (1986).</p>
+            <p data-fn="2"><i class="fig-label">2. </i>Herbert Zapp, &ldquo;Eine Idee und ihre Verwirklichung&rdquo; (speech, 7&nbsp;October 1986), 3.</p>
+            <p data-fn="3"><i class="fig-label">3. </i>Angela Thomas, <i>A Subversive Gleam</i> (2022), 558, 561&ndash;562.</p>
+          </div>
+          <p>Conceived by the Swiss artist, architect and Bauhaus-trained polymath Max Bill, the sculpture was commissioned by Deutsche Bank in Frankfurt, Germany: the bank decided to approach Bill on 7&nbsp;October 1981, and the contract was signed almost two years later.<sup class="fn-ref" data-fn="2">2</sup> It was then realised over three years of continuous work by an international team of sculptors and stonemasons. Its production was led from a workshop in Carrara, Italy, by Dominique Stroobant, who directed the cutting, shipping and shaping of the granite and coordinated the considerable logistics the piece demanded. It belongs to a line of work that runs through Bill&rsquo;s whole career: from 1935 on, in one experiment after another, he looked for ways to give infinity a form in space.<sup class="fn-ref" data-fn="3">3</sup></p>
         </div>
       </div>
     </div>
@@ -2650,6 +2665,69 @@ document.querySelectorAll('.facts').forEach((facts) => {
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(hang);
     hang();
   });
+})();
+
+// The intro's notes, on columns 2-3 beside the paragraph after the opener. Each
+// stands with its first line on the baseline of the line that carries its mark,
+// so a note is read where it is called for; one whose mark lies above the
+// paragraph -- the opener's -- stands on the paragraph's first line, and none
+// starts above the foot of the note before it. A note is dropped by a top
+// margin added to the gap it keeps from the one before. Baselines are read as
+// the letters' caption reads them, off a zero-height inline-block set at the
+// start of the text; a mark's line, which a probe set beside the mark could
+// rebreak, is read off the glyph before it instead, less its paragraph's
+// descent. Below 901px the notes run in the flow and keep their gaps.
+(() => {
+  const notes = document.querySelector('.article-body .fn-note');
+  const para = notes && notes.nextElementSibling;
+  if (!para) return;
+  const items = [...notes.querySelectorAll('[data-fn]')];
+  const baseline = (el) => {
+    const probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.insertBefore(probe, el.firstChild);
+    const y = probe.getBoundingClientRect().top;
+    probe.remove();
+    return y;
+  };
+  const textIn = (el, last) => {
+    const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP) });
+    let n = walk.nextNode();
+    if (last) for (let m = n; m; m = walk.nextNode()) n = m;
+    return n;
+  };
+  const glyphFoot = (node, i) => {
+    const r = document.createRange();
+    r.setStart(node, i);
+    r.setEnd(node, i + 1);
+    return r.getBoundingClientRect().bottom;
+  };
+  // The baseline of the line a mark stands on: the foot of the glyph before it,
+  // less the descent of its paragraph's type (measured on that paragraph's
+  // first glyph and first baseline).
+  const markLine = (ref) => {
+    const host = ref.closest('p');
+    const first = host && textIn(host, false);
+    const before = ref.previousSibling;
+    if (!first || !before || before.nodeType !== 3 || !before.textContent.length) return -Infinity;
+    const descent = glyphFoot(first, 0) - baseline(host);
+    return glyphFoot(before, before.textContent.length - 1) - descent;
+  };
+  function hang() {
+    items.forEach(p => p.style.removeProperty('margin-top'));
+    if (getComputedStyle(notes).float === 'none') return;
+    const floor = baseline(para);
+    items.forEach(p => {
+      const ref = document.querySelector(`.fn-ref[data-fn="${p.dataset.fn}"]`);
+      const want = Math.max(floor, ref ? markLine(ref) : floor);
+      const drop = want - baseline(p);
+      if (drop > 0.5) p.style.marginTop = (parseFloat(getComputedStyle(p).marginTop) + drop).toFixed(1) + 'px';
+    });
+  }
+  window.addEventListener('resize', hang);
+  window.addEventListener('load', hang);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(hang);
+  hang();
 })();
 
 // ============================================================================
