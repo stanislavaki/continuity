@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=278" />
+<link rel="stylesheet" href="styles.css?v=280" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -237,7 +237,7 @@
   <!-- Pull-quote band: the quote's own colour becomes the ground. -->
   <section class="quote-band quote-band--green">
     <div class="container">
-      <p class="quote-text">&ldquo;Max Bill has achieved one of the most ambitious aspirations of the wide program of the modern spirit: the practice of all visual arts with one same and only sense. Painter, sculptor, architect, typographer, industrial designer, he is the modern type of the &lsquo;total artist&rsquo;, a forerunner of the &lsquo;total man&rsquo;, still to be conquered.&rdquo;</p>
+      <p class="quote-text">Max Bill has achieved one of the most ambitious aspirations of the wide program of the modern spirit: the practice of all visual arts with one same and only sense. Painter, sculptor, architect, typographer, industrial designer, he is the modern type of the &lsquo;total artist&rsquo;, a forerunner of the &lsquo;total man&rsquo;, still to be conquered.</p>
       <div class="quote-credit-col">
         <p class="quote-attr">Tomás Maldonado, &ldquo;Max Bill,&rdquo; in <i>Max Bill</i> (1955), 13.</p>
       </div>
@@ -249,7 +249,7 @@
     <div class="container">
       <div class="chapter-head" style="margin-bottom:40px;">
         <div class="chapter-num">2</div>
-        <h2 class="chapter-title">Max Bill</h2>
+        <h2 class="chapter-title">M<span class="kern-open">a</span>x Bill</h2>
       </div>
     </div>
   </section>
@@ -1863,6 +1863,8 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
 
 // Hero title: scale font-size so text spans 80vw. On a phone it is set a word
 // to a line, and the longer line spans the width between the gutters instead.
+// The size it comes to is the project's title size: the chapter titles are
+// set at it too, from --title-size.
 (() => {
   const t = document.querySelector('.hero-title');
   if (!t) return;
@@ -1879,7 +1881,9 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
     }
     const w = t.scrollWidth;
     if (!w) return;
-    t.style.fontSize = (100 * target / w) + 'px';
+    const size = 100 * target / w;
+    t.style.fontSize = size + 'px';
+    document.documentElement.style.setProperty('--title-size', size.toFixed(2) + 'px');
   };
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
   else fit();

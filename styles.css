@@ -614,6 +614,9 @@ body.light .crail-panel {
   font-size: var(--crail-type);
   letter-spacing: -0.03em;
   line-height: 1.15;
+  /* In lower case, as the chapter titles it names are; the markup and the
+     translations keep their capitals. */
+  text-transform: lowercase;
   white-space: nowrap;
   cursor: pointer;              /* the hand, as on the rail */
   /* Off its part, where crailSpread() has had to move it. A translate rather
@@ -1174,8 +1177,11 @@ section { position: relative; }
   opacity: 0.55;
 }
 .chapter-title {
-  /* 74px on desktop, still clamped so it scales down on narrow screens. */
-  font-size: clamp(42px, 6.28vw, 74px);
+  /* The project's title size: the hero title's, which its fit in the script
+     publishes as --title-size -- until then 8vw, the hero's own. No word in a
+     chapter title is wider than "kontinuität", so on a phone, where the hero
+     is fitted to that word, a title still keeps inside the gutters. */
+  font-size: var(--title-size, 8vw);
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.02;
@@ -1281,8 +1287,9 @@ section { position: relative; }
 .facts-rail .rail-note { text-transform: lowercase; }
 .facts-rail .keep-case { text-transform: none; }
 /* A letter that sets the next one off from it: the a of "max", whose tail
-   runs into the x's foot at the figures' close tracking. Wherever the name is
-   set -- riding and in the dock's row, which copies it -- in its own size. */
+   runs into the x's foot at the close tracking of the facts and the chapter
+   titles. Wherever the name is set -- the fact, its copy in the dock's row,
+   chapter 2's title -- in its own size. */
 .kern-open { margin-right: 0.05em; }
 /* Material and the chief of production's name run to two lines, set close so
    they read as one figure. Only here:
@@ -1537,6 +1544,10 @@ section { position: relative; }
      stone, and only a soft shadow separates it, so the sculpture reads as one
      continuous object rather than being sliced by opaque bands. */
   .facts-rail { row-gap: 48vh; padding: 20vh 0 24vh; }
+  /* The longest figure, "kontinuität II", is 6.2 of its size wide: on the
+     narrowest phones the figures come down from 60px until it fits between
+     the gutters. */
+  .intro .rail-val { font-size: min(clamp(60px, 8.7vw, 112px), (100vw - 2 * var(--gutter)) / 6.2); }
   .rail-fact--wide { grid-column: 1 / -1; }
   .intro .rail-fact { margin-left: 0; }
   /* No row of facts at the top here: they stay where they are as they go by. */
