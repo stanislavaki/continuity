@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=280" />
+<link rel="stylesheet" href="styles.css?v=281" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -2526,7 +2526,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     // The pile they start in is laid out the same every time; everywhere a
     // sheet lands after that, it lands where it falls.
     const sheets = pages.map((el, k) => {
-      const lie = { deg: 2.6 * Math.sin(k * 2.4 + 0.7), x: 6 * Math.sin(k * 1.7 + 1), y: 5 * Math.cos(k * 2.3 + 0.5) };
+      const lie = { deg: 1.2 * Math.sin(k * 2.4 + 0.7), x: 3 * Math.sin(k * 1.7 + 1), y: 2.5 * Math.cos(k * 2.3 + 0.5) };
       return { el, k, side: 0, lie, x: lie.x, y: lie.y, r: lie.deg, s: 1,
                vx: 0, vy: 0, vr: 0, vs: 0, spring: null, flying: false };
     });
@@ -2604,9 +2604,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
       focus = k;
       const sh = sheets[k];
       sh.side = to;
-      // Where it comes to rest: within about three degrees and eight pixels of
-      // true, wherever it happens to fall.
-      sh.lie = { deg: rand(-3, 3), x: rand(-8, 8), y: rand(-6, 6) };
+      // Where it comes to rest: within about a degree and a half and a few
+      // pixels of true, close on the sheets under it, wherever it falls.
+      sh.lie = { deg: rand(-1.4, 1.4), x: rand(-3, 3), y: rand(-2.5, 2.5) };
       if (reduce.matches) {
         const t = target(sh);
         sh.x = t.x; sh.y = t.y; sh.r = t.r; sh.s = 1;
@@ -2650,6 +2650,20 @@ document.querySelectorAll('.facts').forEach((facts) => {
     measure();
     sheets.forEach(draw);
     order();
+
+    // The first time the piles are well in view, the top sheet deals itself
+    // over to the right, a moment after they arrive, so the reader sees that
+    // the sheets can be moved and goes on with the rest. Only if nobody has
+    // dealt one yet, and only once.
+    let dealt = false;
+    buttons.forEach((b) => b.addEventListener('click', () => { dealt = true; }, { capture: true }));
+    deck.addEventListener('keydown', () => { dealt = true; }, { capture: true });
+    const show = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.intersectionRatio >= 0.6)) return;
+      show.disconnect();
+      setTimeout(() => { if (!dealt && !piles[1].length) { dealt = true; deal(0); } }, 600);
+    }, { threshold: 0.6 });
+    show.observe(deck);
 
     // The caption stands under the piles beside the paragraph after them, its
     // first line on the baseline of that paragraph's first line. A baseline is

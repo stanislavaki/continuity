@@ -3042,12 +3042,15 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   width: 100%;
   height: auto;
   background: #fff;
-  /* A close contact shadow and a soft one further out, in a deep blue rather
-     than black, so on the bank's ground they read as shade, not as soot. In
-     the air (--lift, written by the script as it tosses a sheet, 0 lying down
-     to 1 at its highest) the contact shadow fades and the far one drops and
-     spreads, the way a sheet's shadow does as it comes off the table. */
-  box-shadow: 0 1px 2px rgba(0, 6, 60, calc(.28 * (1 - var(--lift, 0)))),
+  /* Shadows in a deep blue rather than black, so on the bank's ground they
+     read as shade, not as soot. Two close ones, a hairline and a short heavy
+     band, are what a sheet lying on another casts: each edge of the pile
+     reads as paper on paper. A soft one further out lifts the pile off the
+     table. In the air (--lift, written by the script as it tosses a sheet, 0
+     lying down to 1 at its highest) the close ones fade and the far one drops
+     and spreads, the way a sheet's shadow does as it comes off the table. */
+  box-shadow: 0 0 1px rgba(0, 6, 60, calc(.45 * (1 - var(--lift, 0)))),
+              0 2px 5px rgba(0, 6, 60, calc(.38 * (1 - var(--lift, 0)))),
               0 calc(10px + 22px * var(--lift, 0)) calc(28px + 30px * var(--lift, 0)) rgba(0, 6, 60, .32);
   pointer-events: none;
   /* Only the lift on hover is a transition; the tossing is the script's. */
@@ -3060,7 +3063,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .doc-deck:has(.doc-deck-pile--left:hover:enabled) .doc-deck-page.is-top-left:not(.is-flying),
 .doc-deck:has(.doc-deck-pile--right:hover:enabled) .doc-deck-page.is-top-right:not(.is-flying) {
   translate: 0 -4px;
-  box-shadow: 0 2px 4px rgba(0, 6, 60, .26), 0 16px 36px rgba(0, 6, 60, .36);
+  box-shadow: 0 0 1px rgba(0, 6, 60, .4), 0 4px 8px rgba(0, 6, 60, .34), 0 16px 36px rgba(0, 6, 60, .36);
 }
 @media (prefers-reduced-motion: reduce) {
   .doc-deck-page { transition: none; }
