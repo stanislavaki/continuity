@@ -4624,13 +4624,15 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* The second version of the graph, a copy to try changes on, parted from the
    first by a thin white line across the panel. */
 .bill-reveal-v2 { border-top: 1px solid #fff; }
-/* Its names: each highlight's years, a little grey, over its name in white,
-   at --bg-call (14px, converted into the plot's units by billGraph2()), on a
-   thin leader line to its square. A shaded name stands back as the keys do.
+/* Its names: each highlight's years, a little grey, over its name in its
+   key's colour (--call), at --bg-call (14px, converted into the plot's units
+   by billGraph2()), on a thin leader line to its square. A name is shown only while its domain is
+   lit: all of them under the all key, only the lit domain's under any other
+   (the chain's go with continuity and sculpture).
    The line through the swarm is thin and red, and goes the way the chain
    goes. */
 .bg-call { transition: opacity 0.4s ease; }
-.bg-call.dim { opacity: 0.3; }
+.bg-call.dim { opacity: 0; }
 .bg-call text {
   font-family: var(--sans);
   font-weight: 500;
@@ -4639,11 +4641,12 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   fill: #fff;
 }
 .bg-call .bg-call-years { fill-opacity: 0.55; }
-.bg-call line { stroke: #fff; stroke-opacity: 0.35; stroke-width: 1px; vector-effect: non-scaling-stroke; shape-rendering: crispEdges; }
-.bg-call rect, .bg-spine { shape-rendering: crispEdges; }
+.bg-call .bg-call-name { fill: var(--call, #fff); }
+.bg-call line { stroke: #fff; stroke-opacity: 0.2; stroke-width: 1px; vector-effect: non-scaling-stroke; shape-rendering: crispEdges; }
+.bg-spine { shape-rendering: crispEdges; }
 .bg-spine { transition: opacity 0.4s ease; }
 .bg-spine.dim { opacity: 0.1; }
-.bill-graph { margin: 0; width: 100%; }
+.bill-graph { margin: 0; width: 100%; position: relative; }
 /* The figure's heading, set as the pull-quotes are -- their size, weight,
    leading and tracking, and lower case -- in white on the panel's black. It
    stands on column one and is lifted out of the figure's top into the panel's
@@ -4732,14 +4735,50 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    96 characters, which is wider than columns three to eight at this size, so
    some works wrap -- and the panel centres its contents, so a line arriving or
    leaving would otherwise walk the whole figure up and down under the pointer. */
-.bill-graph-foot {
-  margin-top: 28px;
-  min-height: 2.7em;
+.bill-graph-foot,
+.bill-graph-say,
+.bill-graph-line,
+.bg-count {
   font-family: var(--sans);
   font-weight: 500;
   font-size: clamp(20px, 1.7vw, 26px);
   line-height: 1.35;
   letter-spacing: -0.005em;
+}
+.bill-graph-foot { margin-top: 28px; min-height: 2.7em; }
+/* In the first graph the readout -- the work under the pointer -- stands
+   apart from the encoding, in the empty room the field leaves over the year
+   row: a year on column one and a title on one line from column two. Its foot is set at --work-top, worked out by billGraph() just over
+   the decades -- which stand far enough down for one line under the deepest
+   column -- and it slides down by --work-drop where its words would
+   otherwise reach into the field. */
+.bill-graph-say {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--work-top, 0);
+  transform: translateY(calc(var(--work-drop, 0px) - 100%));
+  pointer-events: none;
+}
+/* The line's own words -- one idea for sixty years -- stand under the row of
+   names instead, under continuity's key, in the room the row keeps under
+   them, so the row and the field don't move when they come. */
+.bill-graph-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% - 40px);
+  pointer-events: none;
+}
+/* The row keeps that line's room under its names, clear of them by a good
+   gap, so it reads as a line of its own rather than the names' second. */
+.bill-graph-keys:has(.bill-graph-line) { padding-bottom: 60px; }
+/* And under a domain's key, while the key is under the pointer, the count of
+   its works, in the key's colour, on the same line. */
+.bg-count {
+  position: absolute;
+  top: calc(100% - 40px);
+  pointer-events: none;
 }
 /* Under the field and across its whole width, all eight columns, so the line
    starts where the years start. While the page scrolls it can pass under the
@@ -4771,6 +4810,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bill-graph-read .rd-title { grid-column: span 7; }
 .bill-graph-read .rd-name { grid-column: span 2; }
 .bill-graph-read .rd-years { grid-column: span 5; }
+/* A count said in a line -- "23 works in book design, 1930–71" -- runs on
+   from column one with plain spaces. */
+.bill-graph-read .rd-line { grid-column: 1 / -1; }
 
 /* ---- the plot's own parts, all inside the one SVG ---- */
 /* The two rows under the field -- the decade, and Bill's age in it -- set in
@@ -4799,7 +4841,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 
 /* The line through the field: the endless ribbon and what came of it, its
    works lying along it in red over the years Bill kept at it.
-   Under the pointer or pressed it holds every domain back. Its works are drawn
+   Pressed, it holds every domain back. Its works are drawn
    on it and nowhere else. */
 .bg-band { cursor: pointer; transition: opacity 0.4s ease; }
 .bg-band.dim { opacity: 0.1; pointer-events: none; }

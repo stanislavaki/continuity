@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=294" />
+<link rel="stylesheet" href="styles.css?v=311" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -306,8 +306,12 @@
              of the field as it scrolls up under it. -->
         <div class="bill-graph-keys" id="billGraphKeys"></div>
         <div class="bill-graph-plot" id="billGraphPlot"></div>
+        <!-- The readout: the work under the pointer, set in the empty room
+             over the year row (placed there by billGraph()). -->
+        <span class="bill-graph-read bill-graph-say" id="billGraphRead"></span>
+        <!-- Under the field, the encoding, which stays. -->
         <figcaption class="bill-graph-foot">
-          <span class="bill-graph-read" id="billGraphRead"></span>
+          <span class="bill-graph-read is-rest" id="billGraphRest"></span>
         </figcaption>
       </figure>
     </div>
@@ -6050,8 +6054,9 @@ if (document.readyState === 'loading') {
   const plot = document.getElementById('billGraphPlot');
   const keysEl = document.getElementById('billGraphKeys');
   const read = document.getElementById('billGraphRead');
+  const restEl = document.getElementById('billGraphRest');
   const rule = document.getElementById('billGraphGrid');
-  if (!fig || !plot || !rule || !keysEl) return;
+  if (!fig || !plot || !rule || !keysEl || !restEl) return;
 
   // Geometry, in the viewBox's own units. The plot is 1340 wide because that is
   // the container's measure at the page's 1440 maximum, so at full width one
@@ -6161,8 +6166,8 @@ if (document.readyState === 'loading') {
   // nowhere else, centred on the line -- and the highlights among them
   // standing HI tall across it. The marks of those
   // years keep clear of the line and what it carries, under it or over it, so
-  // it runs through the columns unbroken. Under the pointer, or pressed, it
-  // holds the field back. (In the code the line is still the band.)
+  // it runs through the columns unbroken. Pressed, it holds the field back.
+  // (In the code the line is still the band.)
   const LOOP = /unendlich|endless|kontinuit|continuity|schleife/i;
   // They are all sculptures, and the line goes the way sculpture goes when a
   // key is pressed, but it has a colour of its own: red, which nothing else in
@@ -6383,7 +6388,7 @@ if (document.readyState === 'loading') {
     // and shades the rest -- in the order the layers stand: sculpture first,
     // the practice the page follows, then architecture, graphic design and
     // book design, then the rest in the order Bill took them up (LEAD in the
-    // build script). Before them all, continuity, in white, lights the line and
+    // build script). Before them all, continuity, in the line's red, lights the line and
     // its works alone; the last key, all, lights every domain, and carries the
     // count of all the works, closing the row against the right edge of the
     // measure. They run on one line from column one (.bg-names), set at 24 of
@@ -6391,14 +6396,18 @@ if (document.readyState === 'loading') {
     const count = works.length.toLocaleString('en-US');
     keysEl.innerHTML = '<div class="bg-names">' +
       '<button type="button" class="bg-key" data-dom="' + CONT + '" aria-pressed="false"' +
-      ' aria-label="' + esc('continuity, ' + loops.length + ' works') + '" style="--tc:#fff">' +
-      'continuity</button>' + domains.map((d, i) =>
+      ' aria-label="' + esc('continuity, ' + loops.length + ' works') + '" style="--tc:' +
+      legible(LOOP_RED) + '">continuity</button>' + domains.map((d, i) =>
       '<button type="button" class="bg-key" data-dom="' + i + '" aria-pressed="false"' +
         ' aria-label="' + esc(d.label + ', ' + d.n + ' works') + '" style="--tc:' +
         legible(d.color) + '">' + esc(d.label) + '</button>'
     ).join('') + '<button type="button" class="bg-key bg-all" data-dom="' + ALL + '" aria-pressed="false"' +
       ' aria-label="' + esc('all domains, ' + count + ' works') + '" style="--tc:#fff">all ' +
-      count + ' works</button></div>';
+      count + ' works</button></div>' +
+      // Under the names, in the room the row keeps under them: what the line
+      // is, while its key or the line itself is under the pointer; and under
+      // a domain's key, while it is under the pointer, how many works it has.
+      '<span class="bill-graph-read bill-graph-line"></span><span class="bg-count" aria-hidden="true"></span>';
     fig.style.setProperty('--bg-key', (24 / PX).toFixed(2) + 'px');
 
     // The field's own figure: the tallest column FIELD_TOP down from its top,
@@ -6406,7 +6415,14 @@ if (document.readyState === 'loading') {
     // AXIS_Y below it and the age's AGE_Y -- far enough down that the rows read
     // as the field's scale rather than as marks at its foot.
     const BASE = FIELD_TOP + fieldH;          // the line the columns stand on
-    const AXIS_Y = 70, AGE_Y = AXIS_Y + 34;
+    // The rows stand far enough down that one line of the readout fits
+    // between them and the deepest column -- READ_CLEAR under the column,
+    // WORK_AIR over the decades' capitals (see the readout, below) -- and
+    // never nearer than 70 units.
+    const WORK_AIR = 34, READ_CLEAR = 10;
+    const readLine = parseFloat(getComputedStyle(read).lineHeight);
+    const AXIS_Y = Math.max(70, Math.ceil((READ_CLEAR + readLine + WORK_AIR) * PX + 0.72 * typeUnits()));
+    const AGE_Y = AXIS_Y + 34;
     const H = BASE + AGE_Y + 16;
     marks.forEach(m => { m.cy = BASE - m.z - m.h / 2; });
 
@@ -6435,7 +6451,6 @@ if (document.readyState === 'loading') {
       // kept in its domain's group so it is shaded with the rest of them, and
       // it never takes the pointer from the field's own hit-testing.
       const inlay = INLAYS.find(i => m.w[0] === i.year && m.w[2] === i.title);
-      m.called = !!m.w[6];
       if (inlay) {
         const [ix, iy, iw, ih] = inlay.box(x, y, w, h);
         dots[m.w[1]].push('<image class="bg-inlay" href="' + inlay.src + '" x="' +
@@ -6509,10 +6524,30 @@ if (document.readyState === 'loading') {
       field + '</svg>';
 
     plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
+    // The readout stands in the room the field leaves over the year row: its
+    // last line WORK_AIR over the decades' capitals, wrapping upward. The
+    // encoding stays under the field.
+    // A readout that would reach into the field -- a title of three lines, or
+    // a line running on under the deep columns of the sixties -- slides down
+    // toward the decades instead: never nearer the field's lowest edge, over
+    // the years its words run across, than READ_CLEAR. deepTo holds that edge,
+    // for each year, over every year up to it.
+    const k = plot.getBoundingClientRect().width / W;
+    const readFoot = plot.offsetTop + (BASE + AXIS_Y - 0.72 * typeUnits()) * k - WORK_AIR;
+    const deepTo = new Array(span).fill(0);
+    [...marks, ...loops].forEach(m => {
+      const [bx, by, bw, bh] = m.box;
+      const i0 = Math.max(0, Math.floor((bx - X0) / step)), i1 = Math.min(span - 1, Math.floor((bx + bw - X0) / step));
+      for (let i = i0; i <= i1; i++) deepTo[i] = Math.max(deepTo[i], by + bh);
+    });
+    for (let i = 1; i < span; i++) deepTo[i] = Math.max(deepTo[i], deepTo[i - 1]);
+    fig.style.setProperty('--work-top', readFoot.toFixed(1) + 'px');
 
     const svg = plot.querySelector('svg');
     const hit = plot.querySelector('#bgHit');
     const keyBtns = keysEl.querySelectorAll('.bg-key');
+    const lineEl = keysEl.querySelector('.bill-graph-line');
+    const countEl = keysEl.querySelector('.bg-count');
     const runs = plot.querySelectorAll('.bg-dots');
     const bandEl = plot.querySelector('#bgBand');
     let pointed = null;                        // the mark under the pointer
@@ -6524,24 +6559,25 @@ if (document.readyState === 'loading') {
     const tone = d => (d === litNow && domains[d].lit) || domains[d].color;
     const scu = domains.findIndex(d => d.key === 'sculpture');
 
-    // At rest the readout states the encoding and nothing else: what a mark
-    // is, then what its two dimensions mean, each part on two of the page's
-    // columns (.bill-graph-read.is-rest).
+    // Under the field the encoding stands, and stays: what a mark is, then
+    // what its two dimensions mean, each part on two of the page's columns
+    // (.bill-graph-read.is-rest).
     const REST = LINES ? '<i>one mark = one work</i><i>length = how long it took</i><i>' +
                          (WEIGHTS ? 'height = its significance' : 'tall = a key work') + '</i>'
                        : '<i>one dot = one work</i>';
+    restEl.innerHTML = REST;
 
-    // One place decides what the figure shows. A key under the pointer asks
-    // for its domain, for the line, or for all of them; failing that, a
-    // highlight under the pointer lights the domain it belongs to, and the
-    // line under the pointer lights the line; failing that, the pressed key
-    // keeps its own. What is asked for is lit and everything else is shaded,
-    // held back but still there to read through. The readout follows the
-    // pointer: the work under it, on the line or in the field; else what the
-    // key under it stands for; else the encoding.
+    // One place decides what the figure shows. Only the keys move the light:
+    // a key under the pointer asks for its domain, for the line, or for all
+    // of them; failing that, the pressed key keeps its own. What is asked for
+    // is lit and everything else is shaded, held back but still there to read
+    // through. A work under the pointer, in the field or on the line, is
+    // outlined and named in the readout but shades nothing, so every work can
+    // be pointed at alike. The readout follows the pointer: the work under
+    // it; else what the line or the key under it stands for; else the
+    // encoding.
     function paint() {
-      const lit = held !== null ? (held === ALL ? null : held)
-                : pointed ? pointed.w[1] : loopHeld ? CONT : pinned;
+      const lit = held !== null ? (held === ALL ? null : held) : pinned;
       // The line goes the way sculpture's marks go -- held back while another
       // domain is lit -- and is lit alone by continuity.
       bandEl.classList.toggle('dim', lit !== null && lit !== CONT && lit !== scu);
@@ -6551,25 +6587,44 @@ if (document.readyState === 'loading') {
         g.classList.toggle('dim', lit !== null && d !== lit);
         g.style.fill = tone(d);
       });
+      // The keys show what is lit -- and, while a work is under the pointer,
+      // the domain it belongs to (the line's, for one of its works), lit in
+      // the row alone, though the field stays as it is.
+      const named = held === null && pointed ? pointed.w[1] : held === null && loopHeld ? CONT : lit;
       keyBtns.forEach(k => {
         const d = +k.dataset.dom;
-        if (d >= 0) k.style.setProperty('--tc', d !== lit && domains[d].ink || legible(tone(d)));
-        k.classList.toggle('dim', d === ALL ? lit !== null : lit !== null && d !== lit);
+        if (d >= 0) k.style.setProperty('--tc', d !== named && domains[d].ink ||
+          legible((d === named && domains[d].lit) || domains[d].color));
+        k.classList.toggle('dim', d === ALL ? named !== null : named !== null && d !== named);
         k.setAttribute('aria-pressed', (d === ALL ? pinned === null : d === pinned) ? 'true' : 'false');
       });
       hit.classList.toggle('on', held === null && (!!pointed || (loopHeld && !!loopAt)));
-      const rest = held === null && !pointed && !loopHeld;
+      // What the line is stands under the names, under its own key; the rest
+      // over the year row.
+      const lineSays = held === CONT || (held === null && loopHeld && !loopAt);
+      lineEl.innerHTML = lineSays ? '<span class="rd-line">' + loops.length + ' works, ' + dates(l0, l1) +
+        ': one idea for sixty years, from the first endless ribbon to the last</span>' : '';
+      const key = held >= 0 ? [...keyBtns].find(k => +k.dataset.dom === held) : null;
+      countEl.textContent = key ? domains[held].n : '';
+      if (key) {
+        countEl.style.left = key.offsetLeft + 'px';
+        countEl.style.color = key.style.getPropertyValue('--tc');
+      }
       if (held === null && pointed) say(pointed.w);
       else if (held === null && loopHeld && loopAt) say(loopAt.w);
-      else if (held === CONT || (held === null && loopHeld)) {
-        read.style.color = '';
-        read.innerHTML = '<b>' + dates(l0, l1) + '</b><span class="rd-title">one idea for sixty years: ' +
-          loops.length + ' works, from the first endless ribbon to the last</span>';
+      else { read.innerHTML = ''; read.style.color = ''; }
+      // How far right the words run, and so which years they stand under.
+      const box = plot.getBoundingClientRect();
+      let right = box.left;
+      const texts = document.createTreeWalker(read, NodeFilter.SHOW_TEXT);
+      for (let t = texts.nextNode(); t; t = texts.nextNode()) {
+        const words = document.createRange();
+        words.selectNodeContents(t);
+        for (const r of words.getClientRects()) right = Math.max(right, r.right);
       }
-      else if (held === ALL) all();
-      else if (held !== null) sum(held);
-      else { read.innerHTML = REST; read.style.color = ''; }
-      read.classList.toggle('is-rest', rest);
+      const year = Math.min(span - 1, Math.max(0, Math.floor(((right - box.left) * W / box.width - X0) / step)));
+      const drop = plot.offsetTop + READ_CLEAR + k * deepTo[year] - (readFoot - read.offsetHeight);
+      read.style.setProperty('--work-drop', Math.max(0, Math.min(drop, WORK_AIR - 6)).toFixed(1) + 'px');
     }
 
     // The year and the piece, and nothing else: the domain is already named in
@@ -6580,28 +6635,16 @@ if (document.readyState === 'loading') {
       read.innerHTML = '<b>' + dates(work[0], work[4]) + '</b><span class="rd-title">' +
         esc(work[2]) + '</span>';
     }
-    // All of them: how many works, and the years they span.
-    function all() {
-      read.style.color = '';
-      read.innerHTML = '<b>' + count + '</b><span class="rd-name">works</span><i class="rd-years">' +
-        esc(dates(y0, y1)) + '</i>';
-    }
-    // A domain: how many works, what it is, the years it was at work.
-    function sum(d) {
-      read.style.color = legible(tone(d));
-      read.innerHTML = '<b>' + domains[d].n + '</b><span class="rd-name">' + esc(domains[d].label) +
-        '</span><i class="rd-years">' + esc(yearsOf(d)) + '</i>';
-    }
 
     // Hit-testing is done on the marks' own arithmetic rather than asking the
     // browser: the thinnest mark is 3 units high and the page can hide the
     // system cursor, so asking which one is under the pointer would mostly
     // answer none. Each mark answers for its own height and half the air
     // above and below it, so a column is covered without a gap, and for as far
-    // as half a column to either side; the nearest answers. Only a highlight
-    // answers at all, so the pointer passes over the rest without lighting
-    // them or naming them -- and while a key is pressed, only a highlight of
-    // its own domain: what it shades stays quiet under the pointer.
+    // as half a column to either side; the nearest answers. Every work
+    // answers, with its title in the readout -- but while a key is pressed,
+    // only the works of its own domain: what it shades stays quiet under the
+    // pointer.
     function at(ev) {
       const r = svg.getBoundingClientRect();
       const k = W / r.width;
@@ -6610,7 +6653,6 @@ if (document.readyState === 'loading') {
       if (ux < X0 || uz < 0) return null;
       let best = null, off = step / 2;
       marks.forEach(m => {
-        if (!m.called) return;
         if (pinned !== null && m.w[1] !== pinned) return;
         if (uz < m.z - VGAP / 2 || uz > m.z + m.h + VGAP / 2) return;
         const d = Math.max(m.x0 - ux, ux - m.x1, 0);
@@ -6622,7 +6664,8 @@ if (document.readyState === 'loading') {
     held = null;
     svg.addEventListener('pointermove', ev => {
       if (held !== null) return;
-      const m = at(ev);
+      // Over the line, its own works answer, not the field's beside it.
+      const m = bandEl.contains(ev.target) ? null : at(ev);
       if (m === pointed) return;
       pointed = m;
       if (m) {
@@ -6641,8 +6684,8 @@ if (document.readyState === 'loading') {
       pointed = null; paint();
     });
 
-    // The line: under the pointer it holds the field back and names whichever
-    // of its works the pointer is on, outlined as a mark in the field is -- of
+    // The line: under the pointer it names whichever of its works the pointer
+    // is on, outlined as a mark in the field is -- of
     // the works over the year under the pointer, the one nearest it up or
     // down; between works it says what the line is. Pressed, it presses the
     // continuity key. While another domain's key is pressed it is shaded, and
@@ -6682,11 +6725,6 @@ if (document.readyState === 'loading') {
       key.addEventListener('click', () => press(d));
     });
     paint();
-
-    function yearsOf(d) {
-      const ws = works.filter(w => w[1] === d);
-      return dates(ws[0][0], ws.reduce((m, w) => Math.max(m, LINES ? w[4] : w[0]), 0));
-    }
 
     // Read the mask rect back before lighting it, so the browser has actually
     // computed the zero width the wipe starts from. On a redraw the figure is
@@ -6754,20 +6792,19 @@ if (document.readyState === 'loading') {
   const AIR = 1.5;             // between two squares, in units; never under a pixel
   const FIELD_TOP = 8;         // the plot's top to the highest name
   const BORN = 1908;           // Max Bill, 1908-1994
-  const INSET = 8;
   // The names, in screen pixels -- their size, their leading, and the widest
   // a name runs before it wraps, in ems.
   const CALL_PX = 14, CALL_LEAD = 1.25, CALL_WRAP = 8;
-  // The two squares that carry an image, as in the first graph: the
-  // Kontinuität its stone, centred, and the Ulm School its name, in the
-  // bottom-left corner.
-  const INLAYS = [
-    { year: 1983, title: 'Kontinuität', src: './assets/kontinuitat-hero-mark.webp', fit: 'xMidYMid',
-      box: (x, y, w, h) => { const i = Math.min(w, h) * 0.1; return [x + i, y + i, w - 2 * i, h - 2 * i]; } },
-    { year: 1950, title: 'Ulm School of Design',
-      src: './assets/ulm-mark.png', fit: 'xMinYMax',
-      box: (x, y, w, h) => [x + INSET / 2, y, w * 0.414, h - INSET / 2] },
-  ];
+  // Which way the swarm goes, from ?shape=: bands (the default) lays each
+  // domain in a band of its own on both sides of the line, in the keys'
+  // order out from it, so every domain's works stay together and the figure
+  // stands half as tall as it would on one side; wave swarms both ways out
+  // from the line, every domain mixed; split stands the design domains over
+  // the line and hangs the art ones (DOWN) under it, as the first graph does;
+  // rise stands everything on the line.
+  const SHAPE = new URLSearchParams(location.search).get('shape') || 'bands';
+  const BANDS = SHAPE === 'bands';
+  const DOWN = /sculpture|architecture|painting/i;
   // The endless ribbon's works, found by their titles, and their red.
   const LOOP = /unendlich|endless|kontinuit|continuity|schleife/i;
   const LOOP_RED = '#e0301e';
@@ -6844,6 +6881,9 @@ if (document.readyState === 'loading') {
     // Every work a square: s its side, x0 its left edge, c its centre's height
     // off the line -- negative over it, positive under it.
     const sq = works.map(w => ({ w, s: sideOf(w), chain: LOOP.test(w[2]) }));
+    // Under bands, the band a square lies in: the chain's first, on the line,
+    // then each domain's in the keys' order.
+    sq.forEach(q => { q.band = q.chain ? -1 : q.w[1]; });
 
     // The chain: the endless ribbon's works, in the order they were finished,
     // centred on the line and laid end to end, each as near the year it was
@@ -6872,8 +6912,8 @@ if (document.readyState === 'loading') {
       run.qs.forEach(o => { o.x0 = x; o.c = 0; x += o.s + G; });
     });
 
-    // The swarm. The highlights go first, then the heaviest, so they lie
-    // nearest the line. A square stays in the year it was finished: the
+    // The swarm, a band at a time under bands. The highlights go first, then
+    // the heaviest, so they lie nearest the line. A square stays in the year it was finished: the
     // year's column holds as many squares of its size side by side as it
     // fits, and a square too big for one starts at its year. Of every place
     // it fits -- on the line, or against the edge of a square already placed
@@ -6882,10 +6922,13 @@ if (document.readyState === 'loading') {
     // the middle of the column.
     const placed = loops.slice();
     const rest = sq.filter(q => !q.chain)
-      .sort((a, b) => b.w[6] - a.w[6] || b.s - a.s || a.w[4] - b.w[4]);
+      .sort((a, b) => (BANDS ? a.band - b.band : 0) || b.w[6] - a.w[6] || b.s - a.s || a.w[4] - b.w[4]);
     let flip = 1;
+    // The side a square must keep to: over the line (-1), under it (1), or
+    // either (0), by ?shape=.
+    const keep = q => SHAPE === 'rise' ? -1 : SHAPE === 'split' ? (DOWN.test(domains[q.w[1]].label) ? 1 : -1) : 0;
     rest.forEach(q => {
-      const s = q.s, slots = [];
+      const s = q.s, slots = [], side = keep(q);
       const n = Math.max(1, Math.floor(step / (s + G)));
       const pad = n > 1 ? (step - n * (s + G) + G) / 2 : 0;
       for (let k = 0; k < n; k++) {
@@ -6900,8 +6943,17 @@ if (document.readyState === 'loading') {
       slots.forEach(sl => {
         const occ = near.filter(p => p.x0 < sl.x0 + s + G && sl.x0 < p.x0 + p.s + G);
         const free = c => occ.every(p => c + s / 2 + G <= p.c - p.s / 2 + 1e-6 || c - s / 2 - G >= p.c + p.s / 2 - 1e-6);
-        [0, ...occ.flatMap(p => [p.c - p.s / 2 - G - s / 2, p.c + p.s / 2 + G + s / 2])].forEach(c => {
-          if (!free(c)) return;
+        const sided = c => !side || (side < 0 ? c + s / 2 + G / 2 <= 1e-6 : c - s / 2 - G / 2 >= -1e-6);
+        // Under bands, a square lies wholly outside the bands before its own,
+        // over the line or under it -- as far out as they reach here.
+        const inner = BANDS ? occ.filter(p => p.band < q.band) : [];
+        const over = Math.max(0, ...inner.map(p => p.s / 2 - p.c));
+        const under = Math.max(0, ...inner.map(p => p.c + p.s / 2));
+        const outside = c => !BANDS || (c < 0 ? c + s / 2 + G <= -over + 1e-6
+                                       : c > 0 ? c - s / 2 - G >= under - 1e-6 : !inner.length);
+        [0, -(s + G) / 2, (s + G) / 2, -(over + G + s / 2), under + G + s / 2,
+         ...occ.flatMap(p => [p.c - p.s / 2 - G - s / 2, p.c + p.s / 2 + G + s / 2])].forEach(c => {
+          if (!sided(c) || !outside(c) || !free(c)) return;
           const score = [Math.round(Math.abs(c) * 100), Math.sign(c) === -lean ? 1 : 0, sl.k];
           if (!best || less(score, best.score)) best = { score, x0: sl.x0, c };
         });
@@ -6917,14 +6969,18 @@ if (document.readyState === 'loading') {
     // the swarm if its square lies over the line, under it if under, and
     // whichever side has room if on it. A name stands to the right of its
     // leader line, the line at the square's middle; one that would run off
-    // the plot's right edge stands to the left of it instead. Names on one
-    // side stand in rows out from the swarm: each takes the nearest row where
-    // it clears the names beside it and where no leader line from a row
-    // further out runs through it, nor its own through a name in a nearer
-    // row. They are placed from the right, so a row nearer the swarm always
-    // has room.
+    // the plot's right edge stands to the left of it instead. Each name
+    // stands as near the line as it can, so the names follow the swarm's
+    // outline: CLEAR beyond the furthest square under its own width and SPAN
+    // to either side of it, so it stands outside the outline rather than in a
+    // notch between two taller columns; never nearer the line than NEAR, so
+    // where the swarm thins to the line a name stays clear of the chain; and
+    // further out only where it would sit on a name beside it, or where a
+    // leader line would run through it or its own through another name.
+    // They are placed from the right and only ever pushed further out, so
+    // each finds room.
     const LF = CALL_PX * PX, LH = LF * CALL_LEAD;
-    const ICON = LF * 0.62, IGAP = LF * 0.4, PADX = LF;
+    const IGAP = LF * 0.4, PADX = LF;     // a name off its leader line; two names apart
     const ctx = document.createElement('canvas').getContext('2d');
     ctx.font = '500 ' + LF + 'px ' + getComputedStyle(document.documentElement).getPropertyValue('--sans');
     const width = t => ctx.measureText(t).width;
@@ -6947,39 +7003,46 @@ if (document.readyState === 'loading') {
     const calls = sq.filter(q => q.w[6]).map(q => {
       const lines = wrap(q.w[2]);
       const yrs = dates(q.w[0], q.w[4]);
-      const w = Math.max(ICON + IGAP + width(yrs), ...lines.map(width));
+      const w = Math.max(width(yrs), ...lines.map(width));
       const lx = snap(q.x0 + q.s / 2);
       const left = lx + IGAP + w > W;
       return { q, lines, yrs, w, lx, left, x0: left ? lx - IGAP - w : lx, x1: left ? lx : lx + IGAP + w,
                h: LH * lines.length + LF };
     });
-    const fits = (a, L, side) => calls.every(p => p === a || p.side !== side ||
-      (p.level === L ? a.x1 + PADX <= p.x0 || p.x1 + PADX <= a.x0
-       : p.level > L ? p.lx < a.x0 - PADX / 2 || p.lx > a.x1 + PADX / 2
-       : a.lx < p.x0 - PADX / 2 || a.lx > p.x1 + PADX / 2));
-    const rowOn = (a, side) => { let L = 0; while (!fits(a, L, side)) L++; return L; };
+    const CLEAR = LF * 2, SPAN = LF * 2, NEAR = LF * 4, LGAP = LF * 0.8;   // LGAP: one name over another
+    // How far the swarm reaches from the line over a run of the plot, over it
+    // (side -1) or under it (1).
+    const extent = (x0, x1, side) => Math.max(0, ...sq.filter(q => q.x0 < x1 + G && x0 < q.x0 + q.s + G)
+      .map(q => q.s / 2 + side * q.c));
+    const across = (p, x) => x >= p.x0 - PADX / 2 && x <= p.x1 + PADX / 2;
+    // d is how far from the line a name's near edge stands.
+    const place = (a, side) => {
+      const others = calls.filter(p => p !== a && p.side === side && p.d !== undefined);
+      const d0 = Math.max(NEAR, extent(a.x0 - SPAN, a.x1 + SPAN, side) + CLEAR);
+      const ok = d => others.every(p =>
+        (a.x1 + PADX <= p.x0 || p.x1 + PADX <= a.x0 || d + a.h + LGAP <= p.d || p.d + p.h + LGAP <= d) &&
+        !(across(a, p.lx) && d < p.d + p.h + LGAP) && !(across(p, a.lx) && p.d < d + a.h + LGAP));
+      const tries = [d0, ...others.map(p => p.d + p.h + LGAP)].filter(d => d >= d0).sort((x, y) => x - y);
+      return tries.find(ok) ?? tries[tries.length - 1];
+    };
     let alt = 1;
     calls.sort((a, b) => b.lx - a.lx).forEach(a => {
       let side = Math.sign(a.q.c);
       if (!side) {
-        const u = rowOn(a, -1), d = rowOn(a, 1);
+        const u = place(a, -1), d = place(a, 1);
         side = u < d ? -1 : d < u ? 1 : (alt = -alt);
       }
       a.side = side;
-      a.level = rowOn(a, side);
+      a.d = place(a, side);
     });
 
-    // The plot, top to bottom: the rows of names over the swarm, CLEAR, the
-    // swarm with the line through it, CLEAR, the rows of names under it, and
-    // under everything the year and age rows, the year's baseline AXIS_Y below
-    // the lowest name and the age's AGE_Y -- as far apart as in the first.
-    const LBL = Math.max(...calls.map(a => a.h));
-    const ROW = LBL + LF;                      // one row of names to the next
-    const CLEAR = LF * 2;
-    const ups = Math.max(-1, ...calls.filter(a => a.side < 0).map(a => a.level)) + 1;
-    const downs = Math.max(-1, ...calls.filter(a => a.side > 0).map(a => a.level)) + 1;
-    const LINE = snap(FIELD_TOP + (ups ? (ups - 1) * ROW + LBL + CLEAR : 0) - top);
-    const FOOT = LINE + bot + (downs ? CLEAR + (downs - 1) * ROW + LBL : 0);
+    // The plot, top to bottom: the swarm with the line through it and its
+    // names about it, as far over the line and under it as either reaches,
+    // and under everything the year and age rows, the year's baseline AXIS_Y
+    // below the lowest of them and the age's AGE_Y -- as far apart as in the
+    // first.
+    const LINE = snap(FIELD_TOP + Math.max(-top, ...calls.filter(a => a.side < 0).map(a => a.d + a.h)));
+    const FOOT = LINE + Math.max(bot, ...calls.filter(a => a.side > 0).map(a => a.d + a.h));
     const AXIS_Y = 70, AGE_Y = AXIS_Y + 34;
     const H = FOOT + AGE_Y + 16;
 
@@ -6987,8 +7050,8 @@ if (document.readyState === 'loading') {
     const count = works.length.toLocaleString('en-US');
     keysEl.innerHTML = '<div class="bg-names">' +
       '<button type="button" class="bg-key" data-dom="' + CONT + '" aria-pressed="false"' +
-      ' aria-label="' + esc('continuity, ' + loops.length + ' works') + '" style="--tc:#fff">' +
-      'continuity</button>' + domains.map((d, i) =>
+      ' aria-label="' + esc('continuity, ' + loops.length + ' works') + '" style="--tc:' +
+      legible(LOOP_RED) + '">continuity</button>' + domains.map((d, i) =>
       '<button type="button" class="bg-key" data-dom="' + i + '" aria-pressed="false"' +
         ' aria-label="' + esc(d.label + ', ' + d.n + ' works') + '" style="--tc:' +
         legible(d.color) + '">' + esc(d.label) + '</button>'
@@ -7000,21 +7063,14 @@ if (document.readyState === 'loading') {
     plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
 
     // Every square snapped to device pixels and never under one across, in
-    // its domain's group, or on the chain in the ribbon's red.
+    // its domain's group, or on the chain in the ribbon's red. Unlike the
+    // first graph, no square carries an image.
     const rect = (q, fill) => {
       const x = snap(q.x0), y = snap(LINE + q.c - q.s / 2);
       const w = Math.max(DEV, snap(q.x0 + q.s) - x), h = Math.max(DEV, snap(LINE + q.c + q.s / 2) - y);
       q.box = [x, y, w, h];
-      let out = '<rect x="' + x.toFixed(2) + '" y="' + y.toFixed(2) + '" width="' + w.toFixed(2) +
-                '" height="' + h.toFixed(2) + '"' + (fill ? ' fill="' + fill + '"' : '') + '/>';
-      const inlay = INLAYS.find(i => q.w[0] === i.year && q.w[2] === i.title);
-      if (inlay) {
-        const [ix, iy, iw, ih] = inlay.box(x, y, w, h);
-        out += '<image class="bg-inlay" href="' + inlay.src + '" x="' + ix.toFixed(2) + '" y="' +
-               iy.toFixed(2) + '" width="' + iw.toFixed(2) + '" height="' + ih.toFixed(2) +
-               '" preserveAspectRatio="' + inlay.fit + ' meet" pointer-events="none"/>';
-      }
-      return out;
+      return '<rect x="' + x.toFixed(2) + '" y="' + y.toFixed(2) + '" width="' + w.toFixed(2) +
+             '" height="' + h.toFixed(2) + '"' + (fill ? ' fill="' + fill + '"' : '') + '/>';
     };
     const dots = domains.map(() => []);
     rest.forEach(q => dots[q.w[1]].push(rect(q)));
@@ -7027,32 +7083,27 @@ if (document.readyState === 'loading') {
     band += '<rect class="bg-band-pad" x="' + cx0.toFixed(2) + '" y="' + (LINE - reach).toFixed(2) +
             '" width="' + (cx1 - cx0).toFixed(2) + '" height="' + (2 * reach).toFixed(2) + '"/></g>';
 
-    // The line itself, thin and red, from the first square to the last, under
-    // them all.
-    const fx0 = Math.min(...sq.map(q => q.x0)), fx1 = Math.max(...sq.map(q => q.x0 + q.s));
-    const spine = '<rect class="bg-spine" x="' + snap(fx0).toFixed(2) + '" y="' + snap(LINE - PX / 2).toFixed(2) +
-                  '" width="' + (snap(fx1) - snap(fx0)).toFixed(2) + '" height="' + Math.max(DEV, snap(PX)).toFixed(2) +
+    // The line itself, thin and red, under them all, joining the chain's
+    // works and nothing beyond them: from the first to the last.
+    const spine = '<rect class="bg-spine" x="' + snap(cx0).toFixed(2) + '" y="' + snap(LINE - PX / 2).toFixed(2) +
+                  '" width="' + (snap(cx1) - snap(cx0)).toFixed(2) + '" height="' + Math.max(DEV, snap(PX)).toFixed(2) +
                   '" fill="' + LOOP_RED + '"/>';
 
     // A name: its leader line from the name's far edge to the square's near
-    // one, a square of its colour, its years, and its name, wrapped.
+    // one, its years, and its name, wrapped, in its key's colour (--call, set
+    // in paint()) -- the colour says the domain, so no swatch is drawn.
     const callout = a => {
       const q = a.q, [, by, , bh] = q.box;
-      const tY = a.side < 0 ? LINE + top - CLEAR - a.level * ROW - a.h : LINE + bot + CLEAR + a.level * ROW;
+      const tY = a.side < 0 ? LINE - a.d - a.h : LINE + a.d;
       const yA = a.side < 0 ? tY : by + bh, yB = a.side < 0 ? by : tY + a.h;
       const base = tY + LF * 0.8;
-      const ink = q.chain ? LOOP_RED : (domains[q.w[1]].ink || domains[q.w[1]].color);
       const anchor = a.left ? ' text-anchor="end"' : '';
       const tx = a.left ? a.lx - IGAP : a.lx + IGAP;
-      const ix = a.left ? tx - width(a.yrs) - IGAP - ICON : tx;
-      const yx = a.left ? tx : tx + ICON + IGAP;
       a.box = [a.x0, tY, a.x1 - a.x0, a.h];
       return '<g class="bg-call" data-dom="' + (q.chain ? CONT : q.w[1]) + '">' +
         '<line x1="' + a.lx.toFixed(2) + '" y1="' + yA.toFixed(2) + '" x2="' + a.lx.toFixed(2) + '" y2="' + yB.toFixed(2) + '"/>' +
-        '<rect x="' + ix.toFixed(2) + '" y="' + (base - ICON).toFixed(2) + '" width="' + ICON.toFixed(2) +
-          '" height="' + ICON.toFixed(2) + '" fill="' + ink + '"/>' +
-        '<text class="bg-call-years" x="' + yx.toFixed(2) + '" y="' + base.toFixed(2) + '"' + anchor + '>' + esc(a.yrs) + '</text>' +
-        a.lines.map((l, i) => '<text x="' + tx.toFixed(2) + '" y="' + (base + (i + 1) * LH).toFixed(2) + '"' +
+        '<text class="bg-call-years" x="' + tx.toFixed(2) + '" y="' + base.toFixed(2) + '"' + anchor + '>' + esc(a.yrs) + '</text>' +
+        a.lines.map((l, i) => '<text class="bg-call-name" x="' + tx.toFixed(2) + '" y="' + (base + (i + 1) * LH).toFixed(2) + '"' +
           anchor + '>' + esc(l) + '</text>').join('') +
         '</g>';
     };
@@ -7097,13 +7148,15 @@ if (document.readyState === 'loading') {
 
     const REST = '<i>one square = one work</i><i>size = its significance</i>';
 
-    // As in the first: a key under the pointer, else a highlight or the chain
-    // under it, else the pressed key decides what is lit; the rest is shaded.
+    // As in the first: a key under the pointer, else the pressed key decides
+    // what is lit, and the rest is shaded; a work under the pointer is
+    // outlined and named but shades nothing.
     // The line, the chain and their names go the way sculpture goes, and are
-    // lit alone by continuity; every other name goes with its domain.
+    // lit alone by continuity; every other name goes with its domain. A
+    // shaded name is hidden (.bg-call.dim), so all of them show only while
+    // every domain is lit.
     function paint() {
-      const lit = held !== null ? (held === ALL ? null : held)
-                : pointed ? pointed.w[1] : loopHeld ? CONT : pinned;
+      const lit = held !== null ? (held === ALL ? null : held) : pinned;
       const chainDim = lit !== null && lit !== CONT && lit !== scu;
       bandEl.classList.toggle('dim', chainDim);
       spineEl.classList.toggle('dim', chainDim);
@@ -7113,14 +7166,22 @@ if (document.readyState === 'loading') {
         g.classList.toggle('dim', lit !== null && d !== lit);
         g.style.fill = tone(d);
       });
+      // A name is set in the colour its key is: the chain's in the line's red,
+      // the rest in their domain's, as the key shows it now.
       callEls.forEach(g => {
         const d = +g.dataset.dom;
         g.classList.toggle('dim', d === CONT ? chainDim : lit !== null && d !== lit);
+        g.style.setProperty('--call', d === CONT ? legible(LOOP_RED) : d !== lit && domains[d].ink || legible(tone(d)));
       });
+      // The keys show what is lit -- and, while a work is under the pointer,
+      // the domain it belongs to (the line's, for one of its works), lit in
+      // the row alone, though the field stays as it is.
+      const named = held === null && pointed ? pointed.w[1] : held === null && loopHeld ? CONT : lit;
       keyBtns.forEach(k => {
         const d = +k.dataset.dom;
-        if (d >= 0) k.style.setProperty('--tc', d !== lit && domains[d].ink || legible(tone(d)));
-        k.classList.toggle('dim', d === ALL ? lit !== null : lit !== null && d !== lit);
+        if (d >= 0) k.style.setProperty('--tc', d !== named && domains[d].ink ||
+          legible((d === named && domains[d].lit) || domains[d].color));
+        k.classList.toggle('dim', d === ALL ? named !== null : named !== null && d !== named);
         k.setAttribute('aria-pressed', (d === ALL ? pinned === null : d === pinned) ? 'true' : 'false');
       });
       hit.classList.toggle('on', held === null && (!!pointed || (loopHeld && !!loopAt)));
@@ -7146,13 +7207,12 @@ if (document.readyState === 'loading') {
     }
     function all() {
       read.style.color = '';
-      read.innerHTML = '<b>' + count + '</b><span class="rd-name">works</span><i class="rd-years">' +
-        esc(dates(y0, y1)) + '</i>';
+      read.innerHTML = '<span class="rd-line">' + count + ' works</span>';
     }
     function sum(d) {
       read.style.color = legible(tone(d));
-      read.innerHTML = '<b>' + domains[d].n + '</b><span class="rd-name">' + esc(domains[d].label) +
-        '</span><i class="rd-years">' + esc(yearsOf(d)) + '</i>';
+      read.innerHTML = '<span class="rd-line">' + domains[d].n + ' works in ' + esc(domains[d].label) +
+        ', ' + esc(yearsOf(d)) + '</span>';
     }
 
     // Only the highlights off the chain answer the pointer, by their square or
