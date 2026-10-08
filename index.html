@@ -5997,8 +5997,9 @@ if (document.readyState === 'loading') {
 // ========== Bill · what he made, and when ==========
 // The graph in #billReveal. One mark to a catalogued work: a dot on the year
 // Bill began it, drawn out along the years for as long as the work took, stacked
-// up that year's column and coloured by domain -- so a building that ran five
-// years weighs five years in the field, and a business card weighs a dot. A row
+// in that year's column out from the continuity line -- the design domains
+// over it, the art domains under -- and coloured by domain, so a building that
+// ran five years weighs five years in the field, and a business card weighs a dot. A row
 // of keys over the field names the domains, each in its colour. The figure
 // comes up with the first key, continuity, pressed -- the endless ribbon's
 // line and its works lit, every domain shaded -- and the last key, all,
@@ -6050,7 +6051,20 @@ if (document.readyState === 'loading') {
   // which stand HI tall. ?marks=weights draws each work as thick as it weighs
   // instead, the way the figure was drawn before (see TOP).
   const FLAT = 4;
+  // Graphic design is six hundred small jobs, and 1931 alone holds a hundred
+  // of them: its marks are drawn THIN, half as thick as the rest, so its
+  // columns don't set the height of the whole figure.
+  const THIN = 2;
   const WEIGHTS = MARKS === 'weights';
+  // How the field is packed, from ?form=: spine (the default) hangs the
+  // field on the continuity line, the design domains standing on it, the art
+  // ones (DOWN) hanging under it, so the line the page is about is the axis
+  // the whole life's work is laid on; strata lays the domains in layers up
+  // from the foot, the way the figure was first drawn; gravity lets every
+  // mark settle as low as it can whatever its domain.
+  const FORM = new URLSearchParams(location.search).get('form') || 'spine';
+  const GRAVITY = FORM === 'gravity', SPINE = FORM === 'spine';
+  const DOWN = /sculpture|architecture|painting/i;
   // How long a work dated to a single year took, in years, by the tier the
   // build script estimated for it: days, weeks, months, a year, years. A single
   // date keeps a work inside its year, so the last two are both drawn a year.
@@ -6246,7 +6260,8 @@ if (document.readyState === 'loading') {
     }));
     const scale = new Map([...load].map(([y, l]) =>
       [y, Math.min(SWELL, Math.max(0, YEAR_H * working(y) - (fixed.get(y) || 0)) / l)]));
-    const thick = w => w[6] ? HI : !WEIGHTS ? FLAT :
+    const gdx = domains.findIndex(d => /graphic/i.test(d.label));
+    const thick = w => w[6] ? HI : !WEIGHTS ? (w[1] === gdx ? THIN : FLAT) :
       Math.min(MAX_T, Math.max(PX, natural(w) * Math.min(...yearsOf1(w).map(y => scale.get(y)))));
     // The widest a mark may stand in one year: its column, less YEAR_AIR.
     const YEAR_W = step - YEAR_AIR;
@@ -6259,22 +6274,26 @@ if (document.readyState === 'loading') {
       return { w, h, x0: c - len / 2, x1: c + len / 2 };
     });
 
-    // The domains stand in layers, one on another, in the order Bill took
-    // them up (the data arrives in that order): the practice he began first
-    // along the foot, each later one laid on those before it -- graphic
-    // design, sculpture, drawings, painting, architecture, product design.
-    // Read up a column, the layers are a record of when each practice began,
-    // where it thinned out, and which he kept at into old age. A layer is packed whole
+    // The domains stand in layers, one on another, in the order the keys
+    // stand in (the data arrives in that order): the first key's domain
+    // nearest the line, each later one laid on those before it. The design
+    // domains stand over the line and the art domains hang under it, each
+    // side layered the same way out from the line. Read out from the line, the
+    // layers are a record of when each practice began, where it thinned out,
+    // and which he kept at into old age. A layer is packed whole
     // before the next is laid on it, so every domain's marks stay together as
     // one band from year to year, never broken up by another colour's marks.
-    // Within its layer each mark settles as low as it can go: never below the
-    // layers under it at any year it spans, never touching a mark of its own
-    // domain already placed. They are placed by the year begun, then the
-    // heaviest and the longest first, so each run stands on its weightiest
-    // work. A work that ran on rests on the highest point beneath it across
-    // the years it ran. A mark can only come to rest on the layer beneath or
-    // on another mark of its own, so those are the only heights tried.
-    marks.sort((a, b) => a.w[1] - b.w[1] || a.w[0] - b.w[0] || b.h - a.h ||
+    // Within its layer each mark settles as close to the line as it can: never
+    // inside the layers before it at any year it spans, never touching a mark
+    // of its own domain already placed. They are placed by the year begun,
+    // then the heaviest and the longest first, so each run stands on its
+    // weightiest work. A work that ran on rests on the highest point beneath
+    // it across the years it ran. A mark can only come to rest on the layer
+    // beneath or on another mark of its own, so those are the only heights
+    // tried. (Under ?form=strata the layers all stand up from the field's
+    // foot instead, and under ?form=gravity there are no layers at all.)
+    marks.forEach(m => { m.dn = SPINE && DOWN.test(domains[m.w[1]].label); });
+    marks.sort((a, b) => (GRAVITY ? 0 : a.w[1] - b.w[1]) || a.w[0] - b.w[0] || b.h - a.h ||
                          (b.x1 - b.x0) - (a.x1 - a.x0));
     // The endless ribbon's line is in the way of them all. Its works lie on it
     // from the year each was begun to the year it was finished, RIB thick and
@@ -6303,20 +6322,35 @@ if (document.readyState === 'loading') {
     });
     const placed = [];
     marks.forEach(m => {
-      const near = placed.filter(o => m.x0 < o.x1 + HGAP && o.x0 < m.x1 + HGAP);
-      const own = near.filter(o => o.w[1] === m.w[1]);
-      const floor = near.reduce((f, o) => o.w[1] === m.w[1] ? f : Math.max(f, o.z + o.h + VGAP), 0);
-      const cut = across(m, l0, l1);
+      const near = placed.filter(o => o.dn === m.dn && m.x0 < o.x1 + HGAP && o.x0 < m.x1 + HGAP);
+      const own = GRAVITY ? near : near.filter(o => o.w[1] === m.w[1]);
       const on = loops.filter(o => across(m, o.w[0], o.w[4]));
       const under = Math.min(BAND_Z, ...on.map(o => o.z0));
       const over = Math.max(BAND_Z + FLAT, ...on.map(o => o.z1)) + VGAP;
-      const rests = [floor, ...own.map(o => o.z + o.h + VGAP), ...(cut ? [over] : [])]
-        .filter(z => z >= floor).sort((a, b) => a - b);
-      m.z = rests.find(z => own.every(o => z + m.h + VGAP <= o.z || z >= o.z + o.h + VGAP) &&
-                            (!cut || z + m.h + VGAP <= under || z >= over));
+      if (m.dn) {
+        // Hung under the line: zd is how far under it the mark's top hangs.
+        const floor = near.reduce((f, o) => o.w[1] === m.w[1] ? f : Math.max(f, o.zd + o.h + VGAP),
+                                  BAND_Z - under + VGAP);
+        const rests = [floor, ...own.map(o => o.zd + o.h + VGAP)].filter(z => z >= floor).sort((a, b) => a - b);
+        m.zd = rests.find(z => own.every(o => z + m.h + VGAP <= o.zd || z >= o.zd + o.h + VGAP));
+        m.z = BAND_Z - m.zd - m.h;
+      } else {
+        const floor = GRAVITY ? 0 : near.reduce((f, o) => o.w[1] === m.w[1] ? f : Math.max(f, o.z + o.h + VGAP),
+                                                SPINE ? over : 0);
+        const cut = SPINE || across(m, l0, l1);
+        const rests = [floor, ...own.map(o => o.z + o.h + VGAP), ...(cut ? [over] : [])]
+          .filter(z => z >= floor).sort((a, b) => a - b);
+        m.z = rests.find(z => own.every(o => z + m.h + VGAP <= o.z || z >= o.z + o.h + VGAP) &&
+                              (!cut || z + m.h + VGAP <= under || z >= over));
+      }
       placed.push(m);
     });
-    const fieldH = Math.max(...marks.map(m => m.z + m.h));
+    // Whatever hangs under the field's foot lifts the whole field, line and all.
+    const zmin = Math.min(0, ...marks.map(m => m.z));
+    marks.forEach(m => { m.z -= zmin; });
+    loops.forEach(o => { o.z0 -= zmin; o.z1 -= zmin; });
+    const bandZ = BAND_Z - zmin;
+    const fieldH = Math.max(...marks.map(m => m.z + m.h), ...loops.map(o => o.z1));
 
     // The row of keys: one button to a domain -- pressed, it lights its domain
     // and shades the rest -- in the order the layers stand: sculpture first,
@@ -6341,9 +6375,12 @@ if (document.readyState === 'loading') {
     fig.style.setProperty('--bg-key', (24 / PX).toFixed(2) + 'px');
 
     // The field's own figure: the tallest column FIELD_TOP down from its top,
-    // and under the columns' foot the year and age rows.
+    // and under the columns' foot the year and age rows, the year's baseline
+    // AXIS_Y below it and the age's AGE_Y -- far enough down that the rows read
+    // as the field's scale rather than as marks at its foot.
     const BASE = FIELD_TOP + fieldH;          // the line the columns stand on
-    const H = BASE + 96;
+    const AXIS_Y = 70, AGE_Y = AXIS_Y + 34;
+    const H = BASE + AGE_Y + 16;
     marks.forEach(m => { m.cy = BASE - m.z - m.h / 2; });
 
     // Every mark is a plain rectangle, square at the corners: a square when it
@@ -6389,11 +6426,11 @@ if (document.readyState === 'loading') {
     // did in the field.
     // It starts and stops on the outer edges of the first and last works, which
     // stand a unit in from their years' edges, so no white shows beyond them.
-    const lineY = snap(BASE - BAND_Z - (FLAT + LINE_T) / 2);
+    const lineY = snap(BASE - bandZ - (FLAT + LINE_T) / 2);
     const lineX0 = snap(yearX(l0) + 1), lineX1 = snap(yearX(l1 + 1) - 1);
     let band = '<g class="bg-band" id="bgBand"><rect class="bg-band-bar" x="' + lineX0.toFixed(2) +
       '" y="' + lineY.toFixed(2) + '" width="' + (lineX1 - lineX0).toFixed(2) +
-      '" height="' + Math.max(DEV, snap(BASE - BAND_Z - (FLAT - LINE_T) / 2) - lineY).toFixed(2) + '" fill="#fff"/>';
+      '" height="' + Math.max(DEV, snap(BASE - bandZ - (FLAT - LINE_T) / 2) - lineY).toFixed(2) + '" fill="#fff"/>';
     loops.forEach(o => {
       const x = snap(yearX(o.w[0]) + 1), w = Math.max(DEV, snap(yearX(o.w[4] + 1) - 1) - x);
       const y = snap(BASE - o.z1), h = Math.max(DEV, snap(BASE - o.z0) - y);
@@ -6423,13 +6460,13 @@ if (document.readyState === 'loading') {
     // it labels. The guides rise only as high as the tallest column, so none
     // stands alone in the empty band over the field.
     const fieldTop = BASE - fieldH;
-    let guides = '<text class="bg-axis" x="' + X0.toFixed(1) + '" y="' + (BASE + 46) + '">year</text>' +
-                 '<text class="bg-age" x="' + X0.toFixed(1) + '" y="' + (BASE + 80) + '">age</text>';
+    let guides = '<text class="bg-axis" x="' + X0.toFixed(1) + '" y="' + (BASE + AXIS_Y) + '">year</text>' +
+                 '<text class="bg-age" x="' + X0.toFixed(1) + '" y="' + (BASE + AGE_Y) + '">age</text>';
     for (let y = Math.ceil(y0 / 10) * 10; y <= y1; y += 10) {
       const gx = (X0 + (y - y0) * step).toFixed(1);
       guides += '<line class="bg-guide" x1="' + gx + '" y1="' + fieldTop.toFixed(1) + '" x2="' + gx + '" y2="' + (BASE + 14) + '"/>' +
-                '<text class="bg-axis" x="' + (+gx + 8) + '" y="' + (BASE + 46) + '">' + y + '</text>' +
-                '<text class="bg-age" x="' + (+gx + 8) + '" y="' + (BASE + 80) + '">' + (y - BORN) + '</text>';
+                '<text class="bg-axis" x="' + (+gx + 8) + '" y="' + (BASE + AXIS_Y) + '">' + y + '</text>' +
+                '<text class="bg-age" x="' + (+gx + 8) + '" y="' + (BASE + AGE_Y) + '">' + (y - BORN) + '</text>';
     }
 
     // No rule under the columns: they stand on a line the decade guides already

@@ -74,13 +74,14 @@ FIELD = {
 # opens the domains' row, after the page's own key for the endless ribbon, and
 # its marks are the layer along the foot of the field, so the practice the page
 # follows is read first and against the ground. Architecture, the other
-# practice of monuments and sites, comes next, then graphic design with book
-# design beside it, the two kinds of printed work. The others follow by the year
-# of each one's first work, and where two began the same year, the one whose
-# works cluster earlier -- the earlier median year -- first. That is the order
-# the layers stack in on the page, each laid on those before it, and the order
-# the keys stand in, left to right. main() sorts them.
-LEAD = ['sculpture', 'architecture', 'graphic', 'book']
+# practice of monuments and sites, comes next, then product design, the
+# objects, then graphic design with book design beside it, the two kinds of
+# printed work. The others follow by the year of each one's first work, and
+# where two began the same year, the one whose works cluster earlier -- the
+# earlier median year -- first. That is the order the layers stack in on the
+# page, each laid on those before it, and the order the keys stand in, left to
+# right. main() sorts them.
+LEAD = ['sculpture', 'architecture', 'product', 'graphic', 'book']
 
 # Graphic design's grey is dark enough to stand back while anything else is
 # lit, and too dark to read the field by when it is the one domain lit -- its
