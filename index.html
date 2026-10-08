@@ -6081,14 +6081,14 @@ if (document.readyState === 'loading') {
   // centred and nearly filling its block, a tenth of the block's shorter side
   // in from its edges. The Ulm School of Design, 1950-55, the school Bill
   // co-founded and first led, carries the school's own name in lower case,
-  // small, in the block's bottom-left corner: its letters a little over a
-  // third of the block across, INSET in from its left and bottom edges.
+  // small, in the block's bottom-left corner: its letters about two fifths of
+  // the block across, INSET in from its left and bottom edges.
   const INLAYS = [
-    { year: 1983, title: 'Kontinuität', src: './assets/kontinuitat-mark.png', fit: 'xMidYMid',
+    { year: 1983, title: 'Kontinuität', src: './assets/kontinuitat-hero-mark.webp', fit: 'xMidYMid',
       box: (x, y, w, h) => { const i = Math.min(w, h) * 0.1; return [x + i, y + i, w - 2 * i, h - 2 * i]; } },
     { year: 1950, title: 'Ulm School of Design',
       src: './assets/ulm-mark.png', fit: 'xMinYMax',
-      box: (x, y, w, h) => [x + INSET, y, w * 0.345, h - INSET] },
+      box: (x, y, w, h) => [x + INSET, y, w * 0.414, h - INSET] },
   ];
   // Under ?marks=weights, Bill is taken to have worked about the same hours
   // every year of his working life, fewer from seventy on: the share of a full year he had at
@@ -6360,10 +6360,10 @@ if (document.readyState === 'loading') {
         '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '"' +
         (LOOP.test(m.w[2]) ? ' fill="' + LOOP_RED + '"' : '') + '/>');
       // The blocks in INLAYS carry an image. The work this page is about
-      // carries the sculpture itself -- the folded band chapter one draws it
-      // as, white straight on its own red block. The image is
-      // assets/kontinuitat-mark.png: chapter one's math-fold.png cut out of its
-      // black ground onto transparency, cropped to the band and made small. The
+      // carries the sculpture itself, as the hero shows it, straight on its own
+      // red block. The image is assets/kontinuitat-hero-mark.webp: the first
+      // frame of the hero's sculpture-rotation-alpha.webm, on its own
+      // transparency, trimmed to the stone and made small. The
       // Ulm School carries its name, black on architecture's blue block. The
       // image is assets/ulm-mark.png: the school's mark with its orange ground
       // cut away onto transparency, so the letters stand on the block's own
@@ -6498,7 +6498,7 @@ if (document.readyState === 'loading') {
       });
       keyBtns.forEach(k => {
         const d = +k.dataset.dom;
-        if (d >= 0) k.style.setProperty('--tc', legible(tone(d)));
+        if (d >= 0) k.style.setProperty('--tc', d !== lit && domains[d].ink || legible(tone(d)));
         k.classList.toggle('dim', d === ALL ? lit !== null : lit !== null && d !== lit);
         k.setAttribute('aria-pressed', (d === ALL ? pinned === null : d === pinned) ? 'true' : 'false');
       });

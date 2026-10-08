@@ -47,7 +47,7 @@ DATASET = os.path.expanduser('~/Downloads/Max_Bill_dataset_handover/Max_Bill_Wor
 # design keeps the handover's white. Measured against the panel's #050505:
 #
 #     sculpture      #f07c1a  orange   7.9:1
-#     graphic design #2a2a2a  grey     1.4:1
+#     graphic design #343434  grey     1.6:1
 #     product design #8f1d8f  magenta  2.7:1
 #     painting       #11703a  green    3.3:1
 #     book design    #ffffff  white   20.6:1
@@ -56,7 +56,7 @@ DATASET = os.path.expanduser('~/Downloads/Max_Bill_dataset_handover/Max_Bill_Wor
 # Where the page sets type in a domain's colour it lifts a colour too dark to
 # be read on the black, so the marks keep the colours as they are.
 DOMAINS = [
-    ('graphic',      'graphic design', '#2a2a2a'),
+    ('graphic',      'graphic design', '#343434'),
     ('book',         'book design',    '#ffffff'),
     ('painting',     'painting',       '#11703a'),
     ('sculpture',    'sculpture',      '#f07c1a'),
@@ -87,6 +87,10 @@ LEAD = ['sculpture', 'architecture', 'graphic', 'book']
 # key under the pointer or pressed -- so then it turns white: its marks, its
 # key and the readout. The page reads this as a domain's `lit` colour.
 LIT = {'graphic': '#ffffff'}
+# And its key's name, at rest, is set in a grey of its own rather than its
+# marks' grey lifted until it reads: a little darker than that, so the key
+# stands back with its marks. The page reads this as a domain's `ink`.
+INK = {'graphic': '#666666'}
 
 # The works the figure points to, drawn taller than any other mark and the
 # only ones in the field that answer the pointer. Listed by the table's IDs,
@@ -471,7 +475,8 @@ def main():
 
     payload = {
         'domains': [dict({'key': k, 'label': label, 'color': colour, 'n': per_domain[i]},
-                         **({'lit': LIT[k]} if k in LIT else {}))
+                         **({'lit': LIT[k]} if k in LIT else {}),
+                         **({'ink': INK[k]} if k in INK else {}))
                     for i, (k, label, colour) in enumerate(domains)],
         'tiers': TIERS,
         'works': works,
