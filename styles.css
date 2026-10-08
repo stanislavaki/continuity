@@ -4742,7 +4742,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* The quiet half of the readout: the encoding at rest, and the span of years
    behind a label. Set below the age row under the plot -- these are the two
    things in the figure that are there to be found rather than read. */
-.bill-graph-read i { font-style: normal; opacity: 0.35; }
+.bill-graph-read i { font-style: normal; opacity: 0.22; }
 .bill-graph-read.is-rest i { grid-column: span 2; }
 /* The year, or a domain's count, holds column one on one line. */
 .bill-graph-read b { font-weight: inherit; white-space: nowrap; }
@@ -4767,7 +4767,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* The age row stands back from the decade above it -- same setting, less ink,
    so the two are read in order rather than at once -- as grey as the quiet
    half of the readout under it (.bill-graph-read i). */
-.bg-age { fill-opacity: 0.35; }
+.bg-age { fill-opacity: 0.22; }
 .bg-dots { transition: opacity 0.4s ease, fill 0.4s ease; }
 /* One mark to a work, square at the corners, its edges on whole pixels -- the
    script snaps them there, and this keeps the browser from blurring them. */
