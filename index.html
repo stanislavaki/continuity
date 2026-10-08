@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=291" />
+<link rel="stylesheet" href="styles.css?v=294" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -308,6 +308,34 @@
         <div class="bill-graph-plot" id="billGraphPlot"></div>
         <figcaption class="bill-graph-foot">
           <span class="bill-graph-read" id="billGraphRead"></span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Bill · what he made, and when -- the second version ------------------
+       The same catalogue as the graph above, drawn another way to try beside
+       it: one square to a work, as large as it weighs, in the year it was
+       finished, swarmed out from the continuity line, the highlights named on
+       leader lines. Drawn by
+       billGraph2() from the same assets/bill-works.json. A thin line parts
+       the two (.bill-reveal-v2). -->
+  <section class="bill-reveal bill-reveal-v2 dark-section" id="billReveal2">
+    <div class="container">
+      <figure class="bill-graph reveal" id="billGraph2">
+        <!-- The figure's heading, set as the pull-quotes are, in white. -->
+        <h3 class="bill-graph-title">Max Bill&rsquo;s works</h3>
+        <!-- Eight empty cells on the page's own grid, laid across the figure's
+             measure. The plot measures its columns off them, so the SVG sits on
+             the same grid as the text above and below it at any width. -->
+        <div class="bill-graph-grid" id="billGraphGrid2" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <!-- The row of names over the field of marks. It is sticky: once it
+             reaches the top of the screen it stays there, naming the colours
+             of the field as it scrolls up under it. -->
+        <div class="bill-graph-keys" id="billGraphKeys2"></div>
+        <div class="bill-graph-plot" id="billGraphPlot2"></div>
+        <figcaption class="bill-graph-foot">
+          <span class="bill-graph-read" id="billGraphRead2"></span>
         </figcaption>
       </figure>
     </div>
@@ -1075,7 +1103,7 @@ function onScroll() {
     // The graph sets its own labels flush on the first column, and the rail's
     // strokes stand in the margin immediately to their left -- two stacks of
     // marks arguing over the same edge. The rail steps out for the section.
-    document.body.classList.toggle('at-graph', cur.id === 'billReveal');
+    document.body.classList.toggle('at-graph', cur.classList.contains('bill-reveal'));
   }
 
   // Active timeline
@@ -6687,6 +6715,533 @@ if (document.readyState === 'loading') {
       .then(r => r.json())
       // The labels are measured to be wrapped, so the figure is drawn once the
       // page's own fonts are in rather than against a fallback's widths.
+      .then(d => { data = d; return document.fonts.ready; })
+      .then(render)
+      .catch(() => { plot.innerHTML = ''; });
+  }, { rootMargin: '600px 0px' });
+  io.observe(fig);
+})();
+
+// ========== Bill · what he made, and when -- the second version ==========
+// The graph in #billReveal2: the same catalogue as the first, drawn another
+// way to try beside it. One square to a work, as large as the work weighs,
+// in the year it was finished -- how long it took is not drawn -- swarmed
+// out from the continuity line both ways, the heaviest nearest the line, each
+// square as close to it as it fits, so a crowded year swells and a quiet one
+// thins down to the line. The endless
+// ribbon's works lie end to end along the line in its red, one chain from the
+// first ribbon to the stone in Frankfurt. The highlights are named over the
+// swarm or under it, each on a thin leader line to its square. The keys, the
+// readout and the pointer behave as in the first.
+(function billGraph2() {
+  const fig = document.getElementById('billGraph2');
+  const plot = document.getElementById('billGraphPlot2');
+  const keysEl = document.getElementById('billGraphKeys2');
+  const read = document.getElementById('billGraphRead2');
+  const rule = document.getElementById('billGraphGrid2');
+  if (!fig || !plot || !rule || !keysEl) return;
+
+  // The viewBox is 1340 wide, the container's measure at the page's 1440
+  // maximum, so at full width one unit is one pixel. Its height follows from
+  // what it holds and is worked out in render().
+  const W = 1340;
+  // A square's side, by the weight the build script gives its work, from 1, a
+  // small printed job, to 5, a monument: S_MIN to S_MAX, every step of weight
+  // multiplying the side by the same amount -- about 9 for a painting, 15 to
+  // 30 for the sculptures, 33 for the Ulm School and the Kontinuität.
+  const S_MIN = 3.3, S_MAX = 33;
+  const sideOf = w => S_MIN * (S_MAX / S_MIN) ** ((w[5] - 1) / 4);
+  const AIR = 1.5;             // between two squares, in units; never under a pixel
+  const FIELD_TOP = 8;         // the plot's top to the highest name
+  const BORN = 1908;           // Max Bill, 1908-1994
+  const INSET = 8;
+  // The names, in screen pixels -- their size, their leading, and the widest
+  // a name runs before it wraps, in ems.
+  const CALL_PX = 14, CALL_LEAD = 1.25, CALL_WRAP = 8;
+  // The two squares that carry an image, as in the first graph: the
+  // Kontinuität its stone, centred, and the Ulm School its name, in the
+  // bottom-left corner.
+  const INLAYS = [
+    { year: 1983, title: 'Kontinuität', src: './assets/kontinuitat-hero-mark.webp', fit: 'xMidYMid',
+      box: (x, y, w, h) => { const i = Math.min(w, h) * 0.1; return [x + i, y + i, w - 2 * i, h - 2 * i]; } },
+    { year: 1950, title: 'Ulm School of Design',
+      src: './assets/ulm-mark.png', fit: 'xMinYMax',
+      box: (x, y, w, h) => [x + INSET / 2, y, w * 0.414, h - INSET / 2] },
+  ];
+  // The endless ribbon's works, found by their titles, and their red.
+  const LOOP = /unendlich|endless|kontinuit|continuity|schleife/i;
+  const LOOP_RED = '#e0301e';
+  const hue = (w, domains) => LOOP.test(w[2]) ? LOOP_RED : domains[w[1]].color;
+
+  // Colour arithmetic, for type set in a domain's colour: a colour too dark
+  // to read on the black is lifted toward white until it clears 4.5:1.
+  const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+  const lum = c => {
+    const [r, g, b] = c.map(v => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const PANEL = lum([5, 5, 5]);
+  const legible = hex => {
+    const c = rgb(hex);
+    for (let t = 0; t <= 1; t += 0.05) {
+      const m = c.map(v => Math.round(v + (255 - v) * t));
+      if ((lum(m) + 0.05) / (PANEL + 0.05) >= 4.5) return 'rgb(' + m.join(',') + ')';
+    }
+    return '#fff';
+  };
+
+  // A run of years as the page writes it: 1956–58.
+  const dates = (a, b) => b > a
+    ? a + '–' + (Math.floor(a / 100) === Math.floor(b / 100) ? String(b).slice(2) : b)
+    : String(a);
+
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  // Where the page's eight columns fall, in the plot's own units.
+  function columns() {
+    const box = plot.getBoundingClientRect();
+    const k = W / box.width;
+    return [...rule.children].map(cell => {
+      const r = cell.getBoundingClientRect();
+      return { x: (r.left - box.left) * k, w: r.width * k };
+    });
+  }
+
+  let data = null;
+  let held = null;             // a key under the pointer outranks the field
+  // As in the first: continuity comes up pressed, and what is pressed
+  // outlives a redraw.
+  const ALL = -1, CONT = -2;
+  let pinned = CONT;
+
+  // The year and age rows are set at the readout's size: its rendered size,
+  // converted into the plot's units, as in the first.
+  function typeUnits() {
+    const box = plot.getBoundingClientRect();
+    return parseFloat(getComputedStyle(read).fontSize) / box.width * W;
+  }
+
+  // Compares two scores, first entry first.
+  const less = (a, b) => { for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] < b[i]; return false; };
+
+  function render() {
+    const domains = data.domains;
+    const works = data.works;   // [year begun, domain, title, tier, year finished, weight, highlight]
+    const grid = columns();
+    const X0 = grid[0].x;                      // the field opens on column one
+    const y0 = works[0][0];
+    const y1 = works.reduce((m, w) => Math.max(m, w[4]), 0);
+    const step = (W - X0) / (y1 - y0 + 1);     // a year, about 18 units at full width
+    const yearX = y => X0 + (y - y0) * step;
+    // A screen pixel in the plot's units, and a device pixel, which the
+    // squares' edges are snapped to.
+    const PX = W / plot.getBoundingClientRect().width;
+    const DEV = PX / (window.devicePixelRatio || 1);
+    const snap = v => Math.round(v / DEV) * DEV;
+    const G = Math.max(AIR, PX);
+
+    // Every work a square: s its side, x0 its left edge, c its centre's height
+    // off the line -- negative over it, positive under it.
+    const sq = works.map(w => ({ w, s: sideOf(w), chain: LOOP.test(w[2]) }));
+
+    // The chain: the endless ribbon's works, in the order they were finished,
+    // centred on the line and laid end to end, each as near the year it was
+    // finished as the ones beside it let it be. Where several crowd one year,
+    // the run they make is centred on the years they want, so the crowding
+    // spreads both ways rather than pushing every later work along.
+    const loops = sq.filter(q => q.chain).sort((a, b) => a.w[4] - b.w[4] || b.w[5] - a.w[5]);
+    const runs = [];
+    loops.forEach(q => {
+      let run = { qs: [q] };
+      runs.push(run);
+      for (;;) {
+        let off = 0, sum = 0;
+        run.qs.forEach(o => { sum += yearX(o.w[4]) - off; off += o.s + G; });
+        run.width = off - G;
+        run.left = sum / run.qs.length;
+        const prev = runs[runs.length - 2];
+        if (!prev || prev.left + prev.width + G <= run.left) break;
+        prev.qs.push(...run.qs);
+        runs.pop();
+        run = prev;
+      }
+    });
+    runs.forEach(run => {
+      let x = run.left;
+      run.qs.forEach(o => { o.x0 = x; o.c = 0; x += o.s + G; });
+    });
+
+    // The swarm. The highlights go first, then the heaviest, so they lie
+    // nearest the line. A square stays in the year it was finished: the
+    // year's column holds as many squares of its size side by side as it
+    // fits, and a square too big for one starts at its year. Of every place
+    // it fits -- on the line, or against the edge of a square already placed
+    // -- it takes the one nearest the line; where over and under are as near,
+    // the side holding less already, so the swarm grows both ways alike; then
+    // the middle of the column.
+    const placed = loops.slice();
+    const rest = sq.filter(q => !q.chain)
+      .sort((a, b) => b.w[6] - a.w[6] || b.s - a.s || a.w[4] - b.w[4]);
+    let flip = 1;
+    rest.forEach(q => {
+      const s = q.s, slots = [];
+      const n = Math.max(1, Math.floor(step / (s + G)));
+      const pad = n > 1 ? (step - n * (s + G) + G) / 2 : 0;
+      for (let k = 0; k < n; k++) {
+        slots.push({ x0: yearX(q.w[4]) + pad + k * (s + G), k: Math.abs(k - (n - 1) / 2) });
+      }
+      const lo = slots[0].x0, hi = slots[slots.length - 1].x0 + s;
+      const near = placed.filter(p => p.x0 < hi + G && lo < p.x0 + p.s + G);
+      let up = 0, down = 0;
+      near.forEach(p => { if (p.c < 0) up += p.s * p.s; else if (p.c > 0) down += p.s * p.s; });
+      const lean = up < down ? -1 : down < up ? 1 : (flip = -flip);
+      let best = null;
+      slots.forEach(sl => {
+        const occ = near.filter(p => p.x0 < sl.x0 + s + G && sl.x0 < p.x0 + p.s + G);
+        const free = c => occ.every(p => c + s / 2 + G <= p.c - p.s / 2 + 1e-6 || c - s / 2 - G >= p.c + p.s / 2 - 1e-6);
+        [0, ...occ.flatMap(p => [p.c - p.s / 2 - G - s / 2, p.c + p.s / 2 + G + s / 2])].forEach(c => {
+          if (!free(c)) return;
+          const score = [Math.round(Math.abs(c) * 100), Math.sign(c) === -lean ? 1 : 0, sl.k];
+          if (!best || less(score, best.score)) best = { score, x0: sl.x0, c };
+        });
+      });
+      q.x0 = best.x0;
+      q.c = best.c;
+      placed.push(q);
+    });
+    const top = Math.min(...sq.map(q => q.c - q.s / 2));
+    const bot = Math.max(...sq.map(q => q.c + q.s / 2));
+
+    // The names. Each highlight is called out by its years and its name, over
+    // the swarm if its square lies over the line, under it if under, and
+    // whichever side has room if on it. A name stands to the right of its
+    // leader line, the line at the square's middle; one that would run off
+    // the plot's right edge stands to the left of it instead. Names on one
+    // side stand in rows out from the swarm: each takes the nearest row where
+    // it clears the names beside it and where no leader line from a row
+    // further out runs through it, nor its own through a name in a nearer
+    // row. They are placed from the right, so a row nearer the swarm always
+    // has room.
+    const LF = CALL_PX * PX, LH = LF * CALL_LEAD;
+    const ICON = LF * 0.62, IGAP = LF * 0.4, PADX = LF;
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.font = '500 ' + LF + 'px ' + getComputedStyle(document.documentElement).getPropertyValue('--sans');
+    const width = t => ctx.measureText(t).width;
+    // A name wraps at CALL_WRAP ems into as few lines as it needs, and then
+    // as evenly as those lines allow, so no word is left on a line of its
+    // own. What stands in brackets is never broken.
+    const words = text => text.match(/\([^)]*\)|[^\s(]+/g);
+    const fill = (ws, max) => ws.reduce((lines, word) => {
+      const last = lines[lines.length - 1];
+      if (last && width(last + ' ' + word) > max) lines.push(word);
+      else lines[lines.length - 1] = last ? last + ' ' + word : word;
+      return lines;
+    }, ['']);
+    const wrap = text => {
+      const ws = words(text), n = fill(ws, CALL_WRAP * LF).length;
+      let lo = 0, hi = CALL_WRAP * LF;
+      while (hi - lo > 1) { const mid = (lo + hi) / 2; if (fill(ws, mid).length > n) lo = mid; else hi = mid; }
+      return fill(ws, hi);
+    };
+    const calls = sq.filter(q => q.w[6]).map(q => {
+      const lines = wrap(q.w[2]);
+      const yrs = dates(q.w[0], q.w[4]);
+      const w = Math.max(ICON + IGAP + width(yrs), ...lines.map(width));
+      const lx = snap(q.x0 + q.s / 2);
+      const left = lx + IGAP + w > W;
+      return { q, lines, yrs, w, lx, left, x0: left ? lx - IGAP - w : lx, x1: left ? lx : lx + IGAP + w,
+               h: LH * lines.length + LF };
+    });
+    const fits = (a, L, side) => calls.every(p => p === a || p.side !== side ||
+      (p.level === L ? a.x1 + PADX <= p.x0 || p.x1 + PADX <= a.x0
+       : p.level > L ? p.lx < a.x0 - PADX / 2 || p.lx > a.x1 + PADX / 2
+       : a.lx < p.x0 - PADX / 2 || a.lx > p.x1 + PADX / 2));
+    const rowOn = (a, side) => { let L = 0; while (!fits(a, L, side)) L++; return L; };
+    let alt = 1;
+    calls.sort((a, b) => b.lx - a.lx).forEach(a => {
+      let side = Math.sign(a.q.c);
+      if (!side) {
+        const u = rowOn(a, -1), d = rowOn(a, 1);
+        side = u < d ? -1 : d < u ? 1 : (alt = -alt);
+      }
+      a.side = side;
+      a.level = rowOn(a, side);
+    });
+
+    // The plot, top to bottom: the rows of names over the swarm, CLEAR, the
+    // swarm with the line through it, CLEAR, the rows of names under it, and
+    // under everything the year and age rows, the year's baseline AXIS_Y below
+    // the lowest name and the age's AGE_Y -- as far apart as in the first.
+    const LBL = Math.max(...calls.map(a => a.h));
+    const ROW = LBL + LF;                      // one row of names to the next
+    const CLEAR = LF * 2;
+    const ups = Math.max(-1, ...calls.filter(a => a.side < 0).map(a => a.level)) + 1;
+    const downs = Math.max(-1, ...calls.filter(a => a.side > 0).map(a => a.level)) + 1;
+    const LINE = snap(FIELD_TOP + (ups ? (ups - 1) * ROW + LBL + CLEAR : 0) - top);
+    const FOOT = LINE + bot + (downs ? CLEAR + (downs - 1) * ROW + LBL : 0);
+    const AXIS_Y = 70, AGE_Y = AXIS_Y + 34;
+    const H = FOOT + AGE_Y + 16;
+
+    // The keys, as in the first.
+    const count = works.length.toLocaleString('en-US');
+    keysEl.innerHTML = '<div class="bg-names">' +
+      '<button type="button" class="bg-key" data-dom="' + CONT + '" aria-pressed="false"' +
+      ' aria-label="' + esc('continuity, ' + loops.length + ' works') + '" style="--tc:#fff">' +
+      'continuity</button>' + domains.map((d, i) =>
+      '<button type="button" class="bg-key" data-dom="' + i + '" aria-pressed="false"' +
+        ' aria-label="' + esc(d.label + ', ' + d.n + ' works') + '" style="--tc:' +
+        legible(d.color) + '">' + esc(d.label) + '</button>'
+    ).join('') + '<button type="button" class="bg-key bg-all" data-dom="' + ALL + '" aria-pressed="false"' +
+      ' aria-label="' + esc('all domains, ' + count + ' works') + '" style="--tc:#fff">all ' +
+      count + ' works</button></div>';
+    fig.style.setProperty('--bg-key', (24 / PX).toFixed(2) + 'px');
+    plot.style.setProperty('--bg-call', LF.toFixed(2) + 'px');
+    plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
+
+    // Every square snapped to device pixels and never under one across, in
+    // its domain's group, or on the chain in the ribbon's red.
+    const rect = (q, fill) => {
+      const x = snap(q.x0), y = snap(LINE + q.c - q.s / 2);
+      const w = Math.max(DEV, snap(q.x0 + q.s) - x), h = Math.max(DEV, snap(LINE + q.c + q.s / 2) - y);
+      q.box = [x, y, w, h];
+      let out = '<rect x="' + x.toFixed(2) + '" y="' + y.toFixed(2) + '" width="' + w.toFixed(2) +
+                '" height="' + h.toFixed(2) + '"' + (fill ? ' fill="' + fill + '"' : '') + '/>';
+      const inlay = INLAYS.find(i => q.w[0] === i.year && q.w[2] === i.title);
+      if (inlay) {
+        const [ix, iy, iw, ih] = inlay.box(x, y, w, h);
+        out += '<image class="bg-inlay" href="' + inlay.src + '" x="' + ix.toFixed(2) + '" y="' +
+               iy.toFixed(2) + '" width="' + iw.toFixed(2) + '" height="' + ih.toFixed(2) +
+               '" preserveAspectRatio="' + inlay.fit + ' meet" pointer-events="none"/>';
+      }
+      return out;
+    };
+    const dots = domains.map(() => []);
+    rest.forEach(q => dots[q.w[1]].push(rect(q)));
+    let band = '<g class="bg-band" id="bgBand2">';
+    loops.forEach(q => { band += rect(q, LOOP_RED); });
+    // What takes the pointer along the chain: its squares and a little air
+    // over and under them.
+    const reach = Math.max(...loops.filter(q => !q.w[6]).map(q => q.s)) / 2 + 3;
+    const cx0 = Math.min(...loops.map(q => q.x0)), cx1 = Math.max(...loops.map(q => q.x0 + q.s));
+    band += '<rect class="bg-band-pad" x="' + cx0.toFixed(2) + '" y="' + (LINE - reach).toFixed(2) +
+            '" width="' + (cx1 - cx0).toFixed(2) + '" height="' + (2 * reach).toFixed(2) + '"/></g>';
+
+    // The line itself, thin and red, from the first square to the last, under
+    // them all.
+    const fx0 = Math.min(...sq.map(q => q.x0)), fx1 = Math.max(...sq.map(q => q.x0 + q.s));
+    const spine = '<rect class="bg-spine" x="' + snap(fx0).toFixed(2) + '" y="' + snap(LINE - PX / 2).toFixed(2) +
+                  '" width="' + (snap(fx1) - snap(fx0)).toFixed(2) + '" height="' + Math.max(DEV, snap(PX)).toFixed(2) +
+                  '" fill="' + LOOP_RED + '"/>';
+
+    // A name: its leader line from the name's far edge to the square's near
+    // one, a square of its colour, its years, and its name, wrapped.
+    const callout = a => {
+      const q = a.q, [, by, , bh] = q.box;
+      const tY = a.side < 0 ? LINE + top - CLEAR - a.level * ROW - a.h : LINE + bot + CLEAR + a.level * ROW;
+      const yA = a.side < 0 ? tY : by + bh, yB = a.side < 0 ? by : tY + a.h;
+      const base = tY + LF * 0.8;
+      const ink = q.chain ? LOOP_RED : (domains[q.w[1]].ink || domains[q.w[1]].color);
+      const anchor = a.left ? ' text-anchor="end"' : '';
+      const tx = a.left ? a.lx - IGAP : a.lx + IGAP;
+      const ix = a.left ? tx - width(a.yrs) - IGAP - ICON : tx;
+      const yx = a.left ? tx : tx + ICON + IGAP;
+      a.box = [a.x0, tY, a.x1 - a.x0, a.h];
+      return '<g class="bg-call" data-dom="' + (q.chain ? CONT : q.w[1]) + '">' +
+        '<line x1="' + a.lx.toFixed(2) + '" y1="' + yA.toFixed(2) + '" x2="' + a.lx.toFixed(2) + '" y2="' + yB.toFixed(2) + '"/>' +
+        '<rect x="' + ix.toFixed(2) + '" y="' + (base - ICON).toFixed(2) + '" width="' + ICON.toFixed(2) +
+          '" height="' + ICON.toFixed(2) + '" fill="' + ink + '"/>' +
+        '<text class="bg-call-years" x="' + yx.toFixed(2) + '" y="' + base.toFixed(2) + '"' + anchor + '>' + esc(a.yrs) + '</text>' +
+        a.lines.map((l, i) => '<text x="' + tx.toFixed(2) + '" y="' + (base + (i + 1) * LH).toFixed(2) + '"' +
+          anchor + '>' + esc(l) + '</text>').join('') +
+        '</g>';
+    };
+
+    // Each decade with Bill's age beneath it, each row named at its left
+    // edge, as in the first: the decade at full, the age standing back.
+    let rows = '<text class="bg-axis" x="' + X0.toFixed(1) + '" y="' + (FOOT + AXIS_Y).toFixed(1) + '">year</text>' +
+               '<text class="bg-age" x="' + X0.toFixed(1) + '" y="' + (FOOT + AGE_Y).toFixed(1) + '">age</text>';
+    for (let y = Math.ceil(y0 / 10) * 10; y <= y1; y += 10) {
+      const gx = (yearX(y) + 8).toFixed(1);
+      rows += '<text class="bg-axis" x="' + gx + '" y="' + (FOOT + AXIS_Y).toFixed(1) + '">' + y + '</text>' +
+              '<text class="bg-age" x="' + gx + '" y="' + (FOOT + AGE_Y).toFixed(1) + '">' + (y - BORN) + '</text>';
+    }
+
+    let field = '<g mask="url(#bgWipe2)" aria-hidden="true">' + rows + spine + calls.map(callout).join('');
+    domains.forEach((d, i) => {
+      field += '<g class="bg-dots" data-dom="' + i + '" fill="' + d.color + '">' + dots[i].join('') + '</g>';
+    });
+    field += band + '<rect class="bg-hit" id="bgHit2" height="10"/></g>';
+
+    plot.innerHTML =
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="' +
+      esc(works.length + ' works by Max Bill, ' + y0 + ' to ' + y1 +
+          ', one square each, as large as the work weighs, swarmed out from the continuity line, by domain: ' +
+          domains.map(d => d.n + ' ' + d.label).join(', ')) + '">' +
+      '<defs><mask id="bgWipe2" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">' +
+      '<rect class="bg-wipe-rect" x="0" y="0" height="' + H + '" fill="#fff"/></mask></defs>' +
+      field + '</svg>';
+
+    const svg = plot.querySelector('svg');
+    const hit = plot.querySelector('#bgHit2');
+    const keyBtns = keysEl.querySelectorAll('.bg-key');
+    const groups = plot.querySelectorAll('.bg-dots');
+    const callEls = plot.querySelectorAll('.bg-call');
+    const bandEl = plot.querySelector('#bgBand2');
+    const spineEl = plot.querySelector('.bg-spine');
+    let pointed = null;                        // the highlight under the pointer
+    let loopHeld = false, loopAt = null;       // the chain under the pointer, and which of its works
+    let litNow = null;
+    const tone = d => (d === litNow && domains[d].lit) || domains[d].color;
+    const scu = domains.findIndex(d => d.key === 'sculpture');
+
+    const REST = '<i>one square = one work</i><i>size = its significance</i>';
+
+    // As in the first: a key under the pointer, else a highlight or the chain
+    // under it, else the pressed key decides what is lit; the rest is shaded.
+    // The line, the chain and their names go the way sculpture goes, and are
+    // lit alone by continuity; every other name goes with its domain.
+    function paint() {
+      const lit = held !== null ? (held === ALL ? null : held)
+                : pointed ? pointed.w[1] : loopHeld ? CONT : pinned;
+      const chainDim = lit !== null && lit !== CONT && lit !== scu;
+      bandEl.classList.toggle('dim', chainDim);
+      spineEl.classList.toggle('dim', chainDim);
+      litNow = lit;
+      groups.forEach(g => {
+        const d = +g.dataset.dom;
+        g.classList.toggle('dim', lit !== null && d !== lit);
+        g.style.fill = tone(d);
+      });
+      callEls.forEach(g => {
+        const d = +g.dataset.dom;
+        g.classList.toggle('dim', d === CONT ? chainDim : lit !== null && d !== lit);
+      });
+      keyBtns.forEach(k => {
+        const d = +k.dataset.dom;
+        if (d >= 0) k.style.setProperty('--tc', d !== lit && domains[d].ink || legible(tone(d)));
+        k.classList.toggle('dim', d === ALL ? lit !== null : lit !== null && d !== lit);
+        k.setAttribute('aria-pressed', (d === ALL ? pinned === null : d === pinned) ? 'true' : 'false');
+      });
+      hit.classList.toggle('on', held === null && (!!pointed || (loopHeld && !!loopAt)));
+      const rest = held === null && !pointed && !loopHeld;
+      if (held === null && pointed) say(pointed.w);
+      else if (held === null && loopHeld && loopAt) say(loopAt.w);
+      else if (held === CONT || (held === null && loopHeld)) {
+        read.style.color = '';
+        const l0 = Math.min(...loops.map(q => q.w[0])), l1 = Math.max(...loops.map(q => q.w[4]));
+        read.innerHTML = '<b>' + dates(l0, l1) + '</b><span class="rd-title">one idea for sixty years: ' +
+          loops.length + ' works, from the first endless ribbon to the last</span>';
+      }
+      else if (held === ALL) all();
+      else if (held !== null) sum(held);
+      else { read.innerHTML = REST; read.style.color = ''; }
+      read.classList.toggle('is-rest', rest);
+    }
+
+    function say(work) {
+      read.style.color = legible(LOOP.test(work[2]) ? LOOP_RED : tone(work[1]));
+      read.innerHTML = '<b>' + dates(work[0], work[4]) + '</b><span class="rd-title">' +
+        esc(work[2]) + '</span>';
+    }
+    function all() {
+      read.style.color = '';
+      read.innerHTML = '<b>' + count + '</b><span class="rd-name">works</span><i class="rd-years">' +
+        esc(dates(y0, y1)) + '</i>';
+    }
+    function sum(d) {
+      read.style.color = legible(tone(d));
+      read.innerHTML = '<b>' + domains[d].n + '</b><span class="rd-name">' + esc(domains[d].label) +
+        '</span><i class="rd-years">' + esc(yearsOf(d)) + '</i>';
+    }
+
+    // Only the highlights off the chain answer the pointer, by their square or
+    // their name, whichever is nearer, within a few units of either; while a
+    // key is pressed, only those of its own domain. The chain answers for its
+    // own works.
+    function at(ev) {
+      const r = svg.getBoundingClientRect(), k = W / r.width;
+      const ux = (ev.clientX - r.left) * k, uy = (ev.clientY - r.top) * k;
+      let best = null, off = 6;
+      calls.forEach(a => {
+        const m = a.q;
+        if (m.chain || (pinned !== null && m.w[1] !== pinned)) return;
+        [m.box, a.box].forEach(([x, y, w, h]) => {
+          const d = Math.max(x - ux, ux - x - w, y - uy, uy - y - h, 0);
+          if (d <= off) { off = d; best = m; }
+        });
+      });
+      return best;
+    }
+    const outline = ([bx, by, bw, bh], stroke) => {
+      hit.setAttribute('x', (bx - 3).toFixed(2));
+      hit.setAttribute('y', (by - 3).toFixed(2));
+      hit.setAttribute('width', (bw + 6).toFixed(2));
+      hit.setAttribute('height', (bh + 6).toFixed(2));
+      hit.setAttribute('stroke', stroke);
+    };
+
+    held = null;
+    svg.addEventListener('pointermove', ev => {
+      if (held !== null) return;
+      const m = at(ev);
+      if (m === pointed) return;
+      pointed = m;
+      if (m) outline(m.box, domains[m.w[1]].lit || hue(m.w, domains));
+      paint();
+    });
+    svg.addEventListener('pointerleave', () => {
+      if (held !== null) return;
+      pointed = null; paint();
+    });
+
+    bandEl.addEventListener('pointermove', ev => {
+      const r = svg.getBoundingClientRect(), k = W / r.width;
+      const ux = (ev.clientX - r.left) * k;
+      const o = loops.find(o => ux >= o.box[0] - G / 2 && ux <= o.box[0] + o.box[2] + G / 2) || null;
+      if (loopHeld && o === loopAt) return;
+      loopHeld = true; loopAt = o;
+      if (o) outline(o.box, '#fff');
+      paint();
+    });
+    bandEl.addEventListener('pointerleave', () => { loopHeld = false; loopAt = null; paint(); });
+    bandEl.addEventListener('click', () => press(CONT));
+
+    const press = d => {
+      pinned = d === ALL || pinned === d ? null : d;
+      paint();
+    };
+    keyBtns.forEach(key => {
+      const d = +key.dataset.dom;
+      key.addEventListener('pointerenter', () => { held = d; pointed = null; paint(); });
+      key.addEventListener('pointerleave', () => { held = null; paint(); });
+      key.addEventListener('click', () => press(d));
+    });
+    paint();
+
+    function yearsOf(d) {
+      const ws = works.filter(w => w[1] === d);
+      return dates(ws[0][0], ws.reduce((m, w) => Math.max(m, w[4]), 0));
+    }
+
+    plot.querySelector('.bg-wipe-rect').getBoundingClientRect();
+    requestAnimationFrame(() => fig.classList.add('bg-lit'));
+  }
+
+  let resizing;
+  window.addEventListener('resize', () => {
+    if (!data) return;
+    clearTimeout(resizing);
+    resizing = setTimeout(render, 160);
+  });
+
+  let asked = false;
+  const io = new IntersectionObserver(entries => {
+    if (!entries.some(e => e.isIntersecting) || asked) return;
+    asked = true;
+    io.disconnect();
+    fetch('./assets/bill-works.json')
+      .then(r => r.json())
       .then(d => { data = d; return document.fonts.ready; })
       .then(render)
       .catch(() => { plot.innerHTML = ''; });

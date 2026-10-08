@@ -4621,6 +4621,28 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* The panel centres its contents, so the container has to be told to take the
    measure rather than shrink to fit the figure inside it. */
 .bill-reveal > .container { width: 100%; }
+/* The second version of the graph, a copy to try changes on, parted from the
+   first by a thin white line across the panel. */
+.bill-reveal-v2 { border-top: 1px solid #fff; }
+/* Its names: each highlight's years, a little grey, over its name in white,
+   at --bg-call (14px, converted into the plot's units by billGraph2()), on a
+   thin leader line to its square. A shaded name stands back as the keys do.
+   The line through the swarm is thin and red, and goes the way the chain
+   goes. */
+.bg-call { transition: opacity 0.4s ease; }
+.bg-call.dim { opacity: 0.3; }
+.bg-call text {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--bg-call, 14px);
+  letter-spacing: -0.005em;
+  fill: #fff;
+}
+.bg-call .bg-call-years { fill-opacity: 0.55; }
+.bg-call line { stroke: #fff; stroke-opacity: 0.35; stroke-width: 1px; vector-effect: non-scaling-stroke; shape-rendering: crispEdges; }
+.bg-call rect, .bg-spine { shape-rendering: crispEdges; }
+.bg-spine { transition: opacity 0.4s ease; }
+.bg-spine.dim { opacity: 0.1; }
 .bill-graph { margin: 0; width: 100%; }
 /* The figure's heading, set as the pull-quotes are -- their size, weight,
    leading and tracking, and lower case -- in white on the panel's black. It
@@ -4786,7 +4808,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* Focus: one domain lit, the rest shaded -- held back far enough to read
    through. */
 .bg-dots.dim { opacity: 0.1; }
-.bg-key.dim { opacity: 0.25; }
+.bg-key.dim { opacity: 0.4; }
 
 /* The field arrives as a wipe across the years rather than a fade, so the
    figure is read left to right the first time as well. The mask rect's width
