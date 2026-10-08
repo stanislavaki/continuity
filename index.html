@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=281" />
+<link rel="stylesheet" href="styles.css?v=288" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -283,13 +283,15 @@
 
   <!-- Bill · what he made, and when -------------------------------------
        Every catalogued work, one mark to a work: a mark on the year it was
-       begun, as long as it took and as tall as its significance, stacked up
-       its column and coloured by the domain it belongs to. ?marks=dots draws
-       every work as the same dot, for comparison. Over the field, a row of
-       keys names its colours and closes on the count of all the works.
-       The plot is drawn by billGraph() at the foot of the script, from
-       assets/bill-works.json -- built by scripts/build_bill_works.py out of
-       the art data set and Fleischmann's catalogue of the graphic work. -->
+       begun, as long as it took, all of one thickness but the key works,
+       which stand tall, stacked up its column and coloured by the domain it
+       belongs to. ?marks=dots draws every work as the same dot, and
+       ?marks=weights as thick as it weighs, for comparison. Over the field, a row of
+       keys opens on continuity, pressed, names the domains' colours, and
+       closes on all, the key that lights every domain and counts the works. The plot is drawn by
+       billGraph() at the foot of the script, from assets/bill-works.json --
+       built by scripts/build_bill_works.py out of the works dataset the data
+       team handed over. -->
   <section class="bill-reveal dark-section" id="billReveal">
     <div class="container">
       <figure class="bill-graph reveal" id="billGraph">
@@ -5996,9 +5998,12 @@ if (document.readyState === 'loading') {
 // The graph in #billReveal. One mark to a catalogued work: a dot on the year
 // Bill began it, drawn out along the years for as long as the work took, stacked
 // up that year's column and coloured by domain -- so a building that ran five
-// years weighs five years in the field, and a business card weighs a dot. Seven labels
-// stand down the left, one to a domain and set in its colour, and while one is
-// under the pointer that domain's marks stay lit and the rest fall back.
+// years weighs five years in the field, and a business card weighs a dot. A row
+// of keys over the field names the domains, each in its colour. The figure
+// comes up with the first key, continuity, pressed -- the endless ribbon's
+// line and its works lit, every domain shaded -- and the last key, all,
+// lights them all. The works the page
+// points to stand taller than any other mark.
 //
 // The whole figure is laid on the page's own eight columns: the labels take
 // columns one and two, the field takes three to eight. The column positions are
@@ -6006,10 +6011,11 @@ if (document.readyState === 'loading') {
 // --gutter, which both scale with the viewport and would otherwise have to be
 // kept in step here by hand; the figure redraws when the measure changes.
 //
-// The data is assets/bill-works.json, built by scripts/build_bill_works.py out
-// of two catalogues that were kept from overlapping -- the art data set for the
-// paintings, sculptures, buildings, drawings, books and objects, and Fleischmann's
-// catalogue for the 570 pieces of typographic work.
+// The data is assets/bill-works.json, built by scripts/build_bill_works.py from
+// the works dataset the data team handed over, taken whole -- the art data set
+// for the paintings, sculptures, buildings, drawings, books and objects,
+// Fleischmann's catalogue for the 570 pieces of typographic work, and a score
+// of works added since.
 (function billGraph() {
   const fig = document.getElementById('billGraph');
   const plot = document.getElementById('billGraphPlot');
@@ -6037,19 +6043,26 @@ if (document.readyState === 'loading') {
   // A work is drawn for as long as it took -- see the marks in render() --
   // unless the page is opened with ?marks=dots, which draws the catalogue the
   // way it was first drawn: one dot to a work, whatever the work took.
-  const LINES = new URLSearchParams(location.search).get('marks') !== 'dots';
+  const MARKS = new URLSearchParams(location.search).get('marks');
+  const LINES = MARKS !== 'dots';
+  // Every work is drawn FLAT thick -- one thickness for all of them, so a mark
+  // says when and for how long and nothing else -- but for the highlights,
+  // which stand HI tall. ?marks=weights draws each work as thick as it weighs
+  // instead, the way the figure was drawn before (see TOP).
+  const FLAT = 4;
+  const WEIGHTS = MARKS === 'weights';
   // How long a work dated to a single year took, in years, by the tier the
   // build script estimated for it: days, weeks, months, a year, years. A single
   // date keeps a work inside its year, so the last two are both drawn a year.
   const EST = [0.02, 0.08, 0.33, 1, 1];
-  // A work's natural thickness, by the weight the build script gives it, from
-  // 1, a small printed job, to 5, a monument, in tenths. The scale is
+  // Under ?marks=weights, a work's natural thickness, by the weight the build
+  // script gives it, from 1, a small printed job, to 5, a monument, in tenths. The scale is
   // geometric: every step of one weight multiplies the thickness by the same
   // amount, from one unit at 1 to TOP units at 5 -- about 5 for a painting, 11
   // for a sculpture, 20 to 40 for the monuments and the buildings. What is
   // drawn is that thickness scaled to the year the work shares (see YEAR_H),
   // and never thinner than one pixel of the screen. ?marks=dots draws every
-  // mark SIDE thick, as before.
+  // mark SIDE thick.
   const TOP = 40;
   // The least air between two marks, side by side and one over the other, in
   // units -- never less than a pixel, so the thinnest marks stay apart.
@@ -6058,9 +6071,9 @@ if (document.readyState === 'loading') {
   const BORN = 1908;           // Max Bill, 1908-1994
   // Two works carry an image in their block, each found by the year it was
   // begun and its title in the catalogue. They are the works the figure points
-  // to, and in the field the Ulm School's is the only mark that answers the
-  // pointer, with its outline and its line in the readout -- see at(); the
-  // band answers for the Kontinuität and the rest of its works. `box` says where in the block
+  // to most of all. In the field only the highlights answer the pointer, with
+  // their outline and their line in the readout -- see at(); the band answers
+  // for the Kontinuität and the rest of its works. `box` says where in the block
   // [x, y, w, h] the image may go, and `fit` how it settles there, as SVG's
   // own preserveAspectRatio: it keeps its proportions, as large as the room
   // allows, against the sides `fit` names. The granite Kontinuität in
@@ -6073,17 +6086,22 @@ if (document.readyState === 'loading') {
   const INLAYS = [
     { year: 1983, title: 'Kontinuität', src: './assets/kontinuitat-mark.png', fit: 'xMidYMid',
       box: (x, y, w, h) => { const i = Math.min(w, h) * 0.1; return [x + i, y + i, w - 2 * i, h - 2 * i]; } },
-    { year: 1950, title: 'Hochschule für Gestaltung Ulm / Ulm School of Design',
+    { year: 1950, title: 'Ulm School of Design',
       src: './assets/ulm-mark.png', fit: 'xMinYMax',
       box: (x, y, w, h) => [x + INSET, y, w * 0.345, h - INSET] },
   ];
-  // Bill is taken to have worked about the same hours every year of his
-  // working life, fewer from seventy on: the share of a full year he had at
+  // Under ?marks=weights, Bill is taken to have worked about the same hours
+  // every year of his working life, fewer from seventy on: the share of a full year he had at
   // each age, easing from all of it at seventy to six tenths at eighty-six.
   // Every year's marks are scaled together to stand YEAR_H tall at a full
   // year's work; a year is never swollen more than SWELL times, and no mark
   // grows past MAX_T -- see the marks in render().
   const YEAR_H = 400, SWELL = 4, MAX_T = 60;
+  // The works the build script lists as highlights (HIGHLIGHTS there) stand HI
+  // tall, so each rises over every other mark. Under ?marks=weights, where none
+  // of the rest grows past MAX_T, their height is taken out of their years
+  // before the rest are scaled to fill them.
+  const HI = 100;
   const working = y => {
     const age = y - BORN;
     return age <= 70 ? 1 : age >= 86 ? 0.6 : 1 - 0.4 * (age - 70) / 16;
@@ -6095,14 +6113,20 @@ if (document.readyState === 'loading') {
   // took up again in version after version, in the Continuity of 1947 and of
   // Frankfurt, and in the endless surfaces between, until the last version was
   // approved the year after he died. The catalogue's titles say which works
-  // those are. A hatched band BAND_H tall cuts through the field BAND_Z over
-  // its foot, from the first of them to the last, each one a solid stretch of
-  // it over its own years and drawn nowhere else; the marks of those years
-  // keep clear of it, under it or over it, so it runs through the columns
-  // unbroken. Under the pointer, or pressed, it holds the field back.
+  // those are. They lie in one line through the field, BAND_Z over its foot,
+  // from the first of them to the last: a white line LINE_T thick, half the
+  // thickness of the field's marks, and on it each of them a mark RIB thick over its
+  // own years, drawn there and nowhere else, standing over and under the line
+  // so it reads as a work on the line rather than a stretch of it -- and the
+  // highlights among them standing HI tall across it. The marks of those
+  // years keep clear of the line and what it carries, under it or over it, so
+  // it runs through the columns unbroken. Under the pointer, or pressed, it
+  // holds the field back. (In the code the line is still the band.)
   const LOOP = /unendlich|endless|kontinuit|continuity|schleife/i;
-  // They are all sculptures, and the band is drawn in sculpture's red.
-  const BAND_H = 40, BAND_Z = 140, LOOP_RED = '#E41802';
+  // They are all sculptures, and the line goes the way sculpture goes when a
+  // key is pressed, but it has a colour of its own: red, which nothing else in
+  // the field is drawn in.
+  const BAND_Z = 140, LINE_T = 2, RIB = 12, LOOP_RED = '#e0301e';
   const hue = (w, domains) => LOOP.test(w[2]) ? LOOP_RED : domains[w[1]].color;
 
   // Colour arithmetic, for type set in or on a domain's colour. The marks take
@@ -6146,11 +6170,14 @@ if (document.readyState === 'loading') {
   }
 
   let data = null;
-  let held = null;             // a label under the pointer outranks the field
-  // A pressed label filters the field to its own domain until it is pressed
-  // again. It outlives a redraw, so a resize keeps the reader where they were.
-  let pinned = null;
-  let loopPinned = false;      // the band pressed: the same, for its works
+  let held = null;             // a key under the pointer outranks the field
+  // A pressed key lights its own domain and shades the rest until another is
+  // pressed; CONT, the first key, lights the continuity line alone, and ALL,
+  // the last, lights every domain. The figure comes up with continuity
+  // pressed, and what is pressed outlives a redraw, so a resize keeps the
+  // reader where they were.
+  const ALL = -1, CONT = -2;
+  let pinned = CONT;
 
   // The type inside the SVG is set in the plot's own units, which scale with
   // the figure -- so to keep the axis at the size the readout is set at, the
@@ -6174,7 +6201,7 @@ if (document.readyState === 'loading') {
     const step = (X1 - X0) / span;
     const colX = y => X0 + (y - y0 + 0.5) * step;
     // One mark to a work: a dot on the year it was begun, drawn out along the
-    // years for as long as it took, and as thick as the work weighs. Where the
+    // years for as long as it took, FLAT thick, or HI for a highlight. Where the
     // catalogue dates a work as a range, the mark runs from the dot on its
     // first year to a dot on its last; otherwise it takes the build script's
     // estimate, kept inside the one year it is dated to. Anything that took
@@ -6189,8 +6216,9 @@ if (document.readyState === 'loading') {
     const DEV = PX / (window.devicePixelRatio || 1);
     const snap = v => Math.round(v / DEV) * DEV;
     const HGAP = Math.max(HAIR, PX), VGAP = Math.max(VAIR, PX);
-    // How thick each mark is drawn. A work's weight gives it a natural
-    // thickness, and the works of one year share that year: at their natural
+    // How thick each mark is drawn: FLAT, or HI for a highlight. Under
+    // ?marks=weights, a work's weight gives it a natural thickness instead,
+    // and the works of one year share that year: at their natural
     // thickness they would stand as tall as their weights add up to, so a year
     // crowded with small jobs would look idle and a year of three monuments
     // would look like the busiest of his life. Instead each year's works are
@@ -6200,20 +6228,26 @@ if (document.readyState === 'loading') {
     // only thinly, the student years and the last ones, is not blown up past
     // SWELL times to fill itself out with a few swollen works; it stands lower.
     // A work that ran over several years takes the smallest of their scales,
-    // so it never overfills the busiest of them.
+    // so it never overfills the busiest of them. A highlight stands HI tall in
+    // every year it ran, and the rest of each of those years fill what is left.
     const natural = w => TOP ** ((w[5] - 1) / 4);
     const yearsOf1 = w => {
       const ys = [];
       for (let y = w[0]; y <= Math.max(w[0], w[4]); y++) ys.push(y);
       return ys;
     };
-    const load = new Map();
+    const load = new Map(), fixed = new Map();
     // The band's works are drawn on the band and nowhere else, so the field
     // is laid out without them.
     const inField = works.filter(w => !LOOP.test(w[2]));
-    inField.forEach(w => yearsOf1(w).forEach(y => load.set(y, (load.get(y) || 0) + natural(w) + VGAP)));
-    const scale = new Map([...load].map(([y, l]) => [y, Math.min(SWELL, YEAR_H * working(y) / l)]));
-    const thick = w => Math.min(MAX_T, Math.max(PX, natural(w) * Math.min(...yearsOf1(w).map(y => scale.get(y)))));
+    inField.forEach(w => yearsOf1(w).forEach(y => {
+      if (w[6]) fixed.set(y, (fixed.get(y) || 0) + HI + VGAP);
+      else load.set(y, (load.get(y) || 0) + natural(w) + VGAP);
+    }));
+    const scale = new Map([...load].map(([y, l]) =>
+      [y, Math.min(SWELL, Math.max(0, YEAR_H * working(y) - (fixed.get(y) || 0)) / l)]));
+    const thick = w => w[6] ? HI : !WEIGHTS ? FLAT :
+      Math.min(MAX_T, Math.max(PX, natural(w) * Math.min(...yearsOf1(w).map(y => scale.get(y)))));
     // The widest a mark may stand in one year: its column, less YEAR_AIR.
     const YEAR_W = step - YEAR_AIR;
     const marks = inField.map(w => {
@@ -6242,39 +6276,68 @@ if (document.readyState === 'loading') {
     // on another mark of its own, so those are the only heights tried.
     marks.sort((a, b) => a.w[1] - b.w[1] || a.w[0] - b.w[0] || b.h - a.h ||
                          (b.x1 - b.x0) - (a.x1 - a.x0));
-    // The band is in the way of them all: a mark over any of its years either
-    // fits whole under it or rests on it or higher.
+    // The endless ribbon's line is in the way of them all. Its works lie on it
+    // from the year each was begun to the year it was finished, RIB thick and
+    // centred on it; works whose years run into one another lie one over
+    // another, a lane each, the weightiest on the line itself; and a highlight
+    // stands HI tall across it, as far over the line as under it. z0 and z1 are each one's
+    // bottom and top over the field's foot. A mark over any of the line's
+    // years keeps clear of whatever it carries there: it fits whole under it,
+    // or rests on it or higher.
     const loopWorks = works.filter(w => LOOP.test(w[2]));
     const l0 = Math.min(...loopWorks.map(w => w[0]));
     const l1 = Math.max(...loopWorks.map(w => w[4]));
     const yearX = y => X0 + (y - y0) * step;
-    const crosses = m => m.x0 < yearX(l1 + 1) + HGAP && yearX(l0) < m.x1 + HGAP;
-    const OVER = BAND_Z + BAND_H + VGAP;
+    const across = (m, a, b) => m.x0 < yearX(b + 1) + HGAP && yearX(a) < m.x1 + HGAP;
+    const loops = loopWorks.map(w => ({ w })).sort((a, b) => a.w[0] - b.w[0] || b.w[5] - a.w[5]);
+    let group = [], reach = -Infinity;
+    loops.forEach(o => {
+      if (o.w[0] > reach) group = [];
+      const taken = group.filter(g => g.w[4] >= o.w[0]).map(g => g.lane);
+      o.lane = 0;
+      while (taken.includes(o.lane)) o.lane++;
+      group.push(o);
+      reach = Math.max(reach, o.w[4]);
+      o.z0 = BAND_Z + FLAT / 2 - (o.w[6] ? HI / 2 : RIB / 2 - o.lane * (RIB + VGAP));
+      o.z1 = o.z0 + (o.w[6] ? HI : RIB);
+    });
     const placed = [];
     marks.forEach(m => {
       const near = placed.filter(o => m.x0 < o.x1 + HGAP && o.x0 < m.x1 + HGAP);
       const own = near.filter(o => o.w[1] === m.w[1]);
       const floor = near.reduce((f, o) => o.w[1] === m.w[1] ? f : Math.max(f, o.z + o.h + VGAP), 0);
-      const cut = crosses(m);
-      const rests = [floor, ...own.map(o => o.z + o.h + VGAP), ...(cut ? [OVER] : [])]
+      const cut = across(m, l0, l1);
+      const on = loops.filter(o => across(m, o.w[0], o.w[4]));
+      const under = Math.min(BAND_Z, ...on.map(o => o.z0));
+      const over = Math.max(BAND_Z + FLAT, ...on.map(o => o.z1)) + VGAP;
+      const rests = [floor, ...own.map(o => o.z + o.h + VGAP), ...(cut ? [over] : [])]
         .filter(z => z >= floor).sort((a, b) => a - b);
       m.z = rests.find(z => own.every(o => z + m.h + VGAP <= o.z || z >= o.z + o.h + VGAP) &&
-                            (!cut || z + m.h + VGAP <= BAND_Z || z >= OVER));
+                            (!cut || z + m.h + VGAP <= under || z >= over));
       placed.push(m);
     });
     const fieldH = Math.max(...marks.map(m => m.z + m.h));
 
-    // The row of names: one toggle button to a domain -- pressed, it filters
-    // the field to its domain -- in the order the layers stand, the order Bill
-    // took them up, graphic design first, product design last. They run on one
-    // line from column one (.bg-names), and the count of all the works closes
-    // the row on the last column. The names are set at 24 of the plot's units,
-    // so they scale with the figure.
-    keysEl.innerHTML = '<div class="bg-names">' + domains.map((d, i) =>
+    // The row of keys: one button to a domain -- pressed, it lights its domain
+    // and shades the rest -- in the order the layers stand: sculpture first,
+    // the practice the page follows, then architecture, graphic design and
+    // book design, then the rest in the order Bill took them up (LEAD in the
+    // build script). Before them all, continuity, in the line's red, lights the line and
+    // its works alone; the last key, all, lights every domain, and carries the
+    // count of all the works, closing the row against the right edge of the
+    // measure. They run on one line from column one (.bg-names), set at 24 of
+    // the plot's units, so they scale with the figure.
+    const count = works.length.toLocaleString('en-US');
+    keysEl.innerHTML = '<div class="bg-names">' +
+      '<button type="button" class="bg-key" data-dom="' + CONT + '" aria-pressed="false"' +
+      ' aria-label="' + esc('continuity, ' + loops.length + ' works') + '" style="--tc:' +
+      legible(LOOP_RED) + '">continuity</button>' + domains.map((d, i) =>
       '<button type="button" class="bg-key" data-dom="' + i + '" aria-pressed="false"' +
         ' aria-label="' + esc(d.label + ', ' + d.n + ' works') + '" style="--tc:' +
         legible(d.color) + '">' + esc(d.label) + '</button>'
-    ).join('') + '</div><p class="bg-total">' + works.length + ' works</p>';
+    ).join('') + '<button type="button" class="bg-key bg-all" data-dom="' + ALL + '" aria-pressed="false"' +
+      ' aria-label="' + esc('all domains, ' + count + ' works') + '" style="--tc:#fff">all ' +
+      count + ' works</button></div>';
     fig.style.setProperty('--bg-key', (24 / PX).toFixed(2) + 'px');
 
     // The field's own figure: the tallest column FIELD_TOP down from its top,
@@ -6301,15 +6364,14 @@ if (document.readyState === 'loading') {
       // as, white straight on its own red block. The image is
       // assets/kontinuitat-mark.png: chapter one's math-fold.png cut out of its
       // black ground onto transparency, cropped to the band and made small. The
-      // Ulm School carries its name, black on its own orange block. The image
-      // is assets/ulm-mark.png: the school's mark with its orange ground cut
-      // away onto transparency, so the letters stand on the block's own orange
-      // rather than on a near match of it, and cropped to the letters, so its
-      // corner is theirs. Each is kept in its domain's
-      // group so it falls back and filters with the rest of them, and it never
-      // takes the pointer from the field's own hit-testing.
+      // Ulm School carries its name, black on architecture's blue block. The
+      // image is assets/ulm-mark.png: the school's mark with its orange ground
+      // cut away onto transparency, so the letters stand on the block's own
+      // colour, and cropped to the letters, so its corner is theirs. Each is
+      // kept in its domain's group so it is shaded with the rest of them, and
+      // it never takes the pointer from the field's own hit-testing.
       const inlay = INLAYS.find(i => m.w[0] === i.year && m.w[2] === i.title);
-      m.called = !!inlay;
+      m.called = !!m.w[6];
       if (inlay) {
         const [ix, iy, iw, ih] = inlay.box(x, y, w, h);
         dots[m.w[1]].push('<image class="bg-inlay" href="' + inlay.src + '" x="' +
@@ -6319,33 +6381,22 @@ if (document.readyState === 'loading') {
       }
     });
 
-    // The band: hatched from the first year of the first of its works to the
-    // last year of the last, and each work a solid stretch of it over its own
-    // years -- the only place it is drawn. Works whose years run into one
-    // another share the band's height between them, one lane each, the
-    // weightiest lowest; a work alone in its years takes the whole height.
-    // The Kontinuität of Frankfurt carries its image here as it did in the field.
-    const loops = loopWorks.map(w => ({ w })).sort((a, b) => a.w[0] - b.w[0] || b.w[5] - a.w[5]);
-    let group = [], reach = -Infinity;
-    const lanes = () => group.forEach(o => { o.of = Math.max(...group.map(g => g.lane)) + 1; });
-    loops.forEach(o => {
-      if (o.w[0] > reach) { lanes(); group = []; }
-      const taken = group.filter(g => g.w[4] >= o.w[0]).map(g => g.lane);
-      o.lane = 0;
-      while (taken.includes(o.lane)) o.lane++;
-      group.push(o);
-      reach = Math.max(reach, o.w[4]);
-    });
-    lanes();
-    const bandY = snap(BASE - BAND_Z - BAND_H);
-    let band = '<g class="bg-band" id="bgBand"><rect class="bg-band-bar" x="' + snap(yearX(l0)).toFixed(2) +
-      '" y="' + bandY.toFixed(2) + '" width="' + (snap(yearX(l1 + 1)) - snap(yearX(l0))).toFixed(2) +
-      '" height="' + BAND_H + '" fill="url(#bgHatch)"/>';
+    // The line: white, LINE_T thick, from the first year of the first of its
+    // works to the last year of the last, each work standing on it in the
+    // ribbon's red over its own years -- the only place they are drawn. It
+    // runs through the middle of the room FLAT gives it, so the works stay
+    // centred on it. The Kontinuität of Frankfurt carries its image here as it
+    // did in the field.
+    // It starts and stops on the outer edges of the first and last works, which
+    // stand a unit in from their years' edges, so no white shows beyond them.
+    const lineY = snap(BASE - BAND_Z - (FLAT + LINE_T) / 2);
+    const lineX0 = snap(yearX(l0) + 1), lineX1 = snap(yearX(l1 + 1) - 1);
+    let band = '<g class="bg-band" id="bgBand"><rect class="bg-band-bar" x="' + lineX0.toFixed(2) +
+      '" y="' + lineY.toFixed(2) + '" width="' + (lineX1 - lineX0).toFixed(2) +
+      '" height="' + Math.max(DEV, snap(BASE - BAND_Z - (FLAT - LINE_T) / 2) - lineY).toFixed(2) + '" fill="#fff"/>';
     loops.forEach(o => {
       const x = snap(yearX(o.w[0]) + 1), w = Math.max(DEV, snap(yearX(o.w[4] + 1) - 1) - x);
-      const y1 = snap(bandY + BAND_H - o.lane * BAND_H / o.of);
-      const y = snap(bandY + BAND_H - (o.lane + 1) * BAND_H / o.of) + (o.lane + 1 < o.of ? Math.max(DEV, snap(1)) : 0);
-      const h = Math.max(DEV, y1 - y);
+      const y = snap(BASE - o.z1), h = Math.max(DEV, snap(BASE - o.z0) - y);
       o.box = [x, y, w, h];
       band += '<rect class="bg-band-tick" x="' + x.toFixed(2) + '" y="' + y.toFixed(2) +
         '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '" fill="' + LOOP_RED + '"/>';
@@ -6357,8 +6408,12 @@ if (document.readyState === 'loading') {
           '" preserveAspectRatio="' + inlay.fit + ' meet" pointer-events="none"/>';
       }
     });
-    band += '<rect class="bg-band-pad" x="' + yearX(l0).toFixed(2) + '" y="' + bandY.toFixed(2) +
-      '" width="' + (yearX(l1 + 1) - yearX(l0)).toFixed(2) + '" height="' + BAND_H + '"/></g>';
+    // What takes the pointer between the works: the line and its lanes, and a
+    // little air over and under them, so a line this thin can be found.
+    const padTop = BASE - Math.max(...loops.filter(o => !o.w[6]).map(o => o.z1)) - 3;
+    const padBot = BASE - Math.min(...loops.filter(o => !o.w[6]).map(o => o.z0)) + 3;
+    band += '<rect class="bg-band-pad" x="' + yearX(l0).toFixed(2) + '" y="' + padTop.toFixed(2) +
+      '" width="' + (yearX(l1 + 1) - yearX(l0)).toFixed(2) + '" height="' + (padBot - padTop).toFixed(2) + '"/></g>';
 
     // Decade guides, and under the field's foot the year they mark with Bill's
     // own age beneath it -- the second row turns the timeline into a life, so a
@@ -6389,15 +6444,13 @@ if (document.readyState === 'loading') {
     plot.innerHTML =
       '<svg viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="' +
       esc(works.length + ' works by Max Bill, ' + y0 + ' to ' + y1 +
-          (LINES ? ', each a mark on the year it was begun, as long as the work took and as tall as its significance, by domain: '
+          (LINES ? ', each a mark on the year it was begun, as long as the work took, the key works standing tall, by domain: '
                  : ', one dot each, by year and domain: ') +
           domains.map(d => d.n + ' ' + d.label).join(', ')) + '">' +
       // The field arrives through this mask, as a wipe across the years -- see
       // .bg-wipe-rect.
       '<defs><mask id="bgWipe" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">' +
-      '<rect class="bg-wipe-rect" x="0" y="0" height="' + H + '" fill="#fff"/></mask>' +
-      '<pattern id="bgHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
-      '<line class="bg-hatch" x1="3" y1="0" x2="3" y2="6"/></pattern></defs>' +
+      '<rect class="bg-wipe-rect" x="0" y="0" height="' + H + '" fill="#fff"/></mask></defs>' +
       field + '</svg>';
 
     plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
@@ -6409,55 +6462,57 @@ if (document.readyState === 'loading') {
     const bandEl = plot.querySelector('#bgBand');
     let pointed = null;                        // the mark under the pointer
     let loopHeld = false, loopAt = null;       // the band under the pointer, and which of its works
+    // The colour a domain shows: its own, or, while it is the one lit, its
+    // `lit` colour where the data gives one -- graphic design's grey turns
+    // white, so the field can be read by it.
+    let litNow = null;
+    const tone = d => (d === litNow && domains[d].lit) || domains[d].color;
+    const scu = domains.findIndex(d => d.key === 'sculpture');
 
     // At rest the readout states the encoding and nothing else: what a mark
     // is, then what its two dimensions mean, each part on two of the page's
     // columns (.bill-graph-read.is-rest).
-    const REST = LINES ? '<i>one mark = one work</i><i>length = how long it took</i><i>height = its significance</i>'
+    const REST = LINES ? '<i>one mark = one work</i><i>length = how long it took</i><i>' +
+                         (WEIGHTS ? 'height = its significance' : 'tall = a key work') + '</i>'
                        : '<i>one dot = one work</i>';
 
-    // One place decides what the figure shows. A label under the pointer asks
-    // for its domain; failing that, a pressed label keeps its own; failing
-    // that, a mark under the pointer lights the domain it belongs to. Filtered,
-    // every other domain's marks are gone rather than held back, so the field
-    // answers only for the one domain left in it. The readout follows: the
-    // work under the pointer, else the domain asked for, else the encoding.
-    // The band outranks none of it: a work or a label under the pointer still
-    // has the readout, and otherwise the band names the work at the year under
-    // the pointer, or counts its works.
+    // One place decides what the figure shows. A key under the pointer asks
+    // for its domain, for the line, or for all of them; failing that, a
+    // highlight under the pointer lights the domain it belongs to, and the
+    // line under the pointer lights the line; failing that, the pressed key
+    // keeps its own. What is asked for is lit and everything else is shaded,
+    // held back but still there to read through. The readout follows the
+    // pointer: the work under it, on the line or in the field; else what the
+    // key under it stands for; else the encoding.
     function paint() {
-      const asked = held ?? pinned;
-      const lit = asked ?? (pointed ? pointed.w[1] : null);
-      // The band is sculpture's, and goes the way sculpture's marks go: out of
-      // the field under another domain's filter, held back while another
-      // domain is lit.
-      const scu = domains.findIndex(d => d.key === 'sculpture');
-      const bandOff = pinned !== null && scu !== asked;
-      const bandDim = pinned === null && lit !== null && scu !== lit;
-      const loop = !bandOff && !bandDim && (loopHeld || loopPinned);
-      svg.classList.toggle('inf-on', loop);
-      bandEl.classList.toggle('on', loopPinned);
-      bandEl.classList.toggle('off', bandOff);
-      bandEl.classList.toggle('dim', bandDim);
+      const lit = held !== null ? (held === ALL ? null : held)
+                : pointed ? pointed.w[1] : loopHeld ? CONT : pinned;
+      // The line goes the way sculpture's marks go -- held back while another
+      // domain is lit -- and is lit alone by continuity.
+      bandEl.classList.toggle('dim', lit !== null && lit !== CONT && lit !== scu);
+      litNow = lit;
       runs.forEach(g => {
         const d = +g.dataset.dom;
-        g.classList.toggle('off', pinned !== null && d !== asked);
-        g.classList.toggle('dim', pinned === null && lit !== null && d !== lit);
+        g.classList.toggle('dim', lit !== null && d !== lit);
+        g.style.fill = tone(d);
       });
       keyBtns.forEach(k => {
-        k.classList.toggle('dim', lit !== null && +k.dataset.dom !== lit);
+        const d = +k.dataset.dom;
+        if (d >= 0) k.style.setProperty('--tc', legible(tone(d)));
+        k.classList.toggle('dim', d === ALL ? lit !== null : lit !== null && d !== lit);
+        k.setAttribute('aria-pressed', (d === ALL ? pinned === null : d === pinned) ? 'true' : 'false');
       });
-      keyBtns.forEach(k => k.setAttribute('aria-pressed', +k.dataset.dom === pinned ? 'true' : 'false'));
-      hit.classList.toggle('on', held === null && (!!pointed || (loop && !!loopAt)));
-      const rest = !(pointed && held === null) && asked === null && !loop;
-      if (pointed && held === null) say(pointed.w);
-      else if (asked !== null) sum(asked);
-      else if (loop && loopAt) say(loopAt.w);
-      else if (loop) {
+      hit.classList.toggle('on', held === null && (!!pointed || (loopHeld && !!loopAt)));
+      const rest = held === null && !pointed && !loopHeld;
+      if (held === null && pointed) say(pointed.w);
+      else if (held === null && loopHeld && loopAt) say(loopAt.w);
+      else if (held === CONT || (held === null && loopHeld)) {
         read.style.color = '';
         read.innerHTML = '<b>' + dates(l0, l1) + '</b><span class="rd-title">one idea for sixty years: ' +
           loops.length + ' works, from the first endless ribbon to the last</span>';
       }
+      else if (held === ALL) all();
+      else if (held !== null) sum(held);
       else { read.innerHTML = REST; read.style.color = ''; }
       read.classList.toggle('is-rest', rest);
     }
@@ -6466,13 +6521,19 @@ if (document.readyState === 'loading') {
     // the keys, so the line says which one it belongs to by taking its colour
     // rather than by repeating its name.
     function say(work) {
-      read.style.color = legible(hue(work, domains));
+      read.style.color = legible(LOOP.test(work[2]) ? LOOP_RED : tone(work[1]));
       read.innerHTML = '<b>' + dates(work[0], work[4]) + '</b><span class="rd-title">' +
         esc(work[2]) + '</span>';
     }
+    // All of them: how many works, and the years they span.
+    function all() {
+      read.style.color = '';
+      read.innerHTML = '<b>' + count + '</b><span class="rd-name">works</span><i class="rd-years">' +
+        esc(dates(y0, y1)) + '</i>';
+    }
     // A domain: how many works, what it is, the years it was at work.
     function sum(d) {
-      read.style.color = legible(domains[d].color);
+      read.style.color = legible(tone(d));
       read.innerHTML = '<b>' + domains[d].n + '</b><span class="rd-name">' + esc(domains[d].label) +
         '</span><i class="rd-years">' + esc(yearsOf(d)) + '</i>';
     }
@@ -6482,10 +6543,10 @@ if (document.readyState === 'loading') {
     // system cursor, so asking which one is under the pointer would mostly
     // answer none. Each mark answers for its own height and half the air
     // above and below it, so a column is covered without a gap, and for as far
-    // as half a column to either side; the nearest answers. Only a mark that
-    // carries an image answers at all (INLAYS) -- the Ulm School's, in the
-    // field -- so the pointer passes over the rest without lighting them or
-    // naming them. Filtered, only the marks still drawn can answer.
+    // as half a column to either side; the nearest answers. Only a highlight
+    // answers at all, so the pointer passes over the rest without lighting
+    // them or naming them -- and while a key is pressed, only a highlight of
+    // its own domain: what it shades stays quiet under the pointer.
     function at(ev) {
       const r = svg.getBoundingClientRect();
       const k = W / r.width;
@@ -6515,7 +6576,8 @@ if (document.readyState === 'loading') {
         hit.setAttribute('y', (by - 3).toFixed(2));
         hit.setAttribute('width', (bw + 6).toFixed(2));
         hit.setAttribute('height', (bh + 6).toFixed(2));
-        hit.setAttribute('stroke', hue(m.w, domains));
+        // Outlined in the colour the mark is about to take, lit.
+        hit.setAttribute('stroke', domains[m.w[1]].lit || hue(m.w, domains));
       }
       paint();
     });
@@ -6524,15 +6586,18 @@ if (document.readyState === 'loading') {
       pointed = null; paint();
     });
 
-    // The band: under the pointer it holds the field back and names whichever
-    // of its works the pointer is on, outlined as a mark in the field is -- each
-    // answering for its own lane and years; between works it says what the band is.
-    // Pressed, it keeps the field held back until it is pressed again.
+    // The line: under the pointer it holds the field back and names whichever
+    // of its works the pointer is on, outlined as a mark in the field is -- of
+    // the works over the year under the pointer, the one nearest it up or
+    // down; between works it says what the line is. Pressed, it presses the
+    // continuity key. While another domain's key is pressed it is shaded, and
+    // takes no pointer at all (.bg-band.dim).
     bandEl.addEventListener('pointermove', ev => {
       const r = svg.getBoundingClientRect(), k = W / r.width;
       const ux = (ev.clientX - r.left) * k, uy = (ev.clientY - r.top) * k;
-      const o = loops.find(o => ux >= o.box[0] - 1 && ux <= o.box[0] + o.box[2] + 1 &&
-                                uy >= o.box[1] - 1 && uy <= o.box[1] + o.box[3] + 1) || null;
+      const off = o => Math.abs(uy - (o.box[1] + o.box[3] / 2)) - o.box[3] / 2;
+      const o = loops.filter(o => ux >= o.box[0] - 1 && ux <= o.box[0] + o.box[2] + 1)
+        .reduce((b, o) => !b || off(o) < off(b) ? o : b, null);
       if (loopHeld && o === loopAt) return;
       loopHeld = true; loopAt = o;
       if (o) {
@@ -6546,14 +6611,13 @@ if (document.readyState === 'loading') {
       paint();
     });
     bandEl.addEventListener('pointerleave', () => { loopHeld = false; loopAt = null; paint(); });
-    bandEl.addEventListener('click', () => { loopPinned = !loopPinned; paint(); });
+    bandEl.addEventListener('click', () => press(CONT));
 
-    // A press toggles the filter: pressing a key filters the field to its domain, pressing it again lets every domain
-    // back, and pressing another moves the filter there. The names are
-    // buttons, so Enter and Space press a focused one.
+    // A press moves the light: pressing a key lights its domain, or the line,
+    // and pressing it again -- or pressing all -- lights every domain. The keys are buttons, so
+    // Enter and Space press a focused one.
     const press = d => {
-      pinned = pinned === d ? null : d;
-      if (pointed && pinned !== null && pointed.w[1] !== pinned) pointed = null;
+      pinned = d === ALL || pinned === d ? null : d;
       paint();
     };
     keyBtns.forEach(key => {
@@ -6585,7 +6649,7 @@ if (document.readyState === 'loading') {
     resizing = setTimeout(render, 160);
   });
 
-  // Fetched rather than written into the page: 58 kB of catalogue that only the
+  // Fetched rather than written into the page: 76 kB of catalogue that only the
   // one section needs, pulled in as the section comes up.
   let asked = false;
   const io = new IntersectionObserver(entries => {

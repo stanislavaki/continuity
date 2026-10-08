@@ -1338,7 +1338,7 @@ section { position: relative; }
   display: flex;
   align-items: flex-start;
   /* The gaps share out what the figures leave of the row -- never less than
-     the names' 30px (.bg-names). */
+     30px. */
   justify-content: space-between;
   column-gap: 30px;
   /* From column 2 to the end of column 7: one column and its gap in from
@@ -4668,16 +4668,16 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   background: var(--black);
   align-items: baseline;
 }
-/* The names run on one line, 30px apart, from column one to the count on the
-   last column. */
+/* The keys run on one line, 15px apart, from column one, and the last of
+   them, all, closes the row against the right edge of the measure. */
 .bg-names {
-  grid-column: 1 / -2;
+  grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  column-gap: 30px;
+  column-gap: 15px;
 }
-/* A name is a toggle button: pressed, it filters the field to its domain. Set
+/* A key is a button: pressed, it lights its domain and shades the rest. Set
    at 24 of the plot's units (--bg-key, from billGraph()), in the domain's
    colour, lifted where that colour is too dark to read on the black, and kept
    whole on its line. */
@@ -4696,24 +4696,16 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   color: var(--tc);
   white-space: nowrap;
   cursor: pointer;      /* the hand, as over the rail and the transport */
-  transition: opacity 0.4s ease;
+  transition: opacity 0.4s ease, color 0.4s ease;
 }
 .bg-key:focus { outline: none; }
 .bg-key:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
-/* The count of all the works the names add up to, closing the row on the last
-   column, in the figure's one voice. */
-.bg-total {
-  grid-column: -2 / -1;
-  margin: 0;
-  font-family: var(--sans);
-  font-weight: 500;
-  font-size: clamp(20px, 1.7vw, 26px);
-  letter-spacing: -0.005em;
-  color: #fff;
-}
+/* All, with the count of the works the keys add up to: set as the other keys
+   are, in white, and pushed to the right edge of the measure. */
+.bg-all { margin-left: auto; text-align: right; }
 /* The foot holds the readout -- the work under the pointer. It is set in the
    figure's one voice: the same face, weight, size, leading and tracking as the
-   count and span above the plot and the labels down its left.
+   year and age rows under the plot.
    Its height is held at two lines. The longest title in the catalogue runs to
    96 characters, which is wider than columns three to eight at this size, so
    some works wrap -- and the panel centres its contents, so a line arriving or
@@ -4762,7 +4754,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bg-guide { stroke: #fff; stroke-opacity: 0.14; stroke-width: 1; }
 /* The two rows under the field -- the decade, and Bill's age in it -- set in
    the figure's one voice with everything else: the same face, weight, size and
-   tracking as the readout below them and the count above the plot. The size
+   tracking as the readout below them. The size
    arrives as --bg-type, measured off the readout by billGraph() and converted
    into the plot's own units, so the two stay matched as the figure scales. */
 .bg-axis,
@@ -4774,31 +4766,28 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   fill: #fff;
 }
 /* The age row stands back from the decade above it -- same setting, less ink,
-   so the two are read in order rather than at once. */
-.bg-age { fill-opacity: 0.6; }
-.bg-dots { transition: opacity 0.4s ease; }
+   so the two are read in order rather than at once -- as grey as the quiet
+   half of the readout under it (.bill-graph-read i). */
+.bg-age { fill-opacity: 0.35; }
+.bg-dots { transition: opacity 0.4s ease, fill 0.4s ease; }
 /* One mark to a work, square at the corners, its edges on whole pixels -- the
    script snaps them there, and this keeps the browser from blurring them. */
 .bg-dots rect { shape-rendering: crispEdges; }
 .bg-hit { pointer-events: none; fill: none; stroke: #fff; stroke-width: 1.5; opacity: 0; transition: opacity 0.15s ease; }
 .bg-hit.on { opacity: 1; }
 
-/* The band through the field: the endless ribbon and what came of it, hatched
-   over the years Bill kept at it and solid over the years of each work. Under
-   the pointer or pressed it holds every domain back. Its works are drawn on
-   it and nowhere else. */
-.bg-hatch { stroke: #fff; stroke-width: 1.5; stroke-opacity: 0.55; }
+/* The line through the field: the endless ribbon and what came of it, its
+   works lying on it in red on a white line over the years Bill kept at it.
+   Under the pointer or pressed it holds every domain back. Its works are drawn
+   on it and nowhere else. */
 .bg-band { cursor: pointer; transition: opacity 0.4s ease; }
-.bg-band.dim { opacity: 0.1; }
-.bg-band.off { opacity: 0; pointer-events: none; }
+.bg-band.dim { opacity: 0.1; pointer-events: none; }
+.bg-band-bar,
 .bg-band-tick { shape-rendering: crispEdges; }
 .bg-band-pad { fill: transparent; }
-.bg-band.on .bg-hatch { stroke-opacity: 1; }
-.inf-on .bg-dots { opacity: 0.1; }
-/* Focus: one domain lit, the rest held back far enough to read through. A
-   filter goes further and takes the rest out of the field altogether. */
+/* Focus: one domain lit, the rest shaded -- held back far enough to read
+   through. */
 .bg-dots.dim { opacity: 0.1; }
-.bg-dots.off { opacity: 0; }
 .bg-key.dim { opacity: 0.25; }
 
 /* The field arrives as a wipe across the years rather than a fade, so the

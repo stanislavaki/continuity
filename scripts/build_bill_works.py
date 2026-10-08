@@ -1,164 +1,119 @@
 #!/usr/bin/env python3
 """Build assets/bill-works.json — the data behind the graph in #billReveal.
 
-Two sources, deliberately kept from overlapping:
+One source: the Max Bill works dataset the data team handed over on
+2026-10-08 (Eugene Yukechev and Sofia Chernykh), one row to a work, 1,017
+rows, 1925-1996, under stable IDs:
 
-  * the art data set, which catalogues the paintings, sculptures, buildings,
-    drawings, books and objects (426 rows, 1925-1996). It is read from a local
-    export of the workbook when one is given with --art, and from the Google
-    Sheet otherwise;
-  * Fleischmann's catalogue of Bill's typography, advertising and book design,
-    570 printed pieces for clients, 1925-1994, exported from the same
-    workbook's typography sheet as an .xlsx.
+  * the works table, the art data set earlier builds read -- the paintings,
+    sculptures, buildings, drawings, books and objects (MB-001 to MB-427);
+  * Fleischmann's catalogue of Bill's typography, advertising and book
+    design, 570 printed pieces for clients (MB-428 to MB-997);
+  * eight works added by hand and twelve from Wikipedia, not yet checked
+    against a source (MB-998 to MB-1017).
 
-Both hold graphic design: Fleischmann's whole catalogue, and the art set's
-books, catalogues, posters and poster drafts. They go into one domain, and an
-art-set piece that Fleischmann's catalogue already holds is left out, so that
-nothing is counted twice -- see IN_FLEISCHMANN.
+The graph takes the table whole: every row with a year it was begun is a
+mark, filed under the table's own Field. The table flags what its makers
+still doubt in its Check column -- among it two dozen of Fleischmann's pieces
+that may repeat a work the works table already holds -- and those doubts are
+settled there, so that a correction made in the workbook reaches the graph on
+the next build rather than being made a second time here.
 
-    python3 scripts/build_bill_works.py [--art path/to/art.xlsx] [path/to/works_extracted.xlsx]
+    python3 scripts/build_bill_works.py [path/to/Max_Bill_Works_dataset.xlsx|.csv]
 
-The graph on the page is built from the consolidated export,
-~/Downloads/Max_Bill_Art_Data_Set_consolidated.xlsx, which carries the twenty
-buildings the Google Sheet does not yet have.
+Without a path it reads the workbook where the handover left it.
 """
 import collections
 import csv
-import io
 import json
 import os
 import re
 import statistics
-import subprocess
 import sys
 import xml.etree.ElementTree as ET
 import zipfile
 
-SHEET = '14uaPRkNVGlXwCusyvrztC1ogfB3QBApsBhgMqKguCy8'
-ART_GID = '519898136'
-ART_URL = f'https://docs.google.com/spreadsheets/d/{SHEET}/export?format=csv&gid={ART_GID}'
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(HERE, 'assets', 'bill-works.json')
-TYPO_DEFAULT = os.path.expanduser('~/Downloads/works_extracted_v5 (1).xlsx')
+DATASET = os.path.expanduser('~/Downloads/Max_Bill_dataset_handover/Max_Bill_Works_dataset.xlsx')
 
-# The domains go out in the order Bill took them up: by the year of each one's
-# first work, and where two began the same year, the one whose works cluster
-# earlier -- the earlier median year -- first. That is the order the layers
-# stack in on the page, the first practice along the foot and each later one
-# laid on those before it, and the order the keys stand in, left to right, so
-# the figure reads as a record of when each practice began, where it thinned
-# out, and which ones he kept at into old age. main() sorts them; the order
-# below only settles what the data cannot.
+# The six fields of the table, in its own words, and their colours: the
+# handover's primaries and secondaries of Bill's paintings, with red kept back
+# for the endless ribbon alone -- the line the page draws through the field
+# (LOOP_RED there) -- but dealt out differently: sculpture takes the orange
+# the handover gave product design, product design a dark magenta,
+# painting a darker green than the handover's, and graphic design, the
+# largest body of work, a dark grey that stands back from the rest; book
+# design keeps the handover's white. Measured against the panel's #050505:
 #
-# The colours. The three largest bodies of work are dealt against their counts:
-# the more works a practice left, the less its colour stands off the panel's
-# near-black, so the six hundred pieces of graphic design are a dark blue that
-# barely lifts off the black, the paintings a violet a step along from it, and
-# sculpture keeps the red it has always had. The three smallest are chosen to
-# be told apart at a glance rather than ranked: architecture orange, drawings
-# a light sky blue, well clear of graphic design's dark one, product design a
-# green, the one colour nothing else in the field comes near. All
-# three stand well off the black, so a handful of their marks still reads.
-# Measured against #050505:
+#     sculpture      #f07c1a  orange   7.9:1
+#     graphic design #2a2a2a  grey     1.4:1
+#     product design #8f1d8f  magenta  2.7:1
+#     painting       #11703a  green    3.3:1
+#     book design    #ffffff  white   20.6:1
+#     architecture   #2f5fd0  blue     3.6:1
 #
-#     605  graphic      #1E3FA0   2.21:1
-#     194  painting     #7030C0   2.79:1
-#     111  sculpture    #E41802   4.30:1
-#      23  drawings     #6CCBFF  11.28:1
-#      20  architecture #FE8C01   8.70:1
-#      16  product      #5FD46B  10.6:1
-#
-# The two darkest are below 3:1 on purpose, as marks; where the page sets type
-# in a domain's colour it lifts a colour that dark until the type can be read.
+# Where the page sets type in a domain's colour it lifts a colour too dark to
+# be read on the black, so the marks keep the colours as they are.
 DOMAINS = [
-    ('graphic',      'graphic design',            '#1E3FA0'),
-    ('painting',     'painting',                  '#7030C0'),
-    ('sculpture',    'sculpture',                 '#E41802'),
-    ('drawing',      'drawings',                  '#6CCBFF'),
-    ('architecture', 'architecture',              '#FE8C01'),
-    ('product',      'product design',            '#5FD46B'),
+    ('graphic',      'graphic design', '#2a2a2a'),
+    ('book',         'book design',    '#ffffff'),
+    ('painting',     'painting',       '#11703a'),
+    ('sculpture',    'sculpture',      '#f07c1a'),
+    ('architecture', 'architecture',   '#2f5fd0'),
+    ('product',      'product design', '#8f1d8f'),
 ]
 IDX = {k: i for i, (k, _, _) in enumerate(DOMAINS)}
-
-# The art set's own Field column, mapped onto the six. Where a field holds more
-# than one kind of work it is sorted row by row, in sort_row().
-FIELD_TO_DOMAIN = {
-    'Painting': 'painting',
-    'Sculpture': 'sculpture',
-    'Sculpture, Product Design': 'sculpture',
-    'Architecture': 'architecture',
-    'Book Design': 'graphic',
-    'Books': 'graphic',
-    'Lithograph': 'graphic',
-    'Graphic Design': 'graphic',
-    'Product Design': 'product',
-    'Drawing': 'drawing',
-    'Other': 'drawing',
+FIELD = {
+    'Graphic Design': 'graphic', 'Book Design': 'book', 'Painting': 'painting',
+    'Sculpture': 'sculpture', 'Architecture': 'architecture', 'Product Design': 'product',
 }
 
-# Art-set graphic work that Fleischmann's catalogue already holds, by the year
-# it was begun and the start of its title here, checked one by one against the
-# catalogue.
-IN_FLEISCHMANN = [
-    (1931, 'Plakat „wohnausstellung neu-bühl'), (1931, 'Brochure for Wohnausstellung Neubühl'),
-    (1931, 'Zett-Haus advertisements'), (1932, 'Information magazine'),
-    (1932, 'Poster for Matinee Performance of Tanzstudio Wulff'), (1933, 'tod und leben'),
-    (1934, 'Corso Theater'), (1936, 'Poster for Swiss Freedom Committee'),
-    (1936, 'Poster for Zeitprobleme'), (1937, 'Le Corbusier & P. Jeanneret'),
-    (1939, 'Aline Valangin'), (1940, 'Alfred Roth'),
-    (1944, 'Poster for the exhibition Konkrete Kunst, Kunsthalle Basel'),
-    (1945, 'Poster for the exhibition USA baut'), (1947, 'Poster for the exhibition Allianz'),
-    (1949, 'Plakat „pevsner'), (1949, 'Poster for the exhibition Pevsner'),
-    (1949, 'Catalog for the exhibition Antoine Pevsner'), (1949, 'Robert Maillart'),
-    (1949, 'Posters for the Juni-Festwochen'), (1977, 'Poster for the exhibition Um 1930'),
-]
-# Works the art set lists twice under two titles; the entry named here is the
-# one left out. (Its 1949 Pevsner, Vantongerloo and Bill poster is listed twice
-# too, and both entries are already in IN_FLEISCHMANN.)
-TWICE = [(1960, 'Poster for the exhibition Dokumentation über Marcel Duchamp')]
-# Titles the art set gets wrong, by year and the title as it stands there, and
-# what they should say. The Endless Ribbon shown in 1942 is version III --
-# version II of 1937, sawn apart, shortened to 150 cm and given a lenticular
-# cross-section -- where the art set repeats "Version II".
+# The domains go out in the order LEAD gives, and the rest in the order Bill
+# took them up. Sculpture leads because the page is about a sculpture: its key
+# opens the domains' row, after the page's own key for the endless ribbon, and
+# its marks are the layer along the foot of the field, so the practice the page
+# follows is read first and against the ground. Architecture, the other
+# practice of monuments and sites, comes next, then graphic design with book
+# design beside it, the two kinds of printed work. The others follow by the year
+# of each one's first work, and where two began the same year, the one whose
+# works cluster earlier -- the earlier median year -- first. That is the order
+# the layers stack in on the page, each laid on those before it, and the order
+# the keys stand in, left to right. main() sorts them.
+LEAD = ['sculpture', 'architecture', 'graphic', 'book']
+
+# Graphic design's grey is dark enough to stand back while anything else is
+# lit, and too dark to read the field by when it is the one domain lit -- its
+# key under the pointer or pressed -- so then it turns white: its marks, its
+# key and the readout. The page reads this as a domain's `lit` colour.
+LIT = {'graphic': '#ffffff'}
+
+# The works the figure points to, drawn taller than any other mark and the
+# only ones in the field that answer the pointer. Listed by the table's IDs,
+# which stay put whatever the row order, each with the name the page gives it.
+# This is the page's own selection: the table's Highlight column holds an
+# earlier, longer one, and is not read.
+HIGHLIGHTS = {
+    'MB-008': 'Krug',
+    'MB-031': 'Wellrelief',
+    'MB-057': 'Quinze variations sur un même thème',
+    'MB-060': 'Die unendliche schleife (Version I)',
+    'MB-419': 'Pavillon Die gute Form',
+    'MB-409': 'Ulm School of Design',
+    'MB-179': 'Ulmer hocker',
+    'MB-196': 'Junghans hand-wound kitchen clock',
+    'MB-416': 'Haus Bill Zumikon',
+    'MB-368': 'Pavillon-skulptur',
+    'MB-380': 'Kontinuität',
+}
+
+# Titles the table gets wrong, by ID, and what they should say. The Endless
+# Ribbon shown in 1942 is version III -- version II of 1937, sawn apart,
+# shortened to 150 cm and given a lenticular cross-section -- where the table
+# repeats "Version II".
 RETITLED = {
-    (1942, 'sculpture: «die unendliche schleife» Version II'):
-        'sculpture: «die unendliche schleife» Version III',
+    'MB-099': '«Die unendliche schleife» Version III',
 }
-
-
-def sort_row(domain, row):
-    """The domain a row of the art set belongs to, where its field holds more
-    than one kind of work.
-
-    Graphic design is what was made to be printed or applied -- posters, books,
-    catalogues, poster drafts. Drawings are unique works on paper, and the art
-    prints go with them: the Quinze variations portfolio, the 7 twins
-    silkscreens, an etching. The art set's catch-all "Other" is mostly work on
-    paper -- designs for a mural and a stained-glass window, a facade drawing,
-    mounted presentation panels, a cut-paper construction -- and stays with the
-    drawings. Its copper vase and brass jug go with the silver tray and the
-    copper pitcher the art set already files as sculpture, and its sandblasted
-    glass picture, a picture in glass, goes with the paintings. The Junghans
-    clock diagrams are product design."""
-    field = (row.get('Field') or '').strip()
-    title = (row.get('Title') or '').lower()
-    material = (row.get('Material') or '').lower()
-    if domain == 'graphic':
-        if 'portfolio' in material or 'silkscreen prints' in material:
-            return 'drawing'
-        return 'graphic'
-    if field == 'Other':
-        if 'plakatentwurf' in title or 'plakatentwurf' in material:
-            return 'graphic'
-        if any(m in material for m in ('copper', 'brass', 'messing')):
-            return 'sculpture'
-        if title.startswith('glasbild'):
-            return 'painting'
-        return 'drawing'
-    if field == 'Drawing' and title.startswith('diagrams of junghans'):
-        return 'product'
-    return domain
-
 
 # The typographic catalogue names each piece by kind and client; the German
 # kinds are given in English so the graph speaks the page's language.
@@ -175,17 +130,17 @@ NS = '{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
 # ---- weight: how long a work took -----------------------------------------
 # The page draws each work for as long as it took: from the year it was begun to
 # the year it was finished, where the catalogue dates it as a range, and
-# otherwise by one of five tiers estimated here. Nothing in the catalogues
-# records time or importance --
-# the art set's "Rank of quotation" and "X-Factor" columns are empty -- so the
-# tier is estimated from what each row does say: the kind of print job, the
+# otherwise by one of five tiers estimated here. Nothing in the table records
+# time or importance -- its "Rank of quotation" and "X-Factor" columns are
+# empty -- so the tier is estimated from what each row does say: the kind of print job, the
 # canvas, the height of a sculpture, whether a building was built. These are
 # rough orders of magnitude, set by rule so they can be argued with and changed
 # here, not researched work by work. A work dated to a single year is drawn no
 # longer than that year, whatever its tier.
 #
 # Each work goes out as [year begun, domain, title, tier, year finished,
-# weight] -- the weight, from 1 to 5 in tenths, is set below.
+# weight, highlight] -- the weight, from 1 to 5 in tenths, is set below, and
+# the last is 1 for the works in HIGHLIGHTS and 0 for the rest.
 TIERS = ['days', 'weeks', 'months', 'a year', 'years']
 DAYS, WEEKS, MONTHS, A_YEAR, YEARS = range(5)
 
@@ -254,28 +209,68 @@ def year_range(text, start):
 # ---- weight: how much a work counts ---------------------------------------
 # The page draws each mark as thick as the work weighs in Bill's history, on a
 # continuous scale from 1, a small printed job, to 5, a monument. Nothing in the
-# data measures significance: the art set has a column for exactly that,
+# data measures significance: the table has a column for exactly that,
 # "Rank of quotation (1-5)", and it is empty. Until it is filled, a work's weight
 # is built up here from what its own row does say:
 #
-#   * its practice sets where it starts (BASE);
+#   * its practice sets where it starts (BASE), and a piece of graphic or book
+#     design by what kind of piece it is (PAPER);
 #   * its scale moves it within the practice -- a painting by the size of its
 #     canvas, a sculpture by its height and whether it stands in public, a
-#     building by whether it was built, a printed piece by what kind of job it
-#     was;
-#   * a public museum holding it, or a note in the catalogue that it won a Grand
+#     building by whether it was built;
+#   * a public museum holding it, or a note in the table that it won a Grand
 #     Prix or is his principal work, lifts it;
 #   * CANON lifts a short list of works whose standing is on record beyond this
 #     data set. That list is an editorial call, not a measurement -- argue with
 #     it here.
 #
-# A rank entered in the art set's column replaces all of this for its work.
+# A rank entered in the table's column replaces all of this for its work. The
+# works in HIGHLIGHTS are drawn taller than any of it, whatever they weigh.
 BASE = {
-    'graphic': 1.0,
-    'drawing': 1.8,
     'painting': 2.8, 'product': 2.8,
     'sculpture': 3.6, 'architecture': 3.6,
 }
+# Graphic and book design, by kind: how long it took, and what it weighs. A
+# poster, draft or printed, is a public statement; a set of prints is months
+# of work, and weighs as a drawing does; a catalogue, a brochure, a magazine,
+# a score or a run of advertisements is a piece of work, and a whole book more
+# than any of them. The drawings are the unique works on paper the table files
+# under graphic design: a sheet is a sitting or two, a worked-up design --
+# for a mural, a window, a memorial, a lettering -- weeks.
+PAPER = {
+    'poster':  (WEEKS, 1.8),
+    'prints':  (MONTHS, 1.8),
+    'light':   (WEEKS, 1.4),
+    'book':    (MONTHS, 2.1),
+    'drawing': (DAYS, 1.8),
+    'design':  (WEEKS, 1.8),
+}
+DRAWN = re.compile(r'tusche|aquarell|gouache|bleistift|farbstift|buntstift|tempera|radierung|'
+                   r'zeichnung|schnitt in|\bink\b', re.I)
+
+
+def paper(row):
+    """What a piece of graphic or book design is, read off its title and
+    material: a poster or a poster draft; a set of prints -- a portfolio of
+    lithographs, a run of silkscreens, and the print series the Wikipedia rows
+    add, which come with no material; a catalogue, brochure, magazine, score
+    or run of advertisements; a drawing or a design on paper; and otherwise a
+    whole book."""
+    title = (row.get('Title') or '').lower()
+    material = (row.get('Material') or '').lower()
+    text = title + ' ' + material
+    if 'poster' in text or 'plakat' in text:
+        return 'poster'
+    if ('portfolio' in material or 'silkscreen prints' in material or
+            (row.get('Data source') or '').startswith('Wikipedia')):
+        return 'prints'
+    if any(k in text for k in ('catalog', 'brochure', 'score', 'magazine', 'advertisement')):
+        return 'light'
+    if DRAWN.search(material):
+        return 'design' if re.search(r'entwurf|design|reinzeichnung|schnitt in', text) else 'drawing'
+    return 'book'
+
+
 # Printed matter by kind: a poster is a public statement, a brochure or a
 # catalogue a piece of work, an advertisement, a card or a letterhead a small job.
 TYPO_WEIGHT = {'Plakat': 0.8, 'Prospekt': 0.4, 'Broschüre': 0.4, 'Katalog': 0.4}
@@ -296,11 +291,12 @@ def art_weight(domain, row, tier):
     rank = next((v for k, v in row.items() if k and k.startswith('Rank of quotation')), '')
     if re.fullmatch(r'[1-5](\.\d+)?', (rank or '').strip()):
         return float(rank)
-    field = (row.get('Field') or '').strip()
     title = (row.get('Title') or '').strip()
-    text = (title + ' ' + (row.get('Material') or '')).lower()
     note = (row.get('Description') or '').lower()
-    w = BASE[domain]
+    if domain in ('graphic', 'book'):
+        w = PAPER[paper(row)][1]
+    else:
+        w = BASE[domain]
     if domain == 'painting':
         a = canvas_m2(row.get('Dimension'))
         if a is not None:
@@ -309,17 +305,6 @@ def art_weight(domain, row, tier):
         w += {WEEKS: -0.6, MONTHS: 0, A_YEAR: 0.7, YEARS: 1.2}.get(tier, 0)
     elif domain == 'architecture':
         w += 1.0 if 'built work' in note else -0.4 if 'unrealised' in note else 0
-    elif domain == 'graphic':
-        # Weighed as Fleischmann's pieces are (TYPO_WEIGHT), so a poster weighs
-        # the same whichever catalogue it came from: a poster or a poster draft
-        # 0.8 over the base, a catalogue, brochure, magazine or score 0.4, and a
-        # whole book, months of work, more than either.
-        if 'poster' in text or 'plakat' in text:
-            w += 0.8
-        elif tier == MONTHS:
-            w += 1.1
-        else:
-            w += 0.4
     if MUSEUM.search(row.get('Collection') or ''):
         w += 0.3
     if 'grand prix' in note or 'principal' in note:
@@ -332,11 +317,10 @@ def art_weight(domain, row, tier):
 
 
 def typo_weight(kind):
-    return round(BASE['graphic'] + TYPO_WEIGHT.get(kind, 0), 1)
+    return round(1.0 + TYPO_WEIGHT.get(kind, 0), 1)
 
 
 def art_tier(domain, row, start):
-    field = (row.get('Field') or '').strip()
     title = (row.get('Title') or '').strip()
     text = (title + ' ' + (row.get('Material') or '')).lower()
     if domain == 'architecture':
@@ -365,24 +349,11 @@ def art_tier(domain, row, start):
         if a is None:
             return WEEKS
         return DAYS if a < 0.1 else WEEKS if a < 1.5 else MONTHS
-    if domain == 'graphic':
-        if 'poster' in text or 'plakat' in text:
-            return WEEKS                  # a poster, a series, a draft
-        # A whole book against a catalogue, a brochure, a magazine or a score.
-        light = ('catalog', 'brochure', 'score', 'magazine')
-        return WEEKS if any(k in text for k in light) else MONTHS
+    if domain in ('graphic', 'book'):
+        return PAPER[paper(row)][0]
     if domain == 'product':
         return WEEKS if 'wallpaper' in text or 'diagram' in text else MONTHS
-    if domain == 'drawing':
-        # A portfolio of prints is months of work, an etching or a sheet of
-        # silkscreens weeks. What comes over from the art set's "Other" is
-        # designs and mounted presentation panels, worked up further than a
-        # drawing's sitting or two.
-        if 'portfolio' in text or 'silkscreen prints' in text:
-            return MONTHS
-        return WEEKS if field in ('Other', 'Lithograph', 'Graphic Design') else DAYS
     return DAYS
-
 
 
 def clean(s, n=96):
@@ -395,7 +366,7 @@ def read_xlsx(path):
 
     Read straight out of the zip, since this Mac's python has no openpyxl. A
     number comes back as Excel stores it, so a whole one is written without the
-    '.0' a float would carry -- the consolidated export keeps its years, and one
+    '.0' a float would carry -- the workbooks keep their years, and one
     sculpture's title ('22'), as numbers.
     """
     book = zipfile.ZipFile(path)
@@ -406,9 +377,11 @@ def read_xlsx(path):
                   if r.get('Id') == first.get(rel))
     target = target.lstrip('/')
     target = target if target.startswith('xl/') else 'xl/' + target
+    # The handover's workbook writes its text into the cells themselves and
+    # has no table of shared strings.
     strings = [''.join(t.text or '' for t in si.iter(NS + 't'))
                for si in ET.fromstring(book.read('xl/sharedStrings.xml'))
-                            .findall('m:si', ns)]
+                            .findall('m:si', ns)] if 'xl/sharedStrings.xml' in book.namelist() else []
 
     def cell(c):
         t, v = c.get('t'), c.find('m:v', ns)
@@ -426,74 +399,65 @@ def read_xlsx(path):
             for row in ET.fromstring(book.read(target)).findall('.//m:sheetData/m:row', ns)]
 
 
-def art_rows(path):
-    """The art data set's rows as dicts keyed by header: from the local
-    workbook when there is one, and from the Google Sheet otherwise."""
-    if path:
-        rows = read_xlsx(path)
-        head = rows[0]
-        return [{head[k]: v for k, v in r.items() if k in head} for r in rows[1:]
-                if any((v or '').strip() for v in r.values())]
-    # Fetched with curl rather than urllib: this Mac's python carries its own
-    # certificate bundle, which does not trust the system roots, so urllib
-    # cannot open a Google URL while curl can.
-    csv_text = subprocess.run(['curl', '-sSLf', ART_URL],
-                              capture_output=True, text=True, check=True).stdout
-    return list(csv.DictReader(io.StringIO(csv_text)))
+def table_rows(path):
+    """The table's rows as dicts keyed by its header, from the workbook or from
+    its CSV twin."""
+    if path.lower().endswith('.csv'):
+        with open(path, encoding='utf-8', newline='') as f:
+            return list(csv.DictReader(f))
+    rows = read_xlsx(path)
+    head = rows[0]
+    return [{head[k]: v for k, v in r.items() if k in head} for r in rows[1:]
+            if any((v or '').strip() for v in r.values())]
 
 
 def main():
-    args = sys.argv[1:]
-    art_path = None
-    if '--art' in args:
-        i = args.index('--art')
-        art_path = os.path.expanduser(args[i + 1])
-        del args[i:i + 2]
-    typo_path = args[0] if args else TYPO_DEFAULT
-    works, dropped = [], collections.Counter()
+    path = os.path.expanduser(sys.argv[1]) if len(sys.argv) > 1 else DATASET
+    works, dropped, found = [], collections.Counter(), set()
 
-    # --- the art data set -------------------------------------------------
-    for row in art_rows(art_path):
-        field = (row.get('Field') or '').strip()
-        # An unknown field is a work all the same; it lands with the drawings.
-        domain = sort_row(FIELD_TO_DOMAIN.get(field, 'drawing'), row)
-        year = (row.get('Beginning') or '').strip()
+    for row in table_rows(path):
+        row = {k: (v or '').strip() for k, v in row.items() if k}
+        wid, field = row.get('ID', ''), row.get('Field', '')
+        if field not in FIELD:
+            sys.exit(f'{wid}: no domain for the field {field!r} -- add it to FIELD')
+        domain = FIELD[field]
+        year = row.get('Beginning', '')
         if not re.fullmatch(r'\d{4}', year):
             dropped['no year'] += 1
             continue
-        title = (row.get('Title') or '').strip()
-        if any(y == int(year) and title.startswith(t) for y, t in IN_FLEISCHMANN):
-            dropped['already in Fleischmann\'s catalogue'] += 1
-            continue
-        if any(y == int(year) and title.startswith(t) for y, t in TWICE):
-            dropped['listed twice in the art set'] += 1
-            continue
-        if (int(year), title) in RETITLED:
-            row = dict(row, Title=RETITLED[(int(year), title)])
-        tier = art_tier(domain, row, int(year))
-        works.append([int(year), IDX[domain], clean(row.get('Title')), tier,
-                      year_range(row.get('Year'), int(year)), art_weight(domain, row, tier)])
+        start = int(year)
+        if wid in RETITLED:
+            row['Title'] = RETITLED[wid]
+        if row.get('Data source', '').startswith('Fleischmann'):
+            # Fleischmann's pieces are named by kind and client, the kind given
+            # in English so the graph speaks the page's language.
+            raw = row.get('Type (source)', '')
+            kind = KIND.get(raw, raw.lower() or 'printed matter')
+            client = clean(row.get('Client'), 60)
+            title = clean(f'{kind} — {client}' if client else kind)
+            tier, weight = TYPO_TIER.get(raw, DAYS), typo_weight(raw)
+        else:
+            title = clean(row.get('Title'))
+            tier = art_tier(domain, row, start)
+            weight = art_weight(domain, row, tier)
+        if wid in HIGHLIGHTS:
+            title = HIGHLIGHTS[wid]
+            found.add(wid)
+        works.append([start, IDX[domain], title, tier, year_range(row.get('Year'), start),
+                      weight, int(wid in HIGHLIGHTS)])
 
-    # --- the typographic catalogue ---------------------------------------
-    for col in read_xlsx(typo_path)[1:]:
-        year = (col.get('A') or '').strip()
-        if not re.fullmatch(r'\d{4}', year):
-            dropped['no year'] += 1
-            continue
-        raw = (col.get('C') or '').strip()
-        kind = KIND.get(raw, raw.lower())
-        client = clean(col.get('B'), 60)
-        works.append([int(year), IDX['graphic'],
-                      clean(f'{kind} — {client}' if client else kind),
-                      TYPO_TIER.get(raw, DAYS), int(year), typo_weight(raw)])
+    missing = set(HIGHLIGHTS) - found
+    if missing:
+        sys.exit(f'highlights not in the table, or undated: {", ".join(sorted(missing))}')
 
-    # Order the domains by when Bill took each up, and renumber every work to
-    # match.
+    # LEAD first, then the rest by when Bill took each up, and every work
+    # renumbered to match.
     counts = collections.Counter(w[1] for w in works)
     years = collections.defaultdict(list)
     for w in works:
         years[w[1]].append(w[0])
-    begun = lambda i: (min(years[i]), statistics.median(years[i]), -counts[i])
+    lead = lambda i: LEAD.index(DOMAINS[i][0]) if DOMAINS[i][0] in LEAD else len(LEAD)
+    begun = lambda i: (lead(i), min(years[i]), statistics.median(years[i]), -counts[i])
     rank = sorted(range(len(DOMAINS)), key=begun)
     renumber = {old: new for new, old in enumerate(rank)}
     domains = [DOMAINS[i] for i in rank]
@@ -506,7 +470,8 @@ def main():
     per_domain = collections.Counter(w[1] for w in works)
 
     payload = {
-        'domains': [{'key': k, 'label': label, 'color': colour, 'n': per_domain[i]}
+        'domains': [dict({'key': k, 'label': label, 'color': colour, 'n': per_domain[i]},
+                         **({'lit': LIT[k]} if k in LIT else {}))
                     for i, (k, label, colour) in enumerate(domains)],
         'tiers': TIERS,
         'works': works,
@@ -523,6 +488,7 @@ def main():
               ''.join(f'{tiered[(i, t)] or "":>8}' for t in range(len(TIERS))))
     for reason, n in dropped.items():
         print(f'  dropped {n}: {reason}')
+    print(f'  {len(found)} highlights')
 
 
 if __name__ == '__main__':
