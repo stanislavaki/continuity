@@ -4751,7 +4751,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bill-graph-read .rd-years { grid-column: span 5; }
 
 /* ---- the plot's own parts, all inside the one SVG ---- */
-.bg-guide { stroke: #fff; stroke-opacity: 0.14; stroke-width: 1; }
 /* The two rows under the field -- the decade, and Bill's age in it -- set in
    the figure's one voice with everything else: the same face, weight, size and
    tracking as the readout below them. The size

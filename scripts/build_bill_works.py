@@ -38,16 +38,16 @@ OUT = os.path.join(HERE, 'assets', 'bill-works.json')
 DATASET = os.path.expanduser('~/Downloads/Max_Bill_dataset_handover/Max_Bill_Works_dataset.xlsx')
 
 # The six fields of the table, in its own words, and their colours: the
-# handover's primaries and secondaries of Bill's paintings, with red kept back
-# for the endless ribbon alone -- the line the page draws through the field
-# (LOOP_RED there) -- but dealt out differently: sculpture takes the orange
-# the handover gave product design, product design a dark magenta,
+# handover's primaries and secondaries of Bill's paintings, dealt out
+# differently: sculpture takes the red of the endless ribbon's line, the one
+# the page draws through the field (LOOP_RED there), since the ribbon's works
+# are sculptures and the page is about one; product design a dark magenta,
 # painting a darker green than the handover's, and graphic design, the
 # largest body of work, a dark grey that stands back from the rest; book
 # design keeps the handover's white. Measured against the panel's #050505:
 #
-#     sculpture      #f07c1a  orange   7.9:1
-#     graphic design #343434  grey     1.6:1
+#     sculpture      #e0301e  red      4.1:1
+#     graphic design #3d3d3d  grey     1.9:1
 #     product design #8f1d8f  magenta  2.7:1
 #     painting       #11703a  green    3.3:1
 #     book design    #ffffff  white   20.6:1
@@ -56,10 +56,10 @@ DATASET = os.path.expanduser('~/Downloads/Max_Bill_dataset_handover/Max_Bill_Wor
 # Where the page sets type in a domain's colour it lifts a colour too dark to
 # be read on the black, so the marks keep the colours as they are.
 DOMAINS = [
-    ('graphic',      'graphic design', '#343434'),
+    ('graphic',      'graphic design', '#3d3d3d'),
     ('book',         'book design',    '#ffffff'),
     ('painting',     'painting',       '#11703a'),
-    ('sculpture',    'sculpture',      '#f07c1a'),
+    ('sculpture',    'sculpture',      '#e0301e'),
     ('architecture', 'architecture',   '#2f5fd0'),
     ('product',      'product design', '#8f1d8f'),
 ]
