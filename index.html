@@ -6547,6 +6547,7 @@ if (document.readyState === 'loading') {
     const hit = plot.querySelector('#bgHit');
     const keyBtns = keysEl.querySelectorAll('.bg-key');
     const lineEl = keysEl.querySelector('.bill-graph-line');
+    lineEl.style.color = legible(LOOP_RED);    // in its key's red
     const countEl = keysEl.querySelector('.bg-count');
     const runs = plot.querySelectorAll('.bg-dots');
     const bandEl = plot.querySelector('#bgBand');
