@@ -44,20 +44,20 @@ DATASET = os.path.expanduser('~/Downloads/Max_Bill_dataset_handover/Max_Bill_Wor
 # are sculptures and the page is about one; product design a dark magenta,
 # painting a darker green than the handover's, and graphic design, the
 # largest body of work, a dark grey that stands back from the rest; book
-# design keeps the handover's white. Measured against the panel's #050505:
+# design a pale yellow. Measured against the panel's #050505:
 #
 #     sculpture      #e0301e  red      4.1:1
 #     graphic design #3d3d3d  grey     1.9:1
 #     product design #8f1d8f  magenta  2.7:1
 #     painting       #11703a  green    3.3:1
-#     book design    #ffffff  white   20.6:1
+#     book design    #f5e283  yellow  15.6:1
 #     architecture   #2f5fd0  blue     3.6:1
 #
 # Where the page sets type in a domain's colour it lifts a colour too dark to
 # be read on the black, so the marks keep the colours as they are.
 DOMAINS = [
     ('graphic',      'graphic design', '#3d3d3d'),
-    ('book',         'book design',    '#ffffff'),
+    ('book',         'book design',    '#f5e283'),
     ('painting',     'painting',       '#11703a'),
     ('sculpture',    'sculpture',      '#e0301e'),
     ('architecture', 'architecture',   '#2f5fd0'),

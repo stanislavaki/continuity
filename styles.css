@@ -4776,12 +4776,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bg-hit.on { opacity: 1; }
 
 /* The line through the field: the endless ribbon and what came of it, its
-   works lying on it in red on a white line over the years Bill kept at it.
+   works lying along it in red over the years Bill kept at it.
    Under the pointer or pressed it holds every domain back. Its works are drawn
    on it and nowhere else. */
 .bg-band { cursor: pointer; transition: opacity 0.4s ease; }
 .bg-band.dim { opacity: 0.1; pointer-events: none; }
-.bg-band-bar,
 .bg-band-tick { shape-rendering: crispEdges; }
 .bg-band-pad { fill: transparent; }
 /* Focus: one domain lit, the rest shaded -- held back far enough to read

@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=290" />
+<link rel="stylesheet" href="styles.css?v=291" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -6128,11 +6128,10 @@ if (document.readyState === 'loading') {
   // Frankfurt, and in the endless surfaces between, until the last version was
   // approved the year after he died. The catalogue's titles say which works
   // those are. They lie in one line through the field, BAND_Z over its foot,
-  // from the first of them to the last: a white line LINE_T thick, half the
-  // thickness of the field's marks, and on it each of them a mark RIB thick over its
-  // own years, drawn there and nowhere else, standing over and under the line
-  // so it reads as a work on the line rather than a stretch of it -- and the
-  // highlights among them standing HI tall across it. The marks of those
+  // from the first of them to the last -- a line no stroke draws, only they
+  // do: each of them a mark RIB thick over its own years, drawn there and
+  // nowhere else, centred on the line -- and the highlights among them
+  // standing HI tall across it. The marks of those
   // years keep clear of the line and what it carries, under it or over it, so
   // it runs through the columns unbroken. Under the pointer, or pressed, it
   // holds the field back. (In the code the line is still the band.)
@@ -6140,7 +6139,7 @@ if (document.readyState === 'loading') {
   // They are all sculptures, and the line goes the way sculpture goes when a
   // key is pressed, but it has a colour of its own: red, which nothing else in
   // the field is drawn in.
-  const BAND_Z = 140, LINE_T = 2, RIB = 12, LOOP_RED = '#e0301e';
+  const BAND_Z = 140, RIB = 12, LOOP_RED = '#e0301e';
   const hue = (w, domains) => LOOP.test(w[2]) ? LOOP_RED : domains[w[1]].color;
 
   // Colour arithmetic, for type set in or on a domain's colour. The marks take
@@ -6356,7 +6355,7 @@ if (document.readyState === 'loading') {
     // and shades the rest -- in the order the layers stand: sculpture first,
     // the practice the page follows, then architecture, graphic design and
     // book design, then the rest in the order Bill took them up (LEAD in the
-    // build script). Before them all, continuity, in the line's red, lights the line and
+    // build script). Before them all, continuity, in white, lights the line and
     // its works alone; the last key, all, lights every domain, and carries the
     // count of all the works, closing the row against the right edge of the
     // measure. They run on one line from column one (.bg-names), set at 24 of
@@ -6364,8 +6363,8 @@ if (document.readyState === 'loading') {
     const count = works.length.toLocaleString('en-US');
     keysEl.innerHTML = '<div class="bg-names">' +
       '<button type="button" class="bg-key" data-dom="' + CONT + '" aria-pressed="false"' +
-      ' aria-label="' + esc('continuity, ' + loops.length + ' works') + '" style="--tc:' +
-      legible(LOOP_RED) + '">continuity</button>' + domains.map((d, i) =>
+      ' aria-label="' + esc('continuity, ' + loops.length + ' works') + '" style="--tc:#fff">' +
+      'continuity</button>' + domains.map((d, i) =>
       '<button type="button" class="bg-key" data-dom="' + i + '" aria-pressed="false"' +
         ' aria-label="' + esc(d.label + ', ' + d.n + ' works') + '" style="--tc:' +
         legible(d.color) + '">' + esc(d.label) + '</button>'
@@ -6418,19 +6417,12 @@ if (document.readyState === 'loading') {
       }
     });
 
-    // The line: white, LINE_T thick, from the first year of the first of its
-    // works to the last year of the last, each work standing on it in the
-    // ribbon's red over its own years -- the only place they are drawn. It
-    // runs through the middle of the room FLAT gives it, so the works stay
-    // centred on it. The Kontinuität of Frankfurt carries its image here as it
-    // did in the field.
-    // It starts and stops on the outer edges of the first and last works, which
-    // stand a unit in from their years' edges, so no white shows beyond them.
-    const lineY = snap(BASE - bandZ - (FLAT + LINE_T) / 2);
-    const lineX0 = snap(yearX(l0) + 1), lineX1 = snap(yearX(l1 + 1) - 1);
-    let band = '<g class="bg-band" id="bgBand"><rect class="bg-band-bar" x="' + lineX0.toFixed(2) +
-      '" y="' + lineY.toFixed(2) + '" width="' + (lineX1 - lineX0).toFixed(2) +
-      '" height="' + Math.max(DEV, snap(BASE - bandZ - (FLAT - LINE_T) / 2) - lineY).toFixed(2) + '" fill="#fff"/>';
+    // The line: from the first year of the first of its works to the last
+    // year of the last, each work in the ribbon's red over its own years --
+    // the only place they are drawn -- centred on the room FLAT gives the
+    // line, and nothing drawn between them. The Kontinuität of Frankfurt
+    // carries its image here as it did in the field.
+    let band = '<g class="bg-band" id="bgBand">';
     loops.forEach(o => {
       const x = snap(yearX(o.w[0]) + 1), w = Math.max(DEV, snap(yearX(o.w[4] + 1) - 1) - x);
       const y = snap(BASE - o.z1), h = Math.max(DEV, snap(BASE - o.z0) - y);
