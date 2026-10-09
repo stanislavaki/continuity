@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=337" />
+<link rel="stylesheet" href="styles.css?v=339" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -6050,8 +6050,10 @@ if (document.readyState === 'loading') {
   // of weight multiplying it by the same amount, and the year's squares are
   // then scaled together to fill YEAR_AREA -- a crowded year's smaller, a
   // thin one's larger, but none past MAX_SIDE, so a year the catalogue knows
-  // one small work of doesn't stand as a slab.
-  const S_MIN = 3.3, S_MAX = 33, YEAR_AREA = 1600, MAX_SIDE = 46;
+  // one small work of doesn't stand as a slab. The key works, the ones the
+  // graph names, stand apart from all of it at HIGH_SIDE, larger than any
+  // other work, whatever their year.
+  const S_MIN = 3.3, S_MAX = 33, YEAR_AREA = 1600, MAX_SIDE = 34, HIGH_SIDE = 44;
   const weighed = w => S_MIN * (S_MAX / S_MIN) ** ((w[5] - 1) / 4);
   const AIR = 1.5;             // between two squares, in units; never under a pixel
   const FIELD_TOP = 8;         // the plot's top to the highest name
@@ -6148,7 +6150,14 @@ if (document.readyState === 'loading') {
     // off the line -- negative over it, positive under it.
     const yearArea = new Map();
     works.forEach(w => yearArea.set(w[4], (yearArea.get(w[4]) || 0) + weighed(w) ** 2));
-    const sideOf = w => Math.min(MAX_SIDE, weighed(w) * Math.sqrt(YEAR_AREA / yearArea.get(w[4])));
+    // The Kontinuität in Frankfurt, the work the whole page is about, stands
+    // KONTINUITAT times its share, past HIGH_SIDE -- the largest square in
+    // the graph by a clear margin.
+    const KONTINUITAT = 1.5;
+    const sideOf = w => w[0] === 1983 && w[2] === 'Kontinuität'
+      ? KONTINUITAT * weighed(w) * Math.sqrt(YEAR_AREA / yearArea.get(w[4]))
+      : w[6] ? HIGH_SIDE
+      : Math.min(MAX_SIDE, weighed(w) * Math.sqrt(YEAR_AREA / yearArea.get(w[4])));
     const sq = works.map(w => ({ w, s: sideOf(w), chain: LOOP.test(w[2]) }));
     // Under bands, the band a square lies in: the chain's first, on the line,
     // then each domain's in the keys' order.
@@ -6275,8 +6284,8 @@ if (document.readyState === 'loading') {
     // the plot's right edge stands to the left of it instead. Each name
     // stands as near the line as it can, so the names follow the swarm's
     // outline: CLEAR beyond the furthest square under its own width and SPAN
-    // to either side of it, so it stands outside the outline rather than in a
-    // notch between two taller columns; never nearer the line than NEAR, so
+    // past it on the side its words run to, so it stands outside the outline
+    // rather than in a notch between two taller columns; never nearer the line than NEAR, so
     // where the swarm thins to the line a name stays clear of the chain; and
     // further out only where it would sit on a name beside it, or where a
     // leader line would run through it or its own through another name.
@@ -6322,23 +6331,37 @@ if (document.readyState === 'loading') {
     // d is how far from the line a name's near edge stands.
     const place = (a, side, among = calls) => {
       const others = among.filter(p => p !== a && p.side === side && p.d !== undefined);
-      const d0 = Math.max(NEAR, extent(a.x0 - SPAN, a.x1 + SPAN, side) + CLEAR);
+      // SPAN reaches out on the side the words run to; behind the leader
+      // line, where no words stand, only a little way.
+      const back = SPAN / 4;
+      const d0 = Math.max(NEAR, extent(a.x0 - (a.left ? SPAN : back), a.x1 + (a.left ? back : SPAN), side) + CLEAR);
       const ok = d => others.every(p =>
         (a.x1 + PADX <= p.x0 || p.x1 + PADX <= a.x0 || d + a.h + LGAP <= p.d || p.d + p.h + LGAP <= d) &&
         !(across(a, p.lx) && d < p.d + p.h + LGAP) && !(across(p, a.lx) && p.d < d + a.h + LGAP));
       const tries = [d0, ...others.map(p => p.d + p.h + LGAP)].filter(d => d >= d0).sort((x, y) => x - y);
       return tries.find(ok) ?? tries[tries.length - 1];
     };
-    let alt = 1;
-    calls.sort((a, b) => b.lx - a.lx).forEach(a => {
-      let side = Math.sign(a.q.c);
-      if (!side) {
-        const u = place(a, -1), d = place(a, 1);
-        side = u < d ? -1 : d < u ? 1 : (alt = -alt);
-      }
-      a.side = side;
-      a.d = place(a, side);
-    });
+    // The names of the works on the line itself -- the endless ribbon's --
+    // stand over it, over the swarm; any other name on the line takes the
+    // side with room nearer. The names are laid out among those that show:
+    // all of them here, to find the room the plot needs, and again, among
+    // only the names a key leaves showing, whenever that changes (see
+    // paint()) -- so a name stands as near the swarm as the names beside it
+    // at that moment let it, not as the hidden ones would.
+    const layOut = list => {
+      list.forEach(a => { a.side = a.d = undefined; });
+      let alt = 1;
+      list.slice().sort((a, b) => b.lx - a.lx).forEach(a => {
+        let side = Math.sign(a.q.c) || (a.q.chain ? -1 : 0);
+        if (!side) {
+          const u = place(a, -1, list), d = place(a, 1, list);
+          side = u < d ? -1 : d < u ? 1 : (alt = -alt);
+        }
+        a.side = side;
+        a.d = place(a, side, list);
+      });
+    };
+    layOut(calls);
 
     // The plot, top to bottom: the swarm with the line through it and its
     // names about it, as far over the line and under it as either reaches,
@@ -6362,7 +6385,12 @@ if (document.readyState === 'loading') {
         legible(d.color) + '">' + esc(d.label) + '</button>'
     ).join('') + '<button type="button" class="bg-key bg-all" data-dom="' + ALL + '" aria-pressed="false"' +
       ' aria-label="' + esc('show all domains, ' + count + ' works') + '" style="--tc:#fff">show all ' +
-      count + ' works</button></div>';
+      count + ' works</button></div>' +
+      // Under the names, in the room the row keeps under them: what the line
+      // is, while its key or the line itself is under the pointer, in its red;
+      // and under a domain's key, while it is under the pointer, how many
+      // works it has, in its colour.
+      '<span class="bill-graph-read bill-graph-line"></span><span class="bg-count" aria-hidden="true"></span>';
     fig.style.setProperty('--bg-key', (KEY / PX).toFixed(2) + 'px');
     plot.style.setProperty('--bg-call', LF.toFixed(2) + 'px');
     plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
@@ -6396,7 +6424,7 @@ if (document.readyState === 'loading') {
     // A name: its leader line from the name's far edge to the square's near
     // one, its years, and its name, wrapped, in its key's colour (--call, set
     // in paint()) -- the colour says the domain, so no swatch is drawn.
-    const callout = a => {
+    const calloutIn = a => {
       const q = a.q, [, by, , bh] = a.edge || q.box;
       const tY = a.side < 0 ? LINE - a.d - a.h : LINE + a.d;
       const yA = a.side < 0 ? tY : by + bh, yB = a.side < 0 ? by : tY + a.h;
@@ -6405,13 +6433,12 @@ if (document.readyState === 'loading') {
       const tx = a.left ? a.lx - IGAP : a.lx + IGAP;
       a.box = [a.x0, tY, a.x1 - a.x0, a.h];
       a.lead = [a.lx, Math.min(yA, yB), Math.max(yA, yB)];
-      return '<g class="bg-call" data-dom="' + (q.chain ? CONT : q.w[1]) + '">' +
-        '<line x1="' + a.lx.toFixed(2) + '" y1="' + yA.toFixed(2) + '" x2="' + a.lx.toFixed(2) + '" y2="' + yB.toFixed(2) + '"/>' +
+      return '<line x1="' + a.lx.toFixed(2) + '" y1="' + yA.toFixed(2) + '" x2="' + a.lx.toFixed(2) + '" y2="' + yB.toFixed(2) + '"/>' +
         '<text class="bg-call-years" x="' + tx.toFixed(2) + '" y="' + base.toFixed(2) + '"' + anchor + '>' + esc(a.yrs) + '</text>' +
         a.lines.map((l, i) => '<text class="bg-call-name" x="' + tx.toFixed(2) + '" y="' + (base + (i + 1) * LH).toFixed(2) + '"' +
-          anchor + '>' + esc(l) + '</text>').join('') +
-        '</g>';
+          anchor + '>' + esc(l) + '</text>').join('');
     };
+    const callout = a => '<g class="bg-call" data-dom="' + (a.q.chain ? CONT : a.q.w[1]) + '">' + calloutIn(a) + '</g>';
 
     // Each decade with Bill's age beneath it, each row named at its left
     // edge: the decade at full, the age standing back.
@@ -6442,20 +6469,30 @@ if (document.readyState === 'loading') {
 
     const svg = plot.querySelector('svg');
     const keyBtns = keysEl.querySelectorAll('.bg-key');
+    const lineEl = keysEl.querySelector('.bill-graph-line');
+    const countEl = keysEl.querySelector('.bg-count');
+    lineEl.style.color = legible(LOOP_RED);
     const groups = plot.querySelectorAll('.bg-dots');
     const callEls = plot.querySelectorAll('.bg-call');
+    let laidOut = calls.map(() => 1).join('');      // the names the layout stands for
     const hoverEl = plot.querySelector('#bgHover2');
     // The lowest a name under the pointer may reach: over the decades.
     const roomBelow = FOOT + AXIS_Y - 1.2 * typeUnits();
     const bandEl = plot.querySelector('#bgBand2');
     const spineEl = plot.querySelector('.bg-spine');
     let pointed = null;                        // the work under the pointer, off the chain
+    let hung = null, folding = 0;              // the card that hangs, and the timer folding it away
+    const FOLD_MS = 360;                       // as long as the fold runs in styles.css
     let loopHeld = false, loopAt = null;       // the chain under the pointer, and which of its works
     let litNow = null;
     const tone = d => (d === litNow && domains[d].lit) || domains[d].color;
     const scu = domains.findIndex(d => d.key === 'sculpture');
 
+    // Under the field the encoding stands, and stays.
     const REST = '<i>one square = one work</i><i>size = its share of its year</i>';
+    read.innerHTML = REST;
+    read.style.color = '';
+    read.classList.add('is-rest');
 
     // A key under the pointer, else the pressed key, decides
     // what is lit, and the rest is shaded; a work under the pointer is
@@ -6485,19 +6522,31 @@ if (document.readyState === 'loading') {
         g.style.setProperty('--call', ink(d));
         calls[i].shown = !dim;
       });
+      const showing = calls.map(a => a.shown ? 1 : 0).join('');
+      if (showing !== laidOut) {
+        laidOut = showing;
+        const list = calls.filter(a => a.shown);
+        layOut(list);
+        list.forEach(a => { callEls[calls.indexOf(a)].innerHTML = calloutIn(a); });
+      }
       // The work under the pointer: its square grows, and its card hangs where
       // its name would stand, on a leader line in the square's own colour. A
-      // standing name in the card's way -- its own among them, since the card
-      // names it -- steps back while it shows (.bg-call.veiled).
+      // standing name in the card's way steps back while it shows
+      // (.bg-call.veiled); the work's own name grows into the card, and
+      // leaves its place at once (.bg-call.gone), its words gone into it.
       const hov = held === null ? pointed || (loopHeld && loopAt) || null : null;
       magnify(hov);
       const card = hov ? cardFor(hov, hov.chain ? LOOP_RED : domains[hov.w[1]].color) : null;
-      if (!card) cardEl.classList.remove('on');
-      hoverEl.innerHTML = card ? '<g class="bg-call" style="--lead:' + (hov.chain ? LOOP_RED : tone(hov.w[1])) +
+      if (!card) fold();
+      if (card) hoverEl.innerHTML = '<g class="bg-call" style="--lead:' + (hov.chain ? LOOP_RED : tone(hov.w[1])) +
         '"><line x1="' + card.lx.toFixed(2) + '" y1="' + card.lead[1].toFixed(2) + '" x2="' + card.lx.toFixed(2) +
-        '" y2="' + card.lead[2].toFixed(2) + '"/></g>' : '';
-      callEls.forEach((g, i) => g.classList.toggle('veiled',
-        !!card && calls[i].shown && (calls[i].q === hov || clash(calls[i], card))));
+        '" y2="' + card.lead[2].toFixed(2) + '"/></g>';
+      else if (!folding) hoverEl.innerHTML = '';
+      const gone = card ? card.own : folding ? hung.own : null;
+      callEls.forEach((g, i) => {
+        g.classList.toggle('gone', !!gone && calls[i] === gone);
+        g.classList.toggle('veiled', !!card && calls[i].shown && calls[i] !== gone && (calls[i].q === hov || clash(calls[i], card)));
+      });
       // The keys show what is lit -- and, while a work is under the pointer,
       // the domain it belongs to (the line's, for one of its works), lit in
       // the row alone, though the field stays as it is.
@@ -6509,19 +6558,19 @@ if (document.readyState === 'loading') {
         k.classList.toggle('dim', d === ALL ? named !== null : named !== null && d !== named);
         k.setAttribute('aria-pressed', (d === ALL ? pinned === null : d === pinned) ? 'true' : 'false');
       });
-      // The readout under the field says what the line or a key stands for;
-      // else the encoding.
-      let atRest = false;
-      if (held === CONT || (held === null && loopHeld && !loopAt)) {
-        read.style.color = legible(LOOP_RED);                       // in its key's red
-        const l0 = Math.min(...loops.map(q => q.w[0])), l1 = Math.max(...loops.map(q => q.w[4]));
-        read.innerHTML = '<b>' + dates(l0, l1) + '</b><span class="rd-title">one idea for sixty years: ' +
-          loops.length + ' works, from the first endless ribbon to the last</span>';
+      // What a key stands for is said under the row of names: the line's
+      // sentence under its key, a domain's count under its own; on a phone,
+      // where the row is swiped, the count follows its key across.
+      const lineSays = held === CONT || (held === null && loopHeld && !loopAt);
+      lineEl.innerHTML = lineSays ? '<span class="rd-line">' + loops.length + ' works, ' +
+        dates(Math.min(...loops.map(q => q.w[0])), Math.max(...loops.map(q => q.w[4]))) +
+        ': one idea for sixty years, from the first endless ribbon to the last</span>' : '';
+      const key = held >= 0 ? [...keyBtns].find(k => +k.dataset.dom === held) : null;
+      countEl.textContent = key ? domains[held].n : '';
+      if (key) {
+        countEl.style.left = (key.offsetLeft - key.parentElement.scrollLeft) + 'px';
+        countEl.style.color = key.style.getPropertyValue('--tc');
       }
-      else if (held === ALL) all();
-      else if (held !== null) sum(held);
-      else { read.innerHTML = REST; read.style.color = ''; atRest = true; }
-      read.classList.toggle('is-rest', atRest);
     }
 
     // The card of the work under the pointer, as the table has it, on a
@@ -6538,16 +6587,33 @@ if (document.readyState === 'loading') {
     // clear of it; failing that, the other side; failing both, off its
     // square on its own side, kept inside the plot.
     function cardFor(q, ground) {
+      // The card already hanging for this work is left as it is -- or, caught
+      // folding back into its name, unfolds again from where it has got to.
+      if (hung && hung.q === q) {
+        if (folding) { clearTimeout(folding); folding = 0; cardEl.classList.remove('is-back'); settle(hung); }
+        return hung;
+      }
+      clearTimeout(folding); folding = 0;
       const more = q.w[7] || {};
       const kind = (q.chain ? 'endless ribbon · ' : '') + domains[q.w[1]].label;
-      const when = dates(q.w[0], q.w[4]) + (more.n ? ' · ' + more.n : '');
       const facts = [['Material', more.m], ['Size', more.s], ['Place', more.p]].filter(f => f[1]);
-      cardEl.style.background = ground;
+      // A work whose name stands in the field grows its card out of the name:
+      // the card gives its years and title as the name does, line for line,
+      // and they fly from the name into it (morph(), below). A name already
+      // stepped back for another card has nothing to give, and its card only
+      // fades in, as every other work's does.
+      const standing = calls.find(c => c.q === q && c.shown && +getComputedStyle(callEls[calls.indexOf(c)]).opacity > 0.5);
+      cardEl.style.setProperty('--ground', ground);
       // On a light ground -- the pale yellow, the orange -- the card is set in
       // black, which reads there far better than white.
       cardEl.classList.toggle('is-light', lum(rgb(ground)) > 0.25);
+      cardEl.classList.remove('is-back');
+      cardEl.classList.toggle('is-morph', !!standing);
+      cardEl.classList.toggle('is-from', !!standing);
       cardEl.innerHTML = '<p class="bg-card-kind">' + esc(kind) + '</p>' +
-        '<p class="bg-card-title">' + esc(q.w[2]) + '</p><p class="bg-card-when">' + esc(when) + '</p>' +
+        '<p class="bg-card-when"><span>' + esc(dates(q.w[0], q.w[4])) + '</span></p>' +
+        '<p class="bg-card-title"><span>' + (standing ? standing.lines.map(esc).join('<br>') : esc(q.w[2])) + '</span></p>' +
+        (more.n ? '<p class="bg-card-note">' + esc(more.n) + '</p>' : '') +
         (facts.length ? '<dl class="bg-card-facts">' +
           facts.map(([k, v]) => '<dt>' + k + '</dt><dd>' + esc(v) + '</dd>').join('') + '</dl>' : '');
       const kpx = plot.getBoundingClientRect().width / W;
@@ -6567,8 +6633,10 @@ if (document.readyState === 'loading') {
         const lo = side < 0 ? 0 : sy + sh + CARD_AIR, hi = side < 0 ? sy - CARD_AIR - h : roomBelow - h;
         return { side, tY: Math.min(hi, Math.max(lo, want)), fits: lo <= hi, moved: Math.abs(Math.min(hi, Math.max(lo, want)) - want) };
       };
-      const own = Math.sign(q.c);
-      const tries = own ? [stand(own), stand(-own)] : [stand(-1), stand(1)].sort((x, y) => x.moved - y.moved);
+      // A card grown out of a name keeps to the name's side, so its words fly
+      // only as far as they must, never across the swarm.
+      const own = standing ? standing.side : Math.sign(q.c);
+      const tries = standing ? [stand(own)] : own ? [stand(own), stand(-own)] : [stand(-1), stand(1)].sort((x, y) => x.moved - y.moved);
       // Failing both, it stands off its square on its own side as near as it
       // can, kept inside the plot -- over the rows of years if it must -- so a
       // phone's box, which crops what runs out of it, shows it whole.
@@ -6581,8 +6649,67 @@ if (document.readyState === 'loading') {
       a.lead = [lx, Math.min(yA, yB), Math.max(yA, yB)];
       cardEl.style.left = (plot.offsetLeft + a.x0 * kpx).toFixed(1) + 'px';
       cardEl.style.top = (plot.offsetTop + tY * kpx).toFixed(1) + 'px';
+      cardEl.classList.toggle('is-left', left);
       cardEl.classList.add('on');
+      hung = a;
+      if (standing) morph(a, standing);
       return a;
+    }
+    // The name grown into its card. The card's years and title are first set
+    // where the name has them, in its size, weight and colours, the card's
+    // ground furled against its line and the rest of it unseen (.is-from);
+    // let go, the words scale and fly into their places on the card, its
+    // ground unfurls from the line, and what the name didn't say comes in.
+    // Leaving the work runs it back (fold()): the words fly home, the ground
+    // furls, and the name stands in their place again.
+    function morph(a, own) {
+      a.own = own;
+      const base = cardEl.getBoundingClientRect();
+      // Each part's box, and its first line's, off the card's corner, before
+      // anything is moved -- so the card can be aimed again however far
+      // along a transition it is.
+      a.parts = ['.bg-card-when', '.bg-card-title'].map(sel => {
+        const el = cardEl.querySelector(sel), r = el.getBoundingClientRect(), f = el.firstChild.getClientRects()[0];
+        return { el, ex: r.left - base.left, ey: r.top - base.top, fx: f.left - base.left, fy: f.top - base.top, fh: f.height };
+      });
+      aim(a);
+      cardEl.getBoundingClientRect();
+      cardEl.classList.remove('is-from');
+      settle(a);
+    }
+    // Sets the card's years and title over its name's.
+    function aim(a) {
+      const g = callEls[calls.indexOf(a.own)], base = cardEl.getBoundingClientRect();
+      const from = [g.querySelector('.bg-call-years'), g.querySelector('.bg-call-name')];
+      a.parts.forEach((p, i) => {
+        const n = from[i].getBoundingClientRect(), k = n.height / p.fh;
+        const tx = n.left - base.left - p.ex - k * (p.fx - p.ex), ty = n.top - base.top - p.ey - k * (p.fy - p.ey);
+        p.el.style.transform = 'translate(' + tx.toFixed(2) + 'px,' + ty.toFixed(2) + 'px) scale(' + k.toFixed(4) + ')';
+        p.el.style.color = i ? getComputedStyle(from[i]).fill : 'rgba(255, 255, 255, 0.55)';
+        p.el.style.fontWeight = '500';
+      });
+    }
+    // Lets them go to their places on the card.
+    function settle(a) {
+      a.parts.forEach(p => { p.el.style.transform = p.el.style.color = p.el.style.fontWeight = ''; });
+    }
+    function fold() {
+      if (!hung || folding) return;
+      const a = hung;
+      if (!a.own) { cardEl.classList.remove('on'); hung = null; return; }
+      cardEl.classList.add('is-back');
+      aim(a);
+      folding = setTimeout(() => {
+        folding = 0; hung = null;
+        cardEl.classList.add('is-from');
+        cardEl.classList.remove('on', 'is-back', 'is-morph');
+        hoverEl.innerHTML = '';
+        const g = callEls[calls.indexOf(a.own)];
+        g.style.transition = 'none';
+        g.classList.remove('gone');
+        g.getBoundingClientRect();
+        g.style.transition = '';
+      }, FOLD_MS);
     }
     // Whether a standing name is in the way of the name under the pointer:
     // the two overlap, or either's leader line runs through the other.
@@ -6634,15 +6761,6 @@ if (document.readyState === 'loading') {
         rectOf[p.i].style.transform = 'translate(' + (dx / r * push).toFixed(2) + 'px,' + (dy / r * push).toFixed(2) + 'px)';
         moved.push(rectOf[p.i]);
       });
-    }
-    function all() {
-      read.style.color = '';
-      read.innerHTML = '<span class="rd-line">' + count + ' works</span>';
-    }
-    function sum(d) {
-      read.style.color = legible(tone(d));
-      read.innerHTML = '<span class="rd-line">' + domains[d].n + ' works in ' + esc(domains[d].label) +
-        ', ' + esc(yearsOf(d)) + '</span>';
     }
 
     // Every work off the chain answers the pointer, by its square -- or, for a
@@ -6707,11 +6825,6 @@ if (document.readyState === 'loading') {
       key.addEventListener('click', () => press(d));
     });
     paint();
-
-    function yearsOf(d) {
-      const ws = works.filter(w => w[1] === d);
-      return dates(ws[0][0], ws.reduce((m, w) => Math.max(m, w[4]), 0));
-    }
 
     plot.querySelector('.bg-wipe-rect').getBoundingClientRect();
     requestAnimationFrame(() => fig.classList.add('bg-lit'));

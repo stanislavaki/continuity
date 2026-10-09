@@ -4638,6 +4638,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bg-call { transition: opacity 0.4s ease; }
 .bg-call.dim,
 .bg-call.veiled { opacity: 0; }
+/* A name grown into its card leaves at once: its words are on the card. */
+.bg-call.gone { opacity: 0; transition: none; }
 .bg-call text {
   font-family: var(--sans);
   font-weight: 500;
@@ -4653,10 +4655,12 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 #bgHover2 line { stroke: var(--lead, #fff); stroke-opacity: 1; }
 
 /* The card: what the table says of the work under the pointer, set over the
-   panel on a ground of the work's own colour (from billGraph2()), square at
-   the corners -- its domain in lower case, as the keys name it, its title, its years and
-   note, and under them its material, size and place, named on the left in a
-   paler white. billGraph2() places it, and it never takes the pointer. */
+   panel on a ground of the work's own colour (--ground, from billGraph2()),
+   square at the corners -- its domain in lower case, as the keys name it, its
+   years and title, as its name gives them, its note, and under them its
+   material, size and place, named on the left in a paler white.
+   billGraph2() places it, and it never takes the pointer. The ground is laid
+   under the words (::before) so it can unfurl from the card's line. */
 .bg-card {
   position: absolute;
   left: 0;
@@ -4665,14 +4669,57 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   width: max-content;
   max-width: 280px;
   padding: 12px 14px 13px;
-  background: #161616;
   font-family: var(--sans);
   color: #fff;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.15s ease;
 }
+.bg-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--ground, #161616);
+  transform-origin: 0 0;
+}
+.bg-card.is-left::before { transform-origin: 100% 0; }
 .bg-card.on { opacity: 1; }
+/* A work named in the field grows its card out of its name (billGraph2()'s
+   morph()). From where the name stands (.is-from, set at once) its years and
+   title fly into the card as they scale, take the card's colours and weight;
+   the ground unfurls from the line just behind them, and the kind, the note
+   and the facts come in last. Leaving the work (.is-back) runs it all back,
+   quicker, in FOLD_MS. */
+.bg-card-when,
+.bg-card-title { transform-origin: 0 0; }
+.bg-card.is-morph .bg-card-when,
+.bg-card.is-morph .bg-card-title {
+  transition: transform 0.38s cubic-bezier(0.3, 0.7, 0.2, 1), color 0.38s ease, font-weight 0.38s ease;
+}
+.bg-card.is-morph::before { transition: transform 0.3s cubic-bezier(0.3, 0.7, 0.2, 1) 0.12s; }
+.bg-card.is-morph .bg-card-kind,
+.bg-card.is-morph .bg-card-note,
+.bg-card.is-morph .bg-card-facts { transition: opacity 0.24s ease 0.28s; }
+.bg-card.is-from::before,
+.bg-card.is-back::before { transform: scaleX(0); }
+.bg-card.is-from .bg-card-kind,
+.bg-card.is-from .bg-card-note,
+.bg-card.is-from .bg-card-facts,
+.bg-card.is-back .bg-card-kind,
+.bg-card.is-back .bg-card-note,
+.bg-card.is-back .bg-card-facts { opacity: 0; }
+.bg-card.is-back::before { transition: transform 0.22s ease; }
+.bg-card.is-back .bg-card-kind,
+.bg-card.is-back .bg-card-note,
+.bg-card.is-back .bg-card-facts { transition: opacity 0.12s ease; }
+.bg-card.is-back .bg-card-when,
+.bg-card.is-back .bg-card-title {
+  transition: transform 0.3s cubic-bezier(0.3, 0.7, 0.2, 1) 0.06s, color 0.3s ease 0.06s, font-weight 0.3s ease 0.06s;
+}
+.bg-card.is-from,
+.bg-card.is-from::before,
+.bg-card.is-from * { transition: none !important; }
 .bg-card-kind {
   margin: 0 0 7px;
   font-size: 13px;
@@ -4681,8 +4728,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   text-transform: lowercase;
   color: rgba(255, 255, 255, 0.72);
 }
-.bg-card-title { margin: 0 0 3px; font-size: 15px; font-weight: 600; line-height: 1.25; letter-spacing: -0.01em; }
-.bg-card-when { margin: 0; font-size: 13px; line-height: 1.4; color: rgba(255, 255, 255, 0.78); }
+.bg-card-when { margin: 0 0 1px; font-size: 13px; line-height: 1.4; color: rgba(255, 255, 255, 0.78); }
+.bg-card-title { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.25; letter-spacing: -0.01em; }
+.bg-card-note { margin: 4px 0 0; font-size: 13px; line-height: 1.4; color: rgba(255, 255, 255, 0.78); }
 .bg-card-facts {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -4695,6 +4743,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bg-card.is-light { color: #050505; }
 .bg-card.is-light .bg-card-kind,
 .bg-card.is-light .bg-card-when,
+.bg-card.is-light .bg-card-note,
 .bg-card.is-light .bg-card-facts dt { color: rgba(5, 5, 5, 0.62); }
 .bg-card-facts dd { margin: 0; }
 .bg-spine { shape-rendering: crispEdges; }
@@ -4816,13 +4865,34 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    96 characters, which is wider than columns three to eight at this size, so
    some works wrap -- and the panel centres its contents, so a line arriving or
    leaving would otherwise walk the whole figure up and down under the pointer. */
-.bill-graph-foot {
+.bill-graph-foot,
+.bill-graph-line,
+.bg-count {
   font-family: var(--sans);
   font-weight: 500;
   font-size: clamp(16px, 1.7vw, 26px);
   line-height: 1.35;
   letter-spacing: -0.005em;
 }
+/* What a key stands for stands under the row of names, in the room the row
+   keeps under them, so the row and the field don't move when it comes: the
+   line's sentence under its key, from column one, and a domain's count of
+   works under its own key, in its colour (placed by billGraph2()). */
+.bill-graph-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% - 40px);
+  pointer-events: none;
+}
+.bg-count {
+  position: absolute;
+  top: calc(100% - 40px);
+  pointer-events: none;
+}
+/* The row keeps that room under its names, clear of them by a good gap, so
+   what comes there reads as a line of its own rather than the names' second. */
+.bill-graph-keys:has(.bill-graph-line) { padding-bottom: 60px; }
 .bill-graph-foot { margin-top: 28px; min-height: 2.7em; }
 /* Under the field and across its whole width, all eight columns, so the line
    starts where the years start. While the page scrolls it can pass under the
