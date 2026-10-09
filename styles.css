@@ -4213,14 +4213,16 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   transition: opacity .35s ease;
 }
 .sg-note h5,
-.journey-cap h5 {
+.journey-cap h5,
+.bill-graph-note h5 {
   font-size: 18px;
   font-weight: 600;
   margin: 0 0 6px;
   letter-spacing: -0.01em;
 }
 .sg-note p,
-.journey-cap p {
+.journey-cap p,
+.bill-graph-note p {
   font-size: 15px;
   line-height: 1.45;
   margin: 0;
@@ -4594,10 +4596,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 
 /* Bill · what he made, and when -------------------------------------------
-   A mark to a catalogued work: a dot on the year it was begun, drawn out for
-   as long as it took, stacked up that year's column, coloured by domain. The
-   labels stand down the left, one to a domain; pointing at one keeps that
-   practice's marks lit and lets the rest fall back, which is when a single
+   A square to a catalogued work, as large as it weighs, in the year it was
+   finished, each domain in a band of its own on both sides of the continuity
+   line. The keys over the field name the domains; pressing one keeps that
+   practice's squares lit and lets the rest fall back, which is when a single
    practice's rhythm is worth following.
 
    Black, like the quote bands: the section already stood as its own panel in
@@ -4621,9 +4623,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* The panel centres its contents, so the container has to be told to take the
    measure rather than shrink to fit the figure inside it. */
 .bill-reveal > .container { width: 100%; }
-/* The second version of the graph, a copy to try changes on, parted from the
-   first by a thin white line across the panel. */
-.bill-reveal-v2 { border-top: 1px solid #fff; }
+/* The graph's notes on the dataset stand on the white page just under it
+   (.bill-graph-notes), so the panel keeps little air under its foot and the
+   page little over the notes. */
+.bill-reveal-v2 { padding-bottom: 32px; }
+.light-section:has(> .container > .bill-graph-notes) { padding-top: 40px; }
 /* Its names: each highlight's years, a little grey, over its name in its
    key's colour (--call), at --bg-call (14px, converted into the plot's units
    by billGraph2()), on a thin leader line to its square. A name is shown only while its domain is
@@ -4632,7 +4636,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    The line through the swarm is thin and red, and goes the way the chain
    goes. */
 .bg-call { transition: opacity 0.4s ease; }
-.bg-call.dim { opacity: 0; }
+.bg-call.dim,
+.bg-call.veiled { opacity: 0; }
 .bg-call text {
   font-family: var(--sans);
   font-weight: 500;
@@ -4643,6 +4648,51 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bg-call .bg-call-years { fill-opacity: 0.55; }
 .bg-call .bg-call-name { fill: var(--call, #fff); }
 .bg-call line { stroke: #fff; stroke-opacity: 0.2; stroke-width: 1px; vector-effect: non-scaling-stroke; shape-rendering: crispEdges; }
+/* The card of the work under the pointer hangs on a line in the square's own
+   colour, at full strength (--lead, set by billGraph2()). */
+#bgHover2 line { stroke: var(--lead, #fff); stroke-opacity: 1; }
+
+/* The card: what the table says of the work under the pointer, set over the
+   panel on a ground of the work's own colour (from billGraph2()), square at
+   the corners -- its domain in lower case, as the keys name it, its title, its years and
+   note, and under them its material, size and place, named on the left in a
+   paler white. billGraph2() places it, and it never takes the pointer. */
+.bg-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 4;
+  width: max-content;
+  max-width: 280px;
+  padding: 12px 14px 13px;
+  background: #161616;
+  font-family: var(--sans);
+  color: #fff;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.bg-card.on { opacity: 1; }
+.bg-card-kind {
+  margin: 0 0 7px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  text-transform: lowercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+.bg-card-title { margin: 0 0 3px; font-size: 15px; font-weight: 600; line-height: 1.25; letter-spacing: -0.01em; }
+.bg-card-when { margin: 0; font-size: 13px; line-height: 1.4; color: rgba(255, 255, 255, 0.78); }
+.bg-card-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 12px;
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.35;
+}
+.bg-card-facts dt { color: rgba(255, 255, 255, 0.72); }
+.bg-card-facts dd { margin: 0; }
 .bg-spine { shape-rendering: crispEdges; }
 .bg-spine { transition: opacity 0.4s ease; }
 .bg-spine.dim { opacity: 0.1; }
@@ -4703,7 +4753,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   column-gap: 15px;
 }
 /* A key is a button: pressed, it lights its domain and shades the rest. Set
-   at 24 of the plot's units (--bg-key, from billGraph()), in the domain's
+   at 24 of the plot's units (--bg-key, from billGraph2()), in the domain's
    colour, lifted where that colour is too dark to read on the black, and kept
    whole on its line. */
 .bg-key {
@@ -4735,10 +4785,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    96 characters, which is wider than columns three to eight at this size, so
    some works wrap -- and the panel centres its contents, so a line arriving or
    leaving would otherwise walk the whole figure up and down under the pointer. */
-.bill-graph-foot,
-.bill-graph-say,
-.bill-graph-line,
-.bg-count {
+.bill-graph-foot {
   font-family: var(--sans);
   font-weight: 500;
   font-size: clamp(20px, 1.7vw, 26px);
@@ -4746,40 +4793,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   letter-spacing: -0.005em;
 }
 .bill-graph-foot { margin-top: 28px; min-height: 2.7em; }
-/* In the first graph the readout -- the work under the pointer -- stands
-   apart from the encoding, in the empty room the field leaves over the year
-   row: a year on column one and a title on one line from column two. Its foot is set at --work-top, worked out by billGraph() just over
-   the decades -- which stand far enough down for one line under the deepest
-   column -- and it slides down by --work-drop where its words would
-   otherwise reach into the field. */
-.bill-graph-say {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: var(--work-top, 0);
-  transform: translateY(calc(var(--work-drop, 0px) - 100%));
-  pointer-events: none;
-}
-/* The line's own words -- one idea for sixty years -- stand under the row of
-   names instead, under continuity's key, in the room the row keeps under
-   them, so the row and the field don't move when they come. */
-.bill-graph-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% - 40px);
-  pointer-events: none;
-}
-/* The row keeps that line's room under its names, clear of them by a good
-   gap, so it reads as a line of its own rather than the names' second. */
-.bill-graph-keys:has(.bill-graph-line) { padding-bottom: 60px; }
-/* And under a domain's key, while the key is under the pointer, the count of
-   its works, in the key's colour, on the same line. */
-.bg-count {
-  position: absolute;
-  top: calc(100% - 40px);
-  pointer-events: none;
-}
 /* Under the field and across its whole width, all eight columns, so the line
    starts where the years start. While the page scrolls it can pass under the
    language menu and the play button fixed in the bottom-left corner; it
@@ -4808,17 +4821,35 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* The year, or a domain's count, holds column one on one line. */
 .bill-graph-read b { font-weight: inherit; white-space: nowrap; }
 .bill-graph-read .rd-title { grid-column: span 7; }
-.bill-graph-read .rd-name { grid-column: span 2; }
-.bill-graph-read .rd-years { grid-column: span 5; }
 /* A count said in a line -- "23 works in book design, 1930–71" -- runs on
    from column one with plain spaces. */
 .bill-graph-read .rd-line { grid-column: 1 / -1; }
+
+/* Where the works graphs' data comes from and what it leaves out: two notes
+   opening the white page under the second graph, set as the journey's
+   captions are (.journey-cap: a heading in the sans at 18px and 600 over its
+   text at 15px and three quarters), in the page's black, side by side on
+   columns one to four and five to eight, and one over the other where the
+   measure is too narrow for two. The page's own text follows a section's
+   padding further down. */
+.bill-graph-notes {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+  row-gap: 32px;
+  margin-bottom: 120px;
+}
+.bill-graph-note { grid-column: span 4; }
+.bill-graph-note a { color: inherit; }
+@media (max-width: 760px) {
+  .bill-graph-note { grid-column: 1 / -1; }
+}
 
 /* ---- the plot's own parts, all inside the one SVG ---- */
 /* The two rows under the field -- the decade, and Bill's age in it -- set in
    the figure's one voice with everything else: the same face, weight, size and
    tracking as the readout below them. The size
-   arrives as --bg-type, measured off the readout by billGraph() and converted
+   arrives as --bg-type, measured off the readout by billGraph2() and converted
    into the plot's own units, so the two stay matched as the figure scales. */
 .bg-axis,
 .bg-age {
@@ -4836,8 +4867,17 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* One mark to a work, square at the corners, its edges on whole pixels -- the
    script snaps them there, and this keeps the browser from blurring them. */
 .bg-dots rect { shape-rendering: crispEdges; }
-.bg-hit { pointer-events: none; fill: none; stroke: #fff; stroke-width: 1.5; opacity: 0; transition: opacity 0.15s ease; }
-.bg-hit.on { opacity: 1; }
+/* A square grows under the pointer and the squares about it part to make
+   room (see magnify() in billGraph2()): each scales about its own middle and
+   slides, eased. */
+#billGraphPlot2 rect[data-i] {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.25s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  #billGraphPlot2 rect[data-i] { transition: none; }
+}
 
 /* The line through the field: the endless ribbon and what came of it, its
    works lying along it in red over the years Bill kept at it.
@@ -4845,7 +4885,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    on it and nowhere else. */
 .bg-band { cursor: pointer; transition: opacity 0.4s ease; }
 .bg-band.dim { opacity: 0.1; pointer-events: none; }
-.bg-band-tick { shape-rendering: crispEdges; }
 .bg-band-pad { fill: transparent; }
 /* Focus: one domain lit, the rest shaded -- held back far enough to read
    through. */
@@ -4860,7 +4899,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    handler re-adds .in on every scroll tick, which on a page that is still
    settling lands in the same task as the plot being built -- so the rect would
    go from 0 to full without the browser ever computing the 0, and there would
-   be nothing to transition. billGraph() sets .bg-lit once, after a flush. */
+   be nothing to transition. billGraph2() sets .bg-lit once, after a flush. */
 .bg-wipe-rect { width: 0; transition: width 1.8s cubic-bezier(0.22, 0.61, 0.36, 1) 0.15s; }
 .bill-graph.bg-lit .bg-wipe-rect { width: 1340px; }
 @media (prefers-reduced-motion: reduce) {

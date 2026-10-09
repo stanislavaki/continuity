@@ -147,7 +147,10 @@ NS = '{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
 #
 # Each work goes out as [year begun, domain, title, tier, year finished,
 # weight, highlight] -- the weight, from 1 to 5 in tenths, is set below, and
-# the last is 1 for the works in HIGHLIGHTS and 0 for the rest.
+# the highlight is 1 for the works in HIGHLIGHTS and 0 for the rest -- and,
+# where the table says any of it, an eighth entry for the card the page shows
+# under the pointer: {m: material, s: size, p: place, n: note}, each as the
+# table writes it (see extras()).
 TIERS = ['days', 'weeks', 'months', 'a year', 'years']
 DAYS, WEEKS, MONTHS, A_YEAR, YEARS = range(5)
 
@@ -418,6 +421,22 @@ def table_rows(path):
             if any((v or '').strip() for v in r.values())]
 
 
+def extras(row):
+    """What the card under the pointer says of a work beyond its title and
+    years, as the table writes it, in its own language: the material, the
+    size (Dimension, units or not), the place -- the collection and where it
+    is, each once, the table's '—' for unknown left out -- and the note
+    (Description). Only what the row has."""
+    place = []
+    for key in ('Collection', 'Location'):
+        v = clean(row.get(key), 120)
+        if v and v.strip('—- ') and not any(v in p or p in v for p in place):
+            place.append(v)
+    out = {'m': clean(row.get('Material'), 120), 's': clean(row.get('Dimension'), 60),
+           'p': ', '.join(place), 'n': clean(row.get('Description'), 200)}
+    return {k: v for k, v in out.items() if v}
+
+
 def main():
     path = os.path.expanduser(sys.argv[1]) if len(sys.argv) > 1 else DATASET
     works, dropped, found = [], collections.Counter(), set()
@@ -450,8 +469,9 @@ def main():
         if wid in HIGHLIGHTS:
             title = HIGHLIGHTS[wid]
             found.add(wid)
+        more = extras(row)
         works.append([start, IDX[domain], title, tier, year_range(row.get('Year'), start),
-                      weight, int(wid in HIGHLIGHTS)])
+                      weight, int(wid in HIGHLIGHTS)] + ([more] if more else []))
 
     missing = set(HIGHLIGHTS) - found
     if missing:
