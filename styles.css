@@ -4861,24 +4861,33 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    from column one with plain spaces. */
 .bill-graph-read .rd-line { grid-column: 1 / -1; }
 
-/* Where the works graphs' data comes from and what it leaves out: two notes
-   opening the white page under the second graph, set as the journey's
-   captions are (.journey-cap: a heading in the sans at 18px and 600 over its
-   text at 15px and three quarters), in the page's black, side by side on
-   columns one to four and five to eight, and one over the other where the
-   measure is too narrow for two. The page's own text follows a section's
-   padding further down. */
+/* Where the works graph's data comes from and what it leaves out: two notes
+   opening the white page under the graph, set as the journey's captions are
+   (.journey-cap: a heading in the sans at 18px and 600 over its text at 15px
+   and three quarters), in the page's black. The page's own text follows a
+   section's padding further down. */
 .bill-graph-notes {
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
   column-gap: var(--col-gap);
-  row-gap: 32px;
+  row-gap: 56px;
   margin-bottom: 120px;
 }
-.bill-graph-note { grid-column: span 4; }
+/* The sources run across the whole measure in four columns of text, and
+   under them, on the page's columns five to eight, the work in progress in
+   two -- every column of text two of the page's wide, so the measure stays
+   short and on the grid. */
+.bill-graph-note p { column-gap: var(--col-gap); }
+.bill-graph-note.is-sources { grid-column: 1 / -1; }
+.bill-graph-note.is-sources p { column-count: 4; }
+.bill-graph-note.is-progress { grid-column: 5 / span 4; }
+.bill-graph-note.is-progress p { column-count: 2; }
 .bill-graph-note a { color: inherit; }
 @media (max-width: 760px) {
-  .bill-graph-note { grid-column: 1 / -1; }
+  .bill-graph-note.is-sources,
+  .bill-graph-note.is-progress { grid-column: 1 / -1; }
+  .bill-graph-note.is-sources p,
+  .bill-graph-note.is-progress p { column-count: 1; }
 }
 
 /* ---- the plot's own parts, all inside the one SVG ---- */
