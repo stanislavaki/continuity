@@ -1848,6 +1848,21 @@ section { position: relative; }
   letter-spacing: -0.005em;
 }
 .article-body p + p { margin-top: 1.2em; }
+/* An aside in the body, set as the works graph's notes are (.bill-graph-note
+   p): the sans at 15px, three quarters strong, in two columns across the
+   body's measure -- the page's columns 5-8 -- a paragraph's lead above it. */
+.article-body p.article-aside {
+  margin-top: calc(1.2 * clamp(20px, 1.7vw, 26px));
+  font-size: 15px;
+  line-height: 1.45;
+  letter-spacing: normal;
+  opacity: .75;
+  column-count: 2;
+  column-gap: var(--col-gap);
+}
+@media (max-width: 760px) {
+  .article-body p.article-aside { column-count: 1; }
+}
 /* The intro's opening paragraph, set as the pull-quote bands set their quotes
    (--quote-size, its weight, leading and tracking, though not their lowercase)
    and breaking out of the body's right half to columns 2-8. The body is four
@@ -1900,9 +1915,9 @@ section { position: relative; }
    body's right half by three columns and three gaps, and two columns and a gap
    wide. Its margin box comes to less than nothing, so the paragraph beside it
    neither wraps nor moves. Between two paragraphs -- the intro's, after the
-   opener -- it drops by the next one's own 1.2em lead, in the body's size, to
-   stand level with it, and that paragraph keeps the lead the column took from
-   it. Inside, the notes script drops each note to the line that carries its
+   opener -- or after a film, it drops by the next one's own 1.2em lead, in
+   the body's size, to stand level with it, and that paragraph keeps the lead
+   the column took from it. Inside, the notes script drops each note to the line that carries its
    mark. */
 .article-body .fn-note {
   float: left;
@@ -1918,8 +1933,10 @@ section { position: relative; }
   overflow-wrap: anywhere;
   color: rgba(255, 255, 255, .72);
 }
-.article-body p + .fn-note { margin-top: calc(1.2 * clamp(20px, 1.7vw, 26px)); }
-.article-body p + .fn-note + p { margin-top: 1.2em; }
+.article-body p + .fn-note,
+.article-body .narr-film + .fn-note { margin-top: calc(1.2 * clamp(20px, 1.7vw, 26px)); }
+.article-body p + .fn-note + p,
+.article-body .narr-film + .fn-note + p { margin-top: 1.2em; }
 .article-body .fn-note p + p { margin-top: 0.75em; }
 .light-section .article-body .fn-note { color: rgba(0, 0, 0, .6); }
 .light-section .fn-note .fig-label { color: #000; }
@@ -2660,6 +2677,39 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    brings its own. */
 .narr-film-pad { padding: 2em 0 1em; }
 .narr-film-pad--still { padding: 1.2em 0 0; }
+/* A film's caption, set and hung as the page's other figure captions are
+   (.bill-portrait-cap, .doc-deck-cap): Space Mono at 12 on 18, led by its
+   italic serif number in the full ink, on page columns 2-3 under the film,
+   beside the paragraph after it, its first line on that paragraph's first
+   baseline -- out of the flow, hung from the foot of the reel's row (the
+   film's foot, whether the still or the reel shows) by --cap-drop, which the
+   script measures. White at 72% on a dark chapter, black at 60% on a white
+   one. */
+.narr-film-cap {
+  position: absolute;
+  grid-row: 2;
+  grid-column: 2 / 4;
+  top: calc(100% + var(--cap-drop, calc(1.2em + 10px)));
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  font-feature-settings: "onum", "pnum";
+  text-rendering: optimizeLegibility;
+  overflow-wrap: anywhere;
+  color: rgba(255, 255, 255, .72);
+}
+.light-section .narr-film-cap { color: rgba(0, 0, 0, .6); }
+.narr-film-cap .fig-label {
+  font-family: "Martina Plantijn", Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 1.15em;
+  line-height: 1;
+  color: #fff;
+}
+.light-section .narr-film-cap .fig-label { color: #000; }
 
 .narr-film-preview {
   position: relative;
@@ -2972,6 +3022,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .article-grid > .article-body .narr-film { margin-left: 0; width: 100%; }
   .narr-film { grid-template-columns: minmax(0, 1fr); }
   .narr-film-fold--still, .narr-film-fold--reel { grid-column: 1; }
+  .narr-film-cap { position: static; grid-row: 3; grid-column: 1; margin: 12px 0 0; }
 }
 
 /* Letters as two piles (.doc-deck), laid out on the page's eight columns out
