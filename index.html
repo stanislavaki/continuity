@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=324" />
+<link rel="stylesheet" href="styles.css?v=330" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -303,9 +303,13 @@
              reaches the top of the screen it stays there, naming the colours
              of the field as it scrolls up under it. -->
         <div class="bill-graph-keys" id="billGraphKeys2"></div>
-        <div class="bill-graph-plot" id="billGraphPlot2"></div>
-        <!-- The card of the work under the pointer, placed by billGraph2(). -->
-        <div class="bg-card" id="billGraphCard2" aria-hidden="true"></div>
+        <!-- The plot, and the card of the work under the pointer (placed by
+             billGraph2()), in a box of their own: on a phone it is swiped
+             across, the graph keeping a desktop's measure. -->
+        <div class="bill-graph-scroll">
+          <div class="bill-graph-plot" id="billGraphPlot2"></div>
+          <div class="bg-card" id="billGraphCard2" aria-hidden="true"></div>
+        </div>
         <figcaption class="bill-graph-foot">
           <span class="bill-graph-read" id="billGraphRead2"></span>
         </figcaption>
@@ -6045,6 +6049,7 @@ if (document.readyState === 'loading') {
   const sideOf = w => w[6] || LOOP.test(w[2]) ? S_MIN * (S_MAX / S_MIN) ** ((w[5] - 1) / 4) : S_ONE;
   const AIR = 1.5;             // between two squares, in units; never under a pixel
   const FIELD_TOP = 8;         // the plot's top to the highest name
+  const KEY = 23;              // the keys' size, in the plot's units
   const BORN = 1908;           // Max Bill, 1908-1994
   // The names, in screen pixels -- their size, their leading, and the widest
   // a name runs before it wraps, in ems.
@@ -6089,13 +6094,14 @@ if (document.readyState === 'loading') {
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
                             .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-  // Where the page's eight columns fall, in the plot's own units.
+  // Where the page's eight columns fall, in the plot's own units -- against
+  // the plot as it stands unscrolled, where on a phone it is swiped across.
   function columns() {
     const box = plot.getBoundingClientRect();
-    const k = W / box.width;
+    const k = W / box.width, swiped = plot.parentElement.scrollLeft;
     return [...rule.children].map(cell => {
       const r = cell.getBoundingClientRect();
-      return { x: (r.left - box.left) * k, w: r.width * k };
+      return { x: (r.left - box.left - swiped) * k, w: r.width * k };
     });
   }
 
@@ -6300,21 +6306,21 @@ if (document.readyState === 'loading') {
     const AXIS_Y = 70, AGE_Y = AXIS_Y + 34;
     const H = FOOT + AGE_Y + 16;
 
-    // The keys: continuity, in the line's red, lights the line and its works
-    // alone; each domain's lights its own; all, carrying the count, lights
+    // The keys: endless ribbon, in the line's red, lights the line and its
+    // works alone; each domain's lights its own; all, carrying the count, lights
     // every domain.
     const count = works.length.toLocaleString('en-US');
     keysEl.innerHTML = '<div class="bg-names">' +
       '<button type="button" class="bg-key" data-dom="' + CONT + '" aria-pressed="false"' +
-      ' aria-label="' + esc('continuity, ' + loops.length + ' works') + '" style="--tc:' +
-      legible(LOOP_RED) + '">continuity</button>' + domains.map((d, i) =>
+      ' aria-label="' + esc('endless ribbon, ' + loops.length + ' works') + '" style="--tc:' +
+      legible(LOOP_RED) + '">endless ribbon</button>' + domains.map((d, i) =>
       '<button type="button" class="bg-key" data-dom="' + i + '" aria-pressed="false"' +
         ' aria-label="' + esc(d.label + ', ' + d.n + ' works') + '" style="--tc:' +
         legible(d.color) + '">' + esc(d.label) + '</button>'
     ).join('') + '<button type="button" class="bg-key bg-all" data-dom="' + ALL + '" aria-pressed="false"' +
       ' aria-label="' + esc('show all domains, ' + count + ' works') + '" style="--tc:#fff">show all ' +
       count + ' works</button></div>';
-    fig.style.setProperty('--bg-key', (24 / PX).toFixed(2) + 'px');
+    fig.style.setProperty('--bg-key', (KEY / PX).toFixed(2) + 'px');
     plot.style.setProperty('--bg-call', LF.toFixed(2) + 'px');
     plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
 
@@ -6476,7 +6482,7 @@ if (document.readyState === 'loading') {
     }
 
     // The card of the work under the pointer, as the table has it, on a
-    // ground of its square's own colour: its domain (the continuity line's
+    // ground of its square's own colour: its domain (the endless ribbon's
     // works say so first), its title, its years and the table's note, and
     // under them its
     // material, size and place -- whichever of them the table gives, in the
@@ -6490,7 +6496,7 @@ if (document.readyState === 'loading') {
     // square, into the rows below.
     function cardFor(q, ground) {
       const more = q.w[7] || {};
-      const kind = (q.chain ? 'continuity · ' : '') + domains[q.w[1]].label;
+      const kind = (q.chain ? 'endless ribbon · ' : '') + domains[q.w[1]].label;
       const when = dates(q.w[0], q.w[4]) + (more.n ? ' · ' + more.n : '');
       const facts = [['Material', more.m], ['Size', more.s], ['Place', more.p]].filter(f => f[1]);
       cardEl.style.background = ground;
@@ -6501,9 +6507,12 @@ if (document.readyState === 'loading') {
       const kpx = plot.getBoundingClientRect().width / W;
       const w = cardEl.offsetWidth / kpx, h = cardEl.offsetHeight / kpx;
       // The card flies from its leader line as a flag from its pole: its
-      // edge on the line, to the right of it, or at the plot's right edge, to
-      // the left.
-      const lx = snap(q.x0 + q.s / 2), left = lx + w > W;
+      // edge on the line, to the right of it, or where it would run past the
+      // right edge of what shows of the plot -- the plot's own, or on a phone
+      // the screen's, the plot being swiped across -- to the left.
+      const box = plot.parentElement;
+      const shows = Math.min(W, (box.scrollLeft + box.clientWidth - plot.offsetLeft) / kpx);
+      const lx = snap(q.x0 + q.s / 2), left = lx + w > shows && lx - w >= (box.scrollLeft - plot.offsetLeft) / kpx;
       const a = { q, lx, h, x0: left ? lx - w : lx, x1: left ? lx : lx + w };
       const [, sy, , sh] = swell(q);
       const CARD_AIR = LF;
@@ -6549,13 +6558,18 @@ if (document.readyState === 'loading') {
     };
     const rectOf = [];
     plot.querySelectorAll('rect[data-i]').forEach(r => { rectOf[+r.dataset.i] = r; });
+    // And every other work steps back while it is pointed at (.is-pointing,
+    // .is-on), the line and the chain with them.
     let grown = null, moved = [];
     function magnify(q) {
       if (q === grown) return;
       moved.forEach(el => { el.style.transform = ''; });
       moved = [];
+      if (grown) rectOf[grown.i].classList.remove('is-on');
       grown = q;
+      svg.classList.toggle('is-pointing', !!q);
       if (!q) return;
+      rectOf[q.i].classList.add('is-on');
       const g = growOf(q), reach = Math.max(60, g * 8);
       const cx = q.x0 + q.s / 2, cy = q.c;
       rectOf[q.i].style.transform = 'scale(' + ((q.s + g) / q.s).toFixed(3) + ')';
@@ -6609,8 +6623,18 @@ if (document.readyState === 'loading') {
       paint();
     });
     svg.addEventListener('pointerleave', () => {
-      if (held !== null) return;
+      if (held !== null || touch) return;
       pointed = null; paint();
+    });
+    // A touch screen has no pointer to rest on a work: a tap on one stands
+    // for it, and holds until the next tap -- on another work, the line, or
+    // nothing, which lets go.
+    let touch = false;
+    svg.addEventListener('pointerdown', ev => {
+      touch = ev.pointerType !== 'mouse';
+      if (!touch || bandEl.contains(ev.target)) return;
+      pointed = at(ev); loopHeld = false; loopAt = null;
+      paint();
     });
 
     bandEl.addEventListener('pointermove', ev => {
@@ -6621,8 +6645,16 @@ if (document.readyState === 'loading') {
       loopHeld = true; loopAt = o;
       paint();
     });
-    bandEl.addEventListener('pointerleave', () => { loopHeld = false; loopAt = null; paint(); });
-    bandEl.addEventListener('click', () => press(CONT));
+    bandEl.addEventListener('pointerleave', () => { if (!touch) { loopHeld = false; loopAt = null; paint(); } });
+    bandEl.addEventListener('pointerdown', ev => {
+      if (ev.pointerType === 'mouse') return;
+      const r = svg.getBoundingClientRect(), ux = (ev.clientX - r.left) * W / r.width;
+      pointed = null; loopHeld = true;
+      loopAt = loops.find(o => ux >= o.box[0] - G / 2 && ux <= o.box[0] + o.box[2] + G / 2) || null;
+      paint();
+    });
+    // A click on the line presses its key -- with a mouse; a tap names the work.
+    bandEl.addEventListener('click', () => { if (!touch) press(CONT); });
 
     const press = d => {
       pinned = d === ALL || pinned === d ? null : d;

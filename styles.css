@@ -4730,6 +4730,29 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    rather than recompute --col-gap and --gutter for itself. */
 .bill-graph-grid { height: 0; visibility: hidden; pointer-events: none; }
 .bill-graph-plot svg { width: 100%; height: auto; display: block; }
+/* The plot and its card share a box, which the card is placed in. */
+.bill-graph-scroll { position: relative; }
+/* On a phone the graph keeps a desktop's measure, 960px, and is swiped
+   across, edge to edge of the screen; the row of keys keeps to one line and
+   is swiped on its own. Neither shows a scrollbar. */
+@media (max-width: 767px) {
+  .bill-graph-scroll,
+  .bg-names {
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-left: calc(-1 * var(--gutter));
+    margin-right: calc(-1 * var(--gutter));
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+  }
+  .bill-graph-scroll::-webkit-scrollbar,
+  .bg-names::-webkit-scrollbar { display: none; }
+  .bill-graph-plot { width: 960px; }
+  .bill-graph-keys .bg-names { flex-wrap: nowrap; }
+}
 /* The row of names over the field. Sticky: once it reaches the top of the
    screen it stays there, over the field scrolling up under it, until the
    figure is done. Held to the very top with its air carried as padding, as
@@ -4743,17 +4766,21 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   background: var(--black);
   align-items: baseline;
 }
-/* The keys run on one line, 15px apart, from column one, and the last of
-   them, all, closes the row against the right edge of the measure. */
+/* The keys run on one line from column one, and the last of them, all,
+   closes the row against the right edge of the measure. They are spaced in
+   their own ems -- about 14px at the desktop's 18.6px -- so the whole row
+   scales with the figure, gaps and all, and keeps to one line at a tablet's
+   width. */
 .bg-names {
   grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  column-gap: 15px;
+  font-size: var(--bg-key, 24px);
+  column-gap: 0.75em;
 }
 /* A key is a button: pressed, it lights its domain and shades the rest. Set
-   at 24 of the plot's units (--bg-key, from billGraph2()), in the domain's
+   at 23 of the plot's units (--bg-key, from billGraph2()), in the domain's
    colour, lifted where that colour is too dark to read on the black, and kept
    whole on its line. */
 .bg-key {
@@ -4788,7 +4815,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bill-graph-foot {
   font-family: var(--sans);
   font-weight: 500;
-  font-size: clamp(20px, 1.7vw, 26px);
+  font-size: clamp(16px, 1.7vw, 26px);
   line-height: 1.35;
   letter-spacing: -0.005em;
 }
@@ -4818,6 +4845,15 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    things in the figure that are there to be found rather than read. */
 .bill-graph-read i { font-style: normal; opacity: 0.22; }
 .bill-graph-read.is-rest i { grid-column: span 2; }
+/* On a narrower screen each part of the encoding takes three columns, so
+   neither breaks in the middle. */
+@media (max-width: 1023px) {
+  .bill-graph-read.is-rest i { grid-column: span 3; }
+}
+/* On a phone, one under the other. */
+@media (max-width: 767px) {
+  .bill-graph-read.is-rest i { grid-column: 1 / -1; }
+}
 /* The year, or a domain's count, holds column one on one line. */
 .bill-graph-read b { font-weight: inherit; white-space: nowrap; }
 .bill-graph-read .rd-title { grid-column: span 7; }
@@ -4873,8 +4909,12 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 #billGraphPlot2 rect[data-i] {
   transform-box: fill-box;
   transform-origin: center;
-  transition: transform 0.25s ease;
+  transition: transform 0.25s ease, opacity 0.25s ease;
 }
+/* While a work is pointed at, every other work -- and the line its chain
+   lies on -- steps back, so the one under the pointer stands alone. */
+#billGraphPlot2 svg.is-pointing rect[data-i]:not(.is-on),
+#billGraphPlot2 svg.is-pointing .bg-spine:not(.dim) { opacity: 0.25; }
 @media (prefers-reduced-motion: reduce) {
   #billGraphPlot2 rect[data-i] { transition: none; }
 }
