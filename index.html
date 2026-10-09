@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=342" />
+<link rel="stylesheet" href="styles.css?v=348" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -254,7 +254,7 @@
     </div>
   </section>
 
-  <section class="article light-section" style="padding-top:0;">
+  <section class="article light-section bill-chapter" style="padding-top:0;">
     <div class="container">
       <div class="article-grid">
         <!-- Bill's portrait, whole, on page columns 2-7, its caption hung on
@@ -315,7 +315,7 @@
   </section>
 
   <!-- Bill and Concrete Art -->
-  <section class="article light-section">
+  <section class="article light-section bill-chapter">
     <div class="container">
       <!-- Where the works graph's data comes from, and what it leaves out: two
            notes set as the journey's captions are, opening the white page
@@ -347,8 +347,8 @@
           <!-- Max Bill, short cut 4 (2:19), from Erich Schmid's film. Set after
                the passage, as the other films are set between paragraphs: the still
                on columns 3-6, the reel on 2-7, opened by a press or by the
-               read-aloud; its caption on columns 2-3, hung under the still beside
-               the paragraph after it. -->
+               read-aloud; its caption, unnumbered, on columns 2-3 under the reel,
+               so it shows only while the film is open. -->
           <figure class="narr-film" data-narr-film>
             <div class="narr-film-fold narr-film-fold--still">
               <div class="narr-film-clip">
@@ -370,12 +370,12 @@
                     <button class="narr-film-full" type="button" aria-label="Show the film full screen"><span class="narr-film-expand" aria-hidden="true"></span></button>
                     <div class="narr-film-time" role="slider" tabindex="0" aria-label="Film position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="narr-film-time-track"><span class="narr-film-time-fill"></span></span></div>
                   </div>
+                  <p class="narr-film-cap">Excerpt from &ldquo;Bill&mdash;das absolute Augenmass&rdquo;, a film by Erich Schmid (Switzerland, 2008, 94&nbsp;min). Camera: Ueli N&uuml;esch. &copy; 2008 Erich Schmid. Excerpts prepared and shown with the kind permission of the filmmaker.</p>
                 </div>
               </div>
             </div>
-            <figcaption class="narr-film-cap" id="schmidFilmCap"><i class="fig-label">Fig. 2.</i> Excerpt from &ldquo;Bill&mdash;das absolute Augenmass&rdquo;, a film by Erich Schmid (Switzerland, 2008, 94&nbsp;min). Camera: Ueli N&uuml;esch. &copy; 2008 Erich Schmid. Excerpts prepared and shown with the kind permission of the filmmaker.</figcaption>
           </figure>
-          <div class="fn-note" data-clear="#schmidFilmCap">
+          <div class="fn-note">
             <p data-fn="10"><i class="fig-label">10. </i>Maldonado, &ldquo;Max Bill&rdquo; (1955), 16.</p>
             <p data-fn="11"><i class="fig-label">11. </i>Thomas, <i>A Subversive Gleam</i> (2022), 557.</p>
             <p data-fn="12"><i class="fig-label">12. </i>Maldonado, &ldquo;Max Bill&rdquo; (1955), 17.</p>
@@ -584,7 +584,7 @@
                    baseline of the first line of the paragraph after them; says
                    what the sheet last tossed across is, the left pile's top until
                    one has been. -->
-              <figcaption class="doc-deck-cap"><i class="fig-label">Fig. 3.</i> <span class="doc-deck-what">Max Bill to Dominique Stroobant, 4 October 1982, with seven photographs of a metal model: about 250 tonnes of light Sardinian granite, worked down to 75.</span></figcaption>
+              <figcaption class="doc-deck-cap"><i class="fig-label">Fig. 2.</i> <span class="doc-deck-what">Max Bill to Dominique Stroobant, 4 October 1982, with seven photographs of a metal model: about 250 tonnes of light Sardinian granite, worked down to 75.</span></figcaption>
               <div class="doc-deck-table">
                 <img class="doc-deck-page" src="./assets/_docs/1982-10-04-bill-to-stroobant-1.jpg" data-cap="Max Bill to Dominique Stroobant, 4 October 1982, with seven photographs of a metal model: about 250 tonnes of light Sardinian granite, worked down to 75." alt="Letter from Max Bill to Dominique Stroobant, 4 October 1982, page 1 of 2" width="1245" height="1759" loading="lazy" decoding="async">
                 <img class="doc-deck-page" src="./assets/_docs/1982-10-04-bill-to-stroobant-2.jpg" data-cap="Page 2: could Bill’s sculpture “22” be ready by the time he comes, for him to drive it back to Zürich?" alt="Letter from Max Bill to Dominique Stroobant, 4 October 1982, page 2 of 2" width="1245" height="1759" loading="lazy" decoding="async" aria-hidden="true">
@@ -2976,23 +2976,13 @@ document.querySelectorAll('.facts').forEach((facts) => {
 // Bill's portrait caption, on page columns 2-3 under the portrait, stands with
 // its first line on the baseline of the first line of the text beside it, as
 // the letters' caption does: out of the flow, hung from the portrait's foot by
-// --cap-drop. Below 901px it runs in the flow. A film's caption hangs the same
-// way from the film's foot, beside the paragraph after the film (past the
-// notes column set before it).
+// --cap-drop. Below 901px it runs in the flow.
 (() => {
-  const hung = [];
   const fig = document.querySelector('.bill-portrait');
   const cap = fig && fig.querySelector('.bill-portrait-cap');
   const body = fig && fig.nextElementSibling;
   const para = body && body.querySelector(':scope > p');
-  if (cap && para) hung.push({ fig, cap, para });
-  document.querySelectorAll('.narr-film-cap').forEach(cap => {
-    const fig = cap.closest('.narr-film');
-    let para = fig.nextElementSibling;
-    while (para && para.tagName !== 'P') para = para.nextElementSibling;
-    if (para) hung.push({ fig, cap, para });
-  });
-  if (!hung.length) return;
+  if (!cap || !para) return;
   const baseline = (el) => {
     const probe = document.createElement('span');
     probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
@@ -3002,12 +2992,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
     return y;
   };
   function hang() {
-    hung.forEach(({ fig, cap, para }) => {
-      if (getComputedStyle(cap).position !== 'absolute') return;
-      const head = baseline(cap) - cap.getBoundingClientRect().top;
-      const drop = baseline(para) - head - fig.getBoundingClientRect().bottom;
-      fig.style.setProperty('--cap-drop', drop.toFixed(1) + 'px');
-    });
+    if (getComputedStyle(cap).position !== 'absolute') return;
+    const head = baseline(cap) - cap.getBoundingClientRect().top;
+    const drop = baseline(para) - head - fig.getBoundingClientRect().bottom;
+    fig.style.setProperty('--cap-drop', drop.toFixed(1) + 'px');
   }
   window.addEventListener('resize', hang);
   window.addEventListener('load', hang);

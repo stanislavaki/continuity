@@ -1850,9 +1850,11 @@ section { position: relative; }
 .article-body p + p { margin-top: 1.2em; }
 /* An aside in the body, set as the works graph's notes are (.bill-graph-note
    p): the sans at 15px, three quarters strong, in two columns across the
-   body's measure -- the page's columns 5-8 -- a paragraph's lead above it. */
+   body's measure -- the page's columns 5-8 -- standing as far under the text
+   as those notes stand over it: the article grid's row gap, 48px, as under
+   Bill's portrait. */
 .article-body p.article-aside {
-  margin-top: calc(1.2 * clamp(20px, 1.7vw, 26px));
+  margin-top: 48px;
   font-size: 15px;
   line-height: 1.45;
   letter-spacing: normal;
@@ -1902,6 +1904,10 @@ section { position: relative; }
 .light-section .fn-note,
 .paper-section .fn-cite,
 .paper-section .fn-note { --fn-lit: var(--bill-blue); }
+/* Bill's chapter -- its text before the works graph and after it -- lights
+   its notes in the signal red instead. */
+.bill-chapter .fn-cite,
+.bill-chapter .fn-note { --fn-lit: var(--signal-red); }
 .fn-cite { transition: color .2s ease; }
 .fn-cite.is-cited { color: var(--fn-lit); }
 .article-body .fn-note p,
@@ -2677,20 +2683,24 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    brings its own. */
 .narr-film-pad { padding: 2em 0 1em; }
 .narr-film-pad--still { padding: 1.2em 0 0; }
-/* A film's caption, set and hung as the page's other figure captions are
-   (.bill-portrait-cap, .doc-deck-cap): Space Mono at 12 on 18, led by its
-   italic serif number in the full ink, on page columns 2-3 under the film,
-   beside the paragraph after it, its first line on that paragraph's first
-   baseline -- out of the flow, hung from the foot of the reel's row (the
-   film's foot, whether the still or the reel shows) by --cap-drop, which the
-   script measures. White at 72% on a dark chapter, black at 60% on a white
-   one. */
+/* In Bill's chapter the film stands off the text as the aside, the works
+   graph's notes and Bill's portrait do, by the article grid's row gap: 48px
+   over the still and 48px under it to the paragraph after -- and to that
+   paragraph's notes column, which stands level with it. */
+.bill-chapter .narr-film-pad--still { padding-top: 48px; }
+.bill-chapter .article-body .narr-film + .fn-note + p { margin-top: 48px; }
+@media (min-width: 901px) {
+  .bill-chapter .article-body .narr-film + .fn-note { margin-top: 48px; }
+}
+/* A film's caption, set as the page's figure captions are (.bill-portrait-cap,
+   .doc-deck-cap) but unnumbered: Space Mono at 12 on 18. It lies in the reel,
+   under the film, so it shows only while the film is open and folds away with
+   it; it is two of the reel's six columns wide -- page columns 2-3 -- a third
+   of the reel less two thirds of a gap. White at 72% on a dark chapter, black
+   at 60% on a white one. */
 .narr-film-cap {
-  position: absolute;
-  grid-row: 2;
-  grid-column: 2 / 4;
-  top: calc(100% + var(--cap-drop, calc(1.2em + 10px)));
-  margin: 0;
+  width: calc(100% / 3 - var(--col-gap) * 2 / 3);
+  margin: 12px 0 0;
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 400;
@@ -2702,14 +2712,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   color: rgba(255, 255, 255, .72);
 }
 .light-section .narr-film-cap { color: rgba(0, 0, 0, .6); }
-.narr-film-cap .fig-label {
-  font-family: "Martina Plantijn", Georgia, "Times New Roman", serif;
-  font-style: italic;
-  font-size: 1.15em;
-  line-height: 1;
-  color: #fff;
-}
-.light-section .narr-film-cap .fig-label { color: #000; }
 
 .narr-film-preview {
   position: relative;
@@ -3022,7 +3024,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .article-grid > .article-body .narr-film { margin-left: 0; width: 100%; }
   .narr-film { grid-template-columns: minmax(0, 1fr); }
   .narr-film-fold--still, .narr-film-fold--reel { grid-column: 1; }
-  .narr-film-cap { position: static; grid-row: 3; grid-column: 1; margin: 12px 0 0; }
+  .narr-film-cap { width: auto; }
 }
 
 /* Letters as two piles (.doc-deck), laid out on the page's eight columns out
@@ -4996,7 +4998,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   grid-template-columns: repeat(8, minmax(0, 1fr));
   column-gap: var(--col-gap);
   row-gap: 56px;
-  margin-bottom: 120px;
+  margin-bottom: 48px;   /* the article grid's row gap, as under Bill's portrait */
 }
 /* The sources run across the whole measure in four columns of text, and
    under them, on the page's columns five to eight, the work in progress in
