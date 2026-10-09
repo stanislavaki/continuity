@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=330" />
+<link rel="stylesheet" href="styles.css?v=333" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -6492,8 +6492,8 @@ if (document.readyState === 'loading') {
     // flag. Where the plot has no such room it
     // comes in over the swarm -- never past the plot's top, where the keys
     // are, nor into the decades, and never over its own square, CARD_AIR
-    // clear of it; failing that, the other side; failing both, under the
-    // square, into the rows below.
+    // clear of it; failing that, the other side; failing both, off its
+    // square on its own side, kept inside the plot.
     function cardFor(q, ground) {
       const more = q.w[7] || {};
       const kind = (q.chain ? 'endless ribbon · ' : '') + domains[q.w[1]].label;
@@ -6523,7 +6523,11 @@ if (document.readyState === 'loading') {
       };
       const own = Math.sign(q.c);
       const tries = own ? [stand(own), stand(-own)] : [stand(-1), stand(1)].sort((x, y) => x.moved - y.moved);
-      const pick = tries.find(t => t.fits) || { side: 1, tY: sy + sh + CARD_AIR };
+      // Failing both, it stands off its square on its own side as near as it
+      // can, kept inside the plot -- over the rows of years if it must -- so a
+      // phone's box, which crops what runs out of it, shows it whole.
+      const off = own < 0 ? sy - CARD_AIR - h : sy + sh + CARD_AIR;
+      const pick = tries.find(t => t.fits) || { side: own < 0 ? -1 : 1, tY: Math.max(0, Math.min(H - h, off)) };
       const tY = pick.tY;
       const yA = pick.side < 0 ? tY : sy + sh, yB = pick.side < 0 ? sy : tY + h;
       a.side = pick.side;
@@ -6615,29 +6619,26 @@ if (document.readyState === 'loading') {
     }
 
     held = null;
+    // Only a mouse points at the works. A finger is too broad for squares a
+    // few pixels across, so on a touch screen the field answers nothing -- no
+    // card, no growing -- and a touch on it only swipes; the keys still answer.
+    const byMouse = ev => ev.pointerType === 'mouse';
     svg.addEventListener('pointermove', ev => {
-      if (held !== null) return;
+      if (held !== null || !byMouse(ev)) return;
       const m = at(ev);
       if (m === pointed) return;
       pointed = m;
       paint();
     });
     svg.addEventListener('pointerleave', () => {
-      if (held !== null || touch) return;
+      if (held !== null) return;
       pointed = null; paint();
     });
-    // A touch screen has no pointer to rest on a work: a tap on one stands
-    // for it, and holds until the next tap -- on another work, the line, or
-    // nothing, which lets go.
     let touch = false;
-    svg.addEventListener('pointerdown', ev => {
-      touch = ev.pointerType !== 'mouse';
-      if (!touch || bandEl.contains(ev.target)) return;
-      pointed = at(ev); loopHeld = false; loopAt = null;
-      paint();
-    });
+    svg.addEventListener('pointerdown', ev => { touch = !byMouse(ev); });
 
     bandEl.addEventListener('pointermove', ev => {
+      if (!byMouse(ev)) return;
       const r = svg.getBoundingClientRect(), k = W / r.width;
       const ux = (ev.clientX - r.left) * k;
       const o = loops.find(o => ux >= o.box[0] - G / 2 && ux <= o.box[0] + o.box[2] + G / 2) || null;
@@ -6645,15 +6646,8 @@ if (document.readyState === 'loading') {
       loopHeld = true; loopAt = o;
       paint();
     });
-    bandEl.addEventListener('pointerleave', () => { if (!touch) { loopHeld = false; loopAt = null; paint(); } });
-    bandEl.addEventListener('pointerdown', ev => {
-      if (ev.pointerType === 'mouse') return;
-      const r = svg.getBoundingClientRect(), ux = (ev.clientX - r.left) * W / r.width;
-      pointed = null; loopHeld = true;
-      loopAt = loops.find(o => ux >= o.box[0] - G / 2 && ux <= o.box[0] + o.box[2] + G / 2) || null;
-      paint();
-    });
-    // A click on the line presses its key -- with a mouse; a tap names the work.
+    bandEl.addEventListener('pointerleave', () => { loopHeld = false; loopAt = null; paint(); });
+    // A click on the line presses its key -- with a mouse; a touch only swipes.
     bandEl.addEventListener('click', () => { if (!touch) press(CONT); });
 
     const press = d => {
