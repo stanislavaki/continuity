@@ -4692,6 +4692,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   line-height: 1.35;
 }
 .bg-card-facts dt { color: rgba(255, 255, 255, 0.72); }
+.bg-card.is-light { color: #050505; }
+.bg-card.is-light .bg-card-kind,
+.bg-card.is-light .bg-card-when,
+.bg-card.is-light .bg-card-facts dt { color: rgba(5, 5, 5, 0.62); }
 .bg-card-facts dd { margin: 0; }
 .bg-spine { shape-rendering: crispEdges; }
 .bg-spine { transition: opacity 0.4s ease; }

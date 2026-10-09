@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=336" />
+<link rel="stylesheet" href="styles.css?v=337" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -282,8 +282,9 @@
   </section>
 
   <!-- Bill · what he made, and when -------------------------------------
-       Every catalogued work, one square to a work -- all of one size but the
-       key works and the continuity series -- in the year it was finished, each domain in a band of its own on both
+       Every catalogued work, one square to a work, in the year it was
+       finished, as large as its share of that year -- every year's squares
+       covering the same area -- each domain in a band of its own on both
        sides of the continuity line, the highlights named on leader lines.
        Drawn by billGraph2() at the foot of the script from
        assets/bill-works.json -- built by scripts/build_bill_works.py out of
@@ -6016,12 +6017,11 @@ if (document.readyState === 'loading') {
 // ========== Bill · what he made, and when ==========
 // The graph in #billReveal2 (a 2 left from when it stood under an earlier
 // graph, now kept on its own in "max bill works graph" beside this project).
-// One square to a work, all of one size but the key works and the
-// continuity series, which stand as large as they weigh,
-// in the year it was finished -- how long it took is not drawn -- swarmed
-// out from the continuity line both ways, the heaviest nearest the line, each
-// square as close to it as it fits, so a crowded year swells and a quiet one
-// thins down to the line. The endless
+// One square to a work, in the year it was finished -- how long it took is
+// not drawn -- as large as its share of that year's work, every year's
+// squares covering the same area, so the graph stands about as tall from end
+// to end; laid out from the continuity line both ways, each domain in a band
+// of its own. The endless
 // ribbon's works lie end to end along the line in its red, one chain from the
 // first ribbon to the stone in Frankfurt. The highlights are named over the
 // swarm or under it, each on a thin leader line to its square. A row of keys
@@ -6039,15 +6039,20 @@ if (document.readyState === 'loading') {
   // maximum, so at full width one unit is one pixel. Its height follows from
   // what it holds and is worked out in render().
   const W = 1340;
-  // Every work is one square of S_ONE, whatever it is -- but for the key
-  // works the page points to and the works of the continuity series, which
-  // stand as large as the build script weighs them, from 1, a small printed
-  // job, to 5, a monument: S_MIN to S_MAX, every step of weight multiplying
-  // the side by the same amount -- 8 or 9 for the Krug and the Quinze
-  // variations, 15 to 30 for the sculptures, 33 for the Ulm School and the
-  // Kontinuität.
-  const S_ONE = 5, S_MIN = 3.3, S_MAX = 33;
-  const sideOf = w => w[6] || LOOP.test(w[2]) ? S_MIN * (S_MAX / S_MIN) ** ((w[5] - 1) / 4) : S_ONE;
+  // A work's square is as large as its share of the year it was finished.
+  // Bill is taken to have worked about as much every year of his life, so
+  // every year's squares together cover the same area, YEAR_AREA, and the
+  // graph stands about as tall from end to end. Within a year each work takes
+  // its share by its significance -- the weight the build script gives it,
+  // from 1, a small printed job, to 5, a monument, by the kind of work it is:
+  // a building or a sculpture took far longer than a poster or a book. Its
+  // side before the year is shared out runs from S_MIN to S_MAX, every step
+  // of weight multiplying it by the same amount, and the year's squares are
+  // then scaled together to fill YEAR_AREA -- a crowded year's smaller, a
+  // thin one's larger, but none past MAX_SIDE, so a year the catalogue knows
+  // one small work of doesn't stand as a slab.
+  const S_MIN = 3.3, S_MAX = 33, YEAR_AREA = 1600, MAX_SIDE = 46;
+  const weighed = w => S_MIN * (S_MAX / S_MIN) ** ((w[5] - 1) / 4);
   const AIR = 1.5;             // between two squares, in units; never under a pixel
   const FIELD_TOP = 8;         // the plot's top to the highest name
   const KEY = 23;              // the keys' size, in the plot's units
@@ -6141,6 +6146,9 @@ if (document.readyState === 'loading') {
 
     // Every work a square: s its side, x0 its left edge, c its centre's height
     // off the line -- negative over it, positive under it.
+    const yearArea = new Map();
+    works.forEach(w => yearArea.set(w[4], (yearArea.get(w[4]) || 0) + weighed(w) ** 2));
+    const sideOf = w => Math.min(MAX_SIDE, weighed(w) * Math.sqrt(YEAR_AREA / yearArea.get(w[4])));
     const sq = works.map(w => ({ w, s: sideOf(w), chain: LOOP.test(w[2]) }));
     // Under bands, the band a square lies in: the chain's first, on the line,
     // then each domain's in the keys' order.
@@ -6179,15 +6187,49 @@ if (document.readyState === 'loading') {
     // fits, and a square too big for one starts at its year. Of every place
     // it fits -- on the line, or against the edge of a square already placed
     // -- it takes the one nearest the line; where over and under are as near,
-    // the side holding less already, so the swarm grows both ways alike; then
-    // the middle of the column.
+    // the side holding less already; then the middle of the column.
+    // Nearest, but not evenly: each stretch of years leans over the line or
+    // under it -- TWIST(year), from -1, all over, to 1, all under -- so a
+    // place on the side it leans to counts as nearer, and one on the other as
+    // further. It leans so the swarm stands about as much over the line as
+    // under it all along Bill's life: the paintings keep under the line and
+    // the graphic design over it (see KEEP), each in one cluster, and the rest
+    // go where those leave the swarm light -- over the line where the
+    // paintings are many, under it where the printed work is, and down to
+    // meet the few paintings of his last years. The balance is taken over
+    // BALANCE years either side, so it drifts rather than jumps, and a slow
+    // swing over and back is laid on it, so the two sides never mirror.
+    const BALANCE = 4;
+    const KEEP = { painting: 1, graphic: -1 };
+    const kept = q => BANDS ? KEEP[domains[q.w[1]].key] || 0 : 0;
+    const over = new Map(), under = new Map(), either = new Map();
+    sq.forEach(q => {
+      if (q.chain) return;
+      const m = [over, either, under][kept(q) + 1];
+      m.set(q.w[4], (m.get(q.w[4]) || 0) + q.s * q.s);
+    });
+    const lean = y => {
+      let a = 0, b = 0, o = 0;
+      for (let d = -BALANCE; d <= BALANCE; d++) {
+        a += over.get(y + d) || 0; b += under.get(y + d) || 0; o += either.get(y + d) || 0;
+      }
+      return o ? 1 - 2 * Math.min(1, Math.max(0, ((a + b + o) / 2 - a) / o)) : 0;
+    };
+    const TWIST = y => {
+      const t = (y - y0) / (y1 - y0 + 1) * 2 * Math.PI;
+      return Math.max(-0.75, Math.min(0.75, 0.6 * lean(y) + 0.2 * Math.sin(2.9 * t + 0.4)));
+    };
+    const leaning = (c, y) => Math.abs(c) * (c < 0 ? 1 + TWIST(y) : c > 0 ? 1 - TWIST(y) : 1);
     const placed = loops.slice();
     const rest = sq.filter(q => !q.chain)
       .sort((a, b) => (BANDS ? a.band - b.band : 0) || b.w[6] - a.w[6] || b.s - a.s || a.w[4] - b.w[4]);
     let flip = 1;
     // The side a square must keep to: over the line (-1), under it (1), or
-    // either (0), by ?shape=.
-    const keep = q => SHAPE === 'rise' ? -1 : SHAPE === 'split' ? (DOWN.test(domains[q.w[1]].label) ? 1 : -1) : 0;
+    // either (0), by ?shape=. Under bands the paintings all keep under the
+    // line and the graphic design over it (KEEP, above), so each runs as one
+    // cluster along the swarm rather than over and under it with the rest.
+    const keep = q => SHAPE === 'rise' ? -1 : SHAPE === 'split' ? (DOWN.test(domains[q.w[1]].label) ? 1 : -1)
+                    : kept(q);
     rest.forEach(q => {
       const s = q.s, slots = [], side = keep(q);
       const n = Math.max(1, Math.floor(step / (s + G)));
@@ -6215,7 +6257,7 @@ if (document.readyState === 'loading') {
         [0, -(s + G) / 2, (s + G) / 2, -(over + G + s / 2), under + G + s / 2,
          ...occ.flatMap(p => [p.c - p.s / 2 - G - s / 2, p.c + p.s / 2 + G + s / 2])].forEach(c => {
           if (!sided(c) || !outside(c) || !free(c)) return;
-          const score = [Math.round(Math.abs(c) * 100), Math.sign(c) === -lean ? 1 : 0, sl.k];
+          const score = [Math.round(leaning(c, q.w[4]) * 100), Math.sign(c) === -lean ? 1 : 0, sl.k];
           if (!best || less(score, best.score)) best = { score, x0: sl.x0, c };
         });
       });
@@ -6392,7 +6434,7 @@ if (document.readyState === 'loading') {
     plot.innerHTML =
       '<svg viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="' +
       esc(works.length + ' works by Max Bill, ' + y0 + ' to ' + y1 +
-          ', one square each, the key works and the continuity series larger, in bands about the continuity line, by domain: ' +
+          ', one square each, sized by its share of its year, in bands about the continuity line, by domain: ' +
           domains.map(d => d.n + ' ' + d.label).join(', ')) + '">' +
       '<defs><mask id="bgWipe2" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">' +
       '<rect class="bg-wipe-rect" x="0" y="0" height="' + H + '" fill="#fff"/></mask></defs>' +
@@ -6413,7 +6455,7 @@ if (document.readyState === 'loading') {
     const tone = d => (d === litNow && domains[d].lit) || domains[d].color;
     const scu = domains.findIndex(d => d.key === 'sculpture');
 
-    const REST = '<i>one square = one work</i><i>large = a key work</i>';
+    const REST = '<i>one square = one work</i><i>size = its share of its year</i>';
 
     // A key under the pointer, else the pressed key, decides
     // what is lit, and the rest is shaded; a work under the pointer is
@@ -6501,6 +6543,9 @@ if (document.readyState === 'loading') {
       const when = dates(q.w[0], q.w[4]) + (more.n ? ' · ' + more.n : '');
       const facts = [['Material', more.m], ['Size', more.s], ['Place', more.p]].filter(f => f[1]);
       cardEl.style.background = ground;
+      // On a light ground -- the pale yellow, the orange -- the card is set in
+      // black, which reads there far better than white.
+      cardEl.classList.toggle('is-light', lum(rgb(ground)) > 0.25);
       cardEl.innerHTML = '<p class="bg-card-kind">' + esc(kind) + '</p>' +
         '<p class="bg-card-title">' + esc(q.w[2]) + '</p><p class="bg-card-when">' + esc(when) + '</p>' +
         (facts.length ? '<dl class="bg-card-facts">' +
@@ -6548,15 +6593,15 @@ if (document.readyState === 'loading') {
       return meet(p.box, a.box, LGAP) || through(p.lead, a.box) || through(a.lead, p.box);
     };
 
-    // Under the pointer a work's square grows -- by half its side, but never
-    // less than GROW_MIN or more than GROW_MAX units -- and the squares about
+    // Under the pointer a work's square grows -- by GROW of its side, but
+    // never less than GROW_MIN or more than GROW_MAX units -- and the squares about
     // it make room: each pushed straight out from it by as much as the growth
     // asks at its edge, less the further out it stands, to nothing at REACH
     // (at least eight times the growth), so the swarm parts round it rather
     // than one ring of squares jumping. Hit-testing keeps to where the
     // squares stand at rest, so nothing shifts under the pointer.
-    const GROW_MIN = 4, GROW_MAX = 10;
-    const growOf = q => Math.min(GROW_MAX, Math.max(GROW_MIN, q.s / 2));
+    const GROW = 1.1, GROW_MIN = 8, GROW_MAX = 22;
+    const growOf = q => Math.min(GROW_MAX, Math.max(GROW_MIN, q.s * GROW));
     const swell = q => {
       const g = growOf(q), [x, y, w, h] = q.box;
       return [x - g / 2, y - g / 2, w + g, h + g];
