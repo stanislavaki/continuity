@@ -277,10 +277,42 @@ body.light .menu-btn { color: #000; }
    Measured off Struve at 500 (canvas measureText, actualBoundingBoxLeft over
    the font size), in em so they hold at any size. */
 #ch1 .chapter-num              { margin-left: -0.068em; }  /* 2 */
-#ch2 .chapter-num              { margin-left: -0.062em; }  /* 3 */
+#ch2 .chapter-num              { margin-left: -0.078em; }  /* 3: its top bar */
+/* The 3 stands on the grid by its flat top bar, which runs from 0.078 to
+   0.574 of its size (measured off the glyph drawn on a canvas): the bar spans
+   columns 3 and 4 of the eight exactly, its left end on column 3's line, and
+   the round bowl under it overshoots the lines by a sixtieth of an em either
+   side, as a round letter does. The head's tracks are kept equal, so the
+   numeral cannot widen its own column and push it off the grid. */
+#ch2 .chapter-head { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+#ch2 .chapter-num { font-size: calc((100cqw - 3 * var(--col-gap)) / 4 / 0.496); }
 #ch3 .chapter-num              { margin-left: -0.026em; }  /* 4 */
 #ch2 .chapter-head { margin-bottom: 0; }
-#ch2 .math-body { margin-top: 200px; }
+/* The text after the fold stands 48px under the art -- the article grid's row
+   gap -- once the art has been let go. The art is centred in a screen-tall
+   stage that leaves the pin with it, and the fold, the taller of the two
+   pictures, is 69% of the frame wide at 1006/1048, so its foot stands
+   0.3312 of the frame's width below the stage's middle; the frame is
+   (75% - a quarter gap) / 0.9721 of the container wide (.math-visual-frame),
+   and a margin's percentage is of that same width. */
+#ch2 .math-body { margin-top: calc(48px - 50vh + (75% - 0.25 * var(--col-gap)) / 0.9721 * 0.3312); }
+@media (max-width: 900px) {
+  /* The frame takes the whole measure here. */
+  #ch2 .math-body { margin-top: calc(48px - 50vh + 100% * 0.3312); }
+}
+/* The chapter's opening text stands under its title as Bill's chapter's
+   portrait does under its own (#ch1's 70px), before the fold. */
+#ch2 .math-body--lead { margin-top: 70px; }
+/* Each block of the chapter's text holds its notes columns, so a note that
+   runs on past the text pushes what follows -- the fold, the red band --
+   down rather than running into it. (Below 901px the notes run in the flow.) */
+@media (min-width: 901px) {
+  #ch2 .math-body { display: flow-root; }
+}
+/* The chapter ends on its text, and keeps the room a section ending on text
+   keeps (.math's and .article's 120px), not the paragraph's lead a section
+   running into a band is otherwise cut to. */
+#ch2 { padding-bottom: 120px; }
 .scroll-video-sticky {
   width: 100%;
   margin-top: 20px;
@@ -1783,8 +1815,8 @@ section { position: relative; }
 }
 .bill-portrait img { display: block; width: 100%; height: auto; }
 /* Its caption, set as the letters' is (.doc-deck-cap) in the white page's
-   tones: black at 60% (5.7:1, clear of AA at 12px), led by its number in full
-   black. It stands on page columns 2-3, the portrait's first two of six --
+   tones: black at 60% (5.7:1, clear of AA at 12px), unnumbered -- the
+   page's captions carry no figure numbers. It stands on page columns 2-3, the portrait's first two of six --
    a third of its width, less two thirds of a gap -- under it and beside the
    paragraph after it, its first line on that paragraph's first baseline: out
    of the flow, hung from the portrait's foot by a drop the script measures
@@ -1804,13 +1836,6 @@ section { position: relative; }
   text-rendering: optimizeLegibility;
   overflow-wrap: anywhere;
   color: rgba(0, 0, 0, .6);
-}
-.bill-portrait-cap .fig-label {
-  font-family: "Martina Plantijn", Georgia, "Times New Roman", serif;
-  font-style: italic;
-  font-size: 1.15em;
-  line-height: 1;
-  color: #000;
 }
 /* Stroobant's photograph, on page columns 2-6. The grid's first three tracks
    are page columns 1-6, six columns and five gaps, so it is set in by one
@@ -1891,7 +1916,8 @@ section { position: relative; }
   letter-spacing: normal;
   opacity: 0.6;
 }
-.article-body p:not(.article-lead) .fn-ref { font-size: 0.65em; }
+.article-body p:not(.article-lead) .fn-ref,
+.math-body p .fn-ref { font-size: 0.65em; }
 /* The sentence a note is for, and its mark. While its note is under the
    pointer it turns to --fn-lit, and the note itself, number and all, comes up
    in the same colour: the two always light together, in one colour. The
@@ -1911,9 +1937,13 @@ section { position: relative; }
 .fn-cite { transition: color .2s ease; }
 .fn-cite.is-cited { color: var(--fn-lit); }
 .article-body .fn-note p,
-.article-body .fn-note .fig-label { transition: color .2s ease; }
-.article-body .fn-note p:hover { color: var(--fn-lit); }
-.article-body .fn-note p:hover .fig-label { color: inherit; }
+.article-body .fn-note .fig-label,
+.math-body .fn-note p,
+.math-body .fn-note .fig-label { transition: color .2s ease; }
+.article-body .fn-note p:hover,
+.math-body .fn-note p:hover { color: var(--fn-lit); }
+.article-body .fn-note p:hover .fig-label,
+.math-body .fn-note p:hover .fig-label { color: inherit; }
 /* A column of notes, set as the letters' caption is (.doc-deck-cap): Space
    Mono at 12 on 18 in white at 72% -- black at 60% on a white chapter -- each
    led by an italic serif number in full ink. It stands on columns 2-3 beside
@@ -1925,7 +1955,8 @@ section { position: relative; }
    the body's size, to stand level with it, and that paragraph keeps the lead
    the column took from it. Inside, the notes script drops each note to the line that carries its
    mark. */
-.article-body .fn-note {
+.article-body .fn-note,
+.math-body .fn-note {
   float: left;
   margin: 0 0 0 calc(-75% - 0.75 * var(--col-gap));
   width: calc(50% - 0.5 * var(--col-gap));
@@ -1943,7 +1974,8 @@ section { position: relative; }
 .article-body .narr-film + .fn-note { margin-top: calc(1.2 * clamp(20px, 1.7vw, 26px)); }
 .article-body p + .fn-note + p,
 .article-body .narr-film + .fn-note + p { margin-top: 1.2em; }
-.article-body .fn-note p + p { margin-top: 0.75em; }
+.article-body .fn-note p + p,
+.math-body .fn-note p + p { margin-top: 0.75em; }
 .light-section .article-body .fn-note { color: rgba(0, 0, 0, .6); }
 .light-section .fn-note .fig-label { color: #000; }
 /* A note's number hangs in the margin, so every note's text starts on column
@@ -1967,9 +1999,12 @@ section { position: relative; }
 @media (max-width: 900px) {
   .article-body .article-lead { margin-left: 0; width: 100%; }
   /* One column: the notes follow the text they are for, in the flow. */
-  .article-body:has(> .fn-note) { display: flex; flex-direction: column; }
-  .article-body > .fn-note { order: 1; }
-  .article-body .fn-note { float: none; margin: 1.2em 0 0; width: auto; }
+  .article-body:has(> .fn-note),
+  .math-body:has(> .fn-note) { display: flex; flex-direction: column; }
+  .article-body > .fn-note,
+  .math-body > .fn-note { order: 1; }
+  .article-body .fn-note,
+  .math-body .fn-note { float: none; margin: 1.2em 0 0; width: auto; }
   /* No margin to hang the numbers in: they run in the line. */
   .fn-note .fig-label { display: inline; width: auto; margin-left: 0; padding-right: 0; }
 }
@@ -2075,7 +2110,7 @@ section { position: relative; }
    visual inside it would then screen-blend against nothing, drawing its black
    field as an opaque rectangle instead of dropping it out. */
 .math-grid {
-  --math-grid-ink: #0018A8;   /* the Deutsche Bank chapter's ground */
+  --math-grid-ink: #00127E;   /* the Deutsche Bank chapter's ground, #0018A8, a quarter of the way to black */
   position: absolute;
   inset: 0;
   margin-inline: auto;
@@ -2693,7 +2728,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .bill-chapter .article-body .narr-film + .fn-note { margin-top: 48px; }
 }
 /* A film's caption, set as the page's figure captions are (.bill-portrait-cap,
-   .doc-deck-cap) but unnumbered: Space Mono at 12 on 18. It lies in the reel,
+   .doc-deck-cap), unnumbered: Space Mono at 12 on 18. It lies in the reel,
    under the film, so it shows only while the film is open and folds away with
    it; it is two of the reel's six columns wide -- page columns 2-3 -- a third
    of the reel less two thirds of a gap. White at 72% on a dark chapter, black
@@ -3009,6 +3044,47 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 /* Closed, the film must not cost the passage after it the space it had. */
 .math-body .narr-film + p { margin-top: 1em; }
+/* A picture in the chapter's text, laid out on the page's eight columns as the
+   films are: the picture on columns 4-5, its caption on 2-3 beside it, as the
+   page's captions stand -- set as they are, Space Mono at 12 on 18, white at
+   72% -- its middle level with the middle of what is pictured. The model's
+   picture is a cut-out whose ink runs from 31 to 700 of its 763, so the ink's
+   middle stands 0.021 of the picture's height, at 763/1017 of its width,
+   above the picture's middle: 1.58% of the width, which the caption's columns
+   share. Centred in the row, the caption is lifted by that much by a margin
+   under it of twice as much. It stands 48px (the article grid's row gap)
+   under the text and the notes beside it, whichever runs further. */
+.math-body .math-fig {
+  clear: left;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+  align-items: center;
+  margin: 48px 0 0 calc(-100% - var(--col-gap) - 2px);
+  width: calc(200% + var(--col-gap) + 2px);
+}
+.math-fig img { grid-column: 4 / 6; grid-row: 1; display: block; width: 100%; height: auto; }
+.math-fig figcaption {
+  grid-column: 2 / 4;
+  grid-row: 1;
+  margin-bottom: 3.15%;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  font-feature-settings: "onum", "pnum";
+  text-rendering: optimizeLegibility;
+  overflow-wrap: anywhere;
+  color: rgba(255, 255, 255, .72);
+}
+@media (max-width: 900px) {
+  .math-body .math-fig { display: block; margin-left: 0; width: 100%; }
+  .math-fig figcaption { margin: 12px 0 0; }
+}
+/* A film after text with notes beside it starts under the notes column too,
+   where a long note runs on past the text, rather than under the note. */
+.math-body .narr-film { clear: left; }
 /* The same eight columns out of an article body standing on the article grid's
    columns 3-4 of four: the body is two tracks and a gap wide, so the grid is
    twice the body plus a gap, and starts one body-width and a gap to its left --
@@ -3123,9 +3199,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 /* The caption, set as the figure captions of the Topology of Continuity study
    (topology-of-continuity.beta-mrdn.world) are: Space Mono at 12 on 18 in a
-   soft tone, led by an italic serif label in the full ink, 1.15em and 4px.
-   There the tones are a warm grey and a warm white on black; on the bank's
-   blue they are white at 72% (6.8:1, well clear of AA at this size) and white.
+   soft tone -- unnumbered here, as all the page's captions are. There the
+   tones are a warm grey and a warm white on black; on the bank's blue the
+   text is white at 72% (6.8:1, well clear of AA at this size).
    It stands in columns 2-3 under the piles, beside the paragraph after them,
    its first line on the baseline of that paragraph's first line: out of the
    flow, hung under the piles' row by a drop the script measures (--cap-drop;
@@ -3145,15 +3221,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   text-rendering: optimizeLegibility;
   overflow-wrap: anywhere;
   color: rgba(255, 255, 255, .72);
-}
-.doc-deck-cap .fig-label {
-  font-family: "Martina Plantijn", Georgia, "Times New Roman", serif;
-  font-style: italic;
-  /* Smaller than the study's 1.15em and 4px: just over the mono's size, which
-     the serif's smaller x-height brings level with it. */
-  font-size: 1.15em;
-  line-height: 1;
-  color: #fff;
 }
 @media (max-width: 900px) {
   /* One column: the two piles side by side across the measure, each a little

@@ -129,12 +129,12 @@
     {
       "id": "ch5-1",
       "anchor": "[data-narr=\"ch5-1\"]",
-      "text": "Max Bill was consistently inspired by mathematics and logic in art. His approach, which he called “verifiable logic,” guided him from early experimentation toward a precise method of making—and explaining—his work: “You can always understand my work, even if you don’t like it.” From the beginning of his career, Bill was fascinated by the Möbius strip. From his first attempts in 1936 to the realization of Continuity in Frankfurt, he produced dozens—if not hundreds—of variations on the infinity loop, exploring differences in scale, material, and environment."
+      "text": "Bill first gave this idea a form in 1935 with the endless ribbon, a surface with one side and one edge. Its coincidence with the Möbius strip, which he learned of only later, was, he said, “an entirely fortuitous spark”. Kontinuität was meant to be another such surface: “one surface, one boundary”. It turned out otherwise. The sculpture has two surfaces with parallel boundaries, “for reasons unknown to me”."
     },
     {
       "id": "ch5-2",
       "anchor": "[data-narr=\"ch5-2\"]",
-      "text": "But how are we to understand the topology of Continuity? Is it a Möbius strip, a variation on an endless loop, or simply an artistic, sculptural interpretation of an infinite motif? In short, how did he do it? Even though Bill left some explanations, our own experiments and consultations with mathematicians did not yield an immediate understanding of how the sculpture was conceived and modeled."
+      "text": "Bill left the question open. We are certain that Kontinuität is a form of infinity. But which kind? And how can we find out? The method of verifiable logic points the way: what a work claims can be checked against the work. A granite monolith obviously cannot be unrolled to establish its topology. But the same form exists at a scale one can hold in the hands: the copper model Bill made in 1945–46, kept today at Haus Bill in Zumikon, Switzerland. It served as the topological prototype for every later Kontinuität, the plaster of 1947 and the granite of 1986 alike. We turned to it for our studies."
     },
     {
       "id": "ch5-3",
@@ -144,17 +144,7 @@
     {
       "id": "ch5-4",
       "anchor": "[data-narr=\"ch5-4\"]",
-      "text": "The interesting thing to note is that Bill thought he had invented a completely new shape. Even more curious was that he discovered it by twisting a strip of paper, just as Möbius had done many years previously. “Not long afterwards, people began to congratulate me on my fresh and original interpretation of the Egyptian symbol for infinity and the Möbius ribbon. I had never heard of either of them. My mathematical knowledge had never gone beyond routine architectural calculations, and I had no great interest in mathematics.”"
-    },
-    {
-      "id": "ch5-5",
-      "anchor": "[data-narr=\"ch5-5\"]",
-      "text": "The mathematician Barry Cipra observed: Bill's intuition that a single half twist connected to a double half twist should result in a single-sided, single-edge surface is quite correct; depending on the handedness of the twists, the loop you wind up with has either three twists or one. So it's a mystery how he managed to add one and two and get four."
-    },
-    {
-      "id": "ch5-6",
-      "anchor": "[data-narr=\"ch5-6\"]",
-      "text": "By carefully examining the sculpture itself and creating a 3D model using 360-degree video and photography, and by comparing it with Bill's metal sculpture from 1945 to 46 — used by him as a one-to-twenty prototype — we were able to analyze the work and conduct a series of spatial experiments. One of these resulted in an origami model that follows the original topology step by step and, surprisingly, resolves into a clear infinity-loop construction. The result is striking: a pure mathematical model transforms into a work of art."
+      "text": "Our experiments were practical: we worked with a strip of paper. First we passed the strip along the band of the model to establish its length. Then the strip was folded step by step, applying the principle of origami and following the direction of every curve of the sculpture. This led us to an inspiring finding: Kontinuität is indeed a single band, turned four times through 180 degrees and closed on itself, a surface without beginning or end."
     },
     {
       "id": "granite-1",
