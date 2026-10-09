@@ -4695,12 +4695,12 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bg-card-title { transform-origin: 0 0; }
 .bg-card.is-morph .bg-card-when,
 .bg-card.is-morph .bg-card-title {
-  transition: transform 0.38s cubic-bezier(0.3, 0.7, 0.2, 1), color 0.38s ease, font-weight 0.38s ease;
+  transition: transform 0.57s cubic-bezier(0.3, 0.7, 0.2, 1), color 0.57s ease, font-weight 0.57s ease;
 }
-.bg-card.is-morph::before { transition: transform 0.3s cubic-bezier(0.3, 0.7, 0.2, 1) 0.12s; }
+.bg-card.is-morph::before { transition: transform 0.45s cubic-bezier(0.3, 0.7, 0.2, 1) 0.18s; }
 .bg-card.is-morph .bg-card-kind,
 .bg-card.is-morph .bg-card-note,
-.bg-card.is-morph .bg-card-facts { transition: opacity 0.24s ease 0.28s; }
+.bg-card.is-morph .bg-card-facts { transition: opacity 0.36s ease 0.42s; }
 .bg-card.is-from::before,
 .bg-card.is-back::before { transform: scaleX(0); }
 .bg-card.is-from .bg-card-kind,
@@ -4709,13 +4709,13 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bg-card.is-back .bg-card-kind,
 .bg-card.is-back .bg-card-note,
 .bg-card.is-back .bg-card-facts { opacity: 0; }
-.bg-card.is-back::before { transition: transform 0.22s ease; }
+.bg-card.is-back::before { transition: transform 0.33s ease; }
 .bg-card.is-back .bg-card-kind,
 .bg-card.is-back .bg-card-note,
-.bg-card.is-back .bg-card-facts { transition: opacity 0.12s ease; }
+.bg-card.is-back .bg-card-facts { transition: opacity 0.18s ease; }
 .bg-card.is-back .bg-card-when,
 .bg-card.is-back .bg-card-title {
-  transition: transform 0.3s cubic-bezier(0.3, 0.7, 0.2, 1) 0.06s, color 0.3s ease 0.06s, font-weight 0.3s ease 0.06s;
+  transition: transform 0.45s cubic-bezier(0.3, 0.7, 0.2, 1) 0.09s, color 0.45s ease 0.09s, font-weight 0.45s ease 0.09s;
 }
 .bg-card.is-from,
 .bg-card.is-from::before,

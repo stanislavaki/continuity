@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=339" />
+<link rel="stylesheet" href="styles.css?v=340" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -6277,20 +6277,18 @@ if (document.readyState === 'loading') {
     const top = Math.min(...sq.map(q => q.c - q.s / 2));
     const bot = Math.max(...sq.map(q => q.c + q.s / 2));
 
-    // The names. Each highlight is called out by its years and its name, over
-    // the swarm if its square lies over the line, under it if under, and
-    // whichever side has room if on it. A name stands to the right of its
-    // leader line, the line at the square's middle; one that would run off
-    // the plot's right edge stands to the left of it instead. Each name
-    // stands as near the line as it can, so the names follow the swarm's
-    // outline: CLEAR beyond the furthest square under its own width and SPAN
-    // past it on the side its words run to, so it stands outside the outline
-    // rather than in a notch between two taller columns; never nearer the line than NEAR, so
-    // where the swarm thins to the line a name stays clear of the chain; and
-    // further out only where it would sit on a name beside it, or where a
-    // leader line would run through it or its own through another name.
-    // They are placed from the right and only ever pushed further out, so
-    // each finds room.
+    // The names. Each highlight is called out by its years and its name, in
+    // one of two rows: one over the swarm, one under it. A name takes the row
+    // on its square's side -- the endless ribbon's the row over it -- and
+    // stands to the right of its leader line, the line at the square's
+    // middle. Where two names in a row would meet, one stands to the left of
+    // its line instead, or wraps narrower, or, failing those, takes the other
+    // row; of the ways to lay them out, the one that moves fewest names off
+    // their own side, then wraps fewest narrower, then sets fewest to the
+    // left, is taken. Each row stands CLEAR beyond
+    // the furthest square under any of its names, never nearer the line than
+    // NEAR, and its names' tops are level, so their years read along one
+    // line. The cards hang from the same two lines (cardFor()).
     const LF = CALL_PX * PX, LH = LF * CALL_LEAD;
     const IGAP = LF * 0.4, PADX = LF;     // a name off its leader line; two names apart
     const ctx = document.createElement('canvas').getContext('2d');
@@ -6322,46 +6320,68 @@ if (document.readyState === 'loading') {
                h: LH * lines.length + LF };
     };
     const calls = sq.filter(q => q.w[6]).map(q => callFor(q));
-    const CLEAR = LF * 2, SPAN = LF * 2, NEAR = LF * 4, LGAP = LF * 0.8;   // LGAP: one name over another
+    // A name's narrower wraps, a line longer each, up to three lines: where
+    // its neighbours in a row crowd it, a name can stand narrower.
+    calls.forEach(a => {
+      a.wraps = [{ lines: a.lines, w: a.w, h: a.h }];
+      for (let ems = CALL_WRAP - 0.5; ems >= 3; ems -= 0.5) {
+        const n = callFor(a.q, ems);
+        if (n.lines.length > 3) break;
+        if (n.lines.length > a.wraps[a.wraps.length - 1].lines.length) a.wraps.push({ lines: n.lines, w: n.w, h: n.h });
+      }
+    });
+    const CLEAR = LF * 2, NEAR = LF * 4, LGAP = LF * 0.8;   // LGAP: one name beside another in a row
     // How far the swarm reaches from the line over a run of the plot, over it
     // (side -1) or under it (1).
     const extent = (x0, x1, side) => Math.max(0, ...sq.filter(q => q.x0 < x1 + G && x0 < q.x0 + q.s + G)
       .map(q => q.s / 2 + side * q.c));
-    const across = (p, x) => x >= p.x0 - PADX / 2 && x <= p.x1 + PADX / 2;
-    // d is how far from the line a name's near edge stands.
-    const place = (a, side, among = calls) => {
-      const others = among.filter(p => p !== a && p.side === side && p.d !== undefined);
-      // SPAN reaches out on the side the words run to; behind the leader
-      // line, where no words stand, only a little way.
-      const back = SPAN / 4;
-      const d0 = Math.max(NEAR, extent(a.x0 - (a.left ? SPAN : back), a.x1 + (a.left ? back : SPAN), side) + CLEAR);
-      const ok = d => others.every(p =>
-        (a.x1 + PADX <= p.x0 || p.x1 + PADX <= a.x0 || d + a.h + LGAP <= p.d || p.d + p.h + LGAP <= d) &&
-        !(across(a, p.lx) && d < p.d + p.h + LGAP) && !(across(p, a.lx) && p.d < d + a.h + LGAP));
-      const tries = [d0, ...others.map(p => p.d + p.h + LGAP)].filter(d => d >= d0).sort((x, y) => x - y);
-      return tries.find(ok) ?? tries[tries.length - 1];
-    };
-    // The names of the works on the line itself -- the endless ribbon's --
-    // stand over it, over the swarm; any other name on the line takes the
-    // side with room nearer. The names are laid out among those that show:
-    // all of them here, to find the room the plot needs, and again, among
-    // only the names a key leaves showing, whenever that changes (see
-    // paint()) -- so a name stands as near the swarm as the names beside it
-    // at that moment let it, not as the hidden ones would.
+    // d is how far from the line a name's near edge stands; rowAt, how far
+    // each row's top stands from it, over the line (-1) and under it (1).
+    const rowAt = { [-1]: 0, [1]: 0 }, fullRow = {};
+    // The names are laid out among those that show: all of them here, to
+    // find the room the plot needs, and again, among only the names a key
+    // leaves showing, whenever that changes (see paint()) -- so a row stands
+    // as near the swarm as the names in it at that moment let it, not as the
+    // hidden ones would. A row with no name showing stays where all the
+    // names put it, for the cards.
     const layOut = list => {
-      list.forEach(a => { a.side = a.d = undefined; });
-      let alt = 1;
-      list.slice().sort((a, b) => b.lx - a.lx).forEach(a => {
-        let side = Math.sign(a.q.c) || (a.q.chain ? -1 : 0);
-        if (!side) {
-          const u = place(a, -1, list), d = place(a, 1, list);
-          side = u < d ? -1 : d < u ? 1 : (alt = -alt);
-        }
-        a.side = side;
-        a.d = place(a, side, list);
+      Object.assign(rowAt, fullRow);
+      const byX = list.slice().sort((a, b) => a.lx - b.lx);
+      const ways = byX.map(a => {
+        const own = a.q.chain ? -1 : Math.sign(a.q.c);
+        const out = [];
+        a.wraps.forEach(({ lines, w, h }, k) =>
+          (a.q.chain ? [-1] : own ? [own, -own] : [-1, 1]).forEach(side => [false, true].forEach(left => {
+            const x0 = left ? a.lx - IGAP - w : a.lx, x1 = left ? a.lx : a.lx + IGAP + w;
+            if (x0 >= 0 && x1 <= W) out.push({ side, left, x0, x1, lines, w, h, cost: (own && side !== own ? 10 : 0) + 3 * k + (left ? 1 : 0) });
+          })));
+        return out.sort((x, y) => x.cost - y.cost);
+      });
+      let best = null, least = Infinity;
+      const taken = [];
+      const lay = (i, cost) => {
+        if (cost >= least) return;
+        if (i === byX.length) { best = taken.slice(); least = cost; return; }
+        ways[i].forEach(o => {
+          if (taken.some(p => p.side === o.side && p.x1 + LGAP > o.x0 && o.x1 + LGAP > p.x0)) return;
+          taken.push(o); lay(i + 1, cost + o.cost); taken.pop();
+        });
+      };
+      lay(0, 0);
+      byX.forEach((a, i) => Object.assign(a, (best || ways.map(w => w[0]))[i]));
+      [-1, 1].forEach(side => {
+        const row = list.filter(a => a.side === side);
+        if (!row.length) return;
+        const d = Math.max(NEAR, ...row.map(a => extent(a.x0, a.x1, side) + CLEAR));
+        const h = Math.max(...row.map(a => a.h));
+        // Over the line the tallest name's foot stands at d, and the others'
+        // tops level with its; under it every top stands at d.
+        row.forEach(a => { a.d = side < 0 ? d + h - a.h : d; });
+        rowAt[side] = side < 0 ? d + h : d;
       });
     };
     layOut(calls);
+    Object.assign(fullRow, rowAt);
 
     // The plot, top to bottom: the swarm with the line through it and its
     // names about it, as far over the line and under it as either reaches,
@@ -6482,11 +6502,13 @@ if (document.readyState === 'loading') {
     const spineEl = plot.querySelector('.bg-spine');
     let pointed = null;                        // the work under the pointer, off the chain
     let hung = null, folding = 0;              // the card that hangs, and the timer folding it away
-    const FOLD_MS = 360;                       // as long as the fold runs in styles.css
+    const FOLD_MS = 540;                       // as long as the fold runs in styles.css
+    const CARD_WIDTHS = [280, 320, 360, 400, 440];   // a card's widest, and wider for a tall one
     let loopHeld = false, loopAt = null;       // the chain under the pointer, and which of its works
     let litNow = null;
     const tone = d => (d === litNow && domains[d].lit) || domains[d].color;
     const scu = domains.findIndex(d => d.key === 'sculpture');
+    const gra = domains.findIndex(d => d.key === 'graphic');
 
     // Under the field the encoding stands, and stays.
     const REST = '<i>one square = one work</i><i>size = its share of its year</i>';
@@ -6513,8 +6535,11 @@ if (document.readyState === 'loading') {
         g.style.fill = tone(d);
       });
       // A name is set in the colour its key is: the chain's in the line's red,
-      // the rest in their domain's, as the key shows it now.
-      const ink = d => d === CONT ? legible(LOOP_RED) : d !== lit && domains[d].ink || legible(tone(d));
+      // the rest in their domain's, as the key shows it now -- but graphic
+      // design's in its squares' own purple, not lifted for the black (the
+      // user's choice), so its names and squares read as one colour.
+      const ink = d => d === CONT ? legible(LOOP_RED) : d === gra ? tone(d) :
+        d !== lit && domains[d].ink || legible(tone(d));
       callEls.forEach((g, i) => {
         const d = +g.dataset.dom;
         const dim = d === CONT ? chainDim : lit !== null && d !== lit;
@@ -6617,31 +6642,65 @@ if (document.readyState === 'loading') {
         (facts.length ? '<dl class="bg-card-facts">' +
           facts.map(([k, v]) => '<dt>' + k + '</dt><dd>' + esc(v) + '</dd>').join('') + '</dl>' : '');
       const kpx = plot.getBoundingClientRect().width / W;
-      const w = cardEl.offsetWidth / kpx, h = cardEl.offsetHeight / kpx;
       // The card flies from its leader line as a flag from its pole: its
       // edge on the line, to the right of it, or where it would run past the
       // right edge of what shows of the plot -- the plot's own, or on a phone
       // the screen's, the plot being swiped across -- to the left.
       const box = plot.parentElement;
       const shows = Math.min(W, (box.scrollLeft + box.clientWidth - plot.offsetLeft) / kpx);
-      const lx = snap(q.x0 + q.s / 2), left = lx + w > shows && lx - w >= (box.scrollLeft - plot.offsetLeft) / kpx;
-      const a = { q, lx, h, x0: left ? lx - w : lx, x1: left ? lx : lx + w };
+      const lx = snap(q.x0 + q.s / 2);
       const [, sy, , sh] = swell(q);
       const CARD_AIR = LF;
-      const stand = side => {
-        const want = side < 0 ? LINE - place(a, side, []) - h : LINE + place(a, side, []);
-        const lo = side < 0 ? 0 : sy + sh + CARD_AIR, hi = side < 0 ? sy - CARD_AIR - h : roomBelow - h;
-        return { side, tY: Math.min(hi, Math.max(lo, want)), fits: lo <= hi, moved: Math.abs(Math.min(hi, Math.max(lo, want)) - want) };
-      };
+      // A card's years stand on its side's row of names, level with the
+      // names' years -- so a name grown into its card hardly moves up or
+      // down, and every card hangs from the same line -- unless that would
+      // put it over its own square. To keep to it, a card over the line may
+      // rise past the plot's top into the room under the keys, and one under
+      // it hang over the rows of years and past the plot's foot, to the
+      // section's end.
+      const nameYears = callEls[0].querySelector('.bg-call-years').getBBox().y - calls[0].box[1];
+      const pr = plot.getBoundingClientRect();
+      const over = Math.max(0, (pr.top - keysEl.querySelector('.bg-names').getBoundingClientRect().bottom - 12) / kpx);
+      const under = Math.max(0, (plot.closest('section').getBoundingClientRect().bottom - pr.bottom - 16) / kpx);
       // A card grown out of a name keeps to the name's side, so its words fly
       // only as far as they must, never across the swarm.
       const own = standing ? standing.side : Math.sign(q.c);
-      const tries = standing ? [stand(own)] : own ? [stand(own), stand(-own)] : [stand(-1), stand(1)].sort((x, y) => x.moved - y.moved);
-      // Failing both, it stands off its square on its own side as near as it
-      // can, kept inside the plot -- over the rows of years if it must -- so a
-      // phone's box, which crops what runs out of it, shows it whole.
+      // A card too tall for the room on its side is set wider, and so
+      // shorter: of the widths it may take, the one that keeps it nearest its
+      // row is taken -- the narrowest of those that keep it on the row, and
+      // never one that would swing a name's card to the other side of its
+      // line, so far from the name, if a narrower one won't.
+      let w, h, left, pick, fit = null;
+      for (const [k, widest] of CARD_WIDTHS.entries()) {
+        cardEl.style.maxWidth = widest + 'px';
+        w = cardEl.offsetWidth / kpx; h = cardEl.offsetHeight / kpx;
+        left = lx + w > shows && lx - w >= (box.scrollLeft - plot.offsetLeft) / kpx;
+        const years = nameYears -
+          (cardEl.querySelector('.bg-card-when span').getClientRects()[0].top - cardEl.getBoundingClientRect().top) / kpx;
+        const stand = side => {
+          const want = (side < 0 ? LINE - rowAt[-1] : LINE + rowAt[1]) + years;
+          const lo = side < 0 ? -over : sy + sh + CARD_AIR, hi = side < 0 ? sy - CARD_AIR - h : H + under - h;
+          return { side, tY: Math.min(hi, Math.max(lo, want)), fits: lo <= hi, moved: Math.abs(Math.min(hi, Math.max(lo, want)) - want) };
+        };
+        const tries = standing ? [stand(own)] : own ? [stand(own), stand(-own)] : [stand(-1), stand(1)].sort((x, y) => x.moved - y.moved);
+        const t = tries.find(t => t.fits);
+        if (!t) continue;
+        const cost = t.moved + 2 * k + (standing && left !== !!standing.left ? 200 : 0);
+        if (!fit || cost < fit.cost) fit = { cost, t, w, h, left, widest };
+        if (t.moved < 0.5) break;
+      }
+      if (fit) {
+        ({ w, h, left } = fit);
+        pick = fit.t;
+        cardEl.style.maxWidth = fit.widest + 'px';
+      }
+      // Failing that, it stands off its square on its own side as near as it
+      // can, kept inside the room it may take -- over the rows of years if it
+      // must -- so a phone's box, which crops what runs out of it, shows it
+      // whole.
       const off = own < 0 ? sy - CARD_AIR - h : sy + sh + CARD_AIR;
-      const pick = tries.find(t => t.fits) || { side: own < 0 ? -1 : 1, tY: Math.max(0, Math.min(H - h, off)) };
+      pick = pick || { side: own < 0 ? -1 : 1, tY: Math.max(-over, Math.min(H + under - h, off)) };
+      const a = { q, lx, h, x0: left ? lx - w : lx, x1: left ? lx : lx + w };
       const tY = pick.tY;
       const yA = pick.side < 0 ? tY : sy + sh, yB = pick.side < 0 ? sy : tY + h;
       a.side = pick.side;
