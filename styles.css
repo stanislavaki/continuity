@@ -4746,7 +4746,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* The graph's notes on the dataset stand on the white page just under it
    (.bill-graph-notes), so the panel keeps little air under its foot and the
    page little over the notes. */
-.bill-reveal-v2 { padding-bottom: 32px; }
+.bill-reveal:has(+ section > .container > .bill-graph-notes) { padding-bottom: 32px; }
+/* The second version of the graph, a copy to try changes on, parted from the
+   first by a 4px white gap across the panel. */
+.bill-reveal-v3 { border-top: 4px solid #fff; }
 .light-section:has(> .container > .bill-graph-notes) { padding-top: 40px; }
 /* Its names: each highlight's years, a little grey, over its name in its
    key's colour (--call), at --bg-call (14px, converted into the plot's units
@@ -5117,9 +5120,89 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* While a work is pointed at, every other work -- and the line its chain
    lies on -- steps back, so the one under the pointer stands alone. */
 #billGraphPlot2 svg.is-pointing rect[data-i]:not(.is-on),
-#billGraphPlot2 svg.is-pointing .bg-spine:not(.dim) { opacity: 0.25; }
+#billGraphPlot2 svg.is-pointing .bg-spine:not(.dim),
+#billGraphPlot3 svg.is-pointing rect[data-i]:not(.is-on),
+#billGraphPlot3 svg.is-pointing .bg-spine:not(.dim) { opacity: 0.25; }
 @media (prefers-reduced-motion: reduce) {
   #billGraphPlot2 rect[data-i] { transition: none; }
+}
+
+/* The second version's tiles (billGraph3()). A work under the pointer grows
+   its square in place into a tile of its own colour (--ground) holding its
+   name and, under it, its years; pressed (.is-open) the tile grows again and
+   holds the rest -- its note, its material, size and place, and its domain --
+   the two layers of words crossing as it opens. It grows out of its square
+   and shrinks back into it (.is-gone, fading as it goes), and never takes the
+   pointer. The squares about it are pushed aside as it grows, on the same
+   curve, and its names step back while it stands. Under the pointer it all
+   runs quickly (0.18s); pressed open, at twice that (.is-open). */
+#billGraphPlot3 rect[data-i] {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.18s cubic-bezier(0.3, 0.7, 0.2, 1), opacity 0.18s ease;
+}
+#billGraphPlot3 svg.is-open rect[data-i] { transition-duration: 0.36s, 0.18s; }
+#billGraphPlot3 .bg-call { transition-duration: 0.18s; }
+#billGraphPlot3 svg.is-pointing .bg-call { opacity: 0; }
+.bg-tile {
+  --tile-ease: cubic-bezier(0.3, 0.7, 0.2, 1);
+  --tile-t: 0.18s;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 4;
+  overflow: hidden;
+  background: var(--ground, #161616);
+  color: #fff;
+  font-family: var(--sans);
+  pointer-events: none;
+  transition: left var(--tile-t) var(--tile-ease), top var(--tile-t) var(--tile-ease),
+              width var(--tile-t) var(--tile-ease), height var(--tile-t) var(--tile-ease), opacity var(--tile-t) ease;
+}
+.bg-tile.is-open { --tile-t: 0.36s; }
+.bg-tile.is-gone { opacity: 0; }
+.bg-tile.is-still,
+.bg-tile.is-still * { transition: none !important; }
+.bg-tile-short,
+.bg-tile-full {
+  position: absolute;
+  left: 0;
+  top: 0;
+  box-sizing: border-box;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.bg-tile-short { padding: 9px 11px 10px; }
+.bg-tile-full { padding: 13px 15px 14px; }
+.bg-tile.on .bg-tile-short { opacity: 1; transition: opacity 0.14s ease 0.07s; }
+.bg-tile.on.is-open .bg-tile-short { opacity: 0; transition: opacity 0.1s ease; }
+.bg-tile.on.is-open .bg-tile-full { opacity: 1; transition: opacity 0.26s ease 0.2s; }
+.bg-tile p { margin: 0; }
+.bg-tile-title { font-size: 14px; font-weight: 600; line-height: 1.22; letter-spacing: -0.01em; overflow-wrap: break-word; }
+.bg-tile-full .bg-tile-title { font-size: 16px; }
+.bg-tile .bg-tile-when { margin-top: 3px; font-size: 12px; line-height: 1.35; color: rgba(255, 255, 255, 0.78); }
+.bg-tile-full .bg-tile-when { font-size: 13px; }
+.bg-tile .bg-tile-note { margin-top: 8px; font-size: 13px; line-height: 1.4; color: rgba(255, 255, 255, 0.78); }
+.bg-tile-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 12px;
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.35;
+}
+.bg-tile-facts dt { color: rgba(255, 255, 255, 0.72); }
+.bg-tile-facts dd { margin: 0; overflow-wrap: break-word; }
+.bg-tile .bg-tile-kind { margin-top: 10px; font-size: 13px; font-weight: 600; letter-spacing: -0.005em; color: rgba(255, 255, 255, 0.72); }
+.bg-tile.is-light { color: #050505; }
+.bg-tile.is-light .bg-tile-when,
+.bg-tile.is-light .bg-tile-note,
+.bg-tile.is-light .bg-tile-kind,
+.bg-tile.is-light .bg-tile-facts dt { color: rgba(5, 5, 5, 0.62); }
+@media (prefers-reduced-motion: reduce) {
+  #billGraphPlot3 rect[data-i],
+  .bg-tile,
+  .bg-tile * { transition: none !important; }
 }
 
 /* The line through the field: the endless ribbon and what came of it, its
