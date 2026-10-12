@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=375" />
+<link rel="stylesheet" href="styles.css?v=376" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -286,8 +286,9 @@
        assets/bill-works.json -- built by scripts/build_bill_works.py out of
        the works dataset the data team handed over. (The 2s are left from
        when it stood under an earlier graph, kept on its own in "max bill
-       works graph" beside this project.) -->
-  <section class="bill-reveal bill-reveal-v2 dark-section" id="billReveal2">
+       works graph" beside this project.)
+       Hidden for now, not deleted: take off `hidden` to bring it back. -->
+  <section class="bill-reveal bill-reveal-v2 dark-section" id="billReveal2" hidden>
     <div class="container">
       <figure class="bill-graph reveal" id="billGraph2">
         <!-- The figure's heading, set as the pull-quotes are, in white. -->
@@ -418,14 +419,6 @@
 
   <!-- CHAPTER 3 · Finite infinity. The mathematics of the sculpture -->
   <section class="chapter math" id="ch2">
-    <!-- The project's own 8-column grid, drawn rather than implied: this is the
-         chapter about how the sculpture was measured, so the measure the page
-         itself is set on is left showing. Placed before .container so that both
-         boxes, being positioned with z-index auto, paint in document order and
-         the grid falls behind the text. -->
-    <div class="math-grid" aria-hidden="true">
-      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-    </div>
     <div class="container">
       <div class="chapter-head">
         <div class="chapter-num">3</div>
@@ -6083,7 +6076,8 @@ if (document.readyState === 'loading') {
   const read = document.getElementById('billGraphRead2');
   const rule = document.getElementById('billGraphGrid2');
   const cardEl = document.getElementById('billGraphCard2');
-  if (!fig || !plot || !rule || !keysEl) return;
+  // Not drawn while its panel is hidden (#billReveal2[hidden]).
+  if (!fig || !plot || !rule || !keysEl || fig.closest('[hidden]')) return;
 
   // The viewBox is 1340 wide, the container's measure at the page's 1440
   // maximum, so at full width one unit is one pixel. Its height follows from
@@ -6996,7 +6990,8 @@ if (document.readyState === 'loading') {
   const weighed = w => S_MIN * (S_MAX / S_MIN) ** ((w[5] - 1) / 4);
   const AIR = 1.5;             // between two squares, in units; never under a pixel
   const FIELD_TOP = 8;         // the plot's top to the room over the swarm
-  const LENS_ROOM = 64;        // over the swarm and under it, for squares pushed aside
+  const ROOM = 134;            // over the swarm and under it to the year row, together
+  const MIN_ROOM = 16;         // the least over it, for squares the lens pushes up
   const KEY = 23;              // the keys' size, in the plot's units
   const BORN = 1908;           // Max Bill, 1908-1994
   // Which way the swarm goes, from ?shape=: bands (the default) lays each
@@ -7124,8 +7119,17 @@ if (document.readyState === 'loading') {
       : Math.min(MAX_SIDE, weighed(w) * Math.sqrt(YEAR_AREA / yearArea.get(w[4])));
     const sq = works.map(w => ({ w, s: sideOf(w), chain: LOOP.test(w[2]) }));
     // Under bands, the band a square lies in: the chain's first, on the line,
-    // then each domain's in the keys' order.
-    sq.forEach((q, i) => { q.band = q.chain ? -1 : q.w[1]; q.i = i; });
+    // then each domain's in the keys' order -- and last, outside them all, a
+    // key work set OUTERMOST, on its side of the line (q.outer): Wellrelief
+    // hangs under the works of its years rather than over them, so the small
+    // squares of the early 1930s lie between it and the line instead of
+    // running down beneath it in a slope.
+    const OUTERMOST = new Set(['Wellrelief']);
+    sq.forEach((q, i) => {
+      q.outer = BANDS && !q.chain && q.w[6] && OUTERMOST.has(q.w[2]) ? 1 : 0;
+      q.band = q.chain ? -1 : q.outer ? domains.length : q.w[1];
+      q.i = i;
+    });
 
     // The chain: the endless ribbon's works, in the order they were finished,
     // centred on the line and laid end to end, each as near the year it was
@@ -7202,13 +7206,29 @@ if (document.readyState === 'loading') {
     // line and the graphic design over it (KEEP, above), so each runs as one
     // cluster along the swarm rather than over and under it with the rest.
     const keep = q => SHAPE === 'rise' ? -1 : SHAPE === 'split' ? (DOWN.test(domains[q.w[1]].label) ? 1 : -1)
-                    : kept(q);
-    rest.forEach(q => {
-      const s = q.s, slots = [], side = keep(q);
+                    : q.outer || (spills(q) ? 0 : kept(q));
+    // The graphic design and the paintings, though, are so many in their
+    // busiest years -- a hundred print jobs in 1931, a run of paintings in the
+    // mid-1950s -- that kept to their side of the line in their own year they
+    // stood as a tower over it and hung as one under it. So each only leans to
+    // its side (LEANS, as KEEP): a place on the other side counts SPILL_AT
+    // further out, and a place up to DRIFT years from its own DRIFT_COST
+    // further for every year, so where its column has grown longer than that,
+    // its squares spread to the years about it and across the line.
+    const LEANS = { graphic: -1, painting: 1 };
+    const SPILL_AT = 80, DRIFT = 2, DRIFT_COST = 24;
+    const leansTo = q => BANDS ? LEANS[domains[q.w[1]].key] || 0 : 0;
+    const spills = q => leansTo(q) !== 0;
+    function put(q) {
+      const s = q.s, slots = [], side = keep(q), to = leansTo(q), drift = to ? DRIFT : 0;
       const n = Math.max(1, Math.floor(step / (s + G)));
       const pad = n > 1 ? (step - n * (s + G) + G) / 2 : 0;
-      for (let k = 0; k < n; k++) {
-        slots.push({ x0: yearX(q.w[4]) + pad + k * (s + G), k: Math.abs(k - (n - 1) / 2) });
+      for (let dy = -drift; dy <= drift; dy++) {
+        const y = q.w[4] + dy;
+        if (y < y0 || y > y1) continue;
+        for (let k = 0; k < n; k++) {
+          slots.push({ x0: yearX(y) + pad + k * (s + G), k: Math.abs(k - (n - 1) / 2), dy });
+        }
       }
       const lo = slots[0].x0, hi = slots[slots.length - 1].x0 + s;
       const near = placed.filter(p => p.x0 < hi + G && lo < p.x0 + p.s + G);
@@ -7221,8 +7241,11 @@ if (document.readyState === 'loading') {
         const free = c => occ.every(p => c + s / 2 + G <= p.c - p.s / 2 + 1e-6 || c - s / 2 - G >= p.c + p.s / 2 - 1e-6);
         const sided = c => !side || (side < 0 ? c + s / 2 + G / 2 <= 1e-6 : c - s / 2 - G / 2 >= -1e-6);
         // Under bands, a square lies wholly outside the bands before its own,
-        // over the line or under it -- as far out as they reach here.
-        const inner = BANDS ? occ.filter(p => p.band < q.band) : [];
+        // over the line or under it -- as far out as they reach here. One that
+        // only leans to its side (LEANS) may also take the room between the
+        // line and a key work standing out from it -- as Krug stands, held out
+        // under the line by two sculptures of 1925 -- rather than leave it empty.
+        const inner = BANDS ? occ.filter(p => p.band < q.band && !(to && p.w[6] && !p.chain)) : [];
         const over = Math.max(0, ...inner.map(p => p.s / 2 - p.c));
         const under = Math.max(0, ...inner.map(p => p.c + p.s / 2));
         const outside = c => !BANDS || (c < 0 ? c + s / 2 + G <= -over + 1e-6
@@ -7230,37 +7253,36 @@ if (document.readyState === 'loading') {
         [0, -(s + G) / 2, (s + G) / 2, -(over + G + s / 2), under + G + s / 2,
          ...occ.flatMap(p => [p.c - p.s / 2 - G - s / 2, p.c + p.s / 2 + G + s / 2])].forEach(c => {
           if (!sided(c) || !outside(c) || !free(c)) return;
-          const score = [Math.round(leaning(c, q.w[4]) * 100), Math.sign(c) === -lean ? 1 : 0, sl.k];
+          const far = to ? Math.abs(c) + (c * to < 0 ? SPILL_AT : 0) + DRIFT_COST * Math.abs(sl.dy)
+                            : leaning(c, q.w[4]);
+          const score = [Math.round(far * 100), Math.sign(c) === -lean ? 1 : 0, sl.k];
           if (!best || less(score, best.score)) best = { score, x0: sl.x0, c };
         });
       });
       q.x0 = best.x0;
       q.c = best.c;
       placed.push(q);
-    });
+    }
+    rest.forEach(put);
     const top = Math.min(...sq.map(q => q.c - q.s / 2));
     const bot = Math.max(...sq.map(q => q.c + q.s / 2));
-
-    // The plot, top to bottom: the swarm with the line through it, with
-    // LENS_ROOM over it and under it for the squares a tile pushes aside, and
-    // under everything the year and age rows, the year's baseline AXIS_Y
-    // below the swarm and the age's AGE_Y.
-    const LINE = snap(FIELD_TOP + LENS_ROOM - top);
-    const FOOT = LINE + bot;
-    const AXIS_Y = 70, AGE_Y = AXIS_Y + 34;
-    const H = FOOT + AGE_Y + 16;
 
     // The keys: endless ribbon, in the line's red, lights the line and its
     // works alone; each domain's lights its own; all, carrying the count, lights
     // every domain.
     const count = works.length.toLocaleString('en-US');
+    // Each domain's name is set in its colour, lifted toward white where too
+    // dark to read on the black -- but graphic design's in a purple of its own,
+    // a little lighter than its squares' rather than lifted all the way.
+    const KEY_INK = { graphic: '#9b279b' };
+    const keyInk = (d, hex) => KEY_INK[domains[d].key] || legible(hex);
     keysEl.innerHTML = '<div class="bg-names">' +
       '<button type="button" class="bg-key" data-dom="' + CONT + '" aria-pressed="false"' +
       ' aria-label="' + esc('endless ribbon, ' + loops.length + ' works') + '" style="--tc:' +
       legible(LOOP_RED) + '">endless ribbon</button>' + domains.map((d, i) =>
       '<button type="button" class="bg-key" data-dom="' + i + '" aria-pressed="false"' +
         ' aria-label="' + esc(d.label + ', ' + d.n + ' works') + '" style="--tc:' +
-        legible(d.color) + '">' + esc(d.label) + '</button>'
+        keyInk(i, d.color) + '">' + esc(d.label) + '</button>'
     ).join('') + '<button type="button" class="bg-key bg-all" data-dom="' + ALL + '" aria-pressed="false"' +
       ' aria-label="' + esc('show all domains, ' + count + ' works') + '" style="--tc:#fff">show all ' +
       count + ' works</button></div>' +
@@ -7271,6 +7293,22 @@ if (document.readyState === 'loading') {
       '<span class="bill-graph-read bill-graph-line"></span><span class="bg-count" aria-hidden="true"></span>';
     fig.style.setProperty('--bg-key', (KEY / PX).toFixed(2) + 'px');
     plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
+
+    // The plot, top to bottom: the swarm with the line through it, with room
+    // over it and under it for the squares a tile pushes aside, and under
+    // everything the year and age rows, the year's baseline AXIS_Y below the
+    // swarm and the age's AGE_Y. The swarm stands midway between the keys and
+    // the years: the room over it -- the keys' own padding under their names,
+    // FIELD_TOP and roomOver -- as deep as the room under it to the top of the
+    // years, the two sharing ROOM by the width (but never less than MIN_ROOM
+    // over it).
+    const keysPad = parseFloat(getComputedStyle(keysEl).paddingBottom) * PX;
+    const ascent = 0.95 * typeUnits();
+    const roomOver = Math.max(MIN_ROOM, (ROOM - ascent - keysPad - FIELD_TOP) / 2);
+    const LINE = snap(FIELD_TOP + roomOver - top);
+    const FOOT = LINE + bot;
+    const AXIS_Y = ROOM - roomOver, AGE_Y = AXIS_Y + 34;
+    const H = FOOT + AGE_Y + 16;
 
     // Every square snapped to device pixels and never under one across, in
     // its domain's group, or on the chain in the ribbon's red. A key work's
@@ -7317,12 +7355,6 @@ if (document.readyState === 'loading') {
     band += '<rect class="bg-band-pad" x="' + cx0.toFixed(2) + '" y="' + (LINE - reach).toFixed(2) +
             '" width="' + (cx1 - cx0).toFixed(2) + '" height="' + (2 * reach).toFixed(2) + '"/></g>';
 
-    // The line itself, thin and red, under them all, joining the chain's
-    // works and nothing beyond them: from the first to the last.
-    const spine = '<rect class="bg-spine" x="' + snap(cx0).toFixed(2) + '" y="' + snap(LINE - PX / 2).toFixed(2) +
-                  '" width="' + (snap(cx1) - snap(cx0)).toFixed(2) + '" height="' + Math.max(DEV, snap(PX)).toFixed(2) +
-                  '" fill="' + LOOP_RED + '"/>';
-
     // Each decade with Bill's age beneath it, each row named at its left
     // edge: the decade at full, the age standing back.
     let rows = '<text class="bg-axis" x="' + X0.toFixed(1) + '" y="' + (FOOT + AXIS_Y).toFixed(1) + '">year</text>' +
@@ -7333,7 +7365,7 @@ if (document.readyState === 'loading') {
               '<text class="bg-age" x="' + gx + '" y="' + (FOOT + AGE_Y).toFixed(1) + '">' + (y - BORN) + '</text>';
     }
 
-    let field = '<g mask="url(#bgWipe3)" aria-hidden="true">' + rows + spine;
+    let field = '<g mask="url(#bgWipe3)" aria-hidden="true">' + rows;
     domains.forEach((d, i) => {
       field += '<g class="bg-dots" data-dom="' + i + '" fill="' + d.color + '">' + dots[i].join('') + '</g>';
     });
@@ -7356,7 +7388,6 @@ if (document.readyState === 'loading') {
     const groups = plot.querySelectorAll('.bg-dots');
     const keyEls = plot.querySelectorAll('.bg-kw');
     const bandEl = plot.querySelector('#bgBand3');
-    const spineEl = plot.querySelector('.bg-spine');
     let pointed = null;                        // the work under the pointer
     let opened = null;                         // the work pressed open
     let loopHeld = false;                      // the pointer on the line
@@ -7381,7 +7412,6 @@ if (document.readyState === 'loading') {
       const lit = held !== null ? (held === ALL ? null : held) : pinned;
       const chainDim = lit !== null && lit !== CONT && lit !== scu;
       bandEl.classList.toggle('dim', chainDim);
-      spineEl.classList.toggle('dim', chainDim);
       litNow = lit;
       groups.forEach(g => {
         const d = +g.dataset.dom;
@@ -7404,7 +7434,7 @@ if (document.readyState === 'loading') {
       keyBtns.forEach(k => {
         const d = +k.dataset.dom;
         if (d >= 0) k.style.setProperty('--tc', d !== named && domains[d].ink ||
-          legible((d === named && domains[d].lit) || domains[d].color));
+          keyInk(d, (d === named && domains[d].lit) || domains[d].color));
         k.classList.toggle('dim', d === ALL ? named !== null : named !== null && d !== named);
         k.setAttribute('aria-pressed', (d === ALL ? pinned === null : d === pinned) ? 'true' : 'false');
       });
@@ -7548,7 +7578,7 @@ if (document.readyState === 'loading') {
     // stand still: a tile moves only the few hundred about it, and they move
     // at once. A square never grows by more than GROW_CAP, and none
     // comes to lie over another. Every other work steps back meanwhile
-    // (.is-pointing, .is-on), the line and the chain with them, and the
+    // (.is-pointing, .is-on), the chain with them, and the
     // pointer finds the squares where they are drawn (view()).
     const LENS = 1.2, LENS_REACH = 56, FAR = 0.33, SQUEEZE = 0.6, GROW_CAP = 24;
     const rectOf = [];

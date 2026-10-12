@@ -41,27 +41,27 @@ DATASET = os.path.expanduser('~/Downloads/Max_Bill_dataset_handover/Max_Bill_Wor
 # handover's primaries and secondaries of Bill's paintings, dealt out
 # differently: sculpture takes the red of the endless ribbon's line, the one
 # the page draws through the field (LOOP_RED there), since the ribbon's works
-# are sculptures and the page is about one; product design a pale yellow,
+# are sculptures and the page is about one; product design an aqua,
 # painting a darker green than the handover's, graphic design, the largest
-# body of work, a dark purple, and book design an orange. Measured against
+# body of work, a dark purple, and book design an amber. Measured against
 # the panel's #050505:
 #
 #     sculpture      #e0301e  red      4.1:1
-#     graphic design #761876  purple   2.1:1
-#     product design #f5e283  yellow  15.6:1
+#     graphic design #611461  purple   1.7:1
+#     product design #1da1af  aqua     6.6:1
 #     painting       #11703a  green    3.3:1
-#     book design    #f07c1a  orange   7.4:1
+#     book design    #f0a21a  amber    9.6:1
 #     architecture   #2f5fd0  blue     3.6:1
 #
 # Where the page sets type in a domain's colour it lifts a colour too dark to
 # be read on the black, so the marks keep the colours as they are.
 DOMAINS = [
-    ('graphic',      'graphic design', '#761876'),
-    ('book',         'book design',    '#f07c1a'),
+    ('graphic',      'graphic design', '#611461'),
+    ('book',         'book design',    '#f0a21a'),
     ('painting',     'painting',       '#11703a'),
     ('sculpture',    'sculpture',      '#e0301e'),
     ('architecture', 'architecture',   '#2f5fd0'),
-    ('product',      'product design', '#f5e283'),
+    ('product',      'product design', '#1da1af'),
 ]
 IDX = {k: i for i, (k, _, _) in enumerate(DOMAINS)}
 FIELD = {
@@ -252,6 +252,10 @@ PAPER = {
     'drawing': (DAYS, 1.8),
     'design':  (WEEKS, 1.8),
 }
+# A piece filed under book design -- a book, a catalogue, a score -- took more
+# time and care than a piece of graphic design of the same kind, so it weighs
+# more by this much.
+BOOK_LIFT = 0.5
 DRAWN = re.compile(r'tusche|aquarell|gouache|bleistift|farbstift|buntstift|tempera|radierung|'
                    r'zeichnung|schnitt in|\bink\b', re.I)
 
@@ -301,7 +305,7 @@ def art_weight(domain, row, tier):
     title = (row.get('Title') or '').strip()
     note = (row.get('Description') or '').lower()
     if domain in ('graphic', 'book'):
-        w = PAPER[paper(row)][1]
+        w = PAPER[paper(row)][1] + (BOOK_LIFT if domain == 'book' else 0)
     else:
         w = BASE[domain]
     if domain == 'painting':

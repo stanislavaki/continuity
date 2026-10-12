@@ -2127,35 +2127,6 @@ section { position: relative; }
 
 /* Math section */
 .math { background: var(--black); color: #fff; padding: 120px 0; position: relative; }
-/* ---- The column grid, as part of the chapter rather than as a dev overlay ----
-   Same box as .container and the same eight columns the layout is set on, so
-   the lines land exactly on the edges the text is measured to. Both boxes are
-   positioned with z-index auto, so they paint in document order — the grid is
-   written first in the markup and falls behind. Neither takes a z-index of its
-   own on purpose: that would make .container a stacking context and the sticky
-   visual inside it would then screen-blend against nothing, drawing its black
-   field as an opaque rectangle instead of dropping it out. */
-.math-grid {
-  --math-grid-ink: #00127E;   /* the Deutsche Bank chapter's ground, #0018A8, a quarter of the way to black */
-  position: absolute;
-  inset: 0;
-  margin-inline: auto;
-  max-width: var(--maxw);
-  padding: 0 var(--gutter);
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: var(--col-gap);
-  pointer-events: none;
-}
-.math-grid i {
-  border-left: 1px solid var(--math-grid-ink);
-  border-right: 1px solid var(--math-grid-ink);
-}
-.math > .container { position: relative; }
-@media (max-width: 900px) {
-  /* Eight columns of hairlines behind body text is noise at this width. */
-  .math-grid { display: none; }
-}
 .math-head {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -4802,6 +4773,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* The second version of the graph, a copy to try changes on, parted from the
    first by a 4px white gap across the panel. */
 .bill-reveal-v3 { border-top: 4px solid #fff; }
+/* A panel hidden for now (the first graph's, #billReveal2[hidden]) takes no
+   room, and the second then has no first to be parted from. */
+.bill-reveal[hidden] { display: none; }
+.bill-reveal[hidden] + .bill-reveal-v3 { border-top: 0; }
 .light-section:has(> .container > .bill-graph-notes) { padding-top: 40px; }
 /* Its names: each highlight's years, a little grey, over its name in its
    key's colour (--call), at --bg-call (14px, converted into the plot's units
@@ -5172,8 +5147,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* While a work is pointed at, every other work -- and the line its chain
    lies on -- steps back, so the one under the pointer stands alone. */
 #billGraphPlot2 svg.is-pointing rect[data-i]:not(.is-on),
-#billGraphPlot2 svg.is-pointing .bg-spine:not(.dim),
-#billGraphPlot3 svg.is-pointing .bg-spine:not(.dim) { opacity: 0.25; }
+#billGraphPlot2 svg.is-pointing .bg-spine:not(.dim) { opacity: 0.25; }
 /* In the second graph the works step back a domain at a time -- a group's
    opacity, not a thousand squares' -- so a tile starts at once; the work under
    the pointer is under its tile, and a key work, standing in a group of its
@@ -5183,7 +5157,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 #billGraphPlot3 svg.is-pointing .bg-kw:not(.dim):not(.is-on) { opacity: 0.25; }
 #billGraphPlot3 .bg-dots { transition: opacity 0.18s ease, fill 0.4s ease; }
 #billGraphPlot3 .bg-band { transition: opacity 0.18s ease; }
-#billGraphPlot3 .bg-kw.dim { opacity: 0.1; }
+/* Shaded deeper here than in the first graph (0.1), so the lit domain stands
+   further out of the rest. */
+#billGraphPlot3 .bg-dots.dim,
+#billGraphPlot3 .bg-band.dim,
+#billGraphPlot3 .bg-kw.dim { opacity: 0.06; }
 @media (prefers-reduced-motion: reduce) {
   #billGraphPlot2 rect[data-i] { transition: none; }
 }
@@ -5202,6 +5180,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 #billGraphPlot3 .bg-kw { transition: opacity 0.18s ease; }
 /* While a work is under the pointer the pointer is a hand: a press opens its tile. */
 #billGraph3.is-on-work { cursor: pointer; }
+/* Over a key work's name the pointer stays what it is about it -- the arrow,
+   or the hand over a work that answers -- never the text bar. */
+#billGraphPlot3 .bg-kw { cursor: default; }
+#billGraph3.is-on-work .bg-kw { cursor: pointer; }
 .bg-kw text { font-family: var(--sans); letter-spacing: -0.01em; }
 .bg-kw .bg-kw-title { font-weight: 600; }
 .bg-kw .bg-kw-when { font-weight: 500; fill-opacity: 0.78; }
