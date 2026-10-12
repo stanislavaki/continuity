@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=364" />
+<link rel="stylesheet" href="styles.css?v=373" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -489,15 +489,22 @@
       <p class="map-reveal-cap" id="mapRevealCap" aria-hidden="true">Walk around&nbsp;— a Gaussian splatting scene</p>
     </aside>
 
-    <!-- The chapter opens on its number and title, alone on the black and
-         standing in the middle of the screen. Scrolled on, the black goes up
-         and the whole globe comes in under it; then the globe comes down onto
-         Frankfurt, and only then does 4.1 arrive. -->
+    <!-- The chapter opens on its number and title on the black, and under them
+         the chapter's lead, set as the intro's opening paragraph is (large,
+         columns 2-8), in the bank's blue; the two stand in the middle of the screen where they fit
+         in one. Scrolled on, the black goes up and the whole globe comes in
+         under it; then the globe comes down onto Frankfurt, and only then does
+         4.1 arrive. -->
     <section class="chapter dark-section making-title" id="ch3">
       <div class="container">
         <div class="chapter-head">
           <div class="chapter-num">4</div>
-          <h2 class="chapter-title">The story of the making</h2>
+          <h2 class="chapter-title">The story <span class="title-line">of the making</span></h2>
+        </div>
+        <div class="article-grid">
+          <div class="article-body">
+            <p class="article-lead">Over more than three years, the making of Kontinuit&auml;t brought together an international team across four countries. In all, the granite monolith covered some 5,000&nbsp;kilometres: from a Sardinian quarry by sea to Carrara, through Gibraltar to Rotterdam, then up the Rhine and the Main into the heart of Frankfurt. A journey worthy of the monoliths of ancient Egypt, and a production challenge without precedent in its time.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -517,20 +524,34 @@
       </div>
     </section>
 
-    <!-- Deutsche Bank · article -->
+    <!-- Deutsche Bank · article: the search for a sculpture as the towers rose,
+         the towers today, and Herbert Zapp, on whose initiative it began, beside
+         his own words in the white band under it -->
     <section class="article dark-section db-section db-body">
       <div class="container">
         <div class="article-grid">
           <div class="article-body">
-            <p data-narr="db-1">Why would one of Germany's leading banks decide to place a large sculpture in front of its headquarters?</p>
-            <p data-narr="db-2">As the Deutsche Bank Twin Towers rose in Frankfurt between 1979 and 1984, the bank's senior management faced a crucial question: what monumental artwork should stand at the threshold of the new headquarters? In 1981, while construction continued, the board began to search for a proper sculptor. Deutsche Bank had long committed to art and culture&nbsp;— a programme whose scope is evident today across the Towers' sixty floors, where the collection spans a hundred international artworks from more than forty countries.</p>
+            <p data-narr="db-2">As Deutsche Bank&rsquo;s Twin Towers rose in Frankfurt between 1979 and 1984, the board, on the initiative of Herbert Zapp, began in 1981 to search for a sculpture to stand at the threshold of the new headquarters. The criteria were clear: an artist from the German-speaking countries, a work of significant contemporary art that would address the plaza rather than the facade, and a free artistic solution that still reflected the functions of the bank.</p>
+          </div>
 
-            <p data-narr="db-3">The choice had to meet several criteria. The artist should come from the German-speaking countries. The work should fit Deutsche Bank's collecting profile&nbsp;— meaning significant contemporary art. It should relate less to the building's facade than to the plaza in front of it. And the artist should be free in his solution, while that solution still reflected the functions of the bank.</p>
+          <!-- The towers today, across all eight page columns, after the
+               paragraph that sees them rise; its caption runs under it on 2-3,
+               in the flow, and Zapp follows. -->
+          <figure class="db-photo">
+            <img src="./assets/_db/deutsche-bank-towers-taunusanlage-2026.jpg" alt="The Deutsche Bank twin towers seen from below, behind the carved stone corner of an older building and the leaves of a plane tree" width="1669" height="1134" loading="lazy" decoding="async">
+            <figcaption class="db-photo-cap">Deutsche Bank headquarters, viewed from Taunusanlage, Frankfurt am Main, 2026. Photo: &copy; Eugene Yukechev / M&eacute;ridien.</figcaption>
+          </figure>
 
-            <p data-narr="db-4">Few names fit better than Max Bill. An established Swiss artist and sculptor, modern and unexpected, his work corresponded closely to the bank's vision. Since his Bauhaus years, Bill had built an art of precise geometry, calculation and mathematics&nbsp;— carried through painting, sculpture and graphic work, an approach as innovative as it was rigorous.</p>
-
-            <p data-narr="db-5">Bill first proposed a coloured column, conceived to present the viewer with numbers and quantities. Yet when the board asked how he himself would decide in their place, he gave his preference to Continuity&nbsp;— the work recommended by the bank's art advisers.</p>
-
+          <div class="article-body">
+            <!-- Zapp's portrait on page columns 5-6, and who he was on 7-8,
+                 beside it on the right and standing on its foot, set as the
+                 works graph's notes are. -->
+            <div class="db-zapp-anchor">
+              <figure class="db-portrait">
+                <img src="./assets/_db/herbert-zapp.jpg" alt="Herbert Zapp" width="1138" height="1666" loading="lazy" decoding="async">
+              </figure>
+              <p class="db-zapp-note">Herbert Zapp (1928&ndash;2004) was a German banker and patron of the arts. Among other positions, he served as a member of the Management Board of Deutsche Bank AG.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -539,23 +560,19 @@
     <!-- Pull-quote band: the quote's own colour becomes the ground. -->
     <section class="quote-band quote-band--white">
       <div class="container">
-        <p class="quote-text" data-narr="db-6">The chance to finally bring this long-running hit, now approaching its fortieth anniversary, to life was so tempting that I cast aside all my reservations about its age&nbsp;— and a wave of almost insurmountable difficulties that was welling up inside me&nbsp;— and decided to take the plunge on this adventure.</p>
+        <p class="quote-text" data-narr="db-12">Max Bill&rsquo;s sculpture does not simply correspond to the bank building. It occupies an urbanistically significant setting, and will be seen and rediscovered daily by many people. Whether from a car, a park bench, on foot, from the Opernplatz or from the Taunusanlage: from every angle, and for everyone who takes pleasure in it, this granite sculpture with its infinite loop is meant to be an offering, a point of reference.</p>
         <div class="quote-credit-col">
-          <p class="quote-attr">Max Bill</p>
+          <p class="quote-attr">Herbert Zapp, Deutsche Bank board member and initiator of its art collection, at the inauguration in 1986.</p>
         </div>
       </div>
     </section>
 
+    <!-- The choice of Max Bill, and the letters that made the sculpture. -->
     <section class="article dark-section db-section db-body">
       <div class="container">
         <div class="article-grid">
           <div class="article-body">
-
-            <p data-narr="db-7">Kontinuität worked through contrast to the straight Twin Towers while proposing harmony. The sculpture had once been destroyed by vandals in Zurich, and the idea of the unbroken continuity of world trade and banking&nbsp;— together with the restoration of art as a restoration of life in post-war Germany&nbsp;— suited the commission perfectly. The work was given to Max Bill.</p>
-
-            <p data-narr="db-8">Carving the large granite sculpture took three years. It required a second sculptor, Dominique Stroobant, charged with its realisation alongside the bank's management. Stroobant approached the task with rigour. He set up the firm, hired assistants, found a suitable quarry for the granite in Sardinia, and built a workshop in the port of Carrara&nbsp;— working for three years always in consultation with, and under the supervision of, Max Bill.</p>
-
-            <p data-narr="db-9">At haus bill&nbsp;— the home where Max Bill's widow Angela Thomas lives today&nbsp;— we found a large archive of documentation, accounts and invoices connected to the sculpture. Stroobant was responsible for the entire management: the extensive correspondence with Deutsche Bank over shipments, the selection and ordering of transport, the payment of invoices, the preparations for the opening, and the accompanying exhibition.</p>
+            <p data-narr="db-3">The choice fell on Max Bill, whose art of precise geometry and mathematics, rooted in the Bauhaus, matched the bank&rsquo;s vision. Bill first proposed a coloured column, but when asked how he would decide in the board&rsquo;s place, he chose Kontinuit&auml;t, the work also favoured by the bank&rsquo;s art advisers. Once destroyed by vandals in Zurich, the granite loop would now stand in contrast and harmony with the straight towers, an image of unbroken continuity in trade, banking and art itself.</p>
 
             <!-- The letters as two piles, oldest on top: Bill to Stroobant and to
                  the Carrara workshop, Zapp to Stroobant, and Stroobant to Angela
@@ -567,8 +584,8 @@
                  A second scan of the 1983 letter to S.G.F. Scultura is left out. -->
             <figure class="doc-deck" aria-roledescription="slideshow" aria-label="Letters">
               <!-- Set as the figure captions of the Topology of Continuity study
-                   are, in columns 2-3 under the piles, its first line on the
-                   baseline of the first line of the paragraph after them; says
+                   are, in columns 2-3 under the piles (in the flow: 4.1 ends on
+                   the letters, so no paragraph follows to stand beside); says
                    what the sheet last tossed across is, the left pile's top until
                    one has been. -->
               <figcaption class="doc-deck-cap"><span class="doc-deck-what">Max Bill to Dominique Stroobant, 4 October 1982, with seven photographs of a metal model: about 250 tonnes of light Sardinian granite, worked down to 75.</span></figcaption>
@@ -587,27 +604,7 @@
               <button class="doc-deck-pile doc-deck-pile--right" type="button" aria-label="Previous page" disabled></button>
             </figure>
 
-            <p data-narr="db-10">It is precisely these documents&nbsp;— the notebooks, drawings, draft letters, expense calculations and photographs of the work in progress&nbsp;— that allow us today to understand the full complexity of realising such an ambitious idea. Stroobant did not simply make the sculpture: he coordinated an entire logistics operation, smoothed away bureaucratic obstacles, and ensured quality at every stage. Deutsche Bank, for its part, placed its trust in his experience and his sense of responsibility.</p>
-
-
-            <p data-narr="db-13">Deutsche Bank's investment in art was never purely aesthetic. It reflected a broader conviction&nbsp;— that cultural engagement is part of what an institution owes to its people and to society, building cultural capital that extends from the workplace to the city and beyond. Kontinuität is perhaps the most eloquent expression of that idea: a sculpture whose name speaks to the unbroken continuity of this commitment.</p>
-
-            <div class="db-zapp-anchor" style="margin-top:1.2em;">
-              <figure class="db-portrait">
-                <img src="./assets/_db/herbert-zapp.jpg" alt="Herbert Zapp">
-              </figure>
-            </div>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Pull-quote band: the quote's own colour becomes the ground. -->
-    <section class="quote-band quote-band--dbblue dark-section">
-      <div class="container">
-        <p class="quote-text" data-narr="db-12">Max Bill's sculpture does not simply correspond to the bank building&nbsp;— it occupies an urbanistically significant setting, and will be seen and rediscovered daily by many people. Whether from a car, a park bench, on foot, from the Opernplatz or from the Taunusanlage: from every angle, and for everyone who takes pleasure in it, this granite sculpture with its infinite loop is meant to be an offering, a point of reference.</p>
-        <div class="quote-credit-col">
-          <p class="quote-attr">Herbert Zapp, Deutsche Bank board member and initiator of its art collection, at the sculpture's inauguration in 1986.</p>
         </div>
       </div>
     </section>
@@ -2688,7 +2685,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
     show.observe(deck);
 
     // The caption stands under the piles beside the paragraph after them, its
-    // first line on the baseline of that paragraph's first line. A baseline is
+    // first line on the baseline of that paragraph's first line. With no
+    // paragraph after them (4.1 ends on the letters) it runs in the flow
+    // instead, and there is nothing to measure. A baseline is
     // read off a zero-height inline-block set at the start of the text, whose
     // foot sits on it. The caption hangs from its first line, so it only has
     // to be measured again when the page reflows, not when a toss changes

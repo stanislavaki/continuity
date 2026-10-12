@@ -1226,6 +1226,12 @@ section { position: relative; }
   margin: 0 auto;
 }
 .chapter-title em { font-family: var(--serif);  font-weight: 400; }
+/* Words a title keeps on one line (chapter 4's "of the making"). Only above
+   600px: on a phone the title size is fitted to "kontinuität" across the
+   measure, and even "the making" is wider than that, so there the words wrap. */
+@media (min-width: 601px) {
+  .chapter-title .title-line { white-space: nowrap; }
+}
 
 /* Intro section (below hero) — 2nd screen: sticky sculpture + bottom-right copy */
 .intro {
@@ -1813,7 +1819,8 @@ section { position: relative; }
   position: relative;
   margin: 0 calc(100% / 8 + var(--col-gap) / 8);
 }
-.bill-portrait img { display: block; width: 100%; height: auto; }
+.bill-portrait img,
+.db-photo img { display: block; width: 100%; height: auto; }
 /* Its caption, set as the letters' is (.doc-deck-cap) in the white page's
    tones: black at 60% (5.7:1, clear of AA at 12px), unnumbered -- the
    page's captions carry no figure numbers. It stands on page columns 2-3, the portrait's first two of six --
@@ -1821,7 +1828,8 @@ section { position: relative; }
    paragraph after it, its first line on that paragraph's first baseline: out
    of the flow, hung from the portrait's foot by a drop the script measures
    (--cap-drop; the fallback is the grid's row gap and a line). */
-.bill-portrait-cap {
+.bill-portrait-cap,
+.db-photo-cap {
   position: absolute;
   left: 0;
   top: calc(100% + var(--cap-drop, 64px));
@@ -1836,6 +1844,24 @@ section { position: relative; }
   text-rendering: optimizeLegibility;
   overflow-wrap: anywhere;
   color: rgba(0, 0, 0, .6);
+}
+/* The Deutsche Bank towers, in 4.1 after the paragraph that sees them rise,
+   across the full measure, all eight page columns. Its caption is set as
+   Bill's portrait's is, but no paragraph follows the picture to hang it
+   beside -- Zapp's portrait does -- so it runs in the flow under it, on page
+   columns 2-3: set in by a column and its gap, an eighth of the measure and an
+   eighth of a gap, and two columns and a gap wide, a quarter less three
+   quarters of a gap. On the bank's blue it takes the letters' tone, white at
+   72%. */
+.article-grid > .db-photo {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.db-photo-cap {
+  position: static;
+  width: calc(25% - var(--col-gap) * 3 / 4);
+  margin: 12px 0 0 calc(100% / 8 + var(--col-gap) / 8);
+  color: rgba(255, 255, 255, .72);
 }
 /* Stroobant's photograph, on page columns 2-6. The grid's first three tracks
    are page columns 1-6, six columns and five gaps, so it is set in by one
@@ -3129,6 +3155,13 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   width: calc(200% + var(--col-gap));
 }
 .article-body .doc-deck + p { margin-top: 1.2em; }
+/* After a paragraph the piles stand off it by the room a chapter's head keeps
+   over its text, rather than a paragraph's distance: 4.1's letters, after the
+   choice of Bill. */
+.article-body p + .doc-deck { margin-top: 80px; }
+/* With no paragraph after the piles to stand beside, the caption runs under
+   them in the flow, still on columns 2-3. */
+.doc-deck:last-child .doc-deck-cap { position: static; grid-row: 2; margin: 12px 0 0; }
 /* A pile's box: its four columns, half a column in from the outer edge and
    only 16px from the inner one, so the two piles stand close about the middle
    and the paper is as large as that allows. Four columns are four tracks and
@@ -3257,7 +3290,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .article-grid > .making-photo { margin-left: 0; }
   /* The portrait takes the measure, its caption under it in the flow. */
   .article-grid > .bill-portrait { margin: 0; }
-  .bill-portrait-cap { position: static; width: auto; margin: 12px 0 0; }
+  .bill-portrait-cap,
+  .db-photo-cap { position: static; width: auto; margin: 12px 0 0; }
   .img-strip { grid-template-columns: repeat(2, 1fr); }
   .fact-row { grid-template-columns: 1fr 1fr; }
   .fact-row::before { width: 100%; } /* full-width divider on the stacked mobile layout */
@@ -3287,12 +3321,13 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .db-section .quote-text { color: #fff; }
 .db-section .quote-attr { color: rgba(255,255,255,0.55); }
 
-/* Zapp portrait + its lead-in. The anchor breaks out of .article-body's
-   right-half column (grid-column 3/5) to the full 8-column measure, then
-   restates that measure as its own 8 tracks so the two children can be placed
-   on real page columns: the portrait takes 5–7, its left edge on the text
-   column's above it, and a paragraph, if one is set beside it, 1–4.
-   `align-items: end` is what sits them on a shared baseline at the foot. */
+/* Zapp portrait + the note on who he was. The anchor breaks out of
+   .article-body's right-half column (grid-column 3/5) to the full 8-column
+   measure, then restates that measure as its own 8 tracks so the two children
+   can be placed on real page columns: the portrait takes 5–6, two columns, its
+   left edge on the text column's above it, and the note 7–8, beside it on the
+   right. Both are pinned to row 1, and `align-items: end` stands the note on
+   the portrait's foot. */
 .db-zapp-anchor {
   /* .article-body spans grid-column 3/5 of a 4-col grid = 4 page columns +
      3 gaps. Doubling that and adding one gap gives the full 8-column measure,
@@ -3304,9 +3339,19 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   column-gap: var(--col-gap);
   align-items: end;
 }
-.db-zapp-anchor > p { grid-column: 1 / 5; margin: 0; }
+/* Set as the works graph's notes are (.bill-graph-note p): the sans at 15 in
+   the ground's ink at 75%. */
+.db-zapp-anchor > .db-zapp-note {
+  grid-column: 7 / 9;
+  grid-row: 1;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  opacity: .75;
+}
 .db-portrait {
-  grid-column: 5 / 8;
+  grid-column: 5 / 7;
+  grid-row: 1;
   width: 100%;
   margin: 0;
 }
@@ -3317,9 +3362,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
     width: 100%;
     grid-template-columns: 1fr;
   }
-  .db-zapp-anchor > p,
-  .db-portrait { grid-column: 1; }
-  .db-portrait { width: 100%; margin: 0 0 28px; }
+  /* The portrait takes the measure, the note under it as a caption is. */
+  .db-zapp-anchor > .db-zapp-note,
+  .db-portrait { grid-column: 1; grid-row: auto; }
+  .db-portrait { width: 100%; margin: 0; }
+  .db-zapp-anchor > .db-zapp-note { margin-top: 12px; }
 }
 
 /* ============================================================
@@ -3381,13 +3428,15 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   background: none;
   pointer-events: none;
 }
-/* The chapter's opening: its number and title alone on the black, a screen
-   tall and standing in the middle of it, over the map, so the globe is not
-   there yet. Scrolled on, the black goes up and the globe comes in from under
-   it. */
+/* The chapter's opening: its number, title and lead on the black, at least a
+   screen tall and standing in the middle of it, over the map, so the globe is
+   not there yet. Where they need more than a screen they keep a chapter's
+   140px above and below, and the head its 80px over the lead, as any chapter's
+   does over its opening text. Scrolled on, the black goes up and the globe
+   comes in from under it. */
 .making-title {
   min-height: 100vh;
-  padding: 0;
+  padding: 140px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -3395,7 +3444,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 /* The full measure, as in any other chapter: a flex item with auto margins
    would otherwise shrink to its content and break the title over four lines. */
 .making-title > .container { width: 100%; }
-.making-title .chapter-head { margin-bottom: 0; }
+/* Its lead is set as the intro's opening paragraph is (.article-lead), in the
+   bank's blue rather than the signal red: the ground 4.1 comes up on
+   (.db-section). */
+.making-title .article-lead { color: #0018A8; }
 /* Then the window the globe comes down onto Frankfurt in. Taller than the
    others: the globe is held whole a while before it moves -- HEAD in the
    journey script -- and the move itself is as long as theirs. */
