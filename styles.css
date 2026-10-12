@@ -5121,8 +5121,17 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    lies on -- steps back, so the one under the pointer stands alone. */
 #billGraphPlot2 svg.is-pointing rect[data-i]:not(.is-on),
 #billGraphPlot2 svg.is-pointing .bg-spine:not(.dim),
-#billGraphPlot3 svg.is-pointing rect[data-i]:not(.is-on),
 #billGraphPlot3 svg.is-pointing .bg-spine:not(.dim) { opacity: 0.25; }
+/* In the second graph the works step back a domain at a time -- a group's
+   opacity, not a thousand squares' -- so a tile starts at once; the work under
+   the pointer is under its tile, and a key work, standing in a group of its
+   own, steps back or stays lit by itself. */
+#billGraphPlot3 svg.is-pointing .bg-dots:not(.dim),
+#billGraphPlot3 svg.is-pointing .bg-band:not(.dim),
+#billGraphPlot3 svg.is-pointing .bg-kw:not(.dim):not(.is-on) { opacity: 0.25; }
+#billGraphPlot3 .bg-dots { transition: opacity 0.18s ease, fill 0.4s ease; }
+#billGraphPlot3 .bg-band { transition: opacity 0.18s ease; }
+#billGraphPlot3 .bg-kw.dim { opacity: 0.1; }
 @media (prefers-reduced-motion: reduce) {
   #billGraphPlot2 rect[data-i] { transition: none; }
 }
@@ -5134,16 +5143,16 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    the two layers of words crossing as it opens. It grows out of its square
    and shrinks back into it (.is-gone, fading as it goes), and never takes the
    pointer. The squares about it are pushed aside as it grows, on the same
-   curve, and its names step back while it stands. Under the pointer it all
-   runs quickly (0.18s); pressed open, at twice that (.is-open). */
-#billGraphPlot3 rect[data-i] {
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: transform 0.18s cubic-bezier(0.3, 0.7, 0.2, 1), opacity 0.18s ease;
-}
-#billGraphPlot3 svg.is-open rect[data-i] { transition-duration: 0.36s, 0.18s; }
-#billGraphPlot3 .bg-call { transition-duration: 0.18s; }
-#billGraphPlot3 svg.is-pointing .bg-call { opacity: 0; }
+   curve, the nearest drawn larger -- moved by the script, not by transitions
+   here (see glide()). Under the pointer it all runs quickly (0.18s); pressed
+   open, at twice that (.is-open). A key work's square (.bg-kw)
+   holds its name and years at rest, as a tile does. */
+#billGraphPlot3 .bg-kw { transition: opacity 0.18s ease; }
+/* While a work is under the pointer the pointer is a hand: a press opens its tile. */
+#billGraph3.is-on-work { cursor: pointer; }
+.bg-kw text { font-family: var(--sans); letter-spacing: -0.01em; }
+.bg-kw .bg-kw-title { font-weight: 600; }
+.bg-kw .bg-kw-when { font-weight: 500; fill-opacity: 0.78; }
 .bg-tile {
   --tile-ease: cubic-bezier(0.3, 0.7, 0.2, 1);
   --tile-t: 0.18s;
@@ -5172,15 +5181,17 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   opacity: 0;
   transition: opacity 0.12s ease;
 }
-.bg-tile-short { padding: 9px 11px 10px; }
+.bg-tile-short { padding: 8px 9px; }
 .bg-tile-full { padding: 13px 15px 14px; }
 .bg-tile.on .bg-tile-short { opacity: 1; transition: opacity 0.14s ease 0.07s; }
 .bg-tile.on.is-open .bg-tile-short { opacity: 0; transition: opacity 0.1s ease; }
 .bg-tile.on.is-open .bg-tile-full { opacity: 1; transition: opacity 0.26s ease 0.2s; }
 .bg-tile p { margin: 0; }
-.bg-tile-title { font-size: 14px; font-weight: 600; line-height: 1.22; letter-spacing: -0.01em; overflow-wrap: break-word; }
+.bg-tile-title { font-size: 13px; font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; }
+.bg-tile .is-tight p,
+.bg-tile .is-tight dd { overflow-wrap: break-word; }
 .bg-tile-full .bg-tile-title { font-size: 16px; }
-.bg-tile .bg-tile-when { margin-top: 3px; font-size: 12px; line-height: 1.35; color: rgba(255, 255, 255, 0.78); }
+.bg-tile .bg-tile-when { margin-top: 3px; font-size: 11px; font-weight: 500; line-height: 1.35; color: rgba(255, 255, 255, 0.78); }
 .bg-tile-full .bg-tile-when { font-size: 13px; }
 .bg-tile .bg-tile-note { margin-top: 8px; font-size: 13px; line-height: 1.4; color: rgba(255, 255, 255, 0.78); }
 .bg-tile-facts {
@@ -5192,7 +5203,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   line-height: 1.35;
 }
 .bg-tile-facts dt { color: rgba(255, 255, 255, 0.72); }
-.bg-tile-facts dd { margin: 0; overflow-wrap: break-word; }
+.bg-tile-facts dd { margin: 0; }
 .bg-tile .bg-tile-kind { margin-top: 10px; font-size: 13px; font-weight: 600; letter-spacing: -0.005em; color: rgba(255, 255, 255, 0.72); }
 .bg-tile.is-light { color: #050505; }
 .bg-tile.is-light .bg-tile-when,
@@ -5200,7 +5211,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bg-tile.is-light .bg-tile-kind,
 .bg-tile.is-light .bg-tile-facts dt { color: rgba(5, 5, 5, 0.62); }
 @media (prefers-reduced-motion: reduce) {
-  #billGraphPlot3 rect[data-i],
+  #billGraphPlot3 .bg-kw,
   .bg-tile,
   .bg-tile * { transition: none !important; }
 }

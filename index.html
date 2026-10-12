@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=368" />
+<link rel="stylesheet" href="styles.css?v=374" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -6990,18 +6990,16 @@ if (document.readyState === 'loading') {
   // of weight multiplying it by the same amount, and the year's squares are
   // then scaled together to fill YEAR_AREA -- a crowded year's smaller, a
   // thin one's larger, but none past MAX_SIDE, so a year the catalogue knows
-  // one small work of doesn't stand as a slab. The key works, the ones the
-  // graph names, stand apart from all of it at HIGH_SIDE, larger than any
-  // other work, whatever their year.
-  const S_MIN = 3.3, S_MAX = 33, YEAR_AREA = 1600, MAX_SIDE = 34, HIGH_SIDE = 44;
+  // one small work of doesn't stand as a slab. The key works stand apart
+  // from all of it, as large as their names need (KEY_SIDE, in render()),
+  // larger than any other work, whatever their year.
+  const S_MIN = 3.3, S_MAX = 33, YEAR_AREA = 1600, MAX_SIDE = 34;
   const weighed = w => S_MIN * (S_MAX / S_MIN) ** ((w[5] - 1) / 4);
   const AIR = 1.5;             // between two squares, in units; never under a pixel
-  const FIELD_TOP = 8;         // the plot's top to the highest name
+  const FIELD_TOP = 8;         // the plot's top to the room over the swarm
+  const LENS_ROOM = 64;        // over the swarm and under it, for squares pushed aside
   const KEY = 23;              // the keys' size, in the plot's units
   const BORN = 1908;           // Max Bill, 1908-1994
-  // The names, in screen pixels -- their size, their leading, and the widest
-  // a name runs before it wraps, in ems.
-  const CALL_PX = 14, CALL_LEAD = 1.25, CALL_WRAP = 8;
   // Which way the swarm goes, from ?shape=: bands (the default) lays each
   // domain in a band of its own on both sides of the line, in the keys'
   // order out from it, so every domain's works stay together and the figure
@@ -7091,13 +7089,39 @@ if (document.readyState === 'loading') {
     // off the line -- negative over it, positive under it.
     const yearArea = new Map();
     works.forEach(w => yearArea.set(w[4], (yearArea.get(w[4]) || 0) + weighed(w) ** 2));
-    // The Kontinuität in Frankfurt, the work the whole page is about, stands
-    // KONTINUITAT times its share, past HIGH_SIDE -- the largest square in
-    // the graph by a clear margin.
-    const KONTINUITAT = 1.5;
-    const sideOf = w => w[0] === 1983 && w[2] === 'Kontinuität'
-      ? KONTINUITAT * weighed(w) * Math.sqrt(YEAR_AREA / yearArea.get(w[4]))
-      : w[6] ? HIGH_SIDE
+    // The key works stand as tiles at rest: each square holds the work's name
+    // and, under it, its years, set as the tile of a work under the pointer
+    // sets them (KT, in screen pixels; see grow()) -- all of them one size,
+    // the smallest that holds every one of their names, KEY_SIDE; and the
+    // Kontinuität in Frankfurt, the work the whole page is about, KONTINUITAT
+    // times that, the largest square in the graph by a clear margin.
+    const KT = { title: 13, lead: 1.2, when: 11, whenLead: 1.35, gap: 3, padX: 9, padY: 8, padB: 8 };
+    const ctx = document.createElement('canvas').getContext('2d');
+    const sans = getComputedStyle(document.documentElement).getPropertyValue('--sans');
+    const titleWidth = t => { ctx.font = '600 ' + KT.title + 'px ' + sans; return ctx.measureText(t).width; };
+    // A name in as few lines as it fits in at a measure, broken at its spaces
+    // and after its hyphens; what stands in brackets is never broken.
+    const linesOf = (text, max) => text.match(/\([^)]*\)|[^\s(-]+-|[^\s(]+/g).reduce((ls, word) => {
+      const last = ls[ls.length - 1];
+      const joined = last ? last + (last.endsWith('-') ? '' : ' ') + word : word;
+      if (last && titleWidth(joined) > max) ls.push(word);
+      else ls[ls.length - 1] = joined;
+      return ls;
+    }, ['']);
+    const holds = (w, side) => {
+      const ls = linesOf(w[2], side - 2 * KT.padX);
+      return Math.max(...ls.map(titleWidth)) <= side - 2 * KT.padX &&
+        KT.padY + ls.length * KT.title * KT.lead + KT.gap + KT.when * KT.whenLead + KT.padB <= side;
+    };
+    const KEY_PX = works.filter(w => w[6]).reduce((m, w) => {
+      let s = 64;
+      while (s < 240 && !holds(w, s)) s += 4;
+      return Math.max(m, s);
+    }, 64);
+    const KEY_SIDE = KEY_PX * PX;
+    const KONTINUITAT = 1.25;
+    const sideOf = w => w[0] === 1983 && w[2] === 'Kontinuität' ? KONTINUITAT * KEY_SIDE
+      : w[6] ? KEY_SIDE
       : Math.min(MAX_SIDE, weighed(w) * Math.sqrt(YEAR_AREA / yearArea.get(w[4])));
     const sq = works.map(w => ({ w, s: sideOf(w), chain: LOOP.test(w[2]) }));
     // Under bands, the band a square lies in: the chain's first, on the line,
@@ -7218,118 +7242,12 @@ if (document.readyState === 'loading') {
     const top = Math.min(...sq.map(q => q.c - q.s / 2));
     const bot = Math.max(...sq.map(q => q.c + q.s / 2));
 
-    // The names. Each highlight is called out by its years and its name, in
-    // one of two rows: one over the swarm, one under it. A name takes the row
-    // on its square's side -- the endless ribbon's the row over it -- and
-    // stands to the right of its leader line, the line at the square's
-    // middle. Where two names in a row would meet, one stands to the left of
-    // its line instead, or wraps narrower, or, failing those, takes the other
-    // row; of the ways to lay them out, the one that moves fewest names off
-    // their own side, then wraps fewest narrower, then sets fewest to the
-    // left, is taken. Each row stands CLEAR beyond
-    // the furthest square under any of its names, never nearer the line than
-    // NEAR, and its names' tops are level, so their years read along one
-    // line. The cards hang from the same two lines (cardFor()).
-    const LF = CALL_PX * PX, LH = LF * CALL_LEAD;
-    const IGAP = LF * 0.4, PADX = LF;     // a name off its leader line; two names apart
-    const ctx = document.createElement('canvas').getContext('2d');
-    ctx.font = '500 ' + LF + 'px ' + getComputedStyle(document.documentElement).getPropertyValue('--sans');
-    const width = t => ctx.measureText(t).width;
-    // A name wraps at CALL_WRAP ems into as few lines as it needs, and then
-    // as evenly as those lines allow, so no word is left on a line of its
-    // own. What stands in brackets is never broken.
-    const words = text => text.match(/\([^)]*\)|[^\s(]+/g);
-    const fill = (ws, max) => ws.reduce((lines, word) => {
-      const last = lines[lines.length - 1];
-      if (last && width(last + ' ' + word) > max) lines.push(word);
-      else lines[lines.length - 1] = last ? last + ' ' + word : word;
-      return lines;
-    }, ['']);
-    const wrap = (text, ems = CALL_WRAP) => {
-      const ws = words(text), n = fill(ws, ems * LF).length;
-      let lo = 0, hi = ems * LF;
-      while (hi - lo > 1) { const mid = (lo + hi) / 2; if (fill(ws, mid).length > n) lo = mid; else hi = mid; }
-      return fill(ws, hi);
-    };
-    const callFor = (q, ems) => {
-      const lines = wrap(q.w[2], ems);
-      const yrs = dates(q.w[0], q.w[4]);
-      const w = Math.max(width(yrs), ...lines.map(width));
-      const lx = snap(q.x0 + q.s / 2);
-      const left = lx + IGAP + w > W;
-      return { q, lines, yrs, w, lx, left, x0: left ? lx - IGAP - w : lx, x1: left ? lx : lx + IGAP + w,
-               h: LH * lines.length + LF };
-    };
-    const calls = sq.filter(q => q.w[6]).map(q => callFor(q));
-    // A name's narrower wraps, a line longer each, up to three lines: where
-    // its neighbours in a row crowd it, a name can stand narrower.
-    calls.forEach(a => {
-      a.wraps = [{ lines: a.lines, w: a.w, h: a.h }];
-      for (let ems = CALL_WRAP - 0.5; ems >= 3; ems -= 0.5) {
-        const n = callFor(a.q, ems);
-        if (n.lines.length > 3) break;
-        if (n.lines.length > a.wraps[a.wraps.length - 1].lines.length) a.wraps.push({ lines: n.lines, w: n.w, h: n.h });
-      }
-    });
-    const CLEAR = LF * 2, NEAR = LF * 4, LGAP = LF * 0.8;   // LGAP: one name beside another in a row
-    // How far the swarm reaches from the line over a run of the plot, over it
-    // (side -1) or under it (1).
-    const extent = (x0, x1, side) => Math.max(0, ...sq.filter(q => q.x0 < x1 + G && x0 < q.x0 + q.s + G)
-      .map(q => q.s / 2 + side * q.c));
-    // d is how far from the line a name's near edge stands; rowAt, how far
-    // each row's top stands from it, over the line (-1) and under it (1).
-    const rowAt = { [-1]: 0, [1]: 0 }, fullRow = {};
-    // The names are laid out among those that show: all of them here, to
-    // find the room the plot needs, and again, among only the names a key
-    // leaves showing, whenever that changes (see paint()) -- so a row stands
-    // as near the swarm as the names in it at that moment let it, not as the
-    // hidden ones would. A row with no name showing stays where all the
-    // names put it, for the cards.
-    const layOut = list => {
-      Object.assign(rowAt, fullRow);
-      const byX = list.slice().sort((a, b) => a.lx - b.lx);
-      const ways = byX.map(a => {
-        const own = a.q.chain ? -1 : Math.sign(a.q.c);
-        const out = [];
-        a.wraps.forEach(({ lines, w, h }, k) =>
-          (a.q.chain ? [-1] : own ? [own, -own] : [-1, 1]).forEach(side => [false, true].forEach(left => {
-            const x0 = left ? a.lx - IGAP - w : a.lx, x1 = left ? a.lx : a.lx + IGAP + w;
-            if (x0 >= 0 && x1 <= W) out.push({ side, left, x0, x1, lines, w, h, cost: (own && side !== own ? 10 : 0) + 3 * k + (left ? 1 : 0) });
-          })));
-        return out.sort((x, y) => x.cost - y.cost);
-      });
-      let best = null, least = Infinity;
-      const taken = [];
-      const lay = (i, cost) => {
-        if (cost >= least) return;
-        if (i === byX.length) { best = taken.slice(); least = cost; return; }
-        ways[i].forEach(o => {
-          if (taken.some(p => p.side === o.side && p.x1 + LGAP > o.x0 && o.x1 + LGAP > p.x0)) return;
-          taken.push(o); lay(i + 1, cost + o.cost); taken.pop();
-        });
-      };
-      lay(0, 0);
-      byX.forEach((a, i) => Object.assign(a, (best || ways.map(w => w[0]))[i]));
-      [-1, 1].forEach(side => {
-        const row = list.filter(a => a.side === side);
-        if (!row.length) return;
-        const d = Math.max(NEAR, ...row.map(a => extent(a.x0, a.x1, side) + CLEAR));
-        const h = Math.max(...row.map(a => a.h));
-        // Over the line the tallest name's foot stands at d, and the others'
-        // tops level with its; under it every top stands at d.
-        row.forEach(a => { a.d = side < 0 ? d + h - a.h : d; });
-        rowAt[side] = side < 0 ? d + h : d;
-      });
-    };
-    layOut(calls);
-    Object.assign(fullRow, rowAt);
-
-    // The plot, top to bottom: the swarm with the line through it and its
-    // names about it, as far over the line and under it as either reaches,
-    // and under everything the year and age rows, the year's baseline AXIS_Y
-    // below the lowest of them and the age's AGE_Y.
-    const LINE = snap(FIELD_TOP + Math.max(-top, ...calls.filter(a => a.side < 0).map(a => a.d + a.h)));
-    const FOOT = LINE + Math.max(bot, ...calls.filter(a => a.side > 0).map(a => a.d + a.h));
+    // The plot, top to bottom: the swarm with the line through it, with
+    // LENS_ROOM over it and under it for the squares a tile pushes aside, and
+    // under everything the year and age rows, the year's baseline AXIS_Y
+    // below the swarm and the age's AGE_Y.
+    const LINE = snap(FIELD_TOP + LENS_ROOM - top);
+    const FOOT = LINE + bot;
     const AXIS_Y = 70, AGE_Y = AXIS_Y + 34;
     const H = FOOT + AGE_Y + 16;
 
@@ -7353,22 +7271,46 @@ if (document.readyState === 'loading') {
       // works it has, in its colour.
       '<span class="bill-graph-read bill-graph-line"></span><span class="bg-count" aria-hidden="true"></span>';
     fig.style.setProperty('--bg-key', (KEY / PX).toFixed(2) + 'px');
-    plot.style.setProperty('--bg-call', LF.toFixed(2) + 'px');
     plot.style.setProperty('--bg-type', typeUnits().toFixed(2) + 'px');
 
     // Every square snapped to device pixels and never under one across, in
-    // its domain's group, or on the chain in the ribbon's red.
+    // its domain's group, or on the chain in the ribbon's red. A key work's
+    // square is a group with its words in it, so the two move as one.
     const rect = (q, fill) => {
       const x = snap(q.x0), y = snap(LINE + q.c - q.s / 2);
       const w = Math.max(DEV, snap(q.x0 + q.s) - x), h = Math.max(DEV, snap(LINE + q.c + q.s / 2) - y);
       q.box = [x, y, w, h];
-      return '<rect data-i="' + q.i + '" x="' + x.toFixed(2) + '" y="' + y.toFixed(2) + '" width="' + w.toFixed(2) +
-             '" height="' + h.toFixed(2) + '"' + (fill ? ' fill="' + fill + '"' : '') + '/>';
+      const r = '<rect' + (q.w[6] ? '' : ' data-i="' + q.i + '"') + ' x="' + x.toFixed(2) + '" y="' + y.toFixed(2) +
+                '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '"' + (fill ? ' fill="' + fill + '"' : '') + '/>';
+      return q.w[6] ? '<g class="bg-kw" data-i="' + q.i + '" fill="' + (q.chain ? LOOP_RED : domains[q.w[1]].color) + '">' +
+                      r + named(q, x, y, w) + '</g>' : r;
     };
-    const dots = domains.map(() => []);
-    rest.forEach(q => dots[q.w[1]].push(rect(q)));
+    // A key work's name, wrapped, and its years under it, in white -- or in
+    // black on the pale yellow and the orange -- set as a tile sets them.
+    const named = (q, x, y, w) => {
+      const ink = lum(rgb(q.chain ? LOOP_RED : domains[q.w[1]].color)) > 0.25 ? '#050505' : '#fff';
+      const tx = (x + KT.padX * PX).toFixed(2);
+      const ls = linesOf(q.w[2], w / PX - 2 * KT.padX);
+      let top = y + KT.padY * PX;
+      let out = '';
+      ls.forEach(l => {
+        const base = top + ((KT.lead - 1) / 2 + 0.8) * KT.title * PX;
+        out += '<text class="bg-kw-title" x="' + tx + '" y="' + base.toFixed(2) + '" font-size="' + (KT.title * PX).toFixed(2) +
+               '" fill="' + ink + '">' + esc(l) + '</text>';
+        top += KT.title * KT.lead * PX;
+      });
+      top += KT.gap * PX;
+      const base = top + ((KT.whenLead - 1) / 2 + 0.8) * KT.when * PX;
+      return out + '<text class="bg-kw-when" x="' + tx + '" y="' + base.toFixed(2) + '" font-size="' + (KT.when * PX).toFixed(2) +
+             '" fill="' + ink + '">' + esc(dates(q.w[0], q.w[4])) + '</text>';
+    };
+    // The key works stand in a group of their own, over the rest, so each
+    // can be shaded or left lit by itself while the rest are shaded a domain
+    // at a time.
+    const dots = domains.map(() => []), keyed = [];
+    rest.forEach(q => (q.w[6] ? keyed : dots[q.w[1]]).push(rect(q)));
     let band = '<g class="bg-band" id="bgBand3">';
-    loops.forEach(q => { band += rect(q, LOOP_RED); });
+    loops.forEach(q => { if (q.w[6]) keyed.push(rect(q, LOOP_RED)); else band += rect(q, LOOP_RED); });
     // What takes the pointer along the chain: its squares and a little air
     // over and under them.
     const reach = Math.max(...loops.filter(q => !q.w[6]).map(q => q.s)) / 2 + 3;
@@ -7382,25 +7324,6 @@ if (document.readyState === 'loading') {
                   '" width="' + (snap(cx1) - snap(cx0)).toFixed(2) + '" height="' + Math.max(DEV, snap(PX)).toFixed(2) +
                   '" fill="' + LOOP_RED + '"/>';
 
-    // A name: its leader line from the name's far edge to the square's near
-    // one, its years, and its name, wrapped, in its key's colour (--call, set
-    // in paint()) -- the colour says the domain, so no swatch is drawn.
-    const calloutIn = a => {
-      const q = a.q, [, by, , bh] = a.edge || q.box;
-      const tY = a.side < 0 ? LINE - a.d - a.h : LINE + a.d;
-      const yA = a.side < 0 ? tY : by + bh, yB = a.side < 0 ? by : tY + a.h;
-      const base = tY + LF * 0.8;
-      const anchor = a.left ? ' text-anchor="end"' : '';
-      const tx = a.left ? a.lx - IGAP : a.lx + IGAP;
-      a.box = [a.x0, tY, a.x1 - a.x0, a.h];
-      a.lead = [a.lx, Math.min(yA, yB), Math.max(yA, yB)];
-      return '<line x1="' + a.lx.toFixed(2) + '" y1="' + yA.toFixed(2) + '" x2="' + a.lx.toFixed(2) + '" y2="' + yB.toFixed(2) + '"/>' +
-        '<text class="bg-call-years" x="' + tx.toFixed(2) + '" y="' + base.toFixed(2) + '"' + anchor + '>' + esc(a.yrs) + '</text>' +
-        a.lines.map((l, i) => '<text class="bg-call-name" x="' + tx.toFixed(2) + '" y="' + (base + (i + 1) * LH).toFixed(2) + '"' +
-          anchor + '>' + esc(l) + '</text>').join('');
-    };
-    const callout = a => '<g class="bg-call" data-dom="' + (a.q.chain ? CONT : a.q.w[1]) + '">' + calloutIn(a) + '</g>';
-
     // Each decade with Bill's age beneath it, each row named at its left
     // edge: the decade at full, the age standing back.
     let rows = '<text class="bg-axis" x="' + X0.toFixed(1) + '" y="' + (FOOT + AXIS_Y).toFixed(1) + '">year</text>' +
@@ -7411,11 +7334,11 @@ if (document.readyState === 'loading') {
               '<text class="bg-age" x="' + gx + '" y="' + (FOOT + AGE_Y).toFixed(1) + '">' + (y - BORN) + '</text>';
     }
 
-    let field = '<g mask="url(#bgWipe3)" aria-hidden="true">' + rows + spine + calls.map(callout).join('');
+    let field = '<g mask="url(#bgWipe3)" aria-hidden="true">' + rows + spine;
     domains.forEach((d, i) => {
       field += '<g class="bg-dots" data-dom="' + i + '" fill="' + d.color + '">' + dots[i].join('') + '</g>';
     });
-    field += band + '</g>';
+    field += band + '<g class="bg-kws">' + keyed.join('') + '</g></g>';
 
     plot.innerHTML =
       '<svg viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="' +
@@ -7432,8 +7355,7 @@ if (document.readyState === 'loading') {
     const countEl = keysEl.querySelector('.bg-count');
     lineEl.style.color = legible(LOOP_RED);
     const groups = plot.querySelectorAll('.bg-dots');
-    const callEls = plot.querySelectorAll('.bg-call');
-    let laidOut = calls.map(() => 1).join('');      // the names the layout stands for
+    const keyEls = plot.querySelectorAll('.bg-kw');
     const bandEl = plot.querySelector('#bgBand3');
     const spineEl = plot.querySelector('.bg-spine');
     let pointed = null;                        // the work under the pointer
@@ -7442,7 +7364,6 @@ if (document.readyState === 'loading') {
     let litNow = null;
     const tone = d => (d === litNow && domains[d].lit) || domains[d].color;
     const scu = domains.findIndex(d => d.key === 'sculpture');
-    const gra = domains.findIndex(d => d.key === 'graphic');
 
     // Under the field the encoding stands, and stays.
     const REST = '<i>one square = one work</i><i>size = its share of its year</i>';
@@ -7468,30 +7389,13 @@ if (document.readyState === 'loading') {
         g.classList.toggle('dim', lit !== null && d !== lit);
         g.style.fill = tone(d);
       });
-      // A name is set in the colour its key is: the chain's in the line's red,
-      // the rest in their domain's, as the key shows it now -- but graphic
-      // design's in its squares' own purple, not lifted for the black (the
-      // user's choice), so its names and squares read as one colour.
-      const ink = d => d === CONT ? legible(LOOP_RED) : d === gra ? tone(d) :
-        d !== lit && domains[d].ink || legible(tone(d));
-      callEls.forEach((g, i) => {
-        const d = +g.dataset.dom;
-        const dim = d === CONT ? chainDim : lit !== null && d !== lit;
-        g.classList.toggle('dim', dim);
-        g.style.setProperty('--call', ink(d));
-        calls[i].shown = !dim;
+      keyEls.forEach(g => {
+        const q = sq[+g.dataset.i];
+        g.classList.toggle('dim', q.chain ? chainDim : lit !== null && q.w[1] !== lit);
       });
-      const showing = calls.map(a => a.shown ? 1 : 0).join('');
-      if (showing !== laidOut) {
-        laidOut = showing;
-        const list = calls.filter(a => a.shown);
-        layOut(list);
-        list.forEach(a => { callEls[calls.indexOf(a)].innerHTML = calloutIn(a); });
-      }
       // The work under the pointer, or the one pressed open, stands as a
       // tile -- its square grown in place to hold what is said of it -- and
-      // the squares about it are pushed aside to make room (show()). The
-      // names over and under the swarm step back while it stands.
+      // the squares about it make room and grow to meet it (show()).
       const on = held === null ? opened || pointed : null;
       show(on);
       // The keys show what is lit -- and, while a work is under the pointer,
@@ -7522,25 +7426,29 @@ if (document.readyState === 'loading') {
 
     // The tile: a work's square grown in place into a panel of its own
     // colour. Under the pointer it holds the work's name and, under it, its
-    // years; pressed, it grows again and holds all the table says of it --
-    // its note, its material, size and place, in the table's own words, and
-    // its domain. It is as large as its words need, square where it can be,
-    // and grows out of its square about its middle -- moved only as far as
-    // it must to keep inside the room it may take: never past the plot's
-    // sides, nor up over the keys, nor down past the section's end. When the
-    // pointer leaves, it shrinks back into its square and fades.
-    const TILE_SHORT = [96, 112, 128, 144, 160, 176, 192];   // its sides, in pixels, smallest first
+    // years -- a key work's square holds them already, and stays as it is --
+    // and pressed, it grows again and holds all the table says of it: its
+    // note, its material, size and place, in the table's own words, and its
+    // domain. It is as large as its words need, square where it can be, and
+    // grows out of its square about its middle, moved only as far as it must
+    // to keep inside the room it may take: never past the plot's sides, nor
+    // up over the keys, nor down past the section's end. When the pointer
+    // leaves, it shrinks back into its square and fades.
+    const TILE_SHORT = [80, 88, 96, 104, 112, 128, 144, 160, 176, 192];   // its sides, in pixels, smallest first
     const TILE_FULL = [224, 256, 288, 320, 352, 384, 416];
     const scroller = plot.parentElement;
     scroller.querySelectorAll('.bg-tile').forEach(el => el.remove());
     let tile = null;                           // { q, el, open, sizes, box }
-    // The smallest of the sides given that holds a layer's words -- or, if
-    // even the largest doesn't, the largest, as tall as they need.
+    // The smallest of the sides given that holds a layer's words, every word
+    // whole -- or, if even the largest doesn't, the largest, as tall as they
+    // need, its longest words broken if they must be (.is-tight).
     const sideFor = (layer, sides) => {
+      const ps = [...layer.querySelectorAll('p, dd')];
       for (const s of sides) {
         layer.style.width = s + 'px';
-        if (layer.offsetHeight <= s) return [s, s];
+        if (layer.offsetHeight <= s && ps.every(p => p.scrollWidth <= p.clientWidth)) return [s, s];
       }
+      layer.classList.add('is-tight');
       return [sides[sides.length - 1], layer.offsetHeight];
     };
     // Sets a tile over a box of the plot's units.
@@ -7551,8 +7459,9 @@ if (document.readyState === 'loading') {
       el.style.width = (w * k).toFixed(1) + 'px';
       el.style.height = (h * k).toFixed(1) + 'px';
     };
-    function grow(q) {
-      const more = q.w[7] || {};
+    // Makes a tile's panel, laid exactly over the box it grows out of.
+    function attach(t, from) {
+      const q = t.q, more = q.w[7] || {};
       const facts = [['Material', more.m], ['Size', more.s], ['Place', more.p]].filter(f => f[1]);
       const ground = q.chain ? LOOP_RED : domains[q.w[1]].color;
       const head = '<p class="bg-tile-title">' + esc(q.w[2]) + '</p>' +
@@ -7570,17 +7479,20 @@ if (document.readyState === 'loading') {
           facts.map(([k, v]) => '<dt>' + k + '</dt><dd>' + esc(v) + '</dd>').join('') + '</dl>' : '') +
         '<p class="bg-tile-kind">' + esc((q.chain ? 'endless ribbon · ' : '') + domains[q.w[1]].label) + '</p></div>';
       scroller.appendChild(el);
-      const t = { q, el, open: false, sizes: [sideFor(el.firstChild, TILE_SHORT), sideFor(el.lastChild, TILE_FULL)] };
-      // Laid exactly over its square first, then let go to grow.
-      lay(el, q.box);
+      t.el = el;
+      // The open panel is measured only when it is first opened.
+      t.sizes = [sideFor(el.firstChild, TILE_SHORT), null];
+      lay(el, from);
       el.getBoundingClientRect();
       el.classList.remove('is-still');
       el.classList.add('on');
-      return t;
     }
     const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
     function place(t) {
+      // A key work under the pointer is its own tile, its square as it stands.
+      if (!t.el) { t.box = t.q.box; return; }
       const pr = plot.getBoundingClientRect(), k = pr.width / W;
+      if (t.open && !t.sizes[1]) t.sizes[1] = sideFor(t.el.lastChild, TILE_FULL);
       const [pw, ph] = t.sizes[t.open ? 1 : 0], w = pw / k, h = ph / k;
       const [qx, qy, qw, qh] = t.q.box;
       const x0 = Math.max(0, (scroller.scrollLeft - plot.offsetLeft) / k);
@@ -7594,98 +7506,213 @@ if (document.readyState === 'loading') {
       t.el.classList.toggle('is-open', t.open);
       lay(t.el, t.box);
     }
-    function shrink(t) {
-      t.el.classList.remove('on', 'is-open');
-      t.el.classList.add('is-gone');
-      lay(t.el, t.q.box);
-      setTimeout(() => t.el.remove(), 300);
+    // Shrinks a tile's panel into a box -- its square, where it stands now --
+    // fading, and lets it go.
+    function shrink(el, box) {
+      el.classList.remove('on', 'is-open');
+      el.classList.add('is-gone');
+      lay(el, box);
+      setTimeout(() => el.remove(), 300);
     }
     // The tile for a work, or none: grown, opened, closed or let go.
     function show(q) {
       const open = !!q && q === opened;
       if (tile && tile.q === q) {
         if (tile.open === open) return;
-      } else {
-        if (tile) shrink(tile);
-        tile = q ? grow(q) : null;
+        tile.open = open;
+        if (open && !tile.el) attach(tile, q.box);
+        else if (!open && q.w[6]) { shrink(tile.el, q.box); tile.el = null; }
+        place(tile);
+        magnify(tile);
+        return;
       }
-      if (tile) { tile.open = open; place(tile); }
+      const old = tile;
+      tile = q ? { q, el: null, open } : null;
+      // It grows out of its square where the square is seen to stand.
+      if (tile && (!q.w[6] || open)) attach(tile, view(q));
+      if (tile) place(tile);
       magnify(tile);
+      if (old && old.el) shrink(old.el, view(old.q));
     }
 
-    // The squares about a tile make room for it: each is pushed straight out
-    // from the tile's square, as far as the tile has grown on that side, less
-    // the further out it stands, easing to nothing at REACH times the
-    // growth, so the swarm parts round the tile rather than one ring of
-    // squares jumping; and where the parting crowds them the squares shrink a
-    // little, so none comes to lie over another. Every other work steps back
-    // meanwhile (.is-pointing, .is-on),
-    // the line and the chain with them. Hit-testing keeps to where the
-    // squares stand at rest, so nothing shifts under the pointer.
-    const REACH = 4.5;
+    // The squares about a tile make room for it, and grow to meet it, as
+    // under a lens: each is pushed straight out from the tile's square along
+    // the axis it lies off it by, its near edge and its far edge each by as
+    // much as their distances ask -- the tile's growth on that side, and
+    // more for every unit within LENS_REACH of the square's edge, where the
+    // squares are drawn up to LENS times larger again at the edge, easing to
+    // their own size at LENS_REACH -- and across that axis in proportion.
+    // Past the lens the push eases off again, by FAR of a unit for every unit
+    // further out -- or faster, where the plot's edge comes sooner, by no more
+    // than SQUEEZE -- so the squares there shrink a little and the swarm
+    // keeps inside the plot, and beyond, where it has died away, the squares
+    // stand still: a tile moves only the few hundred about it, and they move
+    // at once. A square never grows by more than GROW_CAP, and none
+    // comes to lie over another. Every other work steps back meanwhile
+    // (.is-pointing, .is-on), the line and the chain with them, and the
+    // pointer finds the squares where they are drawn (view()).
+    const LENS = 1.2, LENS_REACH = 56, FAR = 0.33, SQUEEZE = 0.6, GROW_CAP = 24;
     const rectOf = [];
-    plot.querySelectorAll('rect[data-i]').forEach(r => { rectOf[+r.dataset.i] = r; });
-    let moved = [], onRect = null;
+    plot.querySelectorAll('[data-i]').forEach(r => { rectOf[+r.dataset.i] = r; });
+    const ext = {
+      x0: Math.min(...sq.map(p => p.box[0])), x1: Math.max(...sq.map(p => p.box[0] + p.box[2])),
+      y0: Math.min(...sq.map(p => p.box[1])), y1: Math.max(...sq.map(p => p.box[1] + p.box[3])),
+    };
+    const floor = FOOT + AXIS_Y - typeUnits();          // the lowest a square may be pushed: over the decades
+    const IS = u => u * u * u - u * u * u * u / 2;      // smoothstep's integral, 0 to u
+    const shownBox = [];
+    const view = p => shownBox[p.i] || p.box;
+    let onRect = null;
     function magnify(t) {
-      moved.forEach(el => { el.style.transform = ''; });
-      moved = [];
+      shownBox.length = 0;
       if (onRect) onRect.classList.remove('is-on');
       onRect = t ? rectOf[t.q.i] : null;
       svg.classList.toggle('is-pointing', !!t);
-      svg.classList.toggle('is-open', !!t && t.open);
-      if (!t) return;
+      // A hand over a work, so it reads as something to press (.is-on-work).
+      fig.classList.toggle('is-on-work', !!t);
+      const goals = new Map();
+      if (!t) { glide(goals, 180); return; }
       onRect.classList.add('is-on');
       const q = t.q, [qx, qy, qw, qh] = q.box, [tx, ty, tw, th] = t.box;
-      const out = { l: Math.max(0, qx - tx), r: Math.max(0, tx + tw - qx - qw),
-                    t: Math.max(0, qy - ty), b: Math.max(0, ty + th - qy - qh) };
-      const reach = Math.max(60, REACH * Math.max(out.l, out.r, out.t, out.b));
-      // How much of the growth on its side a point at this distance from the
-      // square's edge is pushed by: all of it at the edge, easing to none.
-      const ease = g => { const u = Math.min(1, g / reach); return 1 - u * u * (3 - 2 * u); };
-      const cx = q.x0 + q.s / 2, cy = q.c;
+      const M = LENS_REACH;
+      // Each side's push: e, the tile's growth there; T, that and the lens,
+      // all of it at LENS_REACH; C, how much it eases off by per unit past it.
+      const side = (e, F, B) => {
+        e = Math.max(0, e);
+        const T = e + LENS * M / 2, run = F - 1.5 * M;
+        return { e, T, C: run > 0 ? clamp(Math.max(FAR, (T - Math.max(0, B - F)) / run), 0, SQUEEZE) : 0 };
+      };
+      const L = side(qx - tx, qx - ext.x0, qx), R = side(tx + tw - qx - qw, ext.x1 - qx - qw, W - qx - qw);
+      const U = side(qy - ty, qy - ext.y0, qy), D = side(ty + th - qy - qh, ext.y1 - qy - qh, floor - qy - qh);
+      const push = (o, g) => g <= M ? o.e + LENS * (g - M * IS(g / M))
+        : Math.max(0, g <= 2 * M ? o.T - o.C * M * IS(g / M - 1) : o.T - o.C * (g - 1.5 * M));
+      const cx = qx + qw / 2, cy = qy + qh / 2;
       sq.forEach(p => {
         if (p === q || !rectOf[p.i]) return;
-        // Each square is pushed along the axis it lies off the square by --
-        // its near edge and its far edge each as far as their distances ask,
-        // so it shrinks by as much as the swarm is crowded across it, and no
-        // two squares come to meet -- and across that axis in proportion.
-        const dx = p.x0 + p.s / 2 - cx, dy = p.c - cy, alongX = Math.abs(dx) >= Math.abs(dy);
+        const [px, py, s] = p.box;
+        const dx = px + s / 2 - cx, dy = py + s / 2 - cy, alongX = Math.abs(dx) >= Math.abs(dy);
         const m = Math.max(Math.abs(dx), Math.abs(dy)) || 1;
-        const near = Math.max(0, m - (q.s + p.s) / 2);
-        if (near >= reach) return;
-        const ex = dx < 0 ? out.l : out.r, ey = dy < 0 ? out.t : out.b;
-        const e = alongX ? ex : ey;
-        const pn = e * ease(near), pf = e * ease(near + p.s);
-        const k = (p.s + pf - pn) / p.s, f = (ease(near) + ease(near + p.s)) / 2;
-        const mx = alongX ? Math.sign(dx) * (pn + pf) / 2 : dx / m * ex * f;
-        const my = alongX ? dy / m * ey * f : Math.sign(dy) * (pn + pf) / 2;
-        if (Math.abs(mx) < 0.15 && Math.abs(my) < 0.15 && k > 0.99) return;
-        rectOf[p.i].style.transform = 'translate(' + mx.toFixed(2) + 'px,' + my.toFixed(2) + 'px) scale(' + k.toFixed(3) + ')';
-        moved.push(rectOf[p.i]);
+        const near = Math.max(0, m - ((alongX ? qw : qh) + s) / 2);
+        const ox = dx < 0 ? L : R, oy = dy < 0 ? U : D;
+        const pn = push(alongX ? ox : oy, near), pf = push(alongX ? ox : oy, near + s);
+        // Across the axis its row is drawn apart by 1 + by/m: it grows no
+        // more than that, so it never meets the squares beside it.
+        const spread = push(alongX ? oy : ox, near + s / 2);
+        const go = (pn + pf) / 2, by = (alongX ? dy : dx) / m * spread;
+        // Drawn as large as the room its edges are pushed to -- or, past
+        // GROW_CAP or its row's spreading, smaller, in the middle of it.
+        let k = Math.min((s + pf - pn) / s, (s + GROW_CAP) / s, 1 + 0.9 * spread / m);
+        if (k > 1) k = Math.max(1, k - G / s);      // and keeps a sliver of air about it
+        const mx = alongX ? Math.sign(dx) * go : by, my = alongX ? by : Math.sign(dy) * go;
+        if (Math.abs(mx) < 0.1 && Math.abs(my) < 0.1 && Math.abs(k - 1) < 0.01) return;
+        goals.set(p.i, [mx, my, k]);
+        shownBox[p.i] = [px + mx + s * (1 - k) / 2, py + my + s * (1 - k) / 2, s * k, s * k];
       });
+      // Where two squares pushed along different rays still come to meet --
+      // the big key works, mostly, near the diagonals -- whichever moved is
+      // drawn smaller about its middle (both, if both did) until they stand
+      // apart.
+      const boxes = sq.map(p => p === q ? null : view(p));
+      const order = boxes.map((x, i) => i).filter(i => boxes[i]).sort((i, j) => boxes[i][0] - boxes[j][0]);
+      const shrinkTo = (i, half) => {
+        const [x, y, w] = boxes[i], g = goals.get(i), k = g[2] * (2 * half) / w;
+        boxes[i] = shownBox[i] = [x + w / 2 - half, y + w / 2 - half, 2 * half, 2 * half];
+        goals.set(i, [g[0], g[1], k]);
+      };
+      for (let pass = 0; pass < 2; pass++) {
+        for (let u = 0; u < order.length; u++) {
+          const A = boxes[order[u]];
+          for (let v = u + 1; v < order.length; v++) {
+            const B = boxes[order[v]];
+            if (B[0] >= A[0] + A[2] + 30) break;
+            if (B[0] >= A[0] + A[2] || A[0] >= B[0] + B[2] || B[1] >= A[1] + A[3] || A[1] >= B[1] + B[3]) continue;
+            const i = order[u], j = order[v], mi = goals.has(i), mj = goals.has(j);
+            if (!mi && !mj) continue;
+            const room = Math.max(0, Math.max(Math.abs(A[0] + A[2] / 2 - B[0] - B[2] / 2),
+                                              Math.abs(A[1] + A[3] / 2 - B[1] - B[3] / 2)) - G);
+            const ha = A[2] / 2, hb = B[2] / 2;
+            if (mi && mj) { const l = room / (ha + hb); shrinkTo(i, ha * l); shrinkTo(j, hb * l); }
+            else if (mi) shrinkTo(i, Math.max(0, room - hb));
+            else shrinkTo(j, Math.max(0, room - ha));
+          }
+        }
+      }
+      glide(goals, t.open ? 360 : 180);
+    }
+
+    // The squares glide to where magnify() puts them by script, a frame at a
+    // time, each from wherever it is drawn now -- in 0.18s, or 0.36s for a
+    // tile pressed open, on the tiles' curve. (CSS transitions on a few
+    // hundred SVG squares at once cost the browser well over a frame each,
+    // and the swarm lagged behind its tile.) A square is drawn by its
+    // transform attribute: pushed by [mx, my] and scaled by k about its
+    // middle.
+    const EASE = p => 1 - (1 - p) ** 3;
+    const STILL = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let drawn = new Map(), anim = null, frame = 0;
+    const draw = (i, [mx, my, k]) => {
+      const [x, y, w, h] = sq[i].box;
+      if (!mx && !my && k === 1) { rectOf[i].removeAttribute('transform'); return; }
+      rectOf[i].setAttribute('transform', 'translate(' + ((x + w / 2) * (1 - k) + mx).toFixed(2) + ' ' +
+        ((y + h / 2) * (1 - k) + my).toFixed(2) + ') scale(' + k.toFixed(4) + ')');
+    };
+    function glide(goals, ms) {
+      const from = new Map();
+      new Set([...drawn.keys(), ...goals.keys()]).forEach(i => from.set(i, drawn.get(i) || [0, 0, 1]));
+      anim = { from, goals, t0: performance.now(), ms: STILL ? 0 : ms };
+      if (!frame) frame = requestAnimationFrame(tick);
+    }
+    function tick() {
+      frame = 0;
+      if (!anim) return;
+      const p = anim.ms ? Math.min(1, (performance.now() - anim.t0) / anim.ms) : 1, e = EASE(p);
+      const next = new Map();
+      anim.from.forEach((a, i) => {
+        const g = anim.goals.get(i) || [0, 0, 1];
+        const v = p === 1 ? g : [a[0] + (g[0] - a[0]) * e, a[1] + (g[1] - a[1]) * e, a[2] + (g[2] - a[2]) * e];
+        draw(i, v);
+        if (v[0] || v[1] || v[2] !== 1) next.set(i, v);
+      });
+      drawn = next;
+      if (p < 1) frame = requestAnimationFrame(tick);
+      else anim = null;
     }
 
     // The work the pointer is on: the one whose tile it is in; else, within
-    // a few units, the nearest square as the squares stand at rest -- or, with
-    // no tile standing, the nearest highlight's name. While a key is pressed,
-    // only the works of its own domain answer, and the chain's while the
-    // chain is lit.
+    // a few units, the nearest square where it is drawn. A work taken up from
+    // where it stood pushed aside keeps the pointer on its way into its own
+    // tile, which stands where the work stands at rest (hand). While a key is
+    // pressed, only the works of its own domain answer, and the chain's while
+    // the chain is lit.
     const answers = q => q.chain ? !(pinned !== null && pinned !== CONT && pinned !== scu)
                                  : pinned === null || q.w[1] === pinned;
+    let hand = null;
     function at(ev) {
       const r = svg.getBoundingClientRect(), k = W / r.width;
       const ux = (ev.clientX - r.left) * k, uy = (ev.clientY - r.top) * k;
+      const inside = ([x, y, w, h]) => ux >= x && ux <= x + w && uy >= y && uy <= y + h;
       if (tile) {
-        const [x, y, w, h] = tile.box;
-        if (ux >= x && ux <= x + w && uy >= y && uy <= y + h) return tile.q;
+        if (inside(tile.box)) return tile.q;
+        if (hand && hand.q === tile.q) {
+          const [ax, ay, aw, ah] = hand.box, [bx, by, bw, bh] = tile.box;
+          const x0 = Math.min(ax, bx), y0 = Math.min(ay, by);
+          if (inside([x0, y0, Math.max(ax + aw, bx + bw) - x0, Math.max(ay + ah, by + bh) - y0])) return tile.q;
+        }
       }
-      let best = null, off = 4;
+      // With a tile standing, the squares about it stand apart, so the
+      // pointer reaches further for the next -- and in the air just about the
+      // tile, with no square in reach, it stays with the tile.
+      let best = null, off = tile ? 14 : 4;
       const near = ([x, y, w, h], m) => {
         const d = Math.max(x - ux, ux - x - w, y - uy, uy - y - h, 0);
         if (d < off || (d === 0 && !best)) { off = d; best = m; }
       };
-      sq.forEach(m => { if (answers(m)) near(m.box, m); });
-      calls.forEach(a => { if (a.shown && answers(a.q) && (!tile || a.q === tile.q)) near(a.box, a.q); });
+      sq.forEach(m => { if ((!tile || m !== tile.q) && answers(m)) near(view(m), m); });
+      if (best && tile) hand = { q: best, box: view(best) };
+      if (!best && tile) {
+        const [x, y, w, h] = tile.box, AROUND = 24;
+        if (inside([x - AROUND, y - AROUND, w + 2 * AROUND, h + 2 * AROUND])) return tile.q;
+      }
       return best;
     }
 
@@ -7737,7 +7764,29 @@ if (document.readyState === 'loading') {
     });
     paint();
 
-    plot.querySelector('.bg-wipe-rect').getBoundingClientRect();
+    // The first tile costs the browser most -- its styles, its type, its
+    // measuring -- so one is made unseen and let go once the graph is drawn,
+    // while the page is idle, and the first hover starts as quickly as the
+    // rest.
+    (window.requestIdleCallback || setTimeout)(() => {
+      if (tile || !scroller.isConnected) return;
+      const warm = { q: sq.find(p => !p.w[6]), el: null, open: true };
+      attach(warm, warm.q.box);
+      warm.el.style.visibility = 'hidden';
+      sideFor(warm.el.lastChild, TILE_FULL);
+      warm.el.remove();
+    });
+
+    // Once the field has wiped in, its mask goes: under it, every frame of a
+    // tile's push would draw the whole swarm twice over.
+    const wipe = plot.querySelector('.bg-wipe-rect');
+    const unmask = () => { const g = svg.querySelector('g[mask]'); if (g) g.removeAttribute('mask'); };
+    if (fig.classList.contains('bg-lit')) unmask();
+    else {
+      wipe.addEventListener('transitionend', unmask, { once: true });
+      setTimeout(unmask, 4000);
+    }
+    wipe.getBoundingClientRect();
     requestAnimationFrame(() => fig.classList.add('bg-lit'));
   }
 
