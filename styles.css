@@ -1866,10 +1866,6 @@ section { position: relative; }
 /* Stroobant's photograph, on page columns 2-6. The grid's first three tracks
    are page columns 1-6, six columns and five gaps, so it is set in by one
    column and its gap: a sixth of the span and a sixth of a gap. */
-.article-grid > .making-photo {
-  grid-column: 1 / span 3;
-  margin-left: calc(100% / 6 + var(--col-gap) / 6);
-}
 .article-grid > .article-body { grid-column: 3 / 5; margin-left: 0; width: 100%; }
 .article-image {
   aspect-ratio: 4/5;
@@ -3100,6 +3096,59 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .narr-film-cap { width: auto; }
 }
 
+/* Stroobant's study of the cuts beside the paragraph after the Granite Trip
+   film, out on the page's eight columns by the film's formula: the drawing on
+   columns 3-4, its caption on 1-2 standing on the drawing's foot (as
+   .math-fig's), the paragraph on 5-8 where the text column runs. Drawing and
+   paragraph share the top line. */
+.article-grid > .article-body .granite-cuts {
+  margin-left: calc(-100% - var(--col-gap));
+  width: calc(200% + var(--col-gap));
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+  align-items: start;
+}
+.article-body .narr-film + .granite-cuts { margin-top: 1.2em; }
+.granite-cuts > p { grid-column: 5 / 9; grid-row: 1; margin: 0; }
+.granite-cuts-fig {
+  grid-column: 1 / 5;
+  grid-row: 1;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+  align-items: end;
+}
+.granite-cuts-fig img { grid-column: 3 / 5; grid-row: 1; display: block; width: 100%; height: auto; }
+.granite-cuts-fig figcaption {
+  grid-column: 1 / 3;
+  grid-row: 1;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  font-feature-settings: "onum", "pnum";
+  text-rendering: optimizeLegibility;
+  overflow-wrap: anywhere;
+  color: rgba(255, 255, 255, .72);
+}
+@media (max-width: 900px) {
+  /* One column: the paragraph, then the drawing over the measure and its
+     caption under it. */
+  .article-grid > .article-body .granite-cuts {
+    margin-left: 0;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .granite-cuts > p { grid-column: 1; grid-row: 1; }
+  .granite-cuts-fig { grid-column: 1; grid-row: 2; margin-top: 1.2em; grid-template-columns: minmax(0, 1fr); }
+  .granite-cuts-fig img,
+  .granite-cuts-fig figcaption { grid-column: 1; grid-row: auto; }
+  .granite-cuts-fig figcaption { margin-top: 12px; }
+}
+
 /* Letters as two piles (.doc-deck), laid out on the page's eight columns out
    of the body's four, as the films are. The letters start as one pile on
    columns 1-4; pressed, its top sheet is carried across onto a second pile on
@@ -3256,9 +3305,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
     width: 100%;
   }
   /* One track, so everything set on the article grid takes the full measure. */
-  .article-grid > .making-photo,
   .article-grid > .article-body { grid-column: 1 / -1; }
-  .article-grid > .making-photo { margin-left: 0; }
   /* The portrait takes the measure, its caption under it in the flow. */
   .article-grid > .bill-portrait { margin: 0; }
   .bill-portrait-cap,
@@ -5285,10 +5332,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .bg-wipe-rect { width: 1340px; transition: none; }
 }
 
-/* Stroobant's second section ends on text, straight into the Granite Trip, so it
-   closes with the room the Deutsche Bank body closes with. */
-.making-body:has(+ section.journey) { padding-bottom: 120px; }
-
 /* Pull-quote bands -----------------------------------------------------
    Each quote gets its own full-width section, grounded in the colour the
    quote text used to be set in. Ink is whichever of black/white has the
@@ -5411,8 +5454,6 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
 /* Stroobant's body runs as two sections so his pull-quote can sit
    between them at full width. Padding stays here rather than inline so the
    band adjacency rules above outrank it and own the space on both sides. */
-.making-body { padding: 0; }
-.quote-band + section.making-body { padding-top: calc(1.2 * clamp(20px, 1.7vw, 26px)); }
 
 /* Section paddings lifted out of inline styles so the band adjacency rules
    above can override them. */
