@@ -3096,26 +3096,54 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .narr-film-cap { width: auto; }
 }
 
-/* Stroobant's four sheets for cutting the granite block down, after the
-   first photographs of the quarry: three working drawings and the study of the
-   successive cuts, which stood beside the paragraph after the film. Two page
-   columns each across the measure, the width the study stood at -- the
-   article grid's four tracks are two page columns each -- with their tops
-   level. Each caption is under its sheet, set as the photographs' are
-   (.journey-cap p and .journey-credit): the note, then the credit. */
+/* Stroobant's working drawings of faces C and D, after the projections (a
+   .journey-photo-six). Laid on the article grid's four tracks, two page
+   columns each: a drawing takes two of them, four page columns, so they go
+   two to a row, tops level, the article grid's 48px between rows. Each
+   caption is under its sheet, on two page columns as every caption in the
+   Granite Trip is, set as the photographs' are (.journey-cap p and
+   .journey-credit): the note, then the credit. */
 .granite-drawings {
   grid-column: 1 / -1;
   margin: 0 0 var(--col-gap);
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   column-gap: var(--col-gap);
+  row-gap: 48px;
   align-items: start;
 }
 .granite-drawings figure { margin: 0; }
 .granite-drawings img { display: block; width: 100%; height: auto; }
+.granite-drawing--wide { grid-column: span 2; }
+.granite-drawing--wide .journey-cap { width: calc(50% - var(--col-gap) / 2); }
+/* The study of the successive cuts, which stood beside the paragraph after
+   the film, under the block got out of the rock and its note: three page
+   columns, 5-7 of the measure's eight, its caption beside it on 3-4 standing
+   on its foot, as the copper model's stands beside its picture. */
+.granite-study {
+  grid-column: 1 / -1;
+  margin: 0 0 var(--col-gap);
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+}
+.granite-study figure {
+  grid-column: 3 / 8;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+  align-items: end;
+}
+.granite-study img { grid-column: 3 / -1; grid-row: 1; display: block; width: 100%; height: auto; }
+.granite-study .journey-cap { grid-column: 1 / 3; grid-row: 1; margin: 0; }
 @media (max-width: 900px) {
-  /* Two to a row, a row's gap under each pair. */
+  /* Two tracks: a working drawing across both, every caption across its
+     sheet; the study on the first half of the measure. */
   .granite-drawings { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 40px; }
+  .granite-drawing--wide .journey-cap { width: auto; }
+  .granite-study figure { grid-column: 1 / 5; display: block; }
+  .granite-study .journey-cap { margin-top: 12px; }
 }
 
 /* Letters as two piles (.doc-deck), laid out on the page's eight columns out
@@ -3729,10 +3757,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    it is brought back onto the measure the other captions sit on --
    .container's own recipe, applied inside the box that stepped out of it --
    and laid out on the measure's eight page columns, two of which it takes,
-   as every caption in the Granite Trip does. Under the contact sheet, on
-   columns 1-2, where the measure starts. Over the last picture, the stone at
-   sea, on columns 7-8, the column the port's caption stands in just above
-   it, with the same air between it and the picture. */
+   as every caption in the Granite Trip does: columns 3-4, beside the note in
+   the text column -- under the contact sheet (.journey-photo--noted), over the
+   last picture, the stone at sea (.journey-photo--noted-over). */
 .journey-photo-bleed > .journey-cap {
   max-width: var(--maxw);
   margin: 12px auto 0;
@@ -3741,17 +3768,50 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   grid-template-columns: repeat(8, minmax(0, 1fr));
   column-gap: var(--col-gap);
 }
-.journey-photo-bleed > .journey-cap > * { grid-column: 1 / 3; }
-.journey-photo-bleed > .journey-cap:first-child { margin: 0 auto 12px; }
-.journey-photo-bleed > .journey-cap:first-child > * { grid-column: 7 / -1; }
+.journey-photo-bleed > .journey-cap > * { grid-column: 3 / 5; }
+
+/* A photograph whose note has joined the account -- the block got out of the
+   rock, the polyhedron, the contact sheet. The note stands in the text column
+   under it, columns 5-8, in the body's type (.granite-note); what is left of
+   the caption -- what the picture shows, or the quarry's name, and the credit
+   -- on 3-4; both 12px under the picture, tops level. The caption is taken out of the
+   flow, as the bank's photograph's is, so the figure ends at the picture, and
+   the note is drawn up through the grid's 48px row gap and the figure's margin
+   to meet it. */
+.journey-photo--noted { position: relative; }
+.journey-photo--noted > .journey-cap { position: absolute; top: calc(100% + var(--note-gap, 12px)); margin: 0; }
+.journey-photo-measure.journey-photo--noted > .journey-cap,
+.journey-photo-six.journey-photo--noted > .journey-cap { grid-column: 3 / 5; grid-row: auto; }
+.journey-photo-bleed.journey-photo--noted > .journey-cap { left: 0; right: 0; margin: 0 auto; }
+.article-grid > .article-body.granite-note { margin: calc(12px - 48px - var(--col-gap)) 0 var(--col-gap); }
+/* The last picture, whose caption stands over it: the caption is hung from
+   the picture's top edge, out of the flow, level at the foot with the note
+   over it. */
+.journey-photo--noted-over { position: relative; }
+.journey-photo--noted-over > .journey-cap { position: absolute; left: 0; right: 0; bottom: calc(100% + var(--note-gap, 12px)); margin: 0 auto; }
+/* The port's note and the last picture's run on as one passage of the account
+   between the two pictures, a paragraph's gap between them (.article-body
+   p + p), with a little more air above and below than a caption's 12px: 36px,
+   a paragraph gap and a half. The two captions keep level with it -- the
+   port's with its first line, the last picture's with its last -- and the
+   passage is drawn through the row gaps and the figures' margins to stand
+   that far from both pictures. */
+.journey-photo--passage,
+.granite-passage { --note-gap: 36px; }
+.article-grid > .article-body.granite-passage {
+  margin: calc(var(--note-gap) - 48px - var(--col-gap)) 0;
+}
+/* A caption that is only a credit takes the credit's own setting: 14px, at
+   the 60% of a note's 75% it shows at under a note. */
+.journey-cap.journey-cap--credit p { font-size: 14px; opacity: .45; }
 
 /* Lead paragraphs sit above the opening photographs, in the same right-hand
    column the rest of the account uses. */
 .granite-lead { margin-bottom: 60px; }
 /* The full 8-column measure, inside the container gutters. Laid out on those
    eight page columns itself, so what sits inside it can be placed against
-   them: the photograph takes all eight, and its caption the first two,
-   under the picture's left-hand corner. */
+   them: the photograph takes all eight, and its caption two of them under it,
+   1-2 -- or 3-4 where its note has joined the account (.journey-photo--noted). */
 .journey-photo-measure {
   grid-column: 1 / -1;
   margin: 0 0 var(--col-gap);
@@ -3761,25 +3821,34 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 .journey-photo-measure img { grid-column: 1 / -1; }
 /* Where its caption names a place, the mark is set beside the name rather
-   than over it, the two as one row at the start of the measure, on column 1:
+   than over it, the two as one row at the caption's first column:
    the mark, then the name, with the air the mark carries when it stands over
    a name. The note runs under both, from the same edge. */
 .journey-photo-measure .journey-cap {
   grid-column: 1 / 3;
+}
+/* So too where a six-column picture's note has gone to the account and its
+   caption stands under it beside the note: the port's. */
+.journey-photo-measure .journey-cap,
+.journey-photo-six.journey-photo--noted > .journey-cap {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   column-gap: 14px;
   align-items: center;
 }
-.journey-photo-measure .journey-cap h5 { margin: 0; }
-.journey-photo-measure .journey-cap p { grid-column: 1 / -1; }
-.journey-photo-measure .journey-cap h5 + p { margin-top: 6px; }
-.journey-photo-measure .journey-cap::before {
+.journey-photo-measure .journey-cap h5,
+.journey-photo-six.journey-photo--noted > .journey-cap h5 { margin: 0; }
+.journey-photo-measure .journey-cap p,
+.journey-photo-six.journey-photo--noted > .journey-cap p { grid-column: 1 / -1; }
+.journey-photo-measure .journey-cap h5 + p,
+.journey-photo-six.journey-photo--noted > .journey-cap h5 + p { margin-top: 6px; }
+.journey-photo-measure .journey-cap::before,
+.journey-photo-six.journey-photo--noted > .journey-cap::before {
   /* The turned mark overhangs its 24px box by 3px each side (it is 30 long);
      the margins take that back, so its head stands on the column line and
      the gap to the name is the 14px it looks. */
   margin: 0 3px;
-  /* This is the one caption whose mark stands beside the name rather than over
+  /* These are the captions whose mark stands beside the name rather than over
      it, so the pin is turned a quarter to point across the gap at the name it
      marks instead of down at the column rule. Negative, the way .lb-next turns
      its arrow: the point hangs down, so a positive quarter swings it away from
@@ -3801,6 +3870,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 .journey-photo-pair figure { margin: 0; align-self: start; }
 .journey-photo-pair figure:nth-child(2) { margin-top: 100px; }
+/* A pair with its tops level instead: out of the quarry and the closed road. */
+.journey-photo-pair--level figure:nth-child(2) { margin-top: 0; }
 .journey-photo-pair .journey-cap { width: calc(50% - var(--col-gap) / 2); }
 /* Six page columns, flush to column 1, on the measure's eight laid out inside
    it as the full measure's are. Its caption stands beside it on columns 7-8,
@@ -3839,12 +3910,18 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 @media (max-width: 900px) {
   /* One track: every caption under its photograph, across the measure. */
   .journey-photo-measure .journey-cap,
+  .journey-photo-measure.journey-photo--noted > .journey-cap,
   .journey-photo-pair .journey-cap { grid-column: 1 / -1; width: auto; }
+  /* The caption back in the flow under its picture, the note under that. */
+  .journey-photo--noted > .journey-cap { position: static; margin-top: 12px; }
+  .journey-photo-bleed.journey-photo--noted > .journey-cap { margin: 12px auto 0; }
+  .journey-photo--noted-over > .journey-cap { position: static; margin: 0 auto 12px; }
+  .article-grid > .article-body.granite-note { margin: 0; }
+  .journey-photo-six.journey-photo--noted > .journey-cap { grid-column: 1 / -1; grid-row: 2; }
   .journey-photo-six img,
   .journey-photo-six .journey-cap { grid-column: 1 / -1; }
   .journey-photo-six .journey-cap { grid-row: 2; margin-top: 12px; }
-  .journey-photo-bleed > .journey-cap > *,
-  .journey-photo-bleed > .journey-cap:first-child > * { grid-column: 1 / -1; }
+  .journey-photo-bleed > .journey-cap > * { grid-column: 1 / -1; }
 }
 @media (max-width: 600px) {
   /* A phone: the pair one over the other, unstaggered. */
