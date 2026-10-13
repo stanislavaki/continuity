@@ -3320,6 +3320,14 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   line-height: 1.45;
   opacity: .75;
 }
+/* The photo credit under it, in the small caption style (.caption: sans 14 at
+   60%), its own line with a little air above. */
+.db-zapp-anchor > .db-zapp-note .db-zapp-credit {
+  display: block;
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: .6;
+}
 .db-portrait {
   grid-column: 5 / 7;
   grid-row: 1;
