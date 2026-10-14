@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=466" />
+<link rel="stylesheet" href="styles.css?v=469" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -4750,18 +4750,15 @@ document.querySelectorAll('.facts').forEach((facts) => {
   function next() { if (!images.length) return; current = (current + 1) % images.length; show(); }
   function prev() { if (!images.length) return; current = (current - 1 + images.length) % images.length; show(); }
 
-  // A photograph opens in the deck only if the deck would show it bigger. One
-  // the layout already runs about as large as the screen allows comes out no
-  // larger in the lightbox, so a press on it would only lay the same picture
-  // over the page; it gets neither the plus nor the click. Measured rather than
-  // listed, because which those are depends on the screen. The deck draws the
-  // whole photograph fitted into its stage -- the lightbox less its padding,
-  // which resolves even while it is shut -- and never past its own pixels; the
-  // page draws it at the larger of its box's two ratios to those pixels, which
-  // also covers a plate cropped to its box. The deck has to come out a tenth
-  // bigger at least. Every photograph stays in the deck, and on the gallery
-  // sheet, all the same. Taken again on resize, as each picture loads, and as
-  // the pointer comes onto one, since some change size as the page scrolls.
+  // Every photograph opens in the deck but the ones already as wide as the
+  // page -- across the whole measure, eight columns, or out to the window's
+  // edges -- which the lightbox would show no larger; those get neither the
+  // plus nor the press. Measured as drawn (a contained image by its picture,
+  // not its box) against the measure, read off the page's container: nine
+  // tenths of it or more. Every photograph stays in the deck, and on the
+  // gallery sheet, all the same. Taken again on resize, as each picture
+  // loads, and as the pointer comes onto one, since some change size as the
+  // page scrolls.
   const probes = new Map();   // background plates' own pixels, read off an Image
   function pixelsOf(el, url) {
     if (el.tagName === 'IMG') return el.naturalWidth ? [el.naturalWidth, el.naturalHeight] : null;
@@ -4775,17 +4772,12 @@ document.querySelectorAll('.facts').forEach((facts) => {
     }
     return probe.naturalWidth ? [probe.naturalWidth, probe.naturalHeight] : null;
   }
+  const measureBox = journey.querySelector('.container');
   function worthOpening(el) {
-    const px = pixelsOf(el, urlFromEl(el));
-    if (!px) return true;   // not loaded yet; taken again when it is
-    const [w, h] = px;
-    const pad = getComputedStyle(lb);
-    const stageW = document.documentElement.clientWidth - parseFloat(pad.paddingLeft) - parseFloat(pad.paddingRight);
-    const stageH = window.innerHeight - parseFloat(pad.paddingTop) - parseFloat(pad.paddingBottom);
-    const inDeck = Math.min(1, stageW / w, stageH / h);
-    const drawn = pictureOf(el).draw;
-    const onPage = Math.max(drawn.width / w, drawn.height / h);
-    return inDeck > onPage * 1.1;
+    if (!measureBox) return true;
+    const cs = getComputedStyle(measureBox);
+    const measure = measureBox.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    return pictureOf(el).draw.width < measure * .9;
   }
 
   // Where the picture itself is drawn: the element's box, but for an image laid
@@ -5120,7 +5112,12 @@ document.querySelectorAll('.facts').forEach((facts) => {
   }
 
   const isOpen = () => sheet.classList.contains('is-open');
+  // Holding the page takes its scrollbar away, and the page would widen by it
+  // under the sheet -- the button with it, out of line with the sheet's grid,
+  // which keeps a scrollbar of its own. The page is padded by the bar's width
+  // while it is held, so nothing moves.
   let overflowWas = '';
+  let paddingWas = '';
   function open() {
     draw();
     sheet.scrollTop = 0;
@@ -5129,8 +5126,11 @@ document.querySelectorAll('.facts').forEach((facts) => {
     btn.setAttribute('aria-expanded', 'true');
     btn.setAttribute('aria-label', 'Close the photographs');
     window.journeyDeck.closeTo = printFor;
+    const bar = window.innerWidth - document.documentElement.clientWidth;
     overflowWas = document.body.style.overflow;
+    paddingWas = document.body.style.paddingRight;
     document.body.style.overflow = 'hidden';
+    if (bar > 0) document.body.style.paddingRight = bar + 'px';
     sheet.querySelectorAll('video').forEach(v => {
       const p = v.play();
       if (p && p.catch) p.catch(() => {});
@@ -5143,6 +5143,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     btn.setAttribute('aria-label', 'Show all the photographs of the journey');
     window.journeyDeck.closeTo = null;
     document.body.style.overflow = overflowWas;
+    document.body.style.paddingRight = paddingWas;
     sheet.querySelectorAll('video').forEach(v => v.pause());
   }
   btn.addEventListener('click', () => (isOpen() ? close() : open()));
@@ -5153,19 +5154,31 @@ document.querySelectorAll('.facts').forEach((facts) => {
   btn.addEventListener('focus', draw);
 
   // The squares arrive with the first photographs of the quarry at
-  // Scarraciana -- the pair after the account -- riding up with its top edge until they reach
-  // their place, and stay to the end of the Sculpture Trip. The sticky dock is let down into
-  // the section to that photograph's top (--jg-drop): measured, since the
-  // prose above it sets how far down it stands, and measured again whenever
-  // the section changes height -- fonts arriving, a film opening, the width
-  // changing. The dock takes no room, so moving it never changes the height
-  // it is measured from.
+  // Scarraciana -- the pair after the account, Costantino and Bill beside the
+  // first cut (.granite-travel; the pair's old wrapper, which this looked for
+  // until it was rebuilt, is gone, and the squares had been standing from the
+  // section's top) -- riding up level with their top edge until they reach
+  // their place, and stay to the end of the workshop (Carrara), which they
+  // leave with: the dock's bottom margin is all that follows it (--jg-tail),
+  // and a sticky box keeps its margin box inside its section. The sticky dock is
+  // let down into the section to that top (--jg-drop), less the 10.5px its 48px
+  // box holds over the 27px mark: measured, since the prose above it sets how
+  // far down it stands, and measured again whenever the section changes height
+  // -- fonts arriving, a film opening, the width changing. The dock takes no
+  // room, so moving it never changes the height it is measured from.
   const journey = document.getElementById('journey');
-  const quarry = journey && journey.querySelector('#granite-trip .journey-photo-pair');
+  const quarry = journey && journey.querySelector('#granite-trip .granite-travel');
+  const workshop = journey && journey.querySelector('#sculpting');
   if (quarry) {
     const seat = () => {
-      const top = journey.getBoundingClientRect().top + parseFloat(getComputedStyle(journey).paddingTop);
-      journey.style.setProperty('--jg-drop', (quarry.getBoundingClientRect().top - top).toFixed(1) + 'px');
+      const box = journey.getBoundingClientRect();
+      const cs = getComputedStyle(journey);
+      const top = box.top + parseFloat(cs.paddingTop);
+      journey.style.setProperty('--jg-drop', (quarry.getBoundingClientRect().top - top - 10.5).toFixed(1) + 'px');
+      if (workshop) {
+        const end = box.bottom - parseFloat(cs.paddingBottom);
+        journey.style.setProperty('--jg-tail', Math.max(0, end - workshop.getBoundingClientRect().bottom).toFixed(1) + 'px');
+      }
     };
     seat();
     new ResizeObserver(seat).observe(journey);
