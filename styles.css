@@ -1565,6 +1565,28 @@ section { position: relative; }
     rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, .25) 70%, rgba(0, 0, 0, .7) 100%);
   pointer-events: none;
 }
+/* A caption over the globe, set on an arch: the small caption's type (14px,
+   at 60%) on the half circle above the disc and about its centre, the
+   sentence's length over pi in radius so it runs from the one side round to
+   the other. The script draws it and stands it on the disc's centre (see
+   buildPlaceGlobe); it takes no room and no press. Not on a narrow screen,
+   where the globe sits under Place, and an arch the sentence's width would
+   run off the screen's edge. */
+.place-globe-arch {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  fill: currentColor;
+}
+.place-globe-arch text { fill-opacity: .6; }
+@media (max-width: 900px) {
+  .place-globe-arch { display: none; }
+}
 .facts-rail--tail {
   row-gap: 0;
   /* The sticky sculpture carries a -1 x width margin-bottom to pull the hero

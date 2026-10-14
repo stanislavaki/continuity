@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=469" />
+<link rel="stylesheet" href="styles.css?v=470" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -211,6 +211,12 @@
              Frankfurt at its centre -- see buildPlaceGlobe in the journey
              globes script. -->
         <div class="place-globe reveal" id="placeGlobe" role="img" aria-label="Frankfurt am Main at the centre of the globe"></div>
+        <!-- A caption set on an arch over the globe: the half circle above the
+             disc, drawn and stood on its centre by buildPlaceGlobe. -->
+        <svg class="place-globe-arch reveal" id="placeGlobeArch" xmlns="http://www.w3.org/2000/svg">
+          <path id="placeGlobeArc" fill="none"/>
+          <text><textPath href="#placeGlobeArc" startOffset="50%" text-anchor="middle">change to the white globe from the journey chapter</textPath></text>
+        </svg>
       </div>
     </div>
   </section>
@@ -4457,7 +4463,32 @@ document.querySelectorAll('.facts').forEach((facts) => {
         container.style.marginTop = (capTop + disc * OVERSHOOT - fact.getBoundingClientRect().top - inset).toFixed(1) + 'px';
       }
       if (map) { map.resize(); map.setZoom(fitZoom()); }
+      drawArch();
     }
+
+    // The caption over the globe, on the half circle above the disc and about
+    // its centre, from the one side round to the other: its radius is the
+    // sentence's own length over pi, so the arch is as wide as the words need
+    // and they fill it end to end. Drawn again wherever place() puts the globe,
+    // and once the face has arrived, since the length is the face's.
+    const arch = document.getElementById('placeGlobeArch');
+    const arc = arch && arch.querySelector('path');
+    const words = arch && arch.querySelector('text');
+    function drawArch() {
+      if (!arch || narrow.matches) return;
+      const length = words.getComputedTextLength();
+      if (!length) return;
+      const r = length / Math.PI;
+      const room = 2 * parseFloat(getComputedStyle(arch).fontSize);   // the glyphs, outside the arc
+      const side = 2 * (r + room), c = side / 2;
+      arc.setAttribute('d', `M ${(c - r).toFixed(2)} ${c.toFixed(2)} A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${(c + r).toFixed(2)} ${c.toFixed(2)}`);
+      arch.setAttribute('width', side.toFixed(1));
+      arch.setAttribute('height', side.toFixed(1));
+      arch.setAttribute('viewBox', `0 0 ${side.toFixed(1)} ${side.toFixed(1)}`);
+      arch.style.left = (container.offsetLeft + container.offsetWidth / 2 - c).toFixed(1) + 'px';
+      arch.style.top = (container.offsetTop + container.offsetHeight / 2 - c).toFixed(1) + 'px';
+    }
+    if (document.fonts) document.fonts.ready.then(drawArch);
 
     // From a whole turn east of Frankfurt back to it, eased out: the centre
     // moves west, so the surface moves east, quickly at first and settling.
