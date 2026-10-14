@@ -105,17 +105,52 @@
      each way, so 34px puts the mark in a 24px square -- the pause bars' own
      height, which is what makes the two read as the same size. */
   --tts-x-len: 34px;
+  /* The page's pointers, after the iPad's: no outline, only a fill, a mid grey
+     at 65% -- one grey for every ground, since a cursor image cannot take its
+     colour from what is under it the way the iPad's does; this one holds on
+     the black sections and on the white alike. A light shadow under each,
+     dropped 1px and blurred 10, at 35%, gives it an edge on the
+     white and on a busy photograph; it is cut away from under the shape so
+     the fill stays one grey, and each image is 25px wider all round to hold
+     the blur. That makes them larger than 32px, which Chrome will not draw
+     where the image would cross the window's edge; there it takes the next
+     in the list, so each is followed by the same shape without the shadow,
+     held to 32px (the plus's bars to 32). Every hotspot is the middle.
+     The circle, 26px, is the pointer everywhere nothing more is meant. Where
+     a press does something it swells to 34px, as the iPad's does (named the
+     hand for the system pointer it stands in for), and the small controls
+     come up to meet it -- see 'The pointer's lift' at the end. Over photographs it is the lightbox's cross -- upright, a
+     plus, over one that opens the lightbox; as it stands, the X, over the one
+     open in it, which a click closes. One mark, turned: both are cut to the
+     gallery button's cross -- 9px arms, 34.5px end to end, here 35 to keep
+     whole pixels -- written out because a data URI cannot read the tokens. */
+  --cursor-dot: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='76' height='76' viewBox='0 0 76 76'%3E%3Cfilter id='s' x='-100%' y='-100%' width='300%' height='300%'%3E%3CfeGaussianBlur in='SourceAlpha' stdDeviation='10'/%3E%3CfeOffset dy='1'/%3E%3CfeComposite in2='SourceAlpha' operator='out'/%3E%3CfeComponentTransfer result='sh'%3E%3CfeFuncA type='linear' slope='0.35'/%3E%3C/feComponentTransfer%3E%3CfeComponentTransfer in='SourceGraphic' result='g'%3E%3CfeFuncA type='linear' slope='0.65'/%3E%3C/feComponentTransfer%3E%3CfeMerge%3E%3CfeMergeNode in='sh'/%3E%3CfeMergeNode in='g'/%3E%3C/feMerge%3E%3C/filter%3E%3Cg filter='url(%23s)' fill='%23808080'%3E%3Cg transform='translate(25 25)'%3E%3Ccircle cx='13' cy='13' r='13'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 38 38, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cg fill='%23808080' fill-opacity='0.65'%3E%3Ccircle cx='13' cy='13' r='13'/%3E%3C/g%3E%3C/svg%3E") 13 13, auto;
+  --cursor-hand: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 84 84'%3E%3Cfilter id='s' x='-100%' y='-100%' width='300%' height='300%'%3E%3CfeGaussianBlur in='SourceAlpha' stdDeviation='10'/%3E%3CfeOffset dy='1'/%3E%3CfeComposite in2='SourceAlpha' operator='out'/%3E%3CfeComponentTransfer result='sh'%3E%3CfeFuncA type='linear' slope='0.35'/%3E%3C/feComponentTransfer%3E%3CfeComponentTransfer in='SourceGraphic' result='g'%3E%3CfeFuncA type='linear' slope='0.65'/%3E%3C/feComponentTransfer%3E%3CfeMerge%3E%3CfeMergeNode in='sh'/%3E%3CfeMergeNode in='g'/%3E%3C/feMerge%3E%3C/filter%3E%3Cg filter='url(%23s)' fill='%23808080'%3E%3Ccircle cx='42' cy='42' r='17'/%3E%3C/g%3E%3C/svg%3E") 42 42, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23808080' fill-opacity='0.65'/%3E%3C/svg%3E") 16 16, pointer;
+  --cursor-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='85' height='85' viewBox='0 0 85 85'%3E%3Cfilter id='s' x='-100%' y='-100%' width='300%' height='300%'%3E%3CfeGaussianBlur in='SourceAlpha' stdDeviation='10'/%3E%3CfeOffset dy='1'/%3E%3CfeComposite in2='SourceAlpha' operator='out'/%3E%3CfeComponentTransfer result='sh'%3E%3CfeFuncA type='linear' slope='0.35'/%3E%3C/feComponentTransfer%3E%3CfeComponentTransfer in='SourceGraphic' result='g'%3E%3CfeFuncA type='linear' slope='0.65'/%3E%3C/feComponentTransfer%3E%3CfeMerge%3E%3CfeMergeNode in='sh'/%3E%3CfeMergeNode in='g'/%3E%3C/feMerge%3E%3C/filter%3E%3Cg filter='url(%23s)' fill='%23808080'%3E%3Cg transform='translate(25 25)'%3E%3Cpath d='M13 0h9v13h13v9H22v13h-9V22H0v-9h13z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 42 42, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='%23808080' fill-opacity='0.65'%3E%3Cpath d='M11.5 0h9v11.5h11.5v9H20.5V32h-9V20.5H0v-9h11.5z'/%3E%3C/g%3E%3C/svg%3E") 16 16, pointer;
+  /* The plus in white and in black, for over a dark part of a photograph and
+     over a light one (data-tone, set by the lightbox script); the grey one
+     above stands until the picture has been read. Near opaque, the same
+     shadow. */
+  --cursor-plus-white: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='85' height='85' viewBox='0 0 85 85'%3E%3Cfilter id='s' x='-100%' y='-100%' width='300%' height='300%'%3E%3CfeGaussianBlur in='SourceAlpha' stdDeviation='10'/%3E%3CfeOffset dy='1'/%3E%3CfeComposite in2='SourceAlpha' operator='out'/%3E%3CfeComponentTransfer result='sh'%3E%3CfeFuncA type='linear' slope='0.35'/%3E%3C/feComponentTransfer%3E%3CfeComponentTransfer in='SourceGraphic' result='g'%3E%3CfeFuncA type='linear' slope='0.9'/%3E%3C/feComponentTransfer%3E%3CfeMerge%3E%3CfeMergeNode in='sh'/%3E%3CfeMergeNode in='g'/%3E%3C/feMerge%3E%3C/filter%3E%3Cg filter='url(%23s)' fill='%23fff'%3E%3Cg transform='translate(25 25)'%3E%3Cpath d='M13 0h9v13h13v9H22v13h-9V22H0v-9h13z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 42 42, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='%23fff' fill-opacity='0.9'%3E%3Cpath d='M11.5 0h9v11.5h11.5v9H20.5V32h-9V20.5H0v-9h11.5z'/%3E%3C/g%3E%3C/svg%3E") 16 16, pointer;
+  --cursor-plus-black: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='85' height='85' viewBox='0 0 85 85'%3E%3Cfilter id='s' x='-100%' y='-100%' width='300%' height='300%'%3E%3CfeGaussianBlur in='SourceAlpha' stdDeviation='10'/%3E%3CfeOffset dy='1'/%3E%3CfeComposite in2='SourceAlpha' operator='out'/%3E%3CfeComponentTransfer result='sh'%3E%3CfeFuncA type='linear' slope='0.35'/%3E%3C/feComponentTransfer%3E%3CfeComponentTransfer in='SourceGraphic' result='g'%3E%3CfeFuncA type='linear' slope='0.9'/%3E%3C/feComponentTransfer%3E%3CfeMerge%3E%3CfeMergeNode in='sh'/%3E%3CfeMergeNode in='g'/%3E%3C/feMerge%3E%3C/filter%3E%3Cg filter='url(%23s)' fill='%23000'%3E%3Cg transform='translate(25 25)'%3E%3Cpath d='M13 0h9v13h13v9H22v13h-9V22H0v-9h13z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 42 42, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='%23000' fill-opacity='0.9'%3E%3Cpath d='M11.5 0h9v11.5h11.5v9H20.5V32h-9V20.5H0v-9h11.5z'/%3E%3C/g%3E%3C/svg%3E") 16 16, pointer;
+  --cursor-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='82' height='82' viewBox='0 0 82 82'%3E%3Cfilter id='s' x='-100%' y='-100%' width='300%' height='300%'%3E%3CfeGaussianBlur in='SourceAlpha' stdDeviation='10'/%3E%3CfeOffset dy='1'/%3E%3CfeComposite in2='SourceAlpha' operator='out'/%3E%3CfeComponentTransfer result='sh'%3E%3CfeFuncA type='linear' slope='0.35'/%3E%3C/feComponentTransfer%3E%3CfeComponentTransfer in='SourceGraphic' result='g'%3E%3CfeFuncA type='linear' slope='0.65'/%3E%3C/feComponentTransfer%3E%3CfeMerge%3E%3CfeMergeNode in='sh'/%3E%3CfeMergeNode in='g'/%3E%3C/feMerge%3E%3C/filter%3E%3Cg filter='url(%23s)' fill='%23808080'%3E%3Cg transform='translate(25 25)'%3E%3Cpath transform='rotate(45 16 16)' d='M11.5 -1.5h9v13h13v9H20.5v13h-9V20.5H-1.5v-9h13z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 41 41, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='%23808080' fill-opacity='0.65'%3E%3Cpath transform='rotate(45 16 16)' d='M11.5 -1.5h9v13h13v9H20.5v13h-9V20.5H-1.5v-9h13z'/%3E%3C/g%3E%3C/svg%3E") 16 16, pointer;
+  /* The cross likewise, over the photograph open in the lightbox. */
+  --cursor-x-white: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='82' height='82' viewBox='0 0 82 82'%3E%3Cfilter id='s' x='-100%' y='-100%' width='300%' height='300%'%3E%3CfeGaussianBlur in='SourceAlpha' stdDeviation='10'/%3E%3CfeOffset dy='1'/%3E%3CfeComposite in2='SourceAlpha' operator='out'/%3E%3CfeComponentTransfer result='sh'%3E%3CfeFuncA type='linear' slope='0.35'/%3E%3C/feComponentTransfer%3E%3CfeComponentTransfer in='SourceGraphic' result='g'%3E%3CfeFuncA type='linear' slope='0.9'/%3E%3C/feComponentTransfer%3E%3CfeMerge%3E%3CfeMergeNode in='sh'/%3E%3CfeMergeNode in='g'/%3E%3C/feMerge%3E%3C/filter%3E%3Cg filter='url(%23s)' fill='%23fff'%3E%3Cg transform='translate(25 25)'%3E%3Cpath transform='rotate(45 16 16)' d='M11.5 -1.5h9v13h13v9H20.5v13h-9V20.5H-1.5v-9h13z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 41 41, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='%23fff' fill-opacity='0.9'%3E%3Cpath transform='rotate(45 16 16)' d='M11.5 -1.5h9v13h13v9H20.5v13h-9V20.5H-1.5v-9h13z'/%3E%3C/g%3E%3C/svg%3E") 16 16, pointer;
+  --cursor-x-black: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='82' height='82' viewBox='0 0 82 82'%3E%3Cfilter id='s' x='-100%' y='-100%' width='300%' height='300%'%3E%3CfeGaussianBlur in='SourceAlpha' stdDeviation='10'/%3E%3CfeOffset dy='1'/%3E%3CfeComposite in2='SourceAlpha' operator='out'/%3E%3CfeComponentTransfer result='sh'%3E%3CfeFuncA type='linear' slope='0.35'/%3E%3C/feComponentTransfer%3E%3CfeComponentTransfer in='SourceGraphic' result='g'%3E%3CfeFuncA type='linear' slope='0.9'/%3E%3C/feComponentTransfer%3E%3CfeMerge%3E%3CfeMergeNode in='sh'/%3E%3CfeMergeNode in='g'/%3E%3C/feMerge%3E%3C/filter%3E%3Cg filter='url(%23s)' fill='%23000'%3E%3Cg transform='translate(25 25)'%3E%3Cpath transform='rotate(45 16 16)' d='M11.5 -1.5h9v13h13v9H20.5v13h-9V20.5H-1.5v-9h13z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 41 41, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='%23000' fill-opacity='0.9'%3E%3Cpath transform='rotate(45 16 16)' d='M11.5 -1.5h9v13h13v9H20.5v13h-9V20.5H-1.5v-9h13z'/%3E%3C/g%3E%3C/svg%3E") 16 16, pointer;
 }
 html, body { background: var(--bg); color: var(--ink); font-family: var(--sans); }
 html { scroll-behavior: smooth; }
 body {
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
-  cursor: none;
+  cursor: var(--cursor-dot);   /* none while the drawn cursor is on (the tweaks) */
   overflow-x: hidden;
   letter-spacing: -0.005em;
 }
 a { color: inherit; text-decoration: none; }
+/* Links and disclosures get the browser's own hand unless told otherwise; the
+   page's hand instead. Unweighted, so any rule of the page's own still wins. */
+:where(a[href], summary) { cursor: var(--cursor-hand); }
 img, svg { display: block; max-width: 100%; }
 
 /* Custom cursor */
@@ -228,7 +263,7 @@ body.light .cursor { color: #000; }
   font: inherit;
   width: 48px; height: 48px;
   display: grid; place-items: center;
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   position: fixed;
   right: var(--gutter, 24px);
   top: 33px;
@@ -470,7 +505,7 @@ body.light .menu-btn { color: #000; }
   /* The hand, as over a link. Never `none`: TWEAK_DEFAULTS ships the custom
      cursor off, which puts the body back on the native pointer, and hiding that
      would leave nothing at all over the control. */
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   opacity: 1;
   transition: opacity .3s ease, transform .5s cubic-bezier(.22, 1, .36, 1);
 }
@@ -633,7 +668,7 @@ body.light .crail-panel {
      translations keep their capitals. */
   text-transform: lowercase;
   white-space: nowrap;
-  cursor: pointer;              /* the hand, as on the rail */
+  cursor: var(--cursor-hand);              /* the hand, as on the rail */
   /* Off its part, where crailSpread() has had to move it. A translate rather
      than a transform, which the entrance below has. */
   translate: 0 var(--shift, 0px);
@@ -814,7 +849,7 @@ body.light .lang { color: #000; }
   background: transparent;
   border: none;
   border-radius: 0;
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
 }
@@ -839,7 +874,7 @@ body.light .lang { color: #000; }
   font: inherit;
   letter-spacing: inherit;    /* not part of `font`, and buttons reset it */
   white-space: nowrap;
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
   transition: color .25s ease;
@@ -2181,14 +2216,14 @@ section { position: relative; }
   height: 2px;
   background: rgba(255,255,255,.2);
   outline: none;
-  cursor: none;
+  cursor: var(--cursor-dot);
 }
 .topo-slider input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none;
   width: 18px; height: 18px; border-radius: 0;
   background: var(--signal-yellow);
   transform: rotate(45deg);
-  cursor: none;
+  cursor: var(--cursor-dot);
 }
 .topo-toggle {
   display: inline-flex; gap: 8px;
@@ -2198,7 +2233,7 @@ section { position: relative; }
   background: transparent; border: 1px solid rgba(255,255,255,.2);
   color: #fff; padding: 14px 18px;
   font-family: var(--mono); font-size: 11px; letter-spacing: .15em; text-transform: uppercase;
-  cursor: none;
+  cursor: var(--cursor-dot);
   transition: all .2s ease;
 }
 .topo-toggle button.is-active { background: var(--signal-yellow); color: #000; border-color: var(--signal-yellow); }
@@ -2294,6 +2329,14 @@ section { position: relative; }
 /* A control given the hidden attribute goes, whatever display its own rule
    sets -- the transport is hidden this way for now, see the markup. */
 .tts-controls [hidden] { display: none; }
+/* The second row is the play button's 64px whether or not the button is
+   there: the cluster's foot is set (above) so the row's centre, and the
+   letters' capitals with it, stand 32px up. With the transport hidden the
+   row fell to the menu's own 48px and the letters to 8px under --corner-y.
+   The phone's layout places the menu by its own rules. */
+@media (min-width: 901px) {
+  .tts-controls { grid-template-rows: auto 64px; }
+}
 body.dark  .tts-controls { color: #fff; }
 body.light .tts-controls { color: #000; }
 /* The play triangle rides at the end of the language menu: centred on its
@@ -2318,7 +2361,7 @@ body.light .tts-controls { color: #000; }
   color: inherit;
   border: none;
   border-radius: 0;
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   -webkit-tap-highlight-color: transparent;
 }
 .tts-toggle:hover .tts-icon { transform: scale(1.12); }
@@ -2357,7 +2400,7 @@ body.light .tts-controls { color: #000; }
      other two turned black. Every mark here is drawn out of currentColor. */
   color: inherit;
   border: none;
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   pointer-events: none;
   -webkit-tap-highlight-color: transparent;
   transition: width .24s cubic-bezier(.22, 1, .36, 1),
@@ -2455,7 +2498,7 @@ body.light .tts-controls { color: #000; }
   background: transparent;
   color: inherit;
   border: none;
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   pointer-events: none;
   -webkit-tap-highlight-color: transparent;
   transition: height .24s cubic-bezier(.22, 1, .36, 1),
@@ -2716,7 +2759,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   border-radius: 0;
   background: #000;
   color: #fff;
-  cursor: pointer;   /* the hand, as over the transport and the rail; the page's own cursor steps aside */
+  cursor: var(--cursor-hand);   /* the hand, as over the transport and the rail; the page's own cursor steps aside */
   -webkit-tap-highlight-color: transparent;
 }
 .narr-film-preview img {
@@ -2774,7 +2817,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   border-radius: 0;
   background: transparent;
   color: #fff;
-  cursor: pointer;   /* the hand, as over the transport; the page's own cursor steps aside */
+  cursor: var(--cursor-hand);   /* the hand, as over the transport; the page's own cursor steps aside */
   opacity: 0;
   pointer-events: none;
   filter: drop-shadow(0 0 8px rgba(0, 0, 0, .55));
@@ -2839,7 +2882,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   border-radius: 0;
   background: transparent;
   color: #fff;
-  cursor: pointer;   /* the hand, as over the transport; the page's own cursor steps aside */
+  cursor: var(--cursor-hand);   /* the hand, as over the transport; the page's own cursor steps aside */
   opacity: 0;
   pointer-events: none;
   filter: drop-shadow(0 0 8px rgba(0, 0, 0, .55));
@@ -2862,7 +2905,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   border-radius: 0;
   background: transparent;
   color: #fff;
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   opacity: 0;
   pointer-events: none;
   filter: drop-shadow(0 0 8px rgba(0, 0, 0, .55));
@@ -2926,7 +2969,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   right: 96px;
   bottom: 45px;
   height: 24px;
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   touch-action: none;
   opacity: 0;
   pointer-events: none;
@@ -3106,7 +3149,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   padding: 0;
   border: 0;
   background: none;
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   perspective: 2200px;
 }
 .granite-flip-turn:focus { outline: none; }
@@ -3234,10 +3277,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   border: 0;
   background: none;
   color: inherit;
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   -webkit-tap-highlight-color: transparent;
 }
-.doc-deck-pile:disabled { cursor: default; }
+.doc-deck-pile:disabled { cursor: var(--cursor-dot); }
 .doc-deck-pile:focus { outline: none; }
 .doc-deck-pile:focus-visible { outline: 2px solid currentColor; outline-offset: -2px; }
 .doc-deck-page {
@@ -3636,7 +3679,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   display: block;
   /* The hand, as over the transport and the rail; the page's own cursor steps
      aside. */
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   opacity: 0;
   /* Opacity only, for the same reason the names carry none on the transform:
      it is rewritten every frame as the camera moves, and a transition there
@@ -5289,7 +5332,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   letter-spacing: -0.02em;
   color: var(--tc);
   white-space: nowrap;
-  cursor: pointer;      /* the hand, as over the rail and the transport */
+  cursor: var(--cursor-hand);      /* the hand, as over the rail and the transport */
   transition: opacity 0.4s ease, color 0.4s ease;
 }
 .bg-key:focus { outline: none; }
@@ -5478,13 +5521,13 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 #billGraphPlot4 .bg-kw { transition: opacity 0.18s ease; }
 /* While a work is under the pointer the pointer is a hand: a press opens its tile. */
 #billGraph3.is-on-work,
-#billGraph4.is-on-work { cursor: pointer; }
-/* Over a key work's name the pointer stays what it is about it -- the arrow,
+#billGraph4.is-on-work { cursor: var(--cursor-hand); }
+/* Over a key work's name the pointer stays what it is about it -- the circle,
    or the hand over a work that answers -- never the text bar. */
 #billGraphPlot3 .bg-kw,
-#billGraphPlot4 .bg-kw { cursor: default; }
+#billGraphPlot4 .bg-kw { cursor: var(--cursor-dot); }
 #billGraph3.is-on-work .bg-kw,
-#billGraph4.is-on-work .bg-kw { cursor: pointer; }
+#billGraph4.is-on-work .bg-kw { cursor: var(--cursor-hand); }
 .bg-kw text { font-family: var(--sans); letter-spacing: -0.01em; }
 .bg-kw .bg-kw-title { font-weight: 600; }
 .bg-kw .bg-kw-when { font-weight: 500; fill-opacity: 0.78; }
@@ -5556,7 +5599,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    works lying along it in red over the years Bill kept at it.
    Pressed, it holds every domain back. Its works are drawn
    on it and nowhere else. */
-.bg-band { cursor: pointer; transition: opacity 0.4s ease; }
+.bg-band { cursor: var(--cursor-hand); transition: opacity 0.4s ease; }
 .bg-band.dim { opacity: 0.1; pointer-events: none; }
 .bg-band-pad { fill: transparent; }
 /* Focus: one domain lit, the rest shaded -- held back far enough to read
@@ -5880,6 +5923,7 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   object-fit: contain;
   display: block;
   user-select: none;
+  cursor: var(--cursor-x);
 }
 .lb-close, .lb-prev, .lb-next {
   position: fixed;
@@ -5890,7 +5934,7 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   height: 48px;
   display: grid;
   place-items: center;
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   z-index: 701;
 }
 /* In the screen's upper right corner, where the journey gallery's squares
@@ -5930,6 +5974,12 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   .lb-arrow { transition: none; }
   .lb-prev:hover .lb-arrow { transform: rotate(90deg); }
   .lb-next:hover .lb-arrow { transform: rotate(-90deg); }
+}
+/* With a mouse the photograph itself wears the close cross as the pointer
+   (--cursor-x) and a click on it closes, so the button stands down. On a
+   touch screen there is no pointer to wear it, and the button stays. */
+@media (hover: hover) and (pointer: fine) {
+  .lb-close { display: none; }
 }
 .lb-prev, .lb-next {
   top: 50%; transform: translateY(-50%);
@@ -6023,7 +6073,16 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   .lb-next { right: auto; left: calc(50% + 16px); }
   .lb-counter { top: 24px; }
 }
-.lb-clickable { cursor: pointer; }
+.lb-clickable { cursor: var(--cursor-plus); }
+/* White over a dark part of the picture, black over a light one, read off
+   the photograph under the pointer; none where the picture is not drawn --
+   a contained image's margins, which do not open it either. */
+:is(.lb-clickable, .jg-frame img, .jg-frame video)[data-tone="dark"] { cursor: var(--cursor-plus-white); }
+:is(.lb-clickable, .jg-frame img, .jg-frame video)[data-tone="light"] { cursor: var(--cursor-plus-black); }
+.lb-clickable[data-tone="none"] { cursor: var(--cursor-dot); }
+/* And the cross over the photograph open in the lightbox, the same way. */
+.lb-stage :is(img, video)[data-tone="dark"] { cursor: var(--cursor-x-white); }
+.lb-stage :is(img, video)[data-tone="light"] { cursor: var(--cursor-x-black); }
 
 /* ---- Journey gallery ----
    The button: four squares in the screen's upper right corner, where the
@@ -6072,7 +6131,7 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   border: 0;
   background: none;
   color: #fff;
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   pointer-events: auto;
   transition: color .3s ease;
 }
@@ -6187,7 +6246,7 @@ body.light .jg-btn { color: var(--ink); }
   color: inherit;
   font: inherit;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-hand);
   /* The item's box is its whole share of the row -- over a short photograph,
      the empty space the tallest one in the row leaves above it -- so the item
      itself lets the pointer through, and only what is drawn takes it: the
@@ -6231,6 +6290,7 @@ body.light .jg-btn { color: var(--ink); }
   max-width: 100%;
   max-height: 100cqi;
   transform-origin: var(--tilt-at, 50% 50%);
+  cursor: var(--cursor-plus);   /* a photograph of the deck, as on the page */
   transition: transform .3s cubic-bezier(.34, 1.8, .64, 1);
   transition: transform .55s linear(0, 0.061 3.12%, 0.216 6.25%, 0.425 9.38%, 0.650 12.5%,
     0.860 15.6%, 1.036 18.8%, 1.165 21.9%, 1.243 25%, 1.274 28.1%, 1.265 31.2%,
@@ -6358,4 +6418,139 @@ body.light .jg-btn { color: var(--ink); }
   .footer-rowend { display: none; }   /* single column: no row to close */
   .footer-grid { grid-template-columns: 1fr; row-gap: 40px; }
   .footer-col { gap: 40px; }
+}
+
+/* ---- The pointer's lift ----
+   After the iPad. Where a press does something the pointer swells (--cursor-hand)
+   and the small controls -- buttons drawn round a single mark -- come up to
+   meet it: 8% larger, on a little overshoot, over a soft rounded plate in the
+   pointer's own grey, as if the pointer had settled under the mark. Large
+   things a press opens -- the film's still, the flip card, the deck of
+   documents, the graph, the photographs -- stay as they are, as big content
+   does on the iPad. With a mouse only: touch has no hover to lift on.
+
+   The plate is cut to the mark, not to the button: the buttons are hit areas,
+   sized for the finger and differently padded -- the arrows' box is no wider
+   than the arrow, the film's buttons are 64px round a 24px glyph, the footer's
+   icons fill theirs -- so a plate on the box came out a different shape on
+   each and, under the arrows, narrower than the mark. Each is the mark's own
+   box and 10px all round, centred on it, its corners 14px. It is the button's
+   ::before, set behind the mark (the button isolates, so z-index -1 stays
+   inside it), and it comes up from a little smaller as it fades in. */
+@media (hover: hover) and (pointer: fine) {
+  .menu-btn, .lang-btn, .tts-toggle, .tts-prev, .tts-next, .tts-exit,
+  .narr-film-toggle, .narr-film-collapse, .narr-film-full,
+  .lb-prev, .lb-next, .jg-btn, .footer-social a {
+    isolation: isolate;
+    --plate-w: 44px;
+    --plate-h: 44px;
+  }
+  /* Static in the flow until now; the plate needs them to stand on. */
+  .tts-toggle, .tts-exit, .footer-social a { position: relative; }
+  .menu-btn::before, .lang-btn::before, .tts-toggle::before,
+  .tts-prev::before, .tts-next::before, .tts-exit::before,
+  .narr-film-toggle::before, .narr-film-collapse::before,
+  .narr-film-full::before, .lb-prev::before, .lb-next::before,
+  .jg-btn::before, .footer-social a::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--plate-w);
+    height: var(--plate-h);
+    translate: -50% -50%;
+    border-radius: 14px;
+    background: rgba(128, 128, 128, .2);
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    scale: .85;
+    transition: opacity .2s ease, scale .3s cubic-bezier(.3, 1.5, .5, 1);
+  }
+  .menu-btn:hover::before, .lang-btn:hover::before, .tts-toggle:hover::before,
+  .tts-prev:hover::before, .tts-next:hover::before, .tts-exit:hover::before,
+  .narr-film-toggle:hover::before, .narr-film-collapse:hover::before,
+  .narr-film-full:hover::before, .lb-prev:hover::before, .lb-next:hover::before,
+  .jg-btn:hover::before, .footer-social a:hover::before {
+    opacity: 1;
+    scale: 1;
+  }
+  /* Each mark and its 10px. The play button's, the film's three and the
+     default are 24px glyphs. */
+  .menu-btn { --plate-w: 48px; --plate-h: 48px; }                    /* 28px plus */
+  .jg-btn { --plate-w: 47px; --plate-h: 47px; }                      /* the 27px squares */
+  .tts-exit { --plate-w: 48px; --plate-h: 48px; }                    /* the cross, 28px across */
+  .tts-prev, .tts-next { --plate-w: calc(var(--tts-tri-w) * 4 + 20px); }  /* two triangles */
+  .lb-prev, .lb-next {                                                /* the arrow, 14 bars by 11 */
+    --plate-w: calc(var(--lb-arrow-box) + 20px);
+    --plate-h: calc(var(--lb-arrow-box) * 11 / 14 + 20px);
+  }
+  .footer-social a { --plate-w: 66px; --plate-h: 66px; }             /* 46px of drawing */
+  /* The language button reaches past its two letters, further on the left
+     than the right, so its plate is set from the letters' own edges: 16px
+     and .42em in from the button's sides (see .lang-btn), less the 10px;
+     and up and down from their capitals, .704 of --lang-type tall and
+     centred in the 48px row, and 10px. */
+  .lang-btn::before {
+    left: 6px;
+    right: calc(.42em - 10px);
+    top: calc(14px - .352 * var(--lang-type));
+    bottom: calc(14px - .352 * var(--lang-type));
+    width: auto;
+    height: auto;
+    translate: none;
+  }
+  /* The skip buttons clip, so they can open sideways out of nothing; once
+     open and under the pointer there is nothing to hide, and the plate is
+     wider than they are. */
+  .tts-prev:hover, .tts-next:hover { overflow: visible; }
+
+  .menu-btn:hover, .lang-btn:hover, .tts-toggle:hover, .tts-prev:hover,
+  .tts-next:hover, .tts-exit:hover, .narr-film-toggle:hover,
+  .narr-film-collapse:hover, .narr-film-full:hover, .lb-prev:hover,
+  .lb-next:hover, .jg-btn:hover, .footer-social a:hover {
+    scale: 1.08;
+  }
+  /* A transition list cannot be added to, only restated, so each control's
+     own transitions are carried over here in full. */
+  .menu-btn, .lang-btn, .tts-toggle, .lb-prev, .lb-next {
+    transition: scale .3s cubic-bezier(.3, 1.5, .5, 1);
+  }
+  .tts-prev, .tts-next, .tts-exit {
+    transition: width .24s cubic-bezier(.22, 1, .36, 1),
+                transform .24s cubic-bezier(.22, 1, .36, 1),
+                opacity .18s ease-out,
+                height .24s cubic-bezier(.22, 1, .36, 1),
+                scale .3s cubic-bezier(.3, 1.5, .5, 1);
+  }
+  .tts-exit { transition-delay: .08s, .08s, .08s, .08s, 0s; }
+  .narr-film-toggle, .narr-film-collapse, .narr-film-full {
+    transition: opacity .2s ease, scale .3s cubic-bezier(.3, 1.5, .5, 1);
+  }
+  .jg-btn { transition: color .3s ease, scale .3s cubic-bezier(.3, 1.5, .5, 1); }
+  .footer-social a {
+    transition: opacity 150ms ease, color 150ms ease, scale .3s cubic-bezier(.3, 1.5, .5, 1);
+  }
+  /* The marks that grew or slid inside their buttons hold still: the button
+     lifts instead, and a mark that moved would leave its plate off-centre. */
+  .menu-btn:not(.is-open):hover svg,
+  .tts-toggle:hover .tts-icon,
+  .tts-exit:hover .tts-icon,
+  .narr-film-toggle:hover .narr-film-glyph,
+  .jg-btn:hover .jg-ico { transform: none; }
+  .menu-btn.is-open:hover svg { transform: rotate(135deg); }
+  .lb-prev:hover .lb-arrow { transform: rotate(90deg); }
+  .lb-next:hover .lb-arrow { transform: rotate(-90deg); }
+}
+/* Asked for less motion, the plate comes up and nothing grows. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
+  .menu-btn:hover, .lang-btn:hover, .tts-toggle:hover, .tts-prev:hover,
+  .tts-next:hover, .tts-exit:hover, .narr-film-toggle:hover,
+  .narr-film-collapse:hover, .narr-film-full:hover, .lb-prev:hover,
+  .lb-next:hover, .jg-btn:hover, .footer-social a:hover { scale: none; }
+  .menu-btn::before, .lang-btn::before, .tts-toggle::before,
+  .tts-prev::before, .tts-next::before, .tts-exit::before,
+  .narr-film-toggle::before, .narr-film-collapse::before,
+  .narr-film-full::before, .lb-prev::before, .lb-next::before,
+  .jg-btn::before, .footer-social a::before { scale: none; }
 }

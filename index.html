@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=432" />
+<link rel="stylesheet" href="styles.css?v=466" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -2034,7 +2034,7 @@ function applyTweaks(cfg) {
   const c = document.getElementById('cursor');
   const d = document.getElementById('cursorDot');
   if (cfg.cursor === 'off') {
-    document.body.style.cursor = 'auto';
+    document.body.style.cursor = '';
     c.style.display = 'none';
     d.style.display = 'none';
   } else {
@@ -4688,6 +4688,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
   function show() {
     if (!images.length) return;
     const it = images[current];
+    delete lbImg.dataset.tone;     // read again as the new picture arrives
+    delete lbVideo.dataset.tone;
     // One plate is on screen at a time and the other is emptied, not merely
     // hidden: a <video> left with its source keeps decoding behind a display:
     // none, and paging past the passage would leave it running for the rest of
@@ -4748,17 +4750,183 @@ document.querySelectorAll('.facts').forEach((facts) => {
   function next() { if (!images.length) return; current = (current + 1) % images.length; show(); }
   function prev() { if (!images.length) return; current = (current - 1 + images.length) % images.length; show(); }
 
-  // Wire click handlers on eligible elements
+  // A photograph opens in the deck only if the deck would show it bigger. One
+  // the layout already runs about as large as the screen allows comes out no
+  // larger in the lightbox, so a press on it would only lay the same picture
+  // over the page; it gets neither the plus nor the click. Measured rather than
+  // listed, because which those are depends on the screen. The deck draws the
+  // whole photograph fitted into its stage -- the lightbox less its padding,
+  // which resolves even while it is shut -- and never past its own pixels; the
+  // page draws it at the larger of its box's two ratios to those pixels, which
+  // also covers a plate cropped to its box. The deck has to come out a tenth
+  // bigger at least. Every photograph stays in the deck, and on the gallery
+  // sheet, all the same. Taken again on resize, as each picture loads, and as
+  // the pointer comes onto one, since some change size as the page scrolls.
+  const probes = new Map();   // background plates' own pixels, read off an Image
+  function pixelsOf(el, url) {
+    if (el.tagName === 'IMG') return el.naturalWidth ? [el.naturalWidth, el.naturalHeight] : null;
+    if (el.tagName === 'VIDEO') return el.videoWidth ? [el.videoWidth, el.videoHeight] : null;
+    let probe = probes.get(url);
+    if (!probe) {
+      probe = new Image();
+      probe.onload = () => refresh();
+      probe.src = url;
+      probes.set(url, probe);
+    }
+    return probe.naturalWidth ? [probe.naturalWidth, probe.naturalHeight] : null;
+  }
+  function worthOpening(el) {
+    const px = pixelsOf(el, urlFromEl(el));
+    if (!px) return true;   // not loaded yet; taken again when it is
+    const [w, h] = px;
+    const pad = getComputedStyle(lb);
+    const stageW = document.documentElement.clientWidth - parseFloat(pad.paddingLeft) - parseFloat(pad.paddingRight);
+    const stageH = window.innerHeight - parseFloat(pad.paddingTop) - parseFloat(pad.paddingBottom);
+    const inDeck = Math.min(1, stageW / w, stageH / h);
+    const drawn = pictureOf(el).draw;
+    const onPage = Math.max(drawn.width / w, drawn.height / h);
+    return inDeck > onPage * 1.1;
+  }
+
+  // Where the picture itself is drawn: the element's box, but for an image laid
+  // out with object-fit, which draws it larger than the box and crops it
+  // (cover) or smaller and leaves margins (contain -- the emblem). Only where
+  // it is drawn, and inside the box, does the plus show or a press open it.
+  function pictureOf(el) {
+    const box = el.getBoundingClientRect();
+    const px = pixelsOf(el, urlFromEl(el));
+    const cs = getComputedStyle(el);
+    const fit = cs.objectFit;
+    if (!px || !/^(contain|cover|scale-down)$/.test(fit)) return { box, px, draw: box };
+    const [w, h] = px;
+    let s = fit === 'cover' ? Math.max(box.width / w, box.height / h) : Math.min(box.width / w, box.height / h);
+    if (fit === 'scale-down') s = Math.min(1, s);
+    const dw = w * s, dh = h * s;
+    const [ox, oy] = cs.objectPosition.split(' ').map((v, i) =>
+      v.endsWith('%') ? parseFloat(v) / 100 * (i ? box.height - dh : box.width - dw) : parseFloat(v) || 0);
+    return { box, px, draw: { left: box.left + ox, top: box.top + oy, width: dw, height: dh } };
+  }
+  function inPicture(p, x, y) {
+    const d = p.draw, b = p.box;
+    return x >= Math.max(d.left, b.left) && x <= Math.min(d.left + d.width, b.right)
+        && y >= Math.max(d.top, b.top) && y <= Math.min(d.top + d.height, b.bottom);
+  }
+
+  // The plus is white over a dark part of a photograph and black over a light
+  // one, and so is the lightbox's cross over the photograph open in it. Each
+  // photograph is drawn once into a canvas 64 cells on its long side and kept
+  // as a grid of lightness, by its address -- the lightbox's plate changes
+  // picture in place; the pointer's spot is the mean of the cells within 20px
+  // of it. It turns at .6 going light and .5 going dark, so it does not flicker
+  // along an edge. Footage is read afresh each time, since it moves.
+  // Photographs on the page, prints on the gallery sheet and the lightbox's
+  // plate alike, so it listens on the document rather than on each.
+  const lightness = new Map();
+  function gridOf(el, px) {
+    const key = el.tagName === 'VIDEO' ? null : urlFromEl(el);
+    if (key && lightness.has(key)) return lightness.get(key);
+    // A picture still arriving knows its size before it has pixels to give:
+    // drawn now it would read as black, and be kept so. Read it once it is in.
+    const src = el.tagName === 'IMG' || el.tagName === 'VIDEO' ? el : probes.get(urlFromEl(el));
+    if (!src || src.tagName === 'IMG' && !src.complete) return null;
+    let grid = null;
+    try {
+      const [w, h] = px;
+      const gw = Math.max(1, Math.round(64 * Math.min(1, w / h)));
+      const gh = Math.max(1, Math.round(64 * Math.min(1, h / w)));
+      const c = document.createElement('canvas');
+      c.width = gw; c.height = gh;
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(src, 0, 0, gw, gh);
+      const d = ctx.getImageData(0, 0, gw, gh).data;
+      const lum = new Float32Array(gw * gh);
+      let drawn = 0;
+      for (let i = 0; i < lum.length; i++) {
+        lum[i] = (.2126 * d[i * 4] + .7152 * d[i * 4 + 1] + .0722 * d[i * 4 + 2]) / 255;
+        if (d[i * 4 + 3]) drawn++;
+      }
+      if (drawn) grid = { lum, gw, gh };   // nothing drawn: not decoded after all
+    } catch (e) { /* not decoded yet, or unreadable: the grey plus stands */ }
+    if (grid && key) lightness.set(key, grid);
+    return grid;
+  }
+  function toneAt(el, x, y, was) {
+    const p = pictureOf(el);
+    if (!inPicture(p, x, y)) return 'none';
+    const g = p.px && gridOf(el, p.px);
+    if (!g) return was && was !== 'none' ? was : undefined;
+    const d = p.draw;
+    const u = (x - d.left) / d.width * g.gw, v = (y - d.top) / d.height * g.gh;
+    const r = Math.max(.75, 20 / (d.width / g.gw));
+    let sum = 0, n = 0;
+    for (let j = Math.max(0, Math.floor(v - r)); j <= Math.min(g.gh - 1, Math.floor(v + r)); j++) {
+      for (let i = Math.max(0, Math.floor(u - r)); i <= Math.min(g.gw - 1, Math.floor(u + r)); i++) {
+        if ((i + .5 - u) ** 2 + (j + .5 - v) ** 2 > r * r) continue;
+        sum += g.lum[j * g.gw + i]; n++;
+      }
+    }
+    const at = n ? sum / n : g.lum[Math.min(g.gh - 1, Math.floor(v)) * g.gw + Math.min(g.gw - 1, Math.floor(u))];
+    if (was === 'light') return at < .5 ? 'dark' : 'light';
+    if (was === 'dark') return at > .6 ? 'light' : 'dark';
+    return at > .55 ? 'light' : 'dark';
+  }
+  const TONED = '.lb-clickable, .jg-frame img, .jg-frame video, #lbImg, #lbVideo';
+  let toneNext = null;
+  let pointerAt = null;
+  document.addEventListener('pointermove', e => {
+    if (e.pointerType && e.pointerType !== 'mouse') return;
+    pointerAt = { x: e.clientX, y: e.clientY };
+    const el = e.target.closest && e.target.closest(TONED);
+    if (!el) return;
+    const first = !toneNext;
+    toneNext = { el, x: e.clientX, y: e.clientY };
+    if (first) requestAnimationFrame(() => {
+      const { el, x, y } = toneNext;
+      toneNext = null;
+      const tone = toneAt(el, x, y, el.dataset.tone);
+      if (tone && el.dataset.tone !== tone) el.dataset.tone = tone;
+    });
+  }, { passive: true });
+  document.addEventListener('pointerout', e => {
+    const el = e.target.closest && e.target.closest(TONED);
+    if (el && !el.contains(e.relatedTarget)) delete el.dataset.tone;
+  });
+  // Opened, or paged by the arrows or the keys, the lightbox's plate changes
+  // picture under a pointer that may not move: show() lets the old reading go,
+  // and the new picture is read where the pointer stands as it arrives.
+  function retone(el) {
+    if (!pointerAt || document.elementFromPoint(pointerAt.x, pointerAt.y) !== el) return;
+    const tone = toneAt(el, pointerAt.x, pointerAt.y);
+    if (tone) el.dataset.tone = tone;
+  }
+  lbImg.addEventListener('load', () => retone(lbImg));
+  lbVideo.addEventListener('loadeddata', () => retone(lbVideo));
+
+  // Wire click handlers on eligible elements: on the picture itself, not its
+  // figure, so a press on the caption beside or under it, or on the figure's
+  // spare room, does not open it, and the plus does not show there.
+  const wired = [];
+  function refresh(one) {
+    (one ? [one] : wired).forEach(el => el.classList.toggle('lb-clickable', worthOpening(el)));
+  }
   journey.querySelectorAll(SELECTOR).forEach(el => {
     if (!isClickToOpen(el)) return;
     if (!urlFromEl(el)) return;
-    const target = el.tagName === 'IMG' ? (el.closest('figure') || el) : el;
-    target.classList.add('lb-clickable');
-    target.addEventListener('click', () => {
+    wired.push(el);
+    el.addEventListener('click', e => {
+      if (!worthOpening(el) || !inPicture(pictureOf(el), e.clientX, e.clientY)) return;
       const all = collect();
       const idx = all.findIndex(it => it.el === el);
       if (idx >= 0) open(idx);
     });
+    el.addEventListener('pointerenter', () => refresh(el));
+    if (el.tagName === 'IMG' && !el.complete) el.addEventListener('load', () => refresh(el), { once: true });
+  });
+  refresh();
+  let reflow = 0;
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(reflow);
+    reflow = requestAnimationFrame(() => refresh());
   });
 
   // The map's previews are built later, on the globe's style.load, so they are
@@ -4780,7 +4948,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
   lbClose.addEventListener('click', close);
   lbPrev.addEventListener('click', prev);
   lbNext.addEventListener('click', next);
-  lbStage.addEventListener('click', e => { if (e.target === lbStage) close(); });
+  // A click anywhere on the stage closes the deck: on the air around the
+  // picture, and on the picture itself, which wears the close cross as its
+  // cursor (--cursor-x).
+  lbStage.addEventListener('click', close);
   document.addEventListener('keydown', e => {
     if (!lb.classList.contains('is-open')) return;
     if (e.key === 'Escape') close();
