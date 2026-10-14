@@ -919,27 +919,26 @@
 
           <div class="sculpt-gallery">
             <figure class="sg-bookend">
-              <img src="./assets/_journey/2%20sculpting/J-1.jpg" alt="">
+              <img src="./assets/_journey/2%20sculpting/carrara-22-first-wire-cut.jpg" alt="The granite block under the steel-framed shelter of the Carrara workshop, the first diamond wire cut running down its face" width="2585" height="1769" decoding="async">
             </figure>
 
             <div class="sg-stage" id="sculptStage">
               <div class="sg-pin">
                 <div class="sg-canvas">
-                  <img class="sg-tile" data-kf="j2" src="./assets/_journey/2%20sculpting/J-2.jpg" alt="">
+                  <img class="sg-tile" data-kf="j2" src="./assets/_journey/2%20sculpting/carrara-17-removing-a-cut-piece.jpg" alt="Franco Marchini, in gloves, lifting a cut slab of granite away from the face of the block">
                   <img class="sg-tile" data-kf="j3" src="./assets/_journey/2%20sculpting/J-3.jpg" alt="">
                   <img class="sg-tile" data-kf="j4" src="./assets/_journey/2%20sculpting/J-4.jpg" alt="">
-                  <img class="sg-tile" data-kf="j5" src="./assets/_journey/2%20sculpting/J-5.jpg" alt="">
+                  <img class="sg-tile" data-kf="j5" src="./assets/_journey/2%20sculpting/carrara-32-inside-the-sculpture.jpg" alt="Looking down into an opening in the sculpture at Luciano Salvetti, in a white cap, working inside it, a hose running out past him">
                   <img class="sg-tile" data-kf="j6" src="./assets/_journey/2%20sculpting/J-6.jpg" alt="">
-                  <img class="sg-tile" data-kf="j7" src="./assets/_journey/2%20sculpting/J-7.jpg" alt="">
+                  <img class="sg-tile" data-kf="j7" src="./assets/_journey/2%20sculpting/carrara-24-model-drilling-directions.jpg" alt="The plaster model of the sculpture under the workshop roof, steel rods run through it to mark the drilling directions">
                 </div>
               </div>
             </div>
 
             <figure class="sg-bookend sg-bookend--narrow">
-              <img src="./assets/_journey/2%20sculpting/J-8.jpg" alt="">
+              <img src="./assets/_journey/2%20sculpting/carrara-39-finished-sculpture.jpg" alt="The finished sculpture in the Carrara workshop, ready to ship, under the shelter&rsquo;s steel frame and the branches of a tree" width="1770" height="2585" decoding="async">
               <figcaption class="sg-endnote">
-                <h5>30 June 1986</h5>
-                <p>The sculpture is completed.</p>
+                <p>The finished sculpture in the workshop is ready to ship.<span class="journey-credit">Photo &copy; Dominique Stroobant</span></p>
               </figcaption>
             </figure>
           </div>
@@ -4780,14 +4779,14 @@ document.querySelectorAll('.facts').forEach((facts) => {
     // Sculpting
     'stroobant-portrait-ey.jpg': TBD,
     'esagono-emblem-ds.jpg': TBD,
-    'J-1.jpg': TBD,
-    'J-2.jpg': TBD,
+    'carrara-22-first-wire-cut.jpg': TBD,
+    'carrara-17-removing-a-cut-piece.jpg': TBD,
     'J-3.jpg': TBD,
     'J-4.jpg': TBD,
-    'J-5.jpg': TBD,
+    'carrara-32-inside-the-sculpture.jpg': TBD,
     'J-6.jpg': TBD,
-    'J-7.jpg': TBD,
-    'J-8.jpg': TBD,
+    'carrara-24-model-drilling-directions.jpg': TBD,
+    'carrara-39-finished-sculpture.jpg': TBD,
     // Sculpture Trip -- the photographs standing on the globe's marks
     'IMG_8441.jpeg': TBD,
     '6749362-hd_1920_1080_24fps.mp4': TBD,
@@ -5000,29 +4999,44 @@ document.querySelectorAll('.facts').forEach((facts) => {
   //                  brings the block on while the easing tail is still
   //                  running, which reads as settled but arrives sooner
   //   always       = never gated on settling, so it never fades in or out
+  //   title        = optional heading; a caption to its photo goes without
+  //   credit       = optional photo credit, under the body in the small
+  //                  credit style the journey's other captions use
   //
   // Each block takes the column band its anchor photo leaves empty. Anchoring
   // to the photo rather than to the row matters for the last one: J-7 stays
   // stuck on screen long after its row's foot has scrolled away.
   const SLOTS = [
     { track: 'top', at: 'end',   anchor: 'j2', align: 'below', col: 1, span: 2, settle: 0.16,
-      title: 'Measurement transfer',
-      body:  'A grid of "measuring points" was transferred from a four-fold magnified gypsum model using giant dividers.' },
-    { track: 'mid', at: 'end',   anchor: 'j5', align: 'below', col: 7, span: 2,
-      title: '22 March 1986',
-      body:  'The sculpture is turned over and placed on three support points; carving continues.' },
+      body:  'Franco Marchini removing a cut piece of stone.',
+      credit: 'Photo \u00a9 Dominique Stroobant' },
+    // Settles 0.36 out: the swap is done two-thirds of the way through the
+    // track (its last keyframe is held for the final third), so this brings
+    // the caption on as J-5 eases into place rather than once it has scrolled.
+    { track: 'mid', at: 'end',   anchor: 'j5', align: 'below', col: 7, span: 2, settle: 0.36,
+      body:  'Inside the sculpture. Luciano Salvetti at work.',
+      credit: 'Photo \u00a9 Dominique Stroobant' },
     { track: 'bot', at: 'end',   anchor: 'j7', align: 'foot',  col: 1, span: 2,
-      title: 'Carving from the inside',
-      body:  'The sculpture was carved from the inside using complex and dangerous methods. Work was done in shifts: only two people could be inside at a time.' }
+      body:  'The model with drilling directions',
+      credit: 'Photo \u00a9 Dominique Stroobant' }
   ];
   const notes = SLOTS.map(cfg => {
     const el = document.createElement('div');
     el.className = 'sg-note';
-    const h = document.createElement('h5');
-    h.textContent = cfg.title;
+    if (cfg.title) {
+      const h = document.createElement('h5');
+      h.textContent = cfg.title;
+      el.append(h);
+    }
     const body = document.createElement('p');
     body.textContent = cfg.body;
-    el.append(h, body);
+    if (cfg.credit) {
+      const credit = document.createElement('span');
+      credit.className = 'journey-credit';
+      credit.textContent = cfg.credit;
+      body.append(credit);
+    }
+    el.append(body);
     canvas.appendChild(el);
     return Object.assign({ el }, cfg);
   });
