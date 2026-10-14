@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=395" />
+<link rel="stylesheet" href="styles.css?v=421" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -263,7 +263,7 @@
              caption script). -->
         <figure class="bill-portrait">
           <img src="./assets/max-bill-wire-1960-1480.jpg" alt="Max Bill looking through loops of wire held up in both hands, two of his paintings on the wall behind him, 13 March 1960" width="1480" height="1496" decoding="async">
-          <figcaption class="bill-portrait-cap">Max Bill at work, 13&nbsp;March 1960. Photo: Prisma by Dukas Presseagentur GmbH / Alamy Stock Photo. Works by Max Bill &copy; ProLitteris, Zurich.</figcaption>
+          <figcaption class="bill-portrait-cap">Max Bill at work, 13&nbsp;March 1960. <span class="photo-credit">Photo: Prisma by Dukas Presseagentur GmbH / Alamy Stock Photo. Works by Max Bill &copy; ProLitteris, Zurich.</span></figcaption>
         </figure>
         <div class="article-body">
           <div class="fn-note" data-clear=".bill-portrait-cap">
@@ -650,7 +650,7 @@
                in the flow, and Zapp follows. -->
           <figure class="db-photo">
             <img src="./assets/_db/deutsche-bank-towers-taunusanlage-2026.jpg" alt="The Deutsche Bank twin towers seen from below, behind the carved stone corner of an older building and the leaves of a plane tree" width="1669" height="1134" loading="lazy" decoding="async">
-            <figcaption class="db-photo-cap">Deutsche Bank headquarters, viewed from Taunusanlage, Frankfurt am Main, 2026. Photo: &copy; Eugene Yukechev / M&eacute;ridien.</figcaption>
+            <figcaption class="db-photo-cap">Deutsche Bank headquarters, viewed from Taunusanlage, Frankfurt am Main, 2026. <span class="photo-credit">Photo: &copy; Eugene Yukechev / M&eacute;ridien.</span></figcaption>
           </figure>
 
           <div class="article-body">
@@ -817,42 +817,58 @@
                  as the Zapp portrait carries its own. Two of them also name the
                  place the stone stood at, with its mark -- the quarry, then the
                  port -- and the last names the crossing. -->
-            <!-- Pair across the full measure, four page columns each, the second
-                 dropped. The gallery's squares arrive with it. -->
-            <div class="journey-photo-pair">
+            <!-- The quarry pair across the full measure, four page columns
+                 each, and under the first of them Stroobant's projections of
+                 the block, on two columns with its caption beside it on its
+                 foot (.journey-photo--two). The second of the pair, the first
+                 cut, starts dropped and travels down with the scroll (sticky)
+                 beside the two until its foot meets the drawing's; its caption
+                 waits for it there, under where it comes to rest
+                 (.granite-travel). In the page's order, so the deck keeps it:
+                 the pair, then the drawing. Faces C and D follow as one sheet.
+                 All set as the photographs' captions are: the note, then the
+                 credit. -->
+            <div class="granite-travel">
               <figure>
                 <img src="./assets/_journey/1%20italy/sardinia-03-bill-costantino.jpg" alt="Rodolfo Costantino and Max Bill standing on the quarry floor below a cut granite face" width="1400" height="2082" loading="lazy" decoding="async">
                 <figcaption class="journey-cap"><p>Quarry owner Rodolfo Costantino and Max Bill at the Scarraciana quarry, Sardinia, Italy. September 1983.<span class="journey-credit">Photo &copy; Dominique Stroobant</span></p></figcaption>
               </figure>
-              <figure>
-                <img src="./assets/_journey/1%20italy/sardinia-04-first-cut.jpg" alt="Quarrymen bent over a deep, narrow cut in the granite" width="1400" height="2070" loading="lazy" decoding="async">
+              <figure class="granite-travel-go">
+                <div class="granite-travel-track">
+                  <img src="./assets/_journey/1%20italy/sardinia-04-first-cut.jpg" alt="Quarrymen bent over a deep, narrow cut in the granite" width="1400" height="2070" loading="lazy" decoding="async">
+                </div>
                 <figcaption class="journey-cap"><p>The first cut: extracting the stone.<span class="journey-credit">Photo &copy; Dominique Stroobant</span></p></figcaption>
               </figure>
-            </div>
-            <!-- Stroobant's working drawings for cutting the block down. The
-                 projections first, on six page columns flush left as the
-                 six-column photographs are, its caption on its foot on 7-8;
-                 then faces C and D, four columns each, side by side, tops
-                 level, each caption under its sheet on two columns. All set as
-                 the photographs' captions are: the note, then the credit. -->
-            <figure class="journey-photo-six">
-              <img src="./assets/_journey/1%20italy/stroobant-block-projections.jpg" alt="Pen drawing: projections of the granite block, the zones to be cut away hatched and measured" width="1400" height="1591" loading="lazy" decoding="async">
-              <figcaption class="journey-cap"><p>Dominique Stroobant, working drawings for cutting the granite block of Kontinuit&auml;t, c.&nbsp;1983. Left: projections of the block with the zones to be removed hatched and measured.<span class="journey-credit">&copy; Dominique Stroobant. Courtesy haus bill, Zumikon</span></p></figcaption>
-            </figure>
-            <div class="granite-drawings">
-              <figure class="granite-drawing--wide">
-                <img src="./assets/_journey/1%20italy/stroobant-block-face-c.jpg" alt="Drawing of face C of the block, its cutting lines in red, numbered in Roman numerals and measured" width="1400" height="1935" loading="lazy" decoding="async">
-                <figcaption class="journey-cap"><p>Face C (Faccia C) with the cutting lines marked in red, numbered in Roman numerals and dimensioned in centimetres.<span class="journey-credit">&copy; Dominique Stroobant. Courtesy haus bill, Zumikon</span></p></figcaption>
+              <figure class="journey-photo-six journey-photo--two">
+                <img src="./assets/_journey/1%20italy/stroobant-block-projections.jpg" alt="Pen drawing: projections of the granite block, the zones to be cut away hatched and measured" width="1400" height="1591" loading="lazy" decoding="async">
+                <figcaption class="journey-cap"><p>Dominique Stroobant, working drawings for cutting the granite block of Kontinuit&auml;t, c.&nbsp;1983. Left: projections of the block with the zones to be removed hatched and measured.<span class="journey-credit">&copy; Dominique Stroobant. Courtesy haus bill, Zumikon</span></p></figcaption>
               </figure>
-              <figure class="granite-drawing--wide">
-                <img src="./assets/_journey/1%20italy/stroobant-block-face-d.jpg" alt="Drawing of face D of the block, its cutting lines in red, numbered in Roman numerals and measured" width="1400" height="1935" loading="lazy" decoding="async">
-                <figcaption class="journey-cap"><p>Face D (Faccia D), with the cutting lines marked in red, numbered in Roman numerals and dimensioned in centimetres.<span class="journey-credit">&copy; Dominique Stroobant. Courtesy haus bill, Zumikon</span></p></figcaption>
+            </div>
+            <!-- Faces C and D as the two sides of one sheet, face C up: a press
+                 turns it over, in 3D, to face D, and back (.granite-flip; see
+                 the sheet's script). The caption is the face's that is up. -->
+            <div class="granite-drawings">
+              <figure class="granite-drawing--wide granite-flip">
+                <button type="button" class="granite-flip-turn" aria-label="Turn the sheet over to face D">
+                  <span class="granite-flip-card">
+                    <span class="granite-flip-face is-front">
+                      <img src="./assets/_journey/1%20italy/stroobant-block-face-c.jpg" alt="Drawing of face C of the block, its cutting lines in red, numbered in Roman numerals and measured" width="1400" height="1935" loading="lazy" decoding="async">
+                    </span>
+                    <span class="granite-flip-face is-back" aria-hidden="true">
+                      <img src="./assets/_journey/1%20italy/stroobant-block-face-d.jpg" alt="Drawing of face D of the block, its cutting lines in red, numbered in Roman numerals and measured" width="1400" height="1935" loading="lazy" decoding="async">
+                    </span>
+                  </span>
+                </button>
+                <figcaption class="journey-cap">
+                  <p class="is-front">Face C (Faccia C) with the cutting lines marked in red, numbered in Roman numerals and dimensioned in centimetres.<span class="journey-credit">&copy; Dominique Stroobant. Courtesy haus bill, Zumikon</span></p>
+                  <p class="is-back">Face D (Faccia D), with the cutting lines marked in red, numbered in Roman numerals and dimensioned in centimetres.<span class="journey-credit">&copy; Dominique Stroobant. Courtesy haus bill, Zumikon</span></p>
+                </figcaption>
               </figure>
             </div>
             <!-- Across the full measure, columns 1-8: the block got out of the
                  rock. Its note is part of the account now, in the text column
-                 under it (5-8), level with what is left of the caption on 3-4:
-                 the quarry's name, the mark beside it, and the credit. -->
+                 under it (5-8), level with what is left of the caption on 1-2:
+                 the quarry's name and the credit. -->
             <figure class="journey-photo-measure journey-photo--noted">
               <img src="./assets/_journey/1%20italy/sardinia-05-first-cuts.jpg" alt="The granite block split from the rock face, lying on the quarry floor" width="2400" height="1646" loading="lazy" decoding="async">
               <figcaption class="journey-cap journey-cap--credit"><h5>Quarry Scarraciana</h5><p>Photo &copy; Dominique Stroobant</p></figcaption>
@@ -869,31 +885,16 @@
                 <figcaption class="journey-cap"><p>A study of the successive cuts reducing the granite block to a polyhedron, Sardinia, 1983.<span class="journey-credit">&copy; Dominique Stroobant</span></p></figcaption>
               </figure>
             </div>
-            <!-- Across the full measure: the polyhedron. Its caption -- what it
-                 shows and the credit -- on 3-4, the rest of its note in the text
-                 column under it, level with the caption. -->
-            <figure class="journey-photo-measure journey-photo--noted">
-              <img src="./assets/_journey/1%20italy/sardinia-06-polyhedron.jpg" alt="The roughed-out polyhedron in the quarry, a ladder and scaffolding against it" width="2604" height="1742" loading="lazy" decoding="async">
-              <figcaption class="journey-cap"><p>The polyhedron stone in the quarry.<span class="journey-credit">Photo &copy; Dominique Stroobant</span></p></figcaption>
-            </figure>
-            <div class="article-body granite-note">
+            <!-- The account goes on after the study, in the text column (5-8). -->
+            <div class="article-body">
               <p>To transport the granite block to the harbour, workers had to reduce its weight to about 180 tonnes through carefully controlled splitting, without damaging the future sculpture. This work took seven weeks and was completed by late November 1983.</p>
-            </div>
-            <!-- Edge to edge, outside the container gutters: Stroobant's contact
-                 sheet, six frames of the stone being got out of the quarry. Its
-                 caption -- what it shows and the credit -- on 3-4, the rest of
-                 its note in the text column under it, level with the caption,
-                 both brought back onto the measure. -->
-            <figure class="journey-photo-bleed journey-photo--noted">
-              <img src="./assets/_journey/1%20italy/sardinia-07-moving-the-stone.jpg" alt="Contact sheet of six frames: the block on the quarry floor, a loader and a Fagioli truck moving it" width="2581" height="1757" loading="lazy" decoding="async">
-              <figcaption class="journey-cap"><p>Stages of moving the stone out of the quarry.<span class="journey-credit">Photo &copy; Dominique Stroobant</span></p></figcaption>
-            </figure>
-            <div class="article-body granite-note">
               <p>Transporting the granite block from the Sardinian quarry to Carrara required a specially designed 52-metre-long vehicle operated by Italian logistics company Fagioli.</p>
             </div>
-            <!-- Pair: out of the quarry, and across the island on the closed road,
-                 tops level rather than staggered. -->
-            <div class="journey-photo-pair journey-photo-pair--level">
+            <!-- Pictures on a grid, rows of two, four page columns each, each
+                 caption under its picture on two: out of the quarry and across
+                 the island on the closed road. The note on the port follows
+                 under them, in the text column. -->
+            <div class="journey-photo-grid">
               <figure>
                 <img src="./assets/_journey/1%20italy/sardinia-08-out-of-the-quarry.jpg" alt="A Fagioli truck and its crew hauling the block out of the quarry" width="1400" height="955" loading="lazy" decoding="async">
                 <figcaption class="journey-cap"><p>The route to the port of Santa Teresa di Gallura had to be carefully surveyed, bridges and bends checked, special permits obtained, and a temporary access road constructed.<span class="journey-credit">Photo &copy; Dominique Stroobant</span></p></figcaption>
@@ -903,27 +904,17 @@
                 <figcaption class="journey-cap"><p>On 8 and 9 February 1984, the public route was closed for two days while the truck carried the block across Sardinia to the port of Santa Teresa di Gallura, travelling at the pace such a load demands.<span class="journey-credit">Photo &copy; Dominique Stroobant</span></p></figcaption>
               </figure>
             </div>
-            <!-- Six page columns, flush left, named for the port. Its note is
-                 part of the account, in the text column under it (5-8), level
-                 with what is left of the caption on 3-4: the port's name, the
-                 mark beside it, and the credit. The note runs on into the last
-                 picture's as one passage (.granite-passage). -->
-            <figure class="journey-photo-six journey-photo--noted journey-photo--passage">
-              <img src="./assets/_journey/1%20italy/sardinia-10-santa-teresa.jpg" alt="The transporter driving the block onto a barge at the quay, people watching" width="2000" height="1343" loading="lazy" decoding="async">
-              <figcaption class="journey-cap journey-cap--credit"><h5>Porto di Santa Teresa Gallura</h5><p>Photo &copy; Dominique Stroobant</p></figcaption>
-            </figure>
             <!-- The port's note and the last picture's, one passage between the
-                 two pictures: a paragraph's gap between them, a little more air
-                 above and below than a caption's. -->
+                 grid of pictures and the last: a paragraph's gap between them, a
+                 little more air above and below than a caption's. -->
             <div class="article-body granite-note granite-passage">
               <p>At the port of Santa Teresa di Gallura, the granite block was to be loaded onto a ship using the transporter&rsquo;s 14-axle central section. However, severe storms delayed loading for ten days and made the sea crossing to Carrara too dangerous.</p>
               <p>This was only the first leg. Ahead lay a route that would run 2,800 kilometres by water and 1,200 by road, across five countries and most of six months, before the stone reached Frankfurt.</p>
             </div>
             <!-- Edge to edge again, the last picture: the stone at sea, its
-                 caption over it rather than under it, on 3-4, level at the foot
-                 with the passage over it. The line names the crossing rather
-                 than a place, and so carries no mark. -->
-            <figure class="journey-photo-bleed journey-photo--noted-over journey-photo--passage">
+                 caption set on the picture itself, in its pale top-left corner,
+                 on 1-4 (.journey-photo--cap-on). -->
+            <figure class="journey-photo-bleed journey-photo--cap-on">
               <figcaption class="journey-cap journey-cap--crossing journey-cap--credit"><h5>The granite block under tow from Porto di Santa Teresa Gallura to Porto Marina di Carrara</h5><p>Photo &copy; Dominique Stroobant</p></figcaption>
               <img src="./assets/_journey/1%20italy/sardinia-11-the-ship.jpg" alt="The block on a barge at sea, a tug ahead of it" width="2575" height="1746" loading="lazy" decoding="async">
             </figure>
@@ -1018,15 +1009,26 @@
                   <img class="sg-tile" data-kf="j4" src="./assets/_journey/2%20sculpting/J-4.jpg" alt="">
                   <img class="sg-tile" data-kf="j5" src="./assets/_journey/2%20sculpting/carrara-32-inside-the-sculpture.jpg" alt="Looking down into an opening in the sculpture at Luciano Salvetti, in a white cap, working inside it, a hose running out past him">
                   <img class="sg-tile" data-kf="j6" src="./assets/_journey/2%20sculpting/J-6.jpg" alt="">
-                  <img class="sg-tile" data-kf="j7" src="./assets/_journey/2%20sculpting/carrara-24-model-drilling-directions.jpg" alt="The plaster model of the sculpture under the workshop roof, steel rods run through it to mark the drilling directions">
+                  <img class="sg-tile" data-kf="j7" src="./assets/_journey/2%20sculpting/carrara-33-overhead-view.jpg" alt="The sculpture seen from directly above in the workshop, its coil ringed by scaffolding, a man inside its opening and a group on the floor below looking up at the camera">
                 </div>
               </div>
             </div>
 
-            <figure class="sg-bookend sg-bookend--narrow">
-              <img src="./assets/_journey/2%20sculpting/carrara-39-finished-sculpture.jpg" alt="The finished sculpture in the Carrara workshop, ready to ship, under the shelter&rsquo;s steel frame and the branches of a tree" width="1770" height="2585" decoding="async">
+            <!-- The finished sculpture across the full measure, all eight page
+                 columns (.sg-bookend--eight), its caption under it on 7-8. -->
+            <figure class="sg-bookend sg-bookend--narrow sg-bookend--eight">
+              <img src="./assets/_journey/2%20sculpting/carrara-39-finished-sculpture.jpg" alt="The finished sculpture in the Carrara workshop, ready to ship, under the shelter&rsquo;s steel frame and the branches of a tree" width="1770" height="2174" decoding="async">
               <figcaption class="sg-endnote">
                 <p>The finished sculpture in the workshop is ready to ship.<span class="journey-credit">Photo &copy; Dominique Stroobant</span></p>
+              </figcaption>
+            </figure>
+            <!-- Placed here for now: the sculpture leaving the workshop in its
+                 steel crate, on six page columns, 1-6 (.sg-bookend--six), its
+                 caption beside it on its foot on 7-8. -->
+            <figure class="sg-bookend sg-bookend--narrow sg-bookend--six">
+              <img src="./assets/_journey/2%20sculpting/carrara-40-leaves-the-workshop.jpg" alt="The finished sculpture under a tarpaulin in a steel crate on a long Fagioli trailer, drawn along a road by a crane truck" width="1400" height="951" loading="lazy" decoding="async">
+              <figcaption class="sg-endnote">
+                <p>The sculpture leaves the workshop. Steel crate on truck.<span class="journey-credit">Photo &copy; Dominique Stroobant</span></p>
               </figcaption>
             </figure>
           </div>
@@ -4702,6 +4704,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
   // the map's sculpture PNG is an <img> but hangs off an aside, not a figure,
   // and it is the closing reveal rather than a picture of the journey.
   const SELECTOR = '[style*="background-image"], figure > img, img.sg-tile, '
+                 + '.granite-travel-track > img, '
                  + '.map-stop-photo > img, .map-stop-photo > video';
 
   // Every visual image in the journey section, in document order -- and then
@@ -4857,11 +4860,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
     'stroobant-block-face-d.jpg': TBD,
     'sardinia-05-first-cuts.jpg': TBD,
     'stroobant-block-cuts.jpg': TBD,
-    'sardinia-06-polyhedron.jpg': TBD,
-    'sardinia-07-moving-the-stone.jpg': TBD,
     'sardinia-08-out-of-the-quarry.jpg': TBD,
     'sardinia-09-loading-the-trolley.jpg': TBD,
-    'sardinia-10-santa-teresa.jpg': TBD,
     'sardinia-11-the-ship.jpg': TBD,
     // Sculpting
     'stroobant-portrait-ey.jpg': TBD,
@@ -4872,8 +4872,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
     'J-4.jpg': TBD,
     'carrara-32-inside-the-sculpture.jpg': TBD,
     'J-6.jpg': TBD,
-    'carrara-24-model-drilling-directions.jpg': TBD,
+    'carrara-33-overhead-view.jpg': TBD,
     'carrara-39-finished-sculpture.jpg': TBD,
+    'carrara-40-leaves-the-workshop.jpg': TBD,
     // Sculpture Trip -- the photographs standing on the globe's marks
     'IMG_8441.jpeg': TBD,
     '6749362-hd_1920_1080_24fps.mp4': TBD,
@@ -5061,6 +5062,23 @@ document.querySelectorAll('.facts').forEach((facts) => {
   }, true);
 })();
 
+// Faces C and D, one sheet (.granite-flip): a press on it turns it over to
+// the other face, about its upright middle, in 3D -- the turn itself is CSS
+// (.is-turned) -- and the caption goes with the face that is up.
+(() => {
+  document.querySelectorAll('.granite-flip').forEach(fig => {
+    const turn = fig.querySelector('.granite-flip-turn');
+    const [front, back] = fig.querySelectorAll('.granite-flip-face');
+    if (!turn || !front || !back) return;
+    turn.addEventListener('click', () => {
+      const turned = fig.classList.toggle('is-turned');
+      turn.setAttribute('aria-label', turned ? 'Turn the sheet back to face C' : 'Turn the sheet over to face D');
+      front.setAttribute('aria-hidden', turned ? 'true' : 'false');
+      back.setAttribute('aria-hidden', turned ? 'false' : 'true');
+    });
+  });
+})();
+
 // ========== Sculpting · scroll-driven gallery ==========
 (() => {
   const stage = document.getElementById('sculptStage');
@@ -5112,8 +5130,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
       body:  'Caption placeholder',
       credit: 'Photo \u00a9 Name' },
     { track: 'bot', at: 'end',   anchor: 'j7', align: 'foot',  col: 1, span: 2,
-      body:  'The model with drilling directions',
-      credit: 'Photo \u00a9 Dominique Stroobant' }
+      body:  'Overhead view of Kontinuit\u00e4t in workshop.',
+      credit: 'Photo \u00a9 Luigi Biagini' }
   ];
   const notes = SLOTS.map(cfg => {
     const el = document.createElement('div');
@@ -5134,6 +5152,15 @@ document.querySelectorAll('.facts').forEach((facts) => {
     el.append(body);
     canvas.appendChild(el);
     return Object.assign({ el }, cfg);
+  });
+  // A note's credit shows while the photograph it hangs from is under the
+  // pointer (.is-credited; see the credits' styles), as a caption's does
+  // while its own figure is.
+  notes.forEach(n => {
+    const tile = stage.querySelector('.sg-tile[data-kf="' + n.anchor + '"]');
+    if (!tile) return;
+    tile.addEventListener('pointerenter', () => n.el.classList.add('is-credited'));
+    tile.addEventListener('pointerleave', () => n.el.classList.remove('is-credited'));
   });
 
   // How close to a keyframe counts as "settled". The tiles ease in and out,
@@ -5186,8 +5213,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
     j7: [
       [7, 2, 72],
       [7, 2, 72],
-      [3, 6, 72],
-      [3, 6, 72]
+      [3, 4, 72],
+      [3, 4, 72]
     ]
   };
 
@@ -5240,6 +5267,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
   //     fully done while the tile is still on-screen.
   const TRIGGER_START_VH = 1.0;
   const TRIGGER_DURATION_VH = 1.0;
+  // J-7's turn as it flies to its landing place: once round, anticlockwise --
+  // none where the reader has asked for less motion.
+  const J7_TURN = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : -360;
 
   let cachedGap = null;
   let cachedAnchors = null;
@@ -5339,8 +5369,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
     // Phase 2 (until J-7 reaches J-6's bottom edge): J-7 sticks to a fixed
     //         viewport-y while the canvas scrolls up beneath it, so it
     //         appears to slide down through the canvas at scroll speed.
-    // Phase 3: J-7 detaches and runs its own scale + column-move animation,
-    //         landing one --col-gap below J-6.
+    // Phase 3: J-7 flies to its landing place -- moving, growing to four
+    //         columns and turning once round, all at once -- and Phase 4
+    //         lets it go there, a gap above the photograph after the stage.
     let j7Parked = false;
     const j7 = data.find(d => d.kf === 'j7');
     const j6 = data.find(d => d.kf === 'j6');
@@ -5354,26 +5385,40 @@ document.querySelectorAll('.facts').forEach((facts) => {
         maxHeightAtKLast('top', cwPx, gap) + gap +
         maxHeightAtKLast('mid', cwPx, gap) + gap;
       const STICKY_VIEW_Y = phase1EndJ7CanvasY + phase1EndRectTop;
-      const j6Top = parseFloat(j6.tile.style.getPropertyValue('--y')) || 0;
-      const j6Bottom = j6Top + j6.heightPx;
-      // Trigger Phase 3 (scale) the moment J-6's bottom edge passes J-7's
-      // top edge — the columns to J-7's left are cleared at that point so
-      // J-7 can safely expand into them without overlapping J-6.
-      const phase2EndRectTop = STICKY_VIEW_Y - j6Bottom;
+      // J-6's foot once the tracks above have settled -- where it stands from
+      // Phase 2 on, so the phases below are fixed points of the scroll.
+      const j6RestBottom = phase1EndJ7CanvasY + j6.heightPx;
+      // Phase 3 begins when J-6's foot has risen to a gap above J-7's top:
+      // J-7 stands just under J-6, beside its caption.
+      const phase2EndRectTop = STICKY_VIEW_Y - j6RestBottom - gap;
       const PHASE3_DURATION = TRIGGER_DURATION_VH * vh;
       const phase3EndRectTop = phase2EndRectTop - PHASE3_DURATION;
 
-      const kN = KF.j7[KF.j7.length - 1];
+      // Where J-7's flight ends: its last keyframe's columns -- four, 3-6 --
+      // at its own proportion, risen as far as it must to end a gap above the
+      // screen's foot (never past a gap under its top; on a screen too short
+      // for four columns, as many as fit). It lands there, then is let go.
+      const kLast = KF.j7[KF.j7.length - 1];
+      const k0 = KF.j7[0];
+      const widthOf = s => s * cwPx + (s - 1) * gap;
+      let endSpan = kLast[1];
+      while (endSpan > k0[1] && widthOf(endSpan) / j7.aspect > vh - 2 * gap) endSpan--;
+      const endCol = kLast[0] + (kLast[1] - endSpan) / 2;
+      const endW = widthOf(endSpan), endH = endW / j7.aspect;
+      const endY = Math.max(gap, Math.min(STICKY_VIEW_Y, vh - gap - endH));
+      // The arc it travels on: a little up and out of the way before it comes
+      // down to land, as a card is lifted and laid.
+      const ARC = 0.08 * vh;
       let j7Y, j7W, j7L, j7H;
+      j7.tile.style.setProperty('--rot', '0deg');
       if (rect.top > phase1EndRectTop) {
         // Phase 1: leave standard placement intact.
         j7Y = parseFloat(j7.tile.style.getPropertyValue('--y'));
         j7W = j7.widthPx; j7L = j7.leftPx; j7H = j7.heightPx;
         pinJ7(j7.tile, null);
       } else if (rect.top > phase2EndRectTop) {
-        // Phase 2: sticky at K0 size.
-        const k0 = KF.j7[0];
-        j7W = k0[1] * cwPx + (k0[1] - 1) * gap;
+        // Phase 2: held on screen at its first size while J-6 goes up past it.
+        j7W = widthOf(k0[1]);
         j7L = (k0[0] - 1) * (cwPx + gap);
         j7Y = STICKY_VIEW_Y - rect.top;
         j7H = j7W / j7.aspect;
@@ -5382,37 +5427,43 @@ document.querySelectorAll('.facts').forEach((facts) => {
         j7.tile.style.setProperty('--w', j7W + 'px');
         pinJ7(j7.tile, cRect.left + j7L, STICKY_VIEW_Y);
       } else if (rect.top > phase3EndRectTop) {
-        // Phase 3: scale + move while still sticky in the viewport, so the
-        // entire scale animation plays out on screen.
+        // Phase 3: the flight, still held by the browser -- in one motion it
+        // moves to its landing place along the arc, grows to its last size,
+        // and turns once round, anticlockwise, the way the ribbon turns in it.
         const p3 = Math.max(0, Math.min(1, (phase2EndRectTop - rect.top) / PHASE3_DURATION));
         const t  = ease(p3);
-        const k0 = KF.j7[0];
-        const c  = lerp(k0[0], kN[0], t);
-        const cs = lerp(k0[1], kN[1], t);
-        j7W = cs * cwPx + (cs - 1) * gap;
-        j7L = (c - 1) * (cwPx + gap);
-        j7Y = STICKY_VIEW_Y - rect.top; // stays sticky
+        const cs = lerp(k0[1], endSpan, t);
+        j7W = widthOf(cs);
+        j7L = (lerp(k0[0], endCol, t) - 1) * (cwPx + gap);
+        const viewY = lerp(STICKY_VIEW_Y, endY, t) - ARC * Math.sin(Math.PI * t);
+        j7Y = viewY - rect.top;
         j7H = j7W / j7.aspect;
         j7.tile.style.setProperty('--x', j7L + 'px');
         j7.tile.style.setProperty('--y', j7Y + 'px');
         j7.tile.style.setProperty('--w', j7W + 'px');
-        pinJ7(j7.tile, cRect.left + j7L, STICKY_VIEW_Y);
+        j7.tile.style.setProperty('--rot', (J7_TURN * t).toFixed(2) + 'deg');
+        pinJ7(j7.tile, cRect.left + j7L, viewY);
       } else {
-        // Phase 4: scale done — park J-7 at the canvas-y it occupied at the
-        // moment the sticky scale finished, then let it scroll naturally.
+        // Phase 4: landed -- let go in the canvas where the flight ended, to
+        // scroll on with the page.
         j7Parked = true;
-        j7W = kN[1] * cwPx + (kN[1] - 1) * gap;
-        j7L = (kN[0] - 1) * (cwPx + gap);
-        j7Y = STICKY_VIEW_Y - phase3EndRectTop;
-        j7H = j7W / j7.aspect;
+        j7W = endW;
+        j7L = (endCol - 1) * (cwPx + gap);
+        j7Y = endY - phase3EndRectTop;
+        j7H = endH;
         pinJ7(j7.tile, null);
         j7.tile.style.setProperty('--x', j7L + 'px');
         j7.tile.style.setProperty('--y', j7Y + 'px');
         j7.tile.style.setProperty('--w', j7W + 'px');
       }
 
-      const j7Bottom = j7Y + j7H;
-      if (j7Bottom > lastBottom) lastBottom = j7Bottom;
+      // The stage stands as tall, from the start, as it will once J-7 has
+      // landed, rather than following J-7 down while it is held. Followed, the
+      // height grew with the scroll a frame behind it, and the photograph
+      // after the stage was shoved along under J-7 and lurched; now it comes up
+      // steadily, and J-7 lands a gap above it.
+      const j7RestBottom = endY - phase3EndRectTop + endH;
+      lastBottom = Math.max(lastBottom, j7Y + j7H, j7RestBottom);
     }
 
     // Notes go last, once every tile — J-7's phase overrides included — has
