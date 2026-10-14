@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=423" />
+<link rel="stylesheet" href="styles.css?v=430" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -591,12 +591,10 @@
   <div class="making" id="making">
     <!-- The map: one MapLibre globe for the chapter, sticky for all of it and
          giving its own height back (see .making-map), so everything after it
-         lies over it. The Walk-around scene sits on its centre point, which
-         by the end is the sculpture's real coordinate: it opens as a preview
-         on Frankfurt, grows, then turns. -->
+         lies over it. At the end, on Frankfurt, it fades out and the next
+         chapter's title card comes up. -->
     <aside class="journey-map-wrap making-map is-zoomed" id="makingMap">
       <div class="journey-map" id="globeMap" aria-hidden="true"></div>
-      <img class="map-reveal" id="mapReveal" src="./assets/hero-sculpture.png" alt="" aria-hidden="true">
       <p class="map-reveal-cap" id="mapRevealCap" aria-hidden="true">Walk around&nbsp;— a Gaussian splatting scene</p>
     </aside>
 
@@ -1108,7 +1106,24 @@
                 <p class="sub-dates">1986</p>
               </div>
               <figure class="stop-lead" data-lead-for="4"></figure>
-              <p class="stop-cap" data-cap-for="4">From the Osthafen, the sculpture was carried across the city to the <strong>Taunusanlage</strong> on a special low-loader, because of the overhead tram lines, the whole load could not exceed five metres in height.</p>
+              <!-- 4.6's account in one box on the column's row (.stop-cap-group):
+                   the low-loader across the city, Stroobant's drawing of it,
+                   then the ceremony, and Bill with the artisans at the
+                   sculpture, centred on the page (3-6), its caption beside it
+                   on 7-8 -- the pictures four columns wide, each opening in
+                   the deck on a press. -->
+              <div class="stop-cap-group" data-cap-for="4">
+                <p class="stop-cap">From the Osthafen, the sculpture was carried across the city to the <strong>Taunusanlage</strong> on a special low-loader, because of the overhead tram lines, the whole load could not exceed five metres in height.</p>
+                <figure class="stop-cap-figure">
+                  <img src="./assets/_journey/3%20sculpture%20trip/frankfurt-carrier.jpg" alt="Drawing of the low-loader that carried the crate through Frankfurt: a tractor unit, then four-axle trailers either side of the crate, dimensioned in millimetres, 4,800 high overall, 13.5 tonnes to the axle" width="2000" height="966" loading="lazy" decoding="async">
+                  <figcaption class="journey-cap"><span class="journey-credit">&copy; Dominique Stroobant. Courtesy haus bill, Zumikon</span></figcaption>
+                </figure>
+                <p class="stop-cap">On 7&nbsp;October 1986, exactly five years after the bank&rsquo;s decision to invite Max Bill, Kontinuit&auml;t was presented in Frankfurt at a ceremony attended by Bill, the sculptors and stonemasons from Carrara, and representatives of Deutsche Bank. The occasion was marked with an exhibition, a reception and a documentation volume on the sculpture&rsquo;s genesis.</p>
+                <figure class="stop-cap-figure stop-cap-figure--centre">
+                  <img src="./assets/_journey/2%20sculpting/carrara-44-bill-and-the-artisans.jpg" alt="Max Bill and the sculptors and stonemasons of Kontinuit&auml;t grouped at the foot of the sculpture in Frankfurt, Dominique Stroobant seated cross-legged in front, a cameraman filming at the right" width="2816" height="2056" loading="lazy" decoding="async">
+                  <figcaption class="journey-cap"><p>Max Bill and the Kontinuit&auml;t artisans (back row: Mauro Seghetti, Paolo Grassi, Luciano Salvetti, Mario Fruendi, Franco Marchini, Otto Pelloni; second row: Stefano Ratti, Marino Bini, Silvio Santini; seated: Dominique Stroobant; absent: Giuseppe Granai).<span class="journey-credit">Photo &copy; Lutz Kleinhans</span></p></figcaption>
+                </figure>
+              </div>
               <article class="stop" data-stop="4"></article>
 
             </div>
@@ -3345,11 +3360,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
       { text: 'Rhine-Main',        at: 'top'    },
       { text: 'Frankfurt am Main', at: 'left'   },
     ],
-    // One picture per mark, standing where the mark stood. The white dots said
-    // only "a place was here"; the names beside them said which place. Neither
-    // said what happened there, and that was the one thing the section had the
-    // pictures for — so the pictures are the marks now, and a click opens the
-    // one being pointed at full size in the deck.
+    // A picture standing on a mark, where the mark stood, opening full size in
+    // the deck on a click. None stands on this map now: the transport's
+    // photographs, the open-water film and Frankfurt's preview are all off it,
+    // and every stop is a plain mark.
     //
     // Indexed against `stops`, so a null is a stop that carries no preview.
     // The three regions have none because they have no mark either: a stretch
@@ -3363,39 +3377,15 @@ document.querySelectorAll('.facts').forEach((facts) => {
       null,                                   // 1 the quarry
       null,                                   // 2 Santa Teresa Gallura
       null,                                   // 3 Marina di Carrara, the arrival
-      { src: './assets/_journey/3%20sculpture%20trip/IMG_8441.jpeg',
-        alt: 'Continuity mounted into its steel transport frame in the Carrara yard' },
-      // The only moving plate, and the only leg with nothing else to show: two
-      // weeks of open water between the Strait and the North Sea that no one
-      // aboard photographed. Muted and looping, like the plate it replaces.
-      { src: './assets/_journey/3%20sculpture%20trip/6749362-hd_1920_1080_24fps.mp4',
-        video: true, alt: 'Open water' },
+      null,                                   // 4 the port of Carrara
+      null,                                   // 5 Gibraltar
       null,                                   // 6 Portugal — a region
       null,                                   // 7 Bay of Biscay — a region
       null,                                   // 8 English Channel — a region
-      { src: './assets/_journey/3%20sculpture%20trip/IMG_8446.jpeg',
-        alt: 'The crate lifted out of the sea freighter in Rotterdam' },
-      { src: './assets/_journey/3%20sculpture%20trip/IMG_8443.jpeg',
-        alt: 'Continuity on the heavy transporter at the quay, the Kupari alongside' },
-      // Frankfurt, the destination, and the only mark with no photograph of the
-      // transport to stand on it — the crate arrives here, but what the reader
-      // has come to see is the sculpture standing. So it gets the Walk-around
-      // scene, which is the same image the closing reveal opens with, cut to
-      // the same 16:9 pill: the tile and the reveal are one picture in two
-      // states, and when the reveal comes up it takes over from the tile at
-      // exactly its size and shape. Nothing appears, nothing is swapped — the
-      // preview on the last mark simply starts growing, and goes on growing
-      // until it has closed the section.
-      { src: './assets/hero-sculpture.png', reveal: true,
-        alt: 'Continuity standing at Taunusanlage 12, Frankfurt' },
+      null,                                   // 9 Rotterdam
+      null,                                   // 10 Rhine-Main
+      null,                                   // 11 Frankfurt am Main
     ],
-    // Which stop the closing reveal stands on, and the element it is. The name
-    // placer needs both: the reveal is Frankfurt's preview once it opens, but
-    // it is not in the photos layer, so its size has to be looked up where the
-    // reveal writes it. Without this the name is measured off the tile the
-    // reveal has already outgrown and ends up under the picture.
-    revealFor: 11,
-    revealId: 'mapReveal',
     // One segment per leg between two named places, so the route turns over a
     // leg at a time rather than an ocean at a time. Each begins on the stop the
     // one before ended on, which is what keeps the drawn line continuous.
@@ -4315,10 +4305,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
       //
       // `photo` is set on the stops a preview stands on, and those are left
       // undrawn: the picture is the mark there, and a white disc behind it
-      // would only be a rim sticking out from under one corner. What is still
-      // drawn this way is every stop with no picture of its own — which here is
-      // Frankfurt alone, the destination, whose own preview is the reveal that
-      // opens on it at the very end.
+      // would only be a rim sticking out from under one corner. What is drawn
+      // this way is every stop with no picture of its own -- here, all of them.
       map.addLayer({
         id: 'stop-dot', type: 'circle', source: 'stops',
         filter: dotFilter(),
@@ -4543,35 +4531,21 @@ document.querySelectorAll('.facts').forEach((facts) => {
 //
 // See makeStopPhotos in the journey globes script above for where they went.
 
-// ========== Sculpture Trip · closing reveal ==========
-// The satellite camera gets to the sculpture's doorstep but never to the
-// sculpture — Esri has nothing over Taunusanlage past z19, where 4.5 m of
-// granite is a few pixels in the towers' shadow. So the last beat hands off to
-// the photograph: the hero image opens as a speck at the map's centre point,
-// which is the sculpture's own coordinate, then rushes forward to fill the
-// frame while the map dissolves under it. Ends on the same framing the page
-// opened with, closing the loop the sculpture is named for.
+// ========== Sculpture Trip · closing ==========
+// The satellite camera gets to the sculpture's doorstep, Frankfurt, and the
+// last screenful of scroll before the map lets go closes the section there:
+// the map fades out and the title card comes up, naming the chapter next.
 //
 // Scroll-driven off the sticky pin: the map stays put until the stops column's
-// foot reaches the viewport floor, so the reveal simply claims the last
+// foot reaches the viewport floor, so the close simply claims the last
 // screenful of scroll before that release.
 (() => {
   const wrap   = document.getElementById('makingMap');
   const stops  = document.querySelector('#sculpture-trip .journey-stops');
   const mapEl  = wrap && wrap.querySelector('.journey-map');
-  const reveal = document.getElementById('mapReveal');
   const cap    = document.getElementById('mapRevealCap');
-  if (!wrap || !stops || !mapEl || !reveal || !cap) return;
+  if (!wrap || !stops || !mapEl || !cap) return;
 
-  // The size every other stop's preview is cut to. This one is Frankfurt's —
-  // the destination, the only mark on the route with no photograph of the
-  // transport to stand on it, and the one place the page has something better:
-  // the Walk-around scene, sitting on the sculpture's own coordinate, which is
-  // where the camera has just landed. So it opens as a preview the same size as
-  // its four neighbours rather than as a 10px speck, and what grows to fill the
-  // screen and close the section is that preview itself rather than something
-  // new arriving over it.
-  const SEED_PX = 70;
   const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
   const seg = (v, a, b) => clamp((v - a) / (b - a));     // a sub-beat of the window
 
@@ -4584,29 +4558,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
     const span = vh * 1.8;
     const p = clamp((window.scrollY - (unpinAt - span)) / span);
 
-    // Beat 1 — the preview fades up and sits still long enough to be read as
-    // the mark on Frankfurt, which is what it is.
-    reveal.style.setProperty('--reveal-on', seg(p, 0, 0.10).toFixed(3));
-
-    // Beat 2 — it rushes forward as the satellite view goes. Growth is
-    // geometric rather than linear: constant *relative* growth reads as a
-    // camera moving toward the object, where a linear lerp would spend almost
-    // the whole run already big.
-    const grow = seg(p, 0.22, 0.52);
-    // The full 8-column measure. Read off the stops column rather than
-    // recomputed, so it stays the grid's own width at any viewport: the wrap is
-    // full-bleed and the container is centred, so a card this wide centred on
-    // the viewport lands exactly on columns 1-8.
-    const full = stops.clientWidth;
-    reveal.style.setProperty('--reveal-w', (SEED_PX * Math.pow(full / SEED_PX, grow)).toFixed(1) + 'px');
-    // Gone before the sculpture is full, so it lands on clean ground.
+    // The satellite view goes, and the title card comes up, naming the
+    // chapter next.
     mapEl.style.setProperty('--map-fade', (1 - seg(p, 0.22, 0.47)).toFixed(3));
-
-    // Beat 3 — a full clockwise turn, the same move the sculpture makes over
-    // the opening. It starts only once the scene has arrived and held a beat,
-    // so the turn reads as a deliberate second gesture rather than the tail of
-    // the zoom. The title card comes up under it, naming the chapter next.
-    reveal.style.setProperty('--reveal-rot', (seg(p, 0.62, 1) * 360).toFixed(1) + 'deg');
     cap.style.setProperty('--cap-on', seg(p, 0.55, 0.68).toFixed(3));
   }
 
@@ -4875,12 +4829,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
     'carrara-33-overhead-view.jpg': TBD,
     'carrara-39-finished-sculpture.jpg': TBD,
     'carrara-40-leaves-the-workshop.jpg': TBD,
-    // Sculpture Trip -- the photographs standing on the globe's marks
-    'IMG_8441.jpeg': TBD,
-    '6749362-hd_1920_1080_24fps.mp4': TBD,
-    'IMG_8446.jpeg': TBD,
-    'IMG_8443.jpeg': TBD,
-    'hero-sculpture.png': TBD,
+    // Sculpture Trip
+    'frankfurt-carrier.jpg': TBD,
+    'carrara-44-bill-and-the-artisans.jpg': TBD,
   };
   const nameOf = url => decodeURIComponent(url.split(/[?#]/)[0].split('/').pop());
   const cursorEl = document.getElementById('cursor');

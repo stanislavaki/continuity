@@ -4734,43 +4734,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   position: relative;
 }
 
-/* Closing reveal — the Walk-around scene, pinned to the map's centre point,
-   which is the sculpture's real coordinate, and which is where the camera has
-   come to rest by the time this plays. It is Frankfurt's preview: the last
-   mark on the route, opening at --preview-w like the four photographs standing
-   on the stops behind it, then growing to fill the screen while the satellite
-   view dissolves beneath it. Growing the preview rather than cutting to
-   something else is the point — the section ends on the mark it has been
-   travelling toward. It is also the only way to actually show the thing: Esri
-   has no imagery over Taunusanlage past z19, where 4.5 m of granite is a few
-   pixels in the towers' shadow.
-   It carries the walk stage's own shape — 16:9, cover, fully rounded — so the
-   card reads as that chapter arriving, and so the turn sweeps as a blob rather
-   than throwing rectangular corners around.
-   Width is set in px by script rather than scaled with a transform, so the
-   image re-samples sharp at every step instead of being a 10px bitmap blown
-   up. */
-.making-map .map-reveal {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: var(--reveal-w, var(--preview-w, 70px));
-  height: auto;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  border-radius: 9999px;
-  background-color: #1a1a1a;
-  transform: translate(-50%, -50%) rotate(var(--reveal-rot, 0deg));
-  opacity: var(--reveal-on, 0);
-  /* Same shadow the hero gives it, expressed against its own width so it stays
-     in proportion all the way down to the speck. */
-  filter: drop-shadow(0 calc(var(--reveal-w, 70px) * .06)
-                        calc(var(--reveal-w, 70px) * .12) rgba(0,0,0,.45));
-  z-index: 2;
-  pointer-events: none;
-}
-
-/* Title card under the turning sculpture, naming the chapter it hands off to. */
+/* Title card at the map's close, naming the chapter it hands off to. */
 .making-map .map-reveal-cap {
   position: absolute;
   left: 0;
@@ -4929,9 +4893,40 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 #sculpture-trip .trip-part { grid-column: 1 / -1; align-self: end; }
 #sculpture-trip .trip-part[data-part="5"] { grid-row: 5; }
 #sculpture-trip .trip-part[data-part="6"] { grid-row: 8; }
-#sculpture-trip .journey-stops > .stop-cap { grid-column: 5 / span 4; }
+#sculpture-trip .journey-stops > .stop-cap,
+#sculpture-trip .journey-stops > .stop-cap-group { grid-column: 5 / span 4; }
 #sculpture-trip .stop-cap[data-cap-for="3"] { grid-row: 6; }
-#sculpture-trip .stop-cap[data-cap-for="4"] { grid-row: 9; }
+/* 4.6's account runs to two paragraphs, held in one box on its row and
+   spaced as 4.4's pair is. */
+#sculpture-trip .stop-cap-group[data-cap-for="4"] {
+  grid-row: 9;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2em;
+}
+/* The pictures under 4.6's account -- the drawing of the low-loader, then Bill
+   with the artisans -- across the box's four columns, each caption under it in
+   the journey's caption type, its credit shown on hover as every
+   photograph's is (a caption that is only a credit starting on its line). */
+#sculpture-trip .stop-cap-figure { margin: 0; }
+#sculpture-trip .stop-cap-figure img { display: block; width: 100%; height: auto; }
+#sculpture-trip .stop-cap-figure .journey-cap > .journey-credit:first-child { margin-top: 0; }
+/* Bill with the artisans, centred on the page, on 3-6 rather than the box's
+   5-8, its caption beside it on its foot on 7-8: the figure runs 3-8, six
+   page columns (the box's four and half again, and half a gap), drawn left by
+   half the box and half a gap, and lays them out on six columns of its own. */
+#sculpture-trip .stop-cap-figure--centre {
+  align-self: flex-start;
+  width: calc(150% + var(--col-gap) / 2);
+  margin-left: calc(-50% - var(--col-gap) / 2);
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+  align-items: end;
+}
+#sculpture-trip .stop-cap-figure--centre img { grid-column: 1 / 5; grid-row: 1; }
+#sculpture-trip .stop-cap-figure--centre .journey-cap { grid-column: 5 / -1; grid-row: 1; margin: 0; }
 /* The three sub-chapters share one box, so none of their dates can ride the
    top of the screen to its own end, as the workshop's does: each stands under
    its title, as 4.1's and 4.2's do. */
@@ -4969,7 +4964,10 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
      and at 320×700, where 814px of text has to pass a 700px screen, 120px
      before and 50px after. Thin at the bottom end, but never crossed. */
   #sculpture-trip .stop-caps,
-  #sculpture-trip .journey-stops > .stop-cap { grid-column: 1; }
+  #sculpture-trip .journey-stops > .stop-cap,
+  #sculpture-trip .journey-stops > .stop-cap-group { grid-column: 1; }
+  #sculpture-trip .stop-cap-figure--centre { width: 100%; margin-left: 0; display: block; }
+  #sculpture-trip .stop-cap-figure--centre .journey-cap { margin-top: 12px; }
   #sculpture-trip .map-meta {
     left: 12px;
     right: 12px;
