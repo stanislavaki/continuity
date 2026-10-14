@@ -383,11 +383,12 @@
          Each belongs to a stage that lights one part of the graph and shades
          the rest (data-stage on the section, set by billScrolly4()), and is
          headed in its field's colour. A card rises, holds while it is read,
-         and goes: it holds where it covers none of what it speaks of -- its
+         and goes: it holds where it covers least of what it speaks of -- its
          field's works (data-field, the stage's tokens) and above all the ones
-         it names (data-names, titles as the data has them) -- placed, and
-         widened where that helps, by billScrolly4(). After the last, the
-         whole graph comes back, and answers the pointer again. -->
+         it names (data-names, titles as the data has them) -- placed by
+         billScrolly4(), against the side of the measure it names if it names
+         one (data-side). After the last, the whole graph comes back, and
+         answers the pointer again. -->
     <div class="bill-steps" id="billSteps4">
       <div class="bill-step" data-stage="1">
         <article class="bill-card" data-field="graphic early" data-names="Quinze variations sur un m&ecirc;me th&egrave;me">
@@ -407,7 +408,7 @@
         </article>
       </div>
       <div class="bill-step" data-stage="3">
-        <article class="bill-card" data-field="painting" data-names="Feld aus vier Zonen">
+        <article class="bill-card" data-field="painting" data-names="Feld aus vier Zonen" data-side="right">
           <h4 class="bill-card-title">Painting</h4>
           <p>He painted for sixty years, from 1926 to 1986, without a gap of a decade. A third of his 195 paintings date from the 1960s.</p>
           <dl class="bill-card-work">
@@ -9068,7 +9069,11 @@ if (document.readyState === 'loading') {
     const cols = Math.ceil(vw / CELL), rows = Math.ceil(vh / CELL);
     cards.forEach((card, n) => {
       const [w, h] = sizes[n];
-      const starts = w >= measure - 1 ? [0] : cells.map((c, k) => k).filter(k => cells[k].left + w <= cells[cells.length - 1].right + 1);
+      let starts = w >= measure - 1 ? [0] : cells.map((c, k) => k).filter(k => cells[k].left + w <= cells[cells.length - 1].right + 1);
+      // A card that names a side of the measure (data-side) stands against
+      // it, and only its height is chosen.
+      if (card.dataset.side === 'right') starts = starts.slice(-1);
+      else if (card.dataset.side === 'left') starts = starts.slice(0, 1);
       const field = (card.dataset.field || '').split(' ').filter(Boolean);
       const names = new Set((card.dataset.names || '').split('|').map(t => byTitle.get(t)).filter(i => i !== undefined));
       const cost = new Float64Array(cols * rows);
