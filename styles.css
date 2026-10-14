@@ -270,23 +270,6 @@ body.light .menu-btn { color: #000; }
 }
 
 #ch2 { overflow: visible; }
-/* Each numeral's own left side bearing, which is what puts its ink on the
-   column line -- see .chapter-num for the size it pairs with.
-   One rule a numeral because every digit carries a different bearing: the 4's
-   is not half the 6's, so one figure for all would pull the rest out of true.
-   Measured off Struve at 500 (canvas measureText, actualBoundingBoxLeft over
-   the font size), in em so they hold at any size. */
-#ch1 .chapter-num              { margin-left: -0.068em; }  /* 2 */
-#ch2 .chapter-num              { margin-left: -0.078em; }  /* 3: its top bar */
-/* The 3 stands on the grid by its flat top bar, which runs from 0.078 to
-   0.574 of its size (measured off the glyph drawn on a canvas): the bar spans
-   columns 3 and 4 of the eight exactly, its left end on column 3's line, and
-   the round bowl under it overshoots the lines by a sixtieth of an em either
-   side, as a round letter does. The head's tracks are kept equal, so the
-   numeral cannot widen its own column and push it off the grid. */
-#ch2 .chapter-head { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-#ch2 .chapter-num { font-size: calc((100cqw - 3 * var(--col-gap)) / 4 / 0.496); }
-#ch3 .chapter-num              { margin-left: -0.026em; }  /* 4 */
 #ch2 .chapter-head { margin-bottom: 0; }
 /* The text after the fold stands 48px under the art -- the article grid's row
    gap -- once the art has been let go. The art is centred in a screen-tall
@@ -1172,34 +1155,14 @@ section { position: relative; }
   position: relative;
   overflow: hidden;
 }
+/* A chapter opens on its title alone, centred across the measure; the chapter
+   numbers that stood over the titles are gone. */
 .chapter-head {
-  /* Queried by .chapter-num below, which sizes itself to one of these columns.
-     Read from the head's own inline size rather than 100vw so that a scrollbar
-     cannot throw the figure out. */
-  container-type: inline-size;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   align-items: start;
   gap: var(--col-gap);
   margin-bottom: 80px;
-}
-.chapter-num {
-  font-family: var(--sans);
-  font-weight: 500;
-  /* Sized so the numeral's ink fills exactly one column of this four-column
-     head — which is also two of the eight columns drawn behind chapter one,
-     plus the gap between them. The 0.468 is the ink-to-font-size ratio of the
-     face at this weight, measured off the rendered glyph, so the figure is
-     derived from the drawing rather than guessed at. */
-  font-size: calc((100cqw - 3 * var(--col-gap)) / 4 / 0.468);
-  line-height: 0.85;
-  letter-spacing: -0.04em;
-  grid-column: 2 / 3;
-  justify-self: start;
-  text-align: left;
-  /* The old -26px, kept in proportion now that the size is no longer fixed. */
-  margin-left: -0.056em;
-  opacity: 0.96;
 }
 .chapter-label {
   font-family: var(--mono);
@@ -1209,14 +1172,17 @@ section { position: relative; }
   opacity: 0.55;
 }
 .chapter-title {
-  /* The project's title size: the hero title's, which its fit in the script
-     publishes as --title-size -- until then 8vw, the hero's own. No word in a
-     chapter title is wider than "kontinuität", so on a phone, where the hero
-     is fitted to that word, a title still keeps inside the gutters. */
-  font-size: var(--title-size, 8vw);
+  /* 140px on a 1144px window, where it was set (12.24vw), and no larger;
+     smaller with the window, but never under the project's title size -- the
+     hero title's, which its fit in the script publishes as --title-size (8vw
+     until then). No word in a chapter title is wider than "kontinuität", so
+     on a phone, where the hero is fitted to that word, a title still keeps
+     inside the gutters; and from 601px, where "of the making" keeps to one
+     line, 12.24vw still fits it. The leading is 134 on 140. */
+  font-size: clamp(var(--title-size, 8vw), 12.24vw, 140px);
   font-weight: 700;
   letter-spacing: -0.025em;
-  line-height: 1.02;
+  line-height: 0.957;
   /* In lower case, as the hero's title and the facts are; the words keep
      their capitals in the markup. */
   text-transform: lowercase;
@@ -3389,7 +3355,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   background: #0018A8;
   color: #fff;
 }
-.db-section .chapter-num,
 .db-section .chapter-title { color: #fff; }
 .db-section .article-body .quote-text,
 .db-section .quote-text { color: #fff; }

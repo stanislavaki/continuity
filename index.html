@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=430" />
+<link rel="stylesheet" href="styles.css?v=432" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -249,7 +249,6 @@
   <section class="chapter light-section" id="ch1" style="padding-bottom:70px;">
     <div class="container">
       <div class="chapter-head" style="margin-bottom:40px;">
-        <div class="chapter-num">2</div>
         <h2 class="chapter-title">M<span class="kern-open">a</span>x Bill</h2>
       </div>
     </div>
@@ -509,7 +508,6 @@
   <section class="chapter math" id="ch2">
     <div class="container">
       <div class="chapter-head">
-        <div class="chapter-num">3</div>
         <h2 class="chapter-title" data-narr="ch5-title">Finite infinity</h2>
       </div>
 
@@ -607,7 +605,6 @@
     <section class="chapter dark-section making-title" id="ch3">
       <div class="container">
         <div class="chapter-head">
-          <div class="chapter-num">4</div>
           <h2 class="chapter-title">The story <span class="title-line">of the making</span></h2>
         </div>
         <div class="article-grid">
@@ -4658,7 +4655,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
   // the map's sculpture PNG is an <img> but hangs off an aside, not a figure,
   // and it is the closing reveal rather than a picture of the journey.
   const SELECTOR = '[style*="background-image"], figure > img, img.sg-tile, '
-                 + '.granite-travel-track > img, '
+                 + '.granite-travel-track > img, .granite-flip-face > img, '
                  + '.map-stop-photo > img, .map-stop-photo > video';
 
   // Every visual image in the journey section, in document order -- and then
@@ -4676,6 +4673,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
   // but they do appear in the slide deck so arrows can reach them.
   function isClickToOpen(el) {
     if (el.classList.contains('sg-img')) return false;  // sg-full image
+    // Faces C and D: on the page a press turns their sheet over; they are in
+    // the deck, and on the gallery sheet, all the same.
+    if (el.closest('.granite-flip')) return false;
     return true;
   }
 
@@ -4803,35 +4803,38 @@ document.querySelectorAll('.facts').forEach((facts) => {
   if (!btn || !sheet || !grid || !lb || !window.journeyDeck) return;
 
   // Each photograph's caption, by its file's name: what is happening, in a
-  // few words; where; when. Placeholders until the captions are written.
+  // few words; where; when -- from the page's own captions where it has them.
+  // A workshop photograph with no closer date takes the work's, 1984-86.
+  // The placeholder stands in for any photograph not yet named here.
   const TBD = ['Short description of what is happening', 'Location', 'Date'];
+  const WORKSHOP = 'Workshop, Carrara';
   const CAPTIONS = {
     // Granite Trip
-    'sardinia-03-bill-costantino.jpg': TBD,
-    'sardinia-04-first-cut.jpg': TBD,
-    'stroobant-block-projections.jpg': TBD,
-    'stroobant-block-face-c.jpg': TBD,
-    'stroobant-block-face-d.jpg': TBD,
-    'sardinia-05-first-cuts.jpg': TBD,
-    'stroobant-block-cuts.jpg': TBD,
-    'sardinia-08-out-of-the-quarry.jpg': TBD,
-    'sardinia-09-loading-the-trolley.jpg': TBD,
-    'sardinia-11-the-ship.jpg': TBD,
+    'sardinia-03-bill-costantino.jpg': ['Quarry owner Rodolfo Costantino and Max Bill', 'Scarraciana quarry, Sardinia', 'September 1983'],
+    'sardinia-04-first-cut.jpg': ['The first cut: extracting the stone', 'Scarraciana quarry, Sardinia', '1983'],
+    'stroobant-block-projections.jpg': ['Projections of the block, the zones to be removed hatched and measured', 'Working drawing by Dominique Stroobant', 'c. 1983'],
+    'stroobant-block-face-c.jpg': ['Face C of the block, its cutting lines in red, numbered and measured', 'Working drawing by Dominique Stroobant', 'c. 1983'],
+    'stroobant-block-face-d.jpg': ['Face D of the block, its cutting lines in red, numbered and measured', 'Working drawing by Dominique Stroobant', 'c. 1983'],
+    'sardinia-05-first-cuts.jpg': ['The block split from the rock face, some 500 tonnes', 'Scarraciana quarry, Sardinia', 'October 1983'],
+    'stroobant-block-cuts.jpg': ['A study of the successive cuts reducing the block to a polyhedron', 'Drawing by Dominique Stroobant', '1983'],
+    'sardinia-08-out-of-the-quarry.jpg': ['A Fagioli truck hauling the block out of the quarry', 'Scarraciana quarry, Sardinia', 'February 1984'],
+    'sardinia-09-loading-the-trolley.jpg': ['The block on the transporter, carried across the island on a closed road', 'Santa Teresa Gallura, Sardinia', '8\u20139 February 1984'],
+    'sardinia-11-the-ship.jpg': ['The block under tow to Carrara', 'From Santa Teresa Gallura to Marina di Carrara', '1984'],
     // Sculpting
-    'stroobant-portrait-ey.jpg': TBD,
-    'esagono-emblem-ds.jpg': TBD,
-    'carrara-22-first-wire-cut.jpg': TBD,
-    'carrara-17-removing-a-cut-piece.jpg': TBD,
-    'J-3.jpg': TBD,
-    'J-4.jpg': TBD,
-    'carrara-32-inside-the-sculpture.jpg': TBD,
-    'J-6.jpg': TBD,
-    'carrara-33-overhead-view.jpg': TBD,
-    'carrara-39-finished-sculpture.jpg': TBD,
-    'carrara-40-leaves-the-workshop.jpg': TBD,
+    'esagono-emblem-ds.jpg': ['Emblem of Esagono snc: a man with a lever tipping a cube onto its corner', 'Drawing by Dominique Stroobant', ''],
+    'stroobant-portrait-ey.jpg': ['Dominique Stroobant, sculptor and photographer, chief of production of Kontinuit\u00e4t', 'Near Carrara', '2026'],
+    'carrara-22-first-wire-cut.jpg': ['The first diamond wire cut of the stone', WORKSHOP, '1984\u201386'],
+    'carrara-17-removing-a-cut-piece.jpg': ['Franco Marchini removing a cut piece of stone', WORKSHOP, '1984\u201386'],
+    'J-3.jpg': ['A mason grinding the granite', WORKSHOP, '1984\u201386'],
+    'J-4.jpg': ['Measuring on the model', WORKSHOP, '1984\u201386'],
+    'carrara-32-inside-the-sculpture.jpg': ['Inside the sculpture: Luciano Salvetti at work', WORKSHOP, '1984\u201386'],
+    'J-6.jpg': ['Carving the sculpture from the inside', WORKSHOP, '1984\u201386'],
+    'carrara-33-overhead-view.jpg': ['Overhead view of Kontinuit\u00e4t in the workshop', WORKSHOP, '1984\u201386'],
+    'carrara-39-finished-sculpture.jpg': ['The finished sculpture, ready to ship', WORKSHOP, '1986'],
+    'carrara-40-leaves-the-workshop.jpg': ['The sculpture leaves the workshop in its steel crate', 'Carrara', '1986'],
     // Sculpture Trip
-    'frankfurt-carrier.jpg': TBD,
-    'carrara-44-bill-and-the-artisans.jpg': TBD,
+    'frankfurt-carrier.jpg': ['The low-loader that carried the sculpture across Frankfurt', 'Drawing by Dominique Stroobant', '1986'],
+    'carrara-44-bill-and-the-artisans.jpg': ['Max Bill and the Kontinuit\u00e4t artisans at the sculpture', 'Taunusanlage, Frankfurt', '1986'],
   };
   const nameOf = url => decodeURIComponent(url.split(/[?#]/)[0].split('/').pop());
   const cursorEl = document.getElementById('cursor');
