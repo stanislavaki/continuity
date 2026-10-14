@@ -4,3 +4,80 @@
 # ElevenLabs / local secrets — never commit the real key
 .env
 scripts/__pycache__/
+
+# Assets the page never loads -- source originals, alternates, unused cuts.
+# Kept on disk, left out of the repo so GitHub Pages does not publish them
+# (they made each deploy 364MB, which timed out in Pages' publish step).
+/assets/3D-glassy.mov
+/assets/3D-glassy.mp4
+/assets/H__6322.jpg
+/assets/_journey/1 italy/IMG_1790.jpeg
+/assets/_journey/1 italy/IMG_1791.jpeg
+/assets/_journey/1 italy/IMG_1792.jpeg
+/assets/_journey/1 italy/IMG_1793.jpeg
+/assets/_journey/1 italy/IMG_1794.jpeg
+/assets/_journey/1 italy/IMG_1796.jpeg
+/assets/_journey/1 italy/IMG_8405.JPG
+/assets/_journey/1 italy/IMG_8407.jpeg
+/assets/_journey/1 italy/IMG_8408.jpeg
+/assets/_journey/1 italy/IMG_8409.jpeg
+/assets/_journey/1 italy/IMG_8410.jpeg
+/assets/_journey/1 italy/IMG_8411.jpeg
+/assets/_journey/1 italy/IMG_8413.jpeg
+/assets/_journey/1 italy/IMG_8414.jpeg
+/assets/_journey/1 italy/IMG_8415.jpeg
+/assets/_journey/1 italy/IMG_8416.jpeg
+/assets/_journey/1 italy/IMG_8417.jpeg
+/assets/_journey/1 italy/IMG_8418.jpeg
+/assets/_journey/1 italy/IMG_8419.jpeg
+/assets/_journey/1 italy/IMG_8420.jpeg
+/assets/_journey/1 italy/IMG_8421.jpeg
+/assets/_journey/1 italy/IMG_8422.jpeg
+/assets/_journey/1 italy/sardinia-06-polyhedron.jpg
+/assets/_journey/1 italy/sardinia-07-moving-the-stone.jpg
+/assets/_journey/1 italy/sardinia-10-santa-teresa.jpg
+/assets/_journey/2 sculpting/carrara-24-model-drilling-directions.jpg
+/assets/_journey/3 sculpture trip/6749362-hd_1920_1080_24fps.mp4
+/assets/_journey/3 sculpture trip/Bill_2014-1024x768.jpg
+/assets/_journey/3 sculpture trip/IMG_8441.jpeg
+/assets/_journey/3 sculpture trip/IMG_8442.jpeg
+/assets/_journey/3 sculpture trip/IMG_8443.jpeg
+/assets/_journey/3 sculpture trip/IMG_8444.jpeg
+/assets/_journey/3 sculpture trip/IMG_8445.jpeg
+/assets/_journey/3 sculpture trip/IMG_8446.jpeg
+/assets/_journey/3 sculpture trip/IMG_8447.jpeg
+/assets/_journey/3 sculpture trip/IMG_8448.jpeg
+/assets/_journey/3 sculpture trip/IMG_8449.jpeg
+/assets/_journey/3 sculpture trip/IMG_8450.jpeg
+/assets/_journey/3 sculpture trip/IMG_8451.jpeg
+/assets/_videos/maxbill-kurzschnitt-2-poster.jpg
+/assets/_videos/maxbill-kurzschnitt-2.mp4
+/assets/carrara.png
+/assets/cut-out-sculpture.webp
+/assets/footer-small.png
+/assets/footer.png
+/assets/granite-block-1.png
+/assets/granite-block-2.png
+/assets/granite-block-3.png
+/assets/granite-block-4.png
+/assets/hero-pool.png
+/assets/hero-sculpture.png
+/assets/kontinuitat-mark.png
+/assets/math-diagram.png
+/assets/math-loop.png
+/assets/max-bill-chair-1951.jpg
+/assets/max-bill-model-1951.jpg
+/assets/max-bill-portrait.jpg
+/assets/max-bill-wire-1960.jpg
+/assets/measuring.png
+/assets/model-1.png
+/assets/model-2.png
+/assets/opera_2026.mp4
+/assets/paper-model.jpg
+/assets/quarry-map.png
+/assets/quarry.png
+/assets/sculpture-3d.png
+/assets/strip-diagram.png
+/assets/workshop-1.png
+/assets/workshop-2.png
+/assets/workshop-3.png
