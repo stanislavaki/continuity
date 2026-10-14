@@ -3468,9 +3468,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    would otherwise shrink to its content and break the title over four lines. */
 .making-title > .container { width: 100%; }
 /* Its lead is set as the intro's opening paragraph is (.article-lead), in the
-   bank's blue rather than the signal red: the ground 4.1 comes up on
-   (.db-section). */
-.making-title .article-lead { color: #0018A8; }
+   page's green -- the green band's (.quote-band--green) -- rather than the
+   signal red. */
+.making-title .article-lead { color: #00934C; }
 /* Then the window the globe comes down onto Frankfurt in. Taller than the
    others: the globe is held whole a while before it moves -- HEAD in the
    journey script -- and the move itself is as long as theirs. */
