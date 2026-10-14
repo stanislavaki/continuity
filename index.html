@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=383" />
+<link rel="stylesheet" href="styles.css?v=384" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -5010,12 +5010,20 @@ document.querySelectorAll('.facts').forEach((facts) => {
     { track: 'top', at: 'end',   anchor: 'j2', align: 'below', col: 1, span: 2, settle: 0.16,
       body:  'Franco Marchini removing a cut piece of stone.',
       credit: 'Photo \u00a9 Dominique Stroobant' },
+    // On while J-4 holds its opening place, off just before it moves: the
+    // swap starts a third of the way through the track.
+    { track: 'mid', at: 'start', anchor: 'j4', align: 'below', col: 1, span: 2, settle: 0.3,
+      body:  'Measuring on the model.',
+      credit: 'Photo \u00a9 Dominique Stroobant' },
     // Settles 0.36 out: the swap is done two-thirds of the way through the
     // track (its last keyframe is held for the final third), so this brings
     // the caption on as J-5 eases into place rather than once it has scrolled.
     { track: 'mid', at: 'end',   anchor: 'j5', align: 'below', col: 7, span: 2, settle: 0.36,
       body:  'Inside the sculpture. Luciano Salvetti at work.',
       credit: 'Photo \u00a9 Dominique Stroobant' },
+    { track: 'bot', always: true, anchor: 'j6', align: 'below', col: 1, span: 2,
+      body:  'Caption placeholder',
+      credit: 'Photo \u00a9 Name' },
     { track: 'bot', at: 'end',   anchor: 'j7', align: 'foot',  col: 1, span: 2,
       body:  'The model with drilling directions',
       credit: 'Photo \u00a9 Dominique Stroobant' }
@@ -5166,6 +5174,20 @@ document.querySelectorAll('.facts').forEach((facts) => {
     return maxH;
   }
 
+  // While J-7 is held still on screen (Phases 2 and 3) the browser holds it:
+  // it is pinned to the viewport with position: fixed at the same place. Held
+  // by rewriting its canvas top on every frame, it ran a frame behind the
+  // scroll and shuddered. --x/--y/--w stay in canvas terms for the notes.
+  function pinJ7(tile, viewLeft, viewTop) {
+    if (viewLeft == null) {
+      tile.classList.remove('is-pinned');
+      return;
+    }
+    tile.style.setProperty('--fx', viewLeft + 'px');
+    tile.style.setProperty('--fy', viewTop + 'px');
+    tile.classList.add('is-pinned');
+  }
+
   let raf = null;
   function update() {
     raf = null;
@@ -5260,6 +5282,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
         // Phase 1: leave standard placement intact.
         j7Y = parseFloat(j7.tile.style.getPropertyValue('--y'));
         j7W = j7.widthPx; j7L = j7.leftPx; j7H = j7.heightPx;
+        pinJ7(j7.tile, null);
       } else if (rect.top > phase2EndRectTop) {
         // Phase 2: sticky at K0 size.
         const k0 = KF.j7[0];
@@ -5270,6 +5293,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
         j7.tile.style.setProperty('--x', j7L + 'px');
         j7.tile.style.setProperty('--y', j7Y + 'px');
         j7.tile.style.setProperty('--w', j7W + 'px');
+        pinJ7(j7.tile, cRect.left + j7L, STICKY_VIEW_Y);
       } else if (rect.top > phase3EndRectTop) {
         // Phase 3: scale + move while still sticky in the viewport, so the
         // entire scale animation plays out on screen.
@@ -5285,6 +5309,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
         j7.tile.style.setProperty('--x', j7L + 'px');
         j7.tile.style.setProperty('--y', j7Y + 'px');
         j7.tile.style.setProperty('--w', j7W + 'px');
+        pinJ7(j7.tile, cRect.left + j7L, STICKY_VIEW_Y);
       } else {
         // Phase 4: scale done — park J-7 at the canvas-y it occupied at the
         // moment the sticky scale finished, then let it scroll naturally.
@@ -5293,6 +5318,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
         j7L = (kN[0] - 1) * (cwPx + gap);
         j7Y = STICKY_VIEW_Y - phase3EndRectTop;
         j7H = j7W / j7.aspect;
+        pinJ7(j7.tile, null);
         j7.tile.style.setProperty('--x', j7L + 'px');
         j7.tile.style.setProperty('--y', j7Y + 'px');
         j7.tile.style.setProperty('--w', j7W + 'px');
@@ -5383,7 +5409,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
   function setup() {
     if (mq.matches) {
       tiles.forEach(t => {
-        ['--x', '--y', '--w'].forEach(p => t.style.removeProperty(p));
+        ['--x', '--y', '--w', '--fx', '--fy'].forEach(p => t.style.removeProperty(p));
+        t.classList.remove('is-pinned');
       });
       stage.style.removeProperty('height');
       window.removeEventListener('scroll', onScroll);

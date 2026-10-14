@@ -4495,6 +4495,14 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   background-color: rgba(255,255,255,.04);
   will-change: left, top, width;
 }
+/* J-7 while it is held on screen: pinned to the viewport by the browser, at
+   the place the script has worked out, rather than re-placed in the canvas on
+   every frame -- which left it a frame behind the scroll. */
+.sg-tile.is-pinned {
+  position: fixed;
+  left: var(--fx, 0px);
+  top: var(--fy, 0px);
+}
 /* Captions dropped into the gallery's own coordinate space. The script
    measures the gaps left between tiles each frame and only fades a note in
    when the gap is wide enough to hold it, so text never sits on an image. */
