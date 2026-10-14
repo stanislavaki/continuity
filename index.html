@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=421" />
+<link rel="stylesheet" href="styles.css?v=423" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -5129,7 +5129,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     { track: 'bot', always: true, anchor: 'j6', align: 'below', col: 1, span: 2,
       body:  'Caption placeholder',
       credit: 'Photo \u00a9 Name' },
-    { track: 'bot', at: 'end',   anchor: 'j7', align: 'foot',  col: 1, span: 2,
+    { track: 'bot', at: 'end',   anchor: 'j7', align: 'foot',  col: 7, span: 2,
       body:  'Overhead view of Kontinuit\u00e4t in workshop.',
       credit: 'Photo \u00a9 Luigi Biagini' }
   ];
@@ -5210,11 +5210,13 @@ document.querySelectorAll('.facts').forEach((facts) => {
       [1, 6, 72],
       [1, 6, 72]
     ],
+    // J-7's last keyframe is where it lands turned on its side: six columns
+    // across, from 1 (see its phases in update()).
     j7: [
       [7, 2, 72],
       [7, 2, 72],
-      [3, 4, 72],
-      [3, 4, 72]
+      [1, 6, 72],
+      [1, 6, 72]
     ]
   };
 
@@ -5267,9 +5269,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
   //     fully done while the tile is still on-screen.
   const TRIGGER_START_VH = 1.0;
   const TRIGGER_DURATION_VH = 1.0;
-  // J-7's turn as it flies to its landing place: once round, anticlockwise --
-  // none where the reader has asked for less motion.
-  const J7_TURN = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : -360;
+  // J-7's turn as it flies to its landing place: three quarters round,
+  // anticlockwise, to lie on its side there. Driven by the scroll, and part of
+  // where it lands, so it turns whatever the reader's motion setting.
+  const J7_TURN = -270;
 
   let cachedGap = null;
   let cachedAnchors = null;
@@ -5369,9 +5372,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
     // Phase 2 (until J-7 reaches J-6's bottom edge): J-7 sticks to a fixed
     //         viewport-y while the canvas scrolls up beneath it, so it
     //         appears to slide down through the canvas at scroll speed.
-    // Phase 3: J-7 flies to its landing place -- moving, growing to four
-    //         columns and turning once round, all at once -- and Phase 4
-    //         lets it go there, a gap above the photograph after the stage.
+    // Phase 3: J-7 flies to its landing place -- moving, growing and
+    //         turning three quarters round, all at once, to lie on its side
+    //         across six columns -- and Phase 4 lets it go there, a gap above
+    //         the photograph after the stage.
     let j7Parked = false;
     const j7 = data.find(d => d.kf === 'j7');
     const j6 = data.find(d => d.kf === 'j6');
@@ -5394,18 +5398,28 @@ document.querySelectorAll('.facts').forEach((facts) => {
       const PHASE3_DURATION = TRIGGER_DURATION_VH * vh;
       const phase3EndRectTop = phase2EndRectTop - PHASE3_DURATION;
 
-      // Where J-7's flight ends: its last keyframe's columns -- four, 3-6 --
-      // at its own proportion, risen as far as it must to end a gap above the
-      // screen's foot (never past a gap under its top; on a screen too short
-      // for four columns, as many as fit). It lands there, then is let go.
+      // Where J-7's flight ends: turned three quarters round, anticlockwise,
+      // so it lies on its side across its last keyframe's columns -- six, 1-6
+      // -- its foot a gap above the screen's foot (never past a gap under its
+      // top; on a screen too short, across as many columns as fit). Turned,
+      // its width on the page is its height upright, so it flies as an upright
+      // box growing to the width it will stand tall, about its middle, which
+      // travels to the middle of its landing place. It lands there, then is
+      // let go, still turned.
       const kLast = KF.j7[KF.j7.length - 1];
       const k0 = KF.j7[0];
       const widthOf = s => s * cwPx + (s - 1) * gap;
       let endSpan = kLast[1];
-      while (endSpan > k0[1] && widthOf(endSpan) / j7.aspect > vh - 2 * gap) endSpan--;
-      const endCol = kLast[0] + (kLast[1] - endSpan) / 2;
-      const endW = widthOf(endSpan), endH = endW / j7.aspect;
-      const endY = Math.max(gap, Math.min(STICKY_VIEW_Y, vh - gap - endH));
+      while (endSpan > k0[1] && widthOf(endSpan) * j7.aspect > vh - 2 * gap) endSpan--;
+      const across = widthOf(endSpan);          // the turned picture, across the page
+      const tall = across * j7.aspect;          // and down it
+      const endW = tall, endH = across;         // its upright box at the end
+      const endTop = Math.max(gap, Math.min(STICKY_VIEW_Y, vh - gap - tall));
+      const endCx = (kLast[0] - 1) * (cwPx + gap) + across / 2;
+      const endCy = endTop + tall / 2;
+      const startW = widthOf(k0[1]), startH = startW / j7.aspect;
+      const startCx = (k0[0] - 1) * (cwPx + gap) + startW / 2;
+      const startCy = STICKY_VIEW_Y + startH / 2;
       // The arc it travels on: a little up and out of the way before it comes
       // down to land, as a card is lifted and laid.
       const ARC = 0.08 * vh;
@@ -5418,52 +5432,53 @@ document.querySelectorAll('.facts').forEach((facts) => {
         pinJ7(j7.tile, null);
       } else if (rect.top > phase2EndRectTop) {
         // Phase 2: held on screen at its first size while J-6 goes up past it.
-        j7W = widthOf(k0[1]);
+        j7W = startW;
         j7L = (k0[0] - 1) * (cwPx + gap);
         j7Y = STICKY_VIEW_Y - rect.top;
-        j7H = j7W / j7.aspect;
+        j7H = startH;
         j7.tile.style.setProperty('--x', j7L + 'px');
         j7.tile.style.setProperty('--y', j7Y + 'px');
         j7.tile.style.setProperty('--w', j7W + 'px');
         pinJ7(j7.tile, cRect.left + j7L, STICKY_VIEW_Y);
       } else if (rect.top > phase3EndRectTop) {
         // Phase 3: the flight, still held by the browser -- in one motion it
-        // moves to its landing place along the arc, grows to its last size,
-        // and turns once round, anticlockwise, the way the ribbon turns in it.
+        // moves to its landing place along the arc, grows, and turns three
+        // quarters round, anticlockwise, the way the ribbon turns in it.
         const p3 = Math.max(0, Math.min(1, (phase2EndRectTop - rect.top) / PHASE3_DURATION));
         const t  = ease(p3);
-        const cs = lerp(k0[1], endSpan, t);
-        j7W = widthOf(cs);
-        j7L = (lerp(k0[0], endCol, t) - 1) * (cwPx + gap);
-        const viewY = lerp(STICKY_VIEW_Y, endY, t) - ARC * Math.sin(Math.PI * t);
-        j7Y = viewY - rect.top;
+        j7W = lerp(startW, endW, t);
         j7H = j7W / j7.aspect;
+        j7L = lerp(startCx, endCx, t) - j7W / 2;
+        const viewY = lerp(startCy, endCy, t) - ARC * Math.sin(Math.PI * t) - j7H / 2;
+        j7Y = viewY - rect.top;
         j7.tile.style.setProperty('--x', j7L + 'px');
         j7.tile.style.setProperty('--y', j7Y + 'px');
         j7.tile.style.setProperty('--w', j7W + 'px');
         j7.tile.style.setProperty('--rot', (J7_TURN * t).toFixed(2) + 'deg');
         pinJ7(j7.tile, cRect.left + j7L, viewY);
       } else {
-        // Phase 4: landed -- let go in the canvas where the flight ended, to
-        // scroll on with the page.
+        // Phase 4: landed -- let go in the canvas where the flight ended, still
+        // turned, to scroll on with the page.
         j7Parked = true;
         j7W = endW;
-        j7L = (endCol - 1) * (cwPx + gap);
-        j7Y = endY - phase3EndRectTop;
         j7H = endH;
+        j7L = endCx - endW / 2;
+        j7Y = endCy - endH / 2 - phase3EndRectTop;
         pinJ7(j7.tile, null);
         j7.tile.style.setProperty('--x', j7L + 'px');
         j7.tile.style.setProperty('--y', j7Y + 'px');
         j7.tile.style.setProperty('--w', j7W + 'px');
+        j7.tile.style.setProperty('--rot', J7_TURN + 'deg');
       }
 
       // The stage stands as tall, from the start, as it will once J-7 has
-      // landed, rather than following J-7 down while it is held. Followed, the
-      // height grew with the scroll a frame behind it, and the photograph
-      // after the stage was shoved along under J-7 and lurched; now it comes up
-      // steadily, and J-7 lands a gap above it.
-      const j7RestBottom = endY - phase3EndRectTop + endH;
-      lastBottom = Math.max(lastBottom, j7Y + j7H, j7RestBottom);
+      // landed -- to the foot of the turned picture -- rather than following
+      // J-7 down while it is held. Followed, the height grew with the scroll a
+      // frame behind it, and the photograph after the stage was shoved along
+      // under J-7 and lurched; now it comes up steadily, and J-7 lands a gap
+      // above it.
+      const j7RestBottom = endTop + tall - phase3EndRectTop;
+      lastBottom = Math.max(lastBottom, j7RestBottom);
     }
 
     // Notes go last, once every tile — J-7's phase overrides included — has
@@ -5484,14 +5499,22 @@ document.querySelectorAll('.facts').forEach((facts) => {
     if (!notes.length) return 0;
 
     // Read boxes back off the DOM so J-7's phased placement is included.
+    // A turned tile (J-7, landed on its side) by the box it fills on the
+    // page, about its middle, not its upright one.
     const boxes = data.map(d => {
-      const width = parseFloat(d.tile.style.getPropertyValue('--w')) || 0;
+      const w = parseFloat(d.tile.style.getPropertyValue('--w')) || 0;
+      const h = w / (d.aspect || 1);
+      const x = parseFloat(d.tile.style.getPropertyValue('--x')) || 0;
+      const y = parseFloat(d.tile.style.getPropertyValue('--y')) || 0;
+      const a = (parseFloat(d.tile.style.getPropertyValue('--rot')) || 0) * Math.PI / 180;
+      const width = Math.abs(w * Math.cos(a)) + Math.abs(h * Math.sin(a));
+      const height = Math.abs(w * Math.sin(a)) + Math.abs(h * Math.cos(a));
       return {
         kf: d.kf,
-        left: parseFloat(d.tile.style.getPropertyValue('--x')) || 0,
-        top: parseFloat(d.tile.style.getPropertyValue('--y')) || 0,
+        left: x + w / 2 - width / 2,
+        top: y + h / 2 - height / 2,
         width,
-        height: width / (d.aspect || 1)
+        height
       };
     });
     const boxOf = kf => boxes.find(b => b.kf === kf);

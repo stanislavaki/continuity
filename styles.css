@@ -4532,7 +4532,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .sculpt-intro p:last-child { margin-bottom: 60px; }
 .sculpt-gallery {
   display: block;
-  margin: 60px 0;
+  /* None under it: the section's own 120px closes it, as far under the last
+     picture as that picture stands under the one before. */
+  margin: 60px 0 0;
 }
 .sg-bookend {
   margin: 0;
@@ -4558,18 +4560,28 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .sg-bookend + .sg-bookend { margin-top: 48px; }
 .sg-bookend--six img { grid-column: 1 / 7; }
 /* The finished sculpture across the full measure (.sg-bookend--eight): no
-   room beside it, so its caption hangs under it, 12px down, at its right end,
-   on 7-8 -- out of the flow, so the next picture, on 1-6, comes up a column
-   gap under this one, the caption standing beside its top. */
+   room beside it -- it runs edge to edge -- so its caption hangs under it,
+   12px down, at the measure's right end,
+   on 7-8 -- out of the flow, in the room over the next picture, which stands
+   120px under this one, as far as the section's end stands under it. */
 .sg-bookend--eight { position: relative; }
-.sg-bookend--eight img { grid-column: 1 / -1; grid-row: 1; }
+/* Edge to edge, as the Granite Trip's last picture is: out of the measure to
+   the window's sides (--sbw, the scrollbar, set in JS), its caption still on
+   the measure's 7-8 under it. */
+.sg-bookend--eight img {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  width: calc(100vw - var(--sbw, 0px));
+  max-width: none;
+  margin-left: calc(50% - (100vw - var(--sbw, 0px)) / 2);
+}
 .sg-bookend--eight .sg-endnote {
   position: absolute;
   top: calc(100% + 12px);
   grid-column: 7 / 9;
   grid-row: 1;
 }
-.sg-bookend--eight + .sg-bookend { margin-top: var(--col-gap); }
+.sg-bookend--eight + .sg-bookend { margin-top: 120px; }
 /* Closing caption to the right of the final photo, sitting on the image's
    own bottom edge rather than its top. */
 .sg-endnote {
@@ -4611,6 +4623,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   display: block;
   background-color: rgba(255,255,255,.04);
   will-change: left, top, width;
+  /* Turned about its middle (--rot): J-7 as it flies to its landing place,
+     and lying on its side once it has landed. */
+  transform: rotate(var(--rot, 0deg));
 }
 /* J-7 while it is held on screen: pinned to the viewport by the browser, at
    the place the script has worked out, rather than re-placed in the canvas on
@@ -4619,8 +4634,6 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   position: fixed;
   left: var(--fx, 0px);
   top: var(--fy, 0px);
-  /* Turned about its middle as it flies to its landing place (--rot). */
-  transform: rotate(var(--rot, 0deg));
 }
 /* Captions dropped into the gallery's own coordinate space. The script
    measures the gaps left between tiles each frame and only fades a note in
@@ -5025,6 +5038,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
     width: 100%;
     height: auto;
     opacity: 1;
+    transform: none;
   }
   .sg-note { display: none; }
   .sculpt-process li { grid-template-columns: 40px 1fr; gap: 16px; }
