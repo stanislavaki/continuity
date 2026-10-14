@@ -4938,12 +4938,16 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    page little over the notes. */
 .bill-reveal:has(+ section > .container > .bill-graph-notes) { padding-bottom: 32px; }
 /* The second version of the graph, a copy to try changes on, parted from the
-   first by a 4px white gap across the panel. */
-.bill-reveal-v3 { border-top: 4px solid #fff; }
-/* A panel hidden for now (the first graph's, #billReveal2[hidden]) takes no
-   room, and the second then has no first to be parted from. */
+   first by a 4px white gap across the panel; the third, a copy of the second,
+   parted from it the same way. */
+.bill-reveal-v3,
+.bill-reveal-v4 { border-top: 4px solid #fff; }
+/* A panel hidden for now (the first graph's, #billReveal2[hidden], and the
+   second's, #billReveal3[hidden]) takes no room, and the one after it then
+   has nothing to be parted from. */
 .bill-reveal[hidden] { display: none; }
-.bill-reveal[hidden] + .bill-reveal-v3 { border-top: 0; }
+.bill-reveal[hidden] + .bill-reveal-v3,
+.bill-reveal[hidden] + .bill-reveal-v4 { border-top: 0; }
 .light-section:has(> .container > .bill-graph-notes) { padding-top: 40px; }
 /* Its names: each highlight's years, a little grey, over its name in its
    key's colour (--call), at --bg-call (14px, converted into the plot's units
@@ -5320,15 +5324,23 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    the pointer is under its tile, and a key work, standing in a group of its
    own, steps back or stays lit by itself. */
 #billGraphPlot3 svg.is-pointing .bg-dots:not(.dim),
+#billGraphPlot4 svg.is-pointing .bg-dots:not(.dim),
 #billGraphPlot3 svg.is-pointing .bg-band:not(.dim),
-#billGraphPlot3 svg.is-pointing .bg-kw:not(.dim):not(.is-on) { opacity: 0.25; }
-#billGraphPlot3 .bg-dots { transition: opacity 0.18s ease, fill 0.4s ease; }
-#billGraphPlot3 .bg-band { transition: opacity 0.18s ease; }
+#billGraphPlot4 svg.is-pointing .bg-band:not(.dim),
+#billGraphPlot3 svg.is-pointing .bg-kw:not(.dim):not(.is-on),
+#billGraphPlot4 svg.is-pointing .bg-kw:not(.dim):not(.is-on) { opacity: 0.25; }
+#billGraphPlot3 .bg-dots,
+#billGraphPlot4 .bg-dots { transition: opacity 0.18s ease, fill 0.4s ease; }
+#billGraphPlot3 .bg-band,
+#billGraphPlot4 .bg-band { transition: opacity 0.18s ease; }
 /* Shaded deeper here than in the first graph (0.1), so the lit domain stands
    further out of the rest. */
 #billGraphPlot3 .bg-dots.dim,
+#billGraphPlot4 .bg-dots.dim,
 #billGraphPlot3 .bg-band.dim,
-#billGraphPlot3 .bg-kw.dim { opacity: 0.06; }
+#billGraphPlot4 .bg-band.dim,
+#billGraphPlot3 .bg-kw.dim,
+#billGraphPlot4 .bg-kw.dim { opacity: 0.06; }
 @media (prefers-reduced-motion: reduce) {
   #billGraphPlot2 rect[data-i] { transition: none; }
 }
@@ -5344,13 +5356,17 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    here (see glide()). Under the pointer it all runs quickly (0.18s); pressed
    open, at twice that (.is-open). A key work's square (.bg-kw)
    holds its name and years at rest, as a tile does. */
-#billGraphPlot3 .bg-kw { transition: opacity 0.18s ease; }
+#billGraphPlot3 .bg-kw,
+#billGraphPlot4 .bg-kw { transition: opacity 0.18s ease; }
 /* While a work is under the pointer the pointer is a hand: a press opens its tile. */
-#billGraph3.is-on-work { cursor: pointer; }
+#billGraph3.is-on-work,
+#billGraph4.is-on-work { cursor: pointer; }
 /* Over a key work's name the pointer stays what it is about it -- the arrow,
    or the hand over a work that answers -- never the text bar. */
-#billGraphPlot3 .bg-kw { cursor: default; }
-#billGraph3.is-on-work .bg-kw { cursor: pointer; }
+#billGraphPlot3 .bg-kw,
+#billGraphPlot4 .bg-kw { cursor: default; }
+#billGraph3.is-on-work .bg-kw,
+#billGraph4.is-on-work .bg-kw { cursor: pointer; }
 .bg-kw text { font-family: var(--sans); letter-spacing: -0.01em; }
 .bg-kw .bg-kw-title { font-weight: 600; }
 .bg-kw .bg-kw-when { font-weight: 500; fill-opacity: 0.78; }
@@ -5413,6 +5429,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bg-tile.is-light .bg-tile-facts dt { color: rgba(5, 5, 5, 0.62); }
 @media (prefers-reduced-motion: reduce) {
   #billGraphPlot3 .bg-kw,
+  #billGraphPlot4 .bg-kw,
   .bg-tile,
   .bg-tile * { transition: none !important; }
 }
@@ -5442,6 +5459,123 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bill-graph.bg-lit .bg-wipe-rect { width: 1340px; }
 @media (prefers-reduced-motion: reduce) {
   .bg-wipe-rect { width: 1340px; transition: none; }
+}
+
+/* The third graph's cards (.bill-scrolly). The section is one grid cell
+   holding the graph and the column of cards both: the graph's box (.bill-pin)
+   is sticky and holds still, a screen tall, while the cards scroll over it by
+   the page's own scroll -- no script moves them. The pin carries the panel's
+   air instead of the section, a little less of it (--bill-air 56px, which
+   the title reads too), and the key row, no longer sticky on its own, goes
+   up with the graph. A graph taller than the screen sticks by its foot
+   (--pin-top, from billScrolly4()), so the years stay in view. */
+.bill-scrolly {
+  --bill-air: 56px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  padding: 0;
+  min-height: 0;
+}
+.bill-pin,
+.bill-steps { grid-area: 1 / 1; }
+.bill-pin {
+  position: sticky;
+  top: var(--pin-top, 0px);
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding: var(--bill-air) 0;
+  z-index: 1;
+}
+.bill-pin > .container { width: 100%; }
+.bill-scrolly .bill-graph-keys { position: relative; }
+/* Each card comes a screen after the last has gone, so the graph has changed
+   before it rises; it rises from the foot of the screen, holds (sticky) at
+   its place (--hold-top, --card-col, from billScrolly4()) for half a screen of
+   scroll, the step's room after it, and goes up and away. After the last,
+   the whole graph holds still for about a screen of scroll, for the pointer
+   to explore, before the section's foot lifts it away: the tail is two
+   screens, the first of them taken by the foot rising to the screen's. The
+   column lets the pointer through to the graph. */
+.bill-steps {
+  position: relative;
+  z-index: 5;
+  pointer-events: none;
+}
+.bill-step {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 100vh var(--gutter) 0;
+  padding-top: 100svh;
+}
+.bill-step::after { content: ''; display: block; height: 50vh; height: 50svh; }
+.bill-step-tail { height: 200vh; height: 200svh; }
+/* A card: three of the page's eight columns wide, starting on the column
+   billScrolly4() gives it (--card-col, counted from 0; the last three until
+   it has), dark and a little translucent, blurring the graph that reads
+   through it, and headed in its field's colour as the key row names it
+   (--c-<key>, set on the section by billGraph4(); the values here only stand
+   in until it has). On a phone it takes the whole measure. */
+.bill-card {
+  position: sticky;
+  top: var(--hold-top, 20vh);
+  width: calc((100% - 7 * var(--col-gap)) / 8 * 3 + 2 * var(--col-gap));
+  margin-left: calc(((100% - 7 * var(--col-gap)) / 8 + var(--col-gap)) * var(--card-col, 5));
+  background: rgba(5, 5, 5, 0.88);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 24px 28px 26px;
+  color: #fff;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+}
+.bill-card-title {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+}
+.bill-card[data-field~="graphic"] .bill-card-title { color: var(--c-graphic, #9b279b); }
+.bill-card[data-field~="architecture"] .bill-card-title { color: var(--c-architecture, #2f5fd0); }
+.bill-card[data-field~="painting"] .bill-card-title { color: var(--c-painting, #11703a); }
+.bill-card[data-field~="ribbon"] .bill-card-title { color: var(--c-ribbon, #e0301e); }
+.bill-card p { font-size: 17px; line-height: 1.45; color: rgba(255, 255, 255, 0.86); }
+.bill-card-work {
+  margin: 16px 0 0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+.bill-card-work dt { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-bottom: 4px; }
+.bill-card-work dd { margin: 0; color: rgba(255, 255, 255, 0.86); }
+.bill-card-work b { font-weight: 600; color: #fff; }
+@media (max-width: 767px) {
+  .bill-card { width: 100%; margin-left: 0; }
+}
+/* The stages. Every square stands in a stage group (.bg-st) whose data-st
+   names its field, early or late (finished by 1939 or after) and key (a key
+   work); a stage leaves its own lit and shades the rest -- the second the
+   other architecture less deeply, under its four key works -- and its key
+   in the row. Done shades nothing. */
+.bg-st { transition: opacity 0.6s ease; }
+.bill-scrolly[data-stage="1"] .bg-st:not([data-st~="graphic"][data-st~="early"]),
+.bill-scrolly[data-stage="2"] .bg-st:not([data-st~="architecture"]),
+.bill-scrolly[data-stage="3"] .bg-st:not([data-st~="painting"]),
+.bill-scrolly[data-stage="4"] .bg-st:not([data-st~="ribbon"]) { opacity: 0.1; }
+.bill-scrolly[data-stage="2"] .bg-st[data-st~="architecture"]:not([data-st~="key"]) { opacity: 0.3; }
+.bill-scrolly[data-stage="1"] .bg-key:not([data-key="graphic"]),
+.bill-scrolly[data-stage="2"] .bg-key:not([data-key="architecture"]),
+.bill-scrolly[data-stage="3"] .bg-key:not([data-key="painting"]),
+.bill-scrolly[data-stage="4"] .bg-key:not([data-key="ribbon"]) { opacity: 0.4; }
+/* The pointer, the tiles and the keys answer only once the cards are done. */
+.bill-scrolly[data-stage="1"] .bill-graph,
+.bill-scrolly[data-stage="2"] .bill-graph,
+.bill-scrolly[data-stage="3"] .bill-graph,
+.bill-scrolly[data-stage="4"] .bill-graph { pointer-events: none; }
+@media (prefers-reduced-motion: reduce) {
+  .bg-st { transition: none; }
 }
 
 /* Pull-quote bands -----------------------------------------------------
