@@ -4364,6 +4364,66 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 /* .sub-title is set in white for the dark journey; here it follows the ink. */
 #sculpting .sub-title { color: inherit; }
+/* Zapp's words on the men who carved it, in the page's yellow band, between
+   the room's two passages. Elsewhere a band is a section of its own running
+   edge to edge between two others; here it stands inside the sub-chapter's
+   container, so it is taken out to both edges by the room's own full-bleed
+   measure, and its container brings the quote back onto the 8-column grid.
+   It meets the text above and below at a paragraph's distance, as a band
+   meets body copy everywhere (see .quote-band + section.article). */
+#sculpting .quote-band {
+  width: calc(100vw - var(--sbw, 0px));
+  margin: calc(1.2 * clamp(20px, 1.7vw, 26px)) 0 calc(1.2 * clamp(20px, 1.7vw, 26px)) calc(50% - (100vw - var(--sbw, 0px)) / 2);
+}
+#sculpting .article-grid:has(+ .quote-band) .sculpt-intro p:last-child { margin-bottom: 0; }
+/* The room's text keeps its notes inside it, so whatever follows stands
+   clear of the last note as well as the last line. */
+.sculpt-intro { display: flow-root; }
+/* The intro's closing 60px belongs before the gallery. Where the emblem and
+   the portrait follow Stroobant's paragraph instead, they come up the grid's
+   row gap under it -- under its last note, which reaches lower -- and the
+   notes never take that margin at all. */
+.sculpt-intro .fn-note p:last-child,
+#sculpting .article-grid:has(> .sculpt-emblem) .sculpt-intro > p:last-child { margin-bottom: 0; }
+/* Under Stroobant's paragraph, one row, tops level: the emblem he drew for
+   Esagono on columns 2-3 -- the notes' columns -- and his portrait on 5-6, the
+   first two of the text's, each with its caption under it, set as the
+   photographs' are. Each lays out its half of the measure on four page
+   columns, as the article grid's two tracks there are. */
+.sculpt-portrait,
+.sculpt-emblem {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+}
+.sculpt-emblem { grid-column: 1 / 3; }
+.sculpt-portrait { grid-column: 3 / 5; }
+.sculpt-emblem img,
+.sculpt-emblem .journey-cap { grid-column: 2 / 4; }
+.sculpt-portrait img { grid-column: 1 / -1; }
+.sculpt-portrait .journey-cap { grid-column: 1 / 3; }
+.sculpt-portrait img,
+.sculpt-emblem img { display: block; width: 100%; height: auto; }
+/* The portrait runs all four of its columns, the emblem two of its own. The
+   emblem's box is as tall as the portrait -- its figure is as wide as the
+   portrait's, four columns, so its height is that width (100cqw) times the
+   photograph's 804/1216 -- and the drawing stands on its foot, flush left on
+   column 2's line: the two pictures share their foot and the captions under
+   them start on one line. Its paper is white, as the room is, so the box
+   itself does not show. */
+.sculpt-emblem { container-type: inline-size; }
+.sculpt-emblem img { height: calc(100cqw * 804 / 1216); object-fit: contain; object-position: left bottom; }
+@media (max-width: 900px) {
+  .sculpt-portrait,
+  .sculpt-emblem { grid-column: 1 / -1; }
+  .sculpt-portrait img,
+  .sculpt-portrait .journey-cap,
+  .sculpt-emblem img,
+  .sculpt-emblem .journey-cap { grid-column: 1 / 4; }
+  .sculpt-portrait img { grid-column: 1 / -1; }
+  .sculpt-emblem img { height: auto; }
+}
 /* Placeholder tint held behind images until they decode — inverted, since the
    white-on-white version of it shows nothing. */
 #sculpting .sg-bookend img,
@@ -5449,6 +5509,25 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   color: inherit;
   opacity: 1;
 }
+/* The source of a credit in two parts (see the attributions script), set as
+   the credit is, standing still at the foot of the column while the name
+   travels down to meet it. */
+.quote-band .quote-attr-source {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(20px, 1.7vw, 26px);
+  letter-spacing: -0.005em;
+  color: inherit;
+  /* It opens on a quotation mark, which hangs in the margin so the letters
+     start on the column's edge, under the name: the first line is drawn back
+     by the mark's own width in this face (0.515em). */
+  text-indent: -0.515em;
+}
 .quote-band--green { background: #00934C; color: #000; }
 /* The page's signal yellow, so it follows the accent; black wins on it by a
    distance (14.8 vs 1.4). */
@@ -5464,6 +5543,7 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   .quote-band .quote-text { grid-column: 1; }
   .quote-credit-col { grid-column: 1; grid-row: 2; align-self: start; }
   .quote-band .quote-attr { position: static; margin-top: 1.2em; }
+  .quote-band .quote-attr-source { position: static; }
 }
 /* A phone's screen is short for 177px of flat colour above and below the
    quote, so the band closes up to 2.5 times less. */
@@ -5490,6 +5570,7 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   #sculpture-trip .stop-cap,    /* which zeroes its padding at an id's weight */
   .quote-band .quote-text,
   .quote-band .quote-attr,
+  .quote-band .quote-attr-source,
   .sg-endnote {
     padding-right: 48px;
   }
