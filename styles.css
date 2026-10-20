@@ -299,15 +299,18 @@ body.light .menu-btn { color: #000; }
    901px, the + button opens the rail's list in its place -- see .crail-panel --
    and turns to a cross while the list is open. */
 .menu-btn { display: none; }
-/* On a phone it stands on the middle of the screen's right edge, rather than
-   in the top corner, which the journey gallery's squares (.jg-btn) and the
-   lightbox's cross hold. Measured on the dynamic viewport, so it keeps its
-   line as the browser's bars come and go. */
+/* On a phone it holds the bottom-right corner, under the thumb, rather than
+   the top one, which the lightbox's cross holds with the language menu; the
+   journey gallery's squares (.jg-btn) stand over it through the journey. The 48px box centres the
+   28px mark, 10px in from each edge, so the mark's right edge stands on
+   --corner-x and its foot on --corner-y, as the language menu's letters stand
+   on the same edge at the top. */
 @media (max-width: 900px) {
   .menu-btn {
     display: grid;
-    top: calc(50vh - 24px);
-    top: calc(50dvh - 24px);
+    top: auto;
+    right: calc(var(--corner-x) - 10px);
+    bottom: calc(var(--corner-y) - 10px);
   }
 }
 
@@ -756,7 +759,7 @@ body:has(.jg.is-open) .tts-controls {
   .crail-panel {
     align-items: flex-start;
     /* Clear on the right of the + button, a cross while the list is open,
-       which stands on the middle of the right edge, 48px wide. */
+       which stands in the bottom-right corner, 48px wide. */
     padding: 81px calc(var(--gutter) + 48px) 0 var(--gutter);
     overflow-y: auto;
   }
@@ -2586,12 +2589,13 @@ body.light .tts-controls { color: #000; }
 }
 @media (max-width: 900px) {
   /* Below 901px, where the rail is hidden and a finger is the likelier pointer,
-     the language menu and the play button are too close to tell apart under
-     it. So they take a corner each. The play button holds the bottom-left, its
-     triangle's edge on --corner-x and its foot on --corner-y, the jumps opening
-     to its right and the exit above it; the menu's column is empty here, so
-     the grid goes back to three. The 64px button's triangle is 24px in and its
-     foot 20px up. */
+     the corners are shared out: the play button holds the bottom-left, the +
+     button the bottom-right (.menu-btn) and the language menu the top-right,
+     both of the last two on the right gutter that running text keeps 48px
+     clear of. The play button's triangle edge is on --corner-x and its foot on
+     --corner-y, the jumps opening to its right and the exit above it; the
+     menu's column is empty here, so the grid goes back to three. The 64px
+     button's triangle is 24px in and its foot 20px up. */
   .tts-controls {
     left: calc(var(--corner-x) - 24px);
     bottom: calc(var(--corner-y) - 20px);
@@ -2602,28 +2606,30 @@ body.light .tts-controls { color: #000; }
   .tts-next   { grid-area: 2 / 3; }
   .tts-exit   { grid-area: 1 / 1; }
 
-  /* The menu holds the bottom-right: its letters' right edge on the gutter and
-     their baseline on --corner-y, level with the triangle's foot across the
-     page. Fixed, it leaves the cluster's grid, but it stays in the cluster, so
-     it stands down and comes back with it. The 48px row puts the baseline 24px
-     less 0.346em over its foot. Its button reaches out into the gutter. */
+  /* The menu holds the top-right: its letters' right edge on --corner-x and
+     the top of their capitals on --corner-y, level with the journey gallery's
+     squares and the lightbox's cross, which stand on the same insets. The 48px
+     row puts the capitals' middle 24px down, 0.35em under their top. Fixed, it
+     leaves the cluster's grid, but it stays in the cluster, so it stands down
+     and comes back with it (under the lightbox, the gallery and the contents
+     list). Its button reaches out into the gutter. */
   .lang,
   .tts-controls.is-audio:not(:has(.tts-toggle[data-state="idle"])) .lang {
     position: fixed;
     left: auto;
-    right: var(--gutter);
-    bottom: calc(var(--corner-y) - 24px + 0.346em);
+    right: var(--corner-x);
+    top: calc(var(--corner-y) - 24px + 0.35em);
+    bottom: auto;
     width: max-content;
     margin: 0;
   }
   .lang-btn { left: -16px; right: -16px; }
 
-  /* Upward, a name to a line, and flush right: four across are not sure to fit
-     a phone. Each line is a third fold, a one-row grid easing between 0fr and
-     1fr. Closed, every line is shut but the current language's, and the menu
-     stands on its foot, so the lines unfolding under the current one carry its
-     letters up into place, and the rest of its name, unfolding against the
-     gutter, carries them left. */
+  /* Downward, a name to a line, and flush right: four across are not sure to
+     fit a phone. Each line is a third fold, a one-row grid easing between 0fr
+     and 1fr. Closed, every line is shut but the current language's, and the
+     menu hangs from its top, so the others unfold under and over it, and the
+     rest of its name, unfolding against the gutter, carries its letters left. */
   .lang-list {
     flex-direction: column;
     align-items: flex-end;
@@ -2640,6 +2646,18 @@ body.light .tts-controls { color: #000; }
   .lang-fold { min-height: var(--lang-row); align-items: center; }
   .lang-list li:not(:last-child) .lang-rest::after { content: none; }
   .lang.is-still .lang-list li { transition: none; }
+
+  /* The journey gallery's squares stand at the foot of the right gutter,
+     over the + button: their dock sticks near the bottom of the screen rather
+     than at the top, so they still ride up with the quarry's first photographs
+     and leave with the workshop's end, which crosses them on its way up. The
+     + button's mark tops out 28px over --corner-y; the squares' 27px mark
+     stands --corner-y above that, 10.5px inside its 48px box. Measured on the
+     dynamic viewport, as the fixed + button's foot is. */
+  .journey .jg-dock {
+    top: calc(100vh - 2 * var(--corner-y) - 28px - 10.5px - 27px);
+    top: calc(100dvh - 2 * var(--corner-y) - 28px - 10.5px - 27px);
+  }
 }
 @media (max-width: 600px) {
   /* The 56px button, centred in the 64px column the exit sets: its triangle is
@@ -3371,17 +3389,23 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   color: rgba(255, 255, 255, .72);
 }
 @media (max-width: 900px) {
-  /* One column: the two piles side by side across the measure, each a little
-     in from its half, and the caption under them. */
+  /* One pile across the whole measure, so a sheet is large enough to read,
+     and the caption under it. A press slips the top sheet out to the side and
+     tucks it in at the bottom (the letters' script), so the pile can be gone
+     through without end, as a real one is shuffled. The second pile and its
+     button are not used here. */
   .article-grid > .article-body .doc-deck { margin-left: 0; width: 100%; }
-  .doc-deck { grid-template-columns: 1fr 1fr; }
+  .doc-deck { grid-template-columns: minmax(0, 1fr); }
   .doc-deck-table,
-  .doc-deck-pile { padding: 10px 4%; }
+  .doc-deck-pile { padding: 10px 0; }
   .doc-deck-table,
   .doc-deck-pile--left { grid-column: 1; }
-  .doc-deck-pile--right { grid-column: 2; }
-  /* No paragraph beside it here: back in the flow, under the piles. */
+  .doc-deck-pile--right { display: none; }
+  /* No paragraph beside it here: back in the flow, under the pile. */
   .doc-deck-cap { position: static; grid-column: 1 / -1; grid-row: 2; margin: 12px 0 0; }
+  /* A sheet slipped out runs past the gutter; clipped at the screen's edge, on
+     x alone, so it does not widen the page. */
+  section.article:has(.doc-deck) { overflow-x: clip; }
 }
 @media (prefers-reduced-motion: reduce) {
   .narr-film, .narr-film-fold, .narr-film-play, .narr-film-toggle, .narr-film-glyph,
@@ -5890,10 +5914,10 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
 @media (max-width: 600px) {
   section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: calc(177px / 2.5); }
 }
-/* Below 901px the + button and the language menu stand fixed on the right
+/* Below 901px the language menu and the + button stand fixed on the right
    gutter, top and bottom, and running text scrolled under them. So the text
-   column stops 48px short of the gutter, where the + button's box begins: 10px
-   clear of its cross and further clear of the language menu's letters.
+   column stops 48px short of the gutter, where the + button's box begins:
+   10px clear of its cross and further clear of the language menu's letters.
    Pictures, films and maps keep the full width between the gutters, and the
    centred chapter and journey titles keep their full measure to centre on. */
 @media (max-width: 900px) {
@@ -6274,7 +6298,9 @@ body.light .jg-btn { color: var(--ink); }
   grid-template-rows: subgrid;
 }
 @media (max-width: 900px) {
-  .jg-sheet { padding-bottom: 80px; }
+  /* The sheet's cross stands at the foot of the screen here, over the +
+     button's place: the last captions scroll up clear of it. */
+  .jg-sheet { padding-bottom: 136px; }
   .jg-grid > li { grid-column: span 4; }
 }
 /* With the rail beside the page, the button leaves the corner for the page's
@@ -6629,4 +6655,27 @@ body.light .jg-btn { color: var(--ink); }
   .narr-film-toggle::before, .narr-film-collapse::before,
   .narr-film-full::before, .lb-prev::before, .lb-next::before,
   .jg-btn::before, .footer-social a::before { scale: none; }
+}
+
+/* Headings on a phone. Below 901px every chapter and sub-chapter head is set
+   flush left on the gutter, as the text under it is, rather than centred
+   across the measure, and stands closer to what it opens: a chapter keeps
+   72px above and below instead of 140, its title 40px over the text instead
+   of 80, and a sub-chapter's dates 32px over its first paragraph instead of
+   68. Set last, so it wins over the desktop rules it answers at the same
+   weight. (#ch1 carries its own 70px foot and 40px head gap inline.) */
+@media (max-width: 900px) {
+  .chapter { padding: 72px 0; }
+  .chapter-head { margin-bottom: 40px; }
+  .chapter-title { text-align: left; margin: 0; }
+  .making-title { padding: 72px 0; }
+  .making-head { padding-top: 72px; }
+  .journey { --journey-pad: 72px; }
+  #sculpting { padding: 72px 0; }
+  .journey-sub .sub-head { text-align: left; }
+  .journey-sub > .sub-dates,
+  #sculpture-trip .trip-part > .sub-dates {
+    text-align: left;
+    margin-bottom: 32px;
+  }
 }

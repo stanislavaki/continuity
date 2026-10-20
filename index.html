@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=472" />
+<link rel="stylesheet" href="styles.css?v=473" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -2757,6 +2757,11 @@ document.querySelectorAll('.facts').forEach((facts) => {
 // right it is carried by the measured distance between the two piles' paper. The
 // caption names the sheet last tossed, and the left pile's top until one has
 // been. The arrow keys deal too while the piles have the focus.
+// Below 901px there is one pile, across the measure (`one`): a press slips its
+// top sheet out to the side and up, and once it is clear, tucks it in at the
+// bottom of the same pile, so the letters can be gone through without end, the
+// way a real pile is shuffled. The slip is the same springs aimed first at a
+// point off the pile (`away`) and then, under every other sheet, home again.
 (() => {
   document.querySelectorAll('.doc-deck').forEach((deck) => {
     const buttons = [deck.querySelector('.doc-deck-pile--left'), deck.querySelector('.doc-deck-pile--right')];
@@ -2765,6 +2770,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     if (!buttons[0] || !buttons[1] || pages.length < 2) return;
     const n = pages.length;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const one = window.matchMedia('(max-width: 900px)');
     const rand = (a, b) => a + Math.random() * (b - a);
 
     // The pile they start in is laid out the same every time; everywhere a
@@ -2772,14 +2778,14 @@ document.querySelectorAll('.facts').forEach((facts) => {
     const sheets = pages.map((el, k) => {
       const lie = { deg: 1.2 * Math.sin(k * 2.4 + 0.7), x: 3 * Math.sin(k * 1.7 + 1), y: 2.5 * Math.cos(k * 2.3 + 0.5) };
       return { el, k, side: 0, lie, x: lie.x, y: lie.y, r: lie.deg, s: 1,
-               vx: 0, vy: 0, vr: 0, vs: 0, spring: null, flying: false };
+               vx: 0, vy: 0, vr: 0, vs: 0, spring: null, flying: false, away: null, awayAt: 0 };
     });
     let piles = [sheets.map((_, k) => k), []];
     let focus = piles[0][0];
     let dx = 0;
     let raf = 0, last = 0, zTop = 2 * n;
 
-    const target = (sh) => ({ x: sh.side * dx + sh.lie.x, y: sh.lie.y, r: sh.lie.deg });
+    const target = (sh) => sh.away || { x: sh.side * dx + sh.lie.x, y: sh.lie.y, r: sh.lie.deg };
     function draw(sh) {
       sh.el.style.transform = `translate(${sh.x.toFixed(2)}px, ${sh.y.toFixed(2)}px) rotate(${sh.r.toFixed(3)}deg) scale(${sh.s.toFixed(4)})`;
       // How far off the table it is, for the shadow: 0 lying down, 1 at a
@@ -2818,6 +2824,13 @@ document.querySelectorAll('.facts').forEach((facts) => {
       let moving = false;
       sheets.forEach((sh) => {
         if (!sh.flying) return;
+        // A sheet slipped out is let go for home once it is most of the way
+        // off, or after a third of a second at most, and from then on it
+        // travels under every other sheet.
+        if (sh.away && (Math.abs(sh.x) >= 0.8 * Math.abs(sh.away.x) || now - sh.awayAt > 320)) {
+          sh.away = null;
+          sh.el.style.zIndex = '0';
+        }
         const t = target(sh), sp = sh.spring;
         for (let i = 0; i < steps; i++) {
           sh.vx += (-sp.w * sp.w * (sh.x - t.x) - 2 * sp.z * sp.w * sh.vx) * h; sh.x += sh.vx * h;
@@ -2839,7 +2852,43 @@ document.querySelectorAll('.facts').forEach((facts) => {
     }
     const run = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
 
+    // The one pile's turn: the top sheet out and back in at the bottom.
+    function shuffle() {
+      if (piles[0].length < 2) return;
+      const k = piles[0][0];
+      piles[0] = piles[0].slice(1).concat([k]);
+      focus = piles[0][0];
+      const sh = sheets[k];
+      sh.side = 0;
+      sh.lie = { deg: rand(-1.4, 1.4), x: rand(-3, 3), y: rand(-2.5, 2.5) };
+      if (reduce.matches) {
+        const t = target(sh);
+        sh.x = t.x; sh.y = t.y; sh.r = t.r; sh.s = 1;
+        sh.el.style.zIndex = '0';
+        draw(sh); order(); return;
+      }
+      // Out to the right as a rule, now and then to the left; most of a
+      // sheet's width, a little up, and turned the way it goes.
+      const dir = Math.random() < 0.75 ? 1 : -1;
+      const w = sh.el.offsetWidth || 300;
+      sh.away = { x: dir * w * rand(0.62, 0.78), y: -rand(10, 34), r: dir * rand(4, 9) };
+      sh.awayAt = performance.now();
+      sh.spring = { w: rand(9, 12), z: rand(0.66, 0.8),
+                    wy: rand(6.5, 8.5), zy: rand(0.55, 0.7),
+                    wr: rand(7.5, 10.5), zr: rand(0.38, 0.55),
+                    ws: rand(8, 11), zs: rand(0.5, 0.7) };
+      sh.vx += dir * rand(250, 450);
+      sh.vy += -rand(150, 320);
+      sh.vs += rand(0.5, 0.8);
+      sh.flying = true;
+      sh.el.classList.add('is-flying');
+      sh.el.style.zIndex = String(++zTop);
+      order();
+      run();
+    }
+
     function deal(from) {
+      if (one.matches) { if (from === 0) shuffle(); return; }
       if (!piles[from].length) return;
       const to = 1 - from;
       const k = piles[from][0];
@@ -2891,6 +2940,16 @@ document.querySelectorAll('.facts').forEach((facts) => {
       measure();
       sheets.forEach((sh) => { if (!sh.flying) { const t = target(sh); sh.x = t.x; sh.y = t.y; draw(sh); } });
     });
+    // Narrowed to one pile, whatever lies on the right goes under the left,
+    // in its order.
+    const gather = () => {
+      if (!one.matches || !piles[1].length) return;
+      piles[1].forEach((k) => { sheets[k].side = 0; });
+      piles = [piles[0].concat(piles[1]), []];
+      sheets.forEach((sh) => { if (!sh.flying) { const t = target(sh); sh.x = t.x; sh.y = t.y; draw(sh); } });
+      order();
+    };
+    one.addEventListener('change', gather);
     measure();
     sheets.forEach(draw);
     order();
@@ -2905,7 +2964,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     const show = new IntersectionObserver((entries) => {
       if (!entries.some((e) => e.intersectionRatio >= 0.6)) return;
       show.disconnect();
-      setTimeout(() => { if (!dealt && !piles[1].length) { dealt = true; deal(0); } }, 600);
+      setTimeout(() => { if (!dealt && !piles[1].length) { dealt = true; deal(0); } }, 600);   // one pile: shuffled once
     }, { threshold: 0.6 });
     show.observe(deck);
 
