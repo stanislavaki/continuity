@@ -3208,7 +3208,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .narr-film > .narr-film-cap { grid-row: 3; grid-column: 1; margin-top: 12px; }
   .narr-film-fold--reel .narr-film-pad { padding-bottom: 0; }
   .narr-film-collapse { display: none; }
-  .narr-film-time { right: 36px; }
+  /* The playback bar on the same 36px inset the full-screen mark keeps from
+     the top and the right: 36px in from either side and its foot 36px up
+     (its 4px track stands 10px over the foot of its 24px box), rather than
+     level with the collapse button that is gone. */
+  .narr-film-time { right: 36px; bottom: 26px; }
 }
 
 /* Stroobant's working drawings of faces C and D, after the projections (a
