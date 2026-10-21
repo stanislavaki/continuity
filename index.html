@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=480" />
+<link rel="stylesheet" href="styles.css?v=481" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -1273,6 +1273,9 @@ function onScroll() {
   const h = document.documentElement.scrollHeight - window.innerHeight;
   const s = window.scrollY;
   progressBar.style.width = (s / h * 100) + '%';
+  // Scrolled away from the top: on a phone the language menu stands down
+  // (see .lang, body.is-scrolled).
+  document.body.classList.toggle('is-scrolled', s > 24);
   // Chapter rail. It rides this handler rather than adding a second scroll
   // listener, and reuses the two measurements just taken. It goes first so that
   // a throw anywhere below — the route marker, the timeline, the reveal pass —
@@ -9598,12 +9601,11 @@ if (document.readyState === 'loading') {
 <script src="./g-toolset.js" defer></script>
 <div class="tts-controls">
   <!-- Language menu, first in the read-aloud cluster, so the controls after it
-       move with it: on desktop the play button follows the row out as it
-       opens. Below 901px it takes the bottom-right corner instead, clear of
-       the play button under a finger. Closed, it shows the first two letters
-       of the page's language; opened, the languages unfold, across on desktop
-       and upward in the corner, and the two letters slide into place as the
-       start of their own name —
+       move with it: the play button follows the row out as it opens. Below
+       901px it shows on the page only at its top, and in the contents list.
+       Closed, it shows the first two letters of the page's language; opened,
+       the languages unfold across to the right, and the two letters slide
+       into place as the start of their own name —
        see .lang. Each name is its first two letters and the rest, in two
        folds. A language is one option here, its code in its lang attribute,
        and one entry in I18N in the script. The list stays inert while closed:

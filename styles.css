@@ -795,7 +795,8 @@ body:has(.jg.is-open) .tts-controls {
     overflow-y: auto;
   }
   /* Set on the bottom of the screen, its last line's baseline twice --corner-y
-     up, twice the inset the corner controls it hides keep theirs at: under
+     and 144px up: the language menu stands in the bottom-left corner under it
+     (see .lang below), with about two of the list's lines of air between. Under
      that baseline are the line's 0.229em of descent and the link's 10px of
      padding. Taller than the screen, it starts from the top and scrolls. */
   .crail-nav {
@@ -804,7 +805,7 @@ body:has(.jg.is-open) .tts-controls {
     width: 100%;
     height: auto;
     margin-top: auto;
-    margin-bottom: calc(2 * var(--corner-y) - 10px - 0.229 * var(--crail-type));
+    margin-bottom: calc(2 * var(--corner-y) + 144px - 10px - 0.229 * var(--crail-type));
     gap: 0;
   }
   .crail-row { flex: none; gap: 0; }
@@ -816,9 +817,11 @@ body:has(.jg.is-open) .tts-controls {
     translate: none;            /* a plain column: no part to stand off */
   }
   .crail-num { opacity: 1; }
-  /* The list has the screen: the read-aloud cluster and the language menu in
-     the corner would stand over its first column. Reading goes on. */
-  body:has(.crail-panel.is-open) .tts-controls {
+  /* The list has the screen: the read-aloud transport in the corner stands
+     down (reading goes on). The language menu stays, in the corner the list
+     has been raised clear of, and is how the language is changed on a phone
+     once the page has been scrolled (it stands down on the page then). */
+  body:has(.crail-panel.is-open) .tts-controls > :not(.lang) {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -2619,64 +2622,24 @@ body.light .tts-controls { color: #000; }
   50%      { opacity: .4; }
 }
 @media (max-width: 900px) {
-  /* Below 901px, where the rail is hidden and a finger is the likelier pointer,
-     the corners are shared out: the play button holds the bottom-left, the +
-     button the bottom-right (.menu-btn) and the language menu the top-right,
-     both of the last two on the right gutter that running text keeps 48px
-     clear of. The play button's triangle edge is on --corner-x and its foot on
-     --corner-y, the jumps opening to its right and the exit above it; the
-     menu's column is empty here, so the grid goes back to three. The 64px
-     button's triangle is 24px in and its foot 20px up. */
-  .tts-controls {
-    left: calc(var(--corner-x) - 24px);
-    bottom: calc(var(--corner-y) - 20px);
-    grid-template-columns: auto auto auto;
+  /* Below 901px, where the rail is hidden, the cluster keeps the bottom-left
+     corner as on desktop: the language menu's letters on --corner-x with their
+     baseline on --corner-y, opening across to the right, and the play button
+     after them; the + button holds the bottom-right (.menu-btn). The second
+     row is the play button's 64px whether or not it is there, as on desktop,
+     so the letters stand on --corner-y. */
+  .tts-controls { grid-template-rows: auto 64px; }
+  /* On the page the menu shows only at its top: once the page is scrolled
+     (body.is-scrolled, set by the scroll script) it stands down, so nothing
+     but the + button rides over the reading; it comes back at the top, and
+     always with the contents list, which leaves the corner free for it. */
+  .lang { transition: opacity .3s ease, visibility 0s linear 0s; }
+  body.is-scrolled:not(:has(.crail-panel.is-open)) .lang:not(.is-open) {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .3s ease, visibility 0s linear .3s;
   }
-  .tts-toggle { grid-area: 2 / 1; }
-  .tts-prev   { grid-area: 2 / 2; }
-  .tts-next   { grid-area: 2 / 3; }
-  .tts-exit   { grid-area: 1 / 1; }
-
-  /* The menu holds the top-right: its letters' right edge on --corner-x and
-     the top of their capitals on --corner-y, level with the journey gallery's
-     squares and the lightbox's cross, which stand on the same insets. The 48px
-     row puts the capitals' middle 24px down, 0.35em under their top. Fixed, it
-     leaves the cluster's grid, but it stays in the cluster, so it stands down
-     and comes back with it (under the lightbox, the gallery and the contents
-     list). Its button reaches out into the gutter. */
-  .lang,
-  .tts-controls.is-audio:not(:has(.tts-toggle[data-state="idle"])) .lang {
-    position: fixed;
-    left: auto;
-    right: var(--corner-x);
-    top: calc(var(--corner-y) - 24px + 0.35em);
-    bottom: auto;
-    width: max-content;
-    margin: 0;
-  }
-  .lang-btn { left: -16px; right: -16px; }
-
-  /* Downward, a name to a line, and flush right: four across are not sure to
-     fit a phone. Each line is a third fold, a one-row grid easing between 0fr
-     and 1fr. Closed, every line is shut but the current language's, and the
-     menu hangs from its top, so the others unfold under and over it, and the
-     rest of its name, unfolding against the gutter, carries its letters left. */
-  .lang-list {
-    flex-direction: column;
-    align-items: flex-end;
-    margin-left: 0;
-  }
-  .lang-list li {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows .55s cubic-bezier(.22, 1, .36, 1);
-  }
-  .lang-list li:has(> .lang-opt[aria-current="true"]),
-  .lang.is-open .lang-list li { grid-template-rows: 1fr; }
-  .lang-opt { min-height: 0; overflow-y: clip; justify-content: flex-end; }
-  .lang-fold { min-height: var(--lang-row); align-items: center; }
-  .lang-list li:not(:last-child) .lang-rest::after { content: none; }
-  .lang.is-still .lang-list li { transition: none; }
 
   /* The journey gallery's squares stand at the foot of the right gutter,
      over the + button: their dock sticks near the bottom of the screen rather
@@ -2691,12 +2654,10 @@ body.light .tts-controls { color: #000; }
   }
 }
 @media (max-width: 600px) {
-  /* The 56px button, centred in the 64px column the exit sets: its triangle is
-     still 24px in, and its foot 16px up. */
-  .tts-controls {
-    bottom: calc(var(--corner-y) - 16px);
-    gap: 0;
-  }
+  /* The 56px button, centred in the 64px row: its triangle is 20px in, so
+     the menu's margin gives back 20px rather than 24. */
+  .tts-controls { gap: 0; }
+  .lang { margin-right: calc(var(--tts-gap) - 20px); }
   .tts-toggle { width: 56px; height: 56px; }
   .tts-prev, .tts-next { height: 56px; }
   /* The 56px row leaves 16px above its icon. */
