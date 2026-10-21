@@ -3292,6 +3292,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 @media (prefers-reduced-motion: reduce) {
   .granite-flip-card { transition: none; }
 }
+/* On a phone the scroll turns the sheet (the sheet's script writes its
+   rotation every frame), so nothing eases after it, and it is not a button
+   to press; a nearer eye gives the turn more depth at a phone's width. */
+.granite-flip.is-scroll-turned .granite-flip-card { transition: none; }
+.granite-flip.is-scroll-turned .granite-flip-turn { cursor: default; perspective: 1200px; }
 /* The study of the successive cuts, which stood beside the paragraph after
    the film, under the block got out of the rock and its note: three page
    columns, 5-7 of the measure's eight, its caption beside it on 3-4 standing
