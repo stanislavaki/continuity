@@ -1192,6 +1192,13 @@ section { position: relative; }
      a scroll container, so the pin still sticks against the viewport, and y
      stays visible for the release. */
   .sticky-group { overflow-x: clip; }
+  /* In the hero it stands on the plinth line, low on the screen; as the hero
+     goes up it rises to the middle of the screen, where the facts pass it:
+     the plinth's offset is let go by --rise, 0 at the top of the page to 1
+     once the hero has gone (set by the sculpture script). */
+  .sticky-sculpture {
+    transform: translate(-50%, calc(-50% + (1 - var(--rise, 0)) * (var(--plinth-dy) * var(--plate-px) - 0.354 * var(--sculpt-w))));
+  }
 }
 .hero-footer {
   position: absolute;
@@ -1555,19 +1562,19 @@ section { position: relative; }
 }
 @media (max-width: 900px) {
   /* The facts run full width over the stone here, and so do the lines, with
-     the man at their right end. */
+     the man at their left end, on the gutter the facts are set from. */
   .height-rule-span { grid-column: 1 / -1; }
-  .height-rule-figure { right: 0; }
+  .height-rule-figure { left: 0; right: auto; }
   /* Nothing is free beside the figures at this width, so the captions hang
-     under the base line instead, under their figures. */
+     under the base line instead, under their figures, flush left. */
   .stone-rule .caption {
     grid-column: 1 / -1;
-    justify-self: end;
+    justify-self: start;
     top: var(--rule-bottom, 0);
     transform: none;
     margin-top: 10px;
     max-width: 16em;
-    text-align: right;
+    text-align: left;
   }
 }
 /* Place sits below the sculpture rather than beside it, so it needs no
@@ -1649,21 +1656,42 @@ section { position: relative; }
      cross it. They carry no panel behind them: the type sits directly on the
      stone, and only a soft shadow separates it, so the sculpture reads as one
      continuous object rather than being sliced by opaque bands. */
-  .facts-rail { row-gap: 48vh; padding: 20vh 0 24vh; }
+  .facts-rail { row-gap: 24vh; padding: 20vh 0 24vh; }
+  /* Height holds the screen longer than the rest: its rule and the Modulor
+     stay up until "4.5 m" is four fifths of the stone's height over its tip, not only
+     to the tip (--rule-until, in the stone's span from the tip, 0, to the
+     base, 1), and Weight waits 56vh more behind it, so it comes up once the
+     man and his caption have gone rather than over them. */
+  .height-rule { --rule-until: -0.8; }
+  .intro .rail-fact[data-rule="height"] { margin-bottom: 56vh; }
   /* The longest figure, "kontinuität II", is 6.2 of its size wide: on the
      narrowest phones the figures come down from 60px until it fits between
      the gutters. */
-  .intro .rail-val { font-size: min(clamp(60px, 8.7vw, 112px), (100vw - 2 * var(--gutter)) / 6.2); }
+  /* Tracked a little more open on a phone than the desktop's -0.03em, and
+     so "kontinuität II" runs to 6.5 of its size now rather than 6.2. */
+  .intro .rail-val,
+  .intro-place .rail-val { letter-spacing: -0.01em; }
+  .intro .rail-val { font-size: min(clamp(60px, 8.7vw, 112px), (100vw - 2 * var(--gutter)) / 6.5); }
+  /* Place at the facts' own size here, wrapping where it must (its markup
+     keeps "am Main" together, so the name breaks before it). */
+  .intro-place .rail-val {
+    font-size: min(clamp(60px, 8.7vw, 112px), (100vw - 2 * var(--gutter)) / 6.5);
+    line-height: 0.8;   /* as the facts set on two lines are (.rail-val--stacked) */
+  }
   .rail-fact--wide { grid-column: 1 / -1; }
   .intro .rail-fact { margin-left: 0; }
   /* No row of facts at the top here: they stay where they are as they go by. */
   .facts-dock { display: none; }
   .facts-dock + .container { margin-top: 0; }
   /* One column here; the rail's row gap above is for the stone's facts. */
-  .facts-rail--tail { row-gap: 0; }
+  /* Place closes the facts; the lead paragraph follows it at half the room
+     the facts keep under their last (10vh rather than 24vh). */
+  .facts-rail--tail { row-gap: 0; padding-bottom: 10vh; }
   .facts-rail--tail > .rail-fact { grid-row: auto; }
   /* The globe under Place, two fifths of the measure wide, from its left edge. */
-  .place-globe { grid-column: 1 / -1; grid-row: auto; width: 40%; margin-top: 24px; }
+  /* No globe under Place on a phone: the place is named, and the making
+     chapter's globe shows it again further on. buildPlaceGlobe() builds none. */
+  .place-globe { display: none; }
   .rail-fact {
     background: none;
     padding: 14px 0 20px;
@@ -1671,7 +1699,7 @@ section { position: relative; }
   .rail-key,
   .rail-val,
   .rail-note { text-shadow: 0 2px 18px rgba(0,0,0,0.55); }
-  .rail-key { margin-bottom: 12px; }
+  .rail-key { margin-bottom: 4px; }   /* the label close over its figure */
 }
 .intro-text {
   position: relative;
@@ -2088,6 +2116,8 @@ section { position: relative; }
 }
 @media (max-width: 900px) {
   .article-body .article-lead { margin-left: 0; width: 100%; }
+  /* Its large lead tracked a little more open on a phone. */
+  .article-body .article-lead { letter-spacing: -0.005em; }
   /* One column: the notes follow the text they are for, in the flow. */
   .article-body:has(> .fn-note),
   .math-body:has(> .fn-note) { display: flex; flex-direction: column; }

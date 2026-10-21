@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=483" />
+<link rel="stylesheet" href="styles.css?v=493" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -216,7 +216,9 @@
       <div class="facts-rail facts-rail--tail">
         <div class="rail-fact rail-fact--wide reveal">
           <span class="rail-key">Place</span>
-          <span class="rail-val">Frankfurt am Main, Germany</span>
+          <!-- "am Main" kept on one line: where the city's name breaks, it
+               breaks before it. -->
+          <span class="rail-val">Frankfurt am&nbsp;Main, Germany</span>
         </div>
         <!-- The place on the globe: the making chapter's own globe, whole, with
              Frankfurt at its centre -- see buildPlaceGlobe in the journey
@@ -2169,6 +2171,8 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
   // that, so the turn reads as a deliberate move on the black rather than
   // something already under way at the seam.
   const CONTENT_TOP = 0.210, SPIN_CLEAR_VH = 0.15;
+  const narrow = window.matchMedia('(max-width: 900px)');
+  const lastFact = [...group.querySelectorAll('.facts-rail .rail-fact')].pop() || null;
   const FPS = 24, EASE_IN = 0.22;
 
   // Progress -> position in the clip. Quadratic out of rest so the sculpture
@@ -2207,7 +2211,24 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
     const box = sculpture.getBoundingClientRect();
     const contentTop = box.top + CONTENT_TOP * box.height;
     const spinStart = heroH - contentTop + SPIN_CLEAR_VH * vh;
-    const spinSpan = Math.max(1, total - spinStart);
+    // On a phone the facts scroll past the stone one under another, and the
+    // turn ends as the last of them comes to the middle of the screen, so the
+    // stone has turned once over the facts and stands still for the tail
+    // rather than turning on after them. Elsewhere it turns to the end of the
+    // pin, as the facts gather in the dock.
+    // On a phone the stone rises from the plinth to the middle of the
+    // screen as the hero goes up (--rise, eased), so the facts pass it
+    // centred.
+    if (narrow.matches) {
+      const r = Math.min(1, Math.max(0, scrolled / (0.8 * heroH)));
+      sculpture.style.setProperty('--rise', (r * r * (3 - 2 * r)).toFixed(4));
+    } else sculpture.style.removeProperty('--rise');
+    let spinEnd = total;
+    if (narrow.matches && lastFact) {
+      const f = lastFact.getBoundingClientRect();
+      spinEnd = Math.min(total, f.top - rect.top + f.height / 2 - vh / 2);
+    }
+    const spinSpan = Math.max(1, spinEnd - spinStart);
 
     if (sculpture.duration) {
       // Last frame repeats the first: stop one frame short of the wrap.
@@ -2286,6 +2307,8 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
     return fact && {
       el,
       fact,
+      next: fact.nextElementSibling,
+      caption: el.querySelector('.caption'),
       value: fact.querySelector('.rail-val') || fact,
       metres: parseFloat(el.dataset.metres) || 0,
       shown: false,
@@ -2296,6 +2319,13 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
 
   const FPS = 24, ALPHA = 128;
   const STONE_M = 4.5, REVEAL = 0.9;
+  // On a phone the rule's caption hangs under the base line, where the next
+  // fact rides up: the rule, the figure and the caption all go before the
+  // next fact comes within CLEAR px of the caption's foot -- room for the
+  // half second the caption takes to fade -- so the two never overlap,
+  // however tall the screen or turned the stone.
+  const narrow = window.matchMedia('(max-width: 900px)');
+  const CLEAR = 96;
 
   // The stylesheet's numbers for each rule: its beats.
   const readStyle = () => rules.forEach((r) => {
@@ -2362,6 +2392,10 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
             ? r.fact.getBoundingClientRect().top < window.innerHeight * REVEAL
             : at <= r.from;
           on = started && at > r.until;
+          if (on && narrow.matches && r.next) {
+            const foot = r.caption ? r.caption.getBoundingClientRect().bottom : bottom;
+            if (r.next.getBoundingClientRect().top < foot + CLEAR) on = false;
+          }
           figureOn = on && !(at > r.figureFrom);
           // Set on the rule itself, so everything in it reads the same values.
           const o = r.el.getBoundingClientRect();
@@ -4634,7 +4668,8 @@ document.querySelectorAll('.facts').forEach((facts) => {
   function initJourney() {
     if (!window.maplibregl) { window.addEventListener('load', initJourney, { once: true }); return; }
     buildJourneyGlobe(MAKING);
-    buildPlaceGlobe();
+    // Not on a phone, where the place's globe is not shown (.place-globe).
+    if (!window.matchMedia('(max-width: 900px)').matches) buildPlaceGlobe();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initJourney);
   else initJourney();
