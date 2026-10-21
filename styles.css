@@ -4186,10 +4186,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    takes its own back, as the Sculpture Trip's accounts do. */
 .making-window .granite-close { margin-top: 140vh; pointer-events: auto; }
 /* On a phone the paragraph comes up with the crossing rather than after it:
-   near the top of the screen as the camera leaves the quarry, read while the
-   route draws itself north to Marina di Carrara. */
+   64px under the stone at sea, the space the text sections keep there, so it
+   follows the picture onto the map and is read while the route draws itself
+   north to Marina di Carrara. */
 @media (max-width: 900px) {
-  .making-window .granite-close { margin-top: 24vh; }
+  .making-window .granite-close { margin-top: 64px; }
 }
 @media (max-width: 900px) {
   /* One track: every caption under its photograph, across the measure. */
