@@ -6213,12 +6213,15 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   .lb-next { right: auto; left: calc(50% + 16px); }
 }
 @media (max-width: 600px) {
-  .lightbox { padding: 72px var(--gutter) 110px; }
+  /* The picture keeps the 29px it had over the arrows' heads, now they stand
+     higher: the row's centre-line, then half the turned arrow's 11 strokes. */
+  .lightbox { padding: 72px var(--gutter) calc(2 * var(--corner-y) + 41.5px + var(--tts-bar) * 5.5 + 29px); }
   .lb-prev, .lb-next {
     top: auto;
-    /* The row's centre-line 48px up: drop the arrow half its own height
-       below that. */
-    bottom: calc(48px - var(--lb-arrow-box) / 2);
+    /* The row's centre-line on the cross's, which stands on the journey
+       gallery's squares (2 * --corner-y + 41.5px up, see .journey .jg-dock):
+       drop the arrow half its own box below that. */
+    bottom: calc(2 * var(--corner-y) + 41.5px - var(--lb-arrow-box) / 2);
     transform: none;
   }
   /* Side by side about the middle, 32px between them, as on desktop. */
