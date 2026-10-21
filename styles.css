@@ -4101,7 +4101,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   column-gap: var(--col-gap);
   margin: 0 0 var(--col-gap);
 }
-.granite-travel > figure { margin: 0; }
+.granite-travel figure { margin: 0; }
+.granite-travel-row { display: contents; }
 .granite-travel > figure:first-child { grid-column: 1; grid-row: 1; align-self: start; }
 .granite-travel > figure:first-child img,
 .granite-travel-track > img { display: block; width: 100%; height: auto; }
@@ -4119,7 +4120,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   margin: 12px 0 0;
   width: calc(50% - var(--col-gap) / 2);
 }
-.granite-travel > .journey-photo-six {
+.granite-travel .journey-photo-six {
   grid-column: 1;
   grid-row: 2;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4135,7 +4136,35 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .granite-travel-track { grid-column: 1; grid-row: 2; }
   .granite-travel-track > img { margin-top: 40px; position: static; }
   .granite-travel-go > .journey-cap { grid-column: 1; grid-row: 3; }
-  .granite-travel > .journey-photo-six { grid-column: 1; grid-row: 4; margin-top: 40px; }
+  .granite-travel .journey-photo-six { grid-column: 1; grid-row: 4; margin-top: 40px; }
+  /* The first cut and the projections are swiped across rather than
+     stacked, as the road to Santa Teresa is: their row (.granite-travel-row)
+     comes forward under Costantino and Bill, edge to edge of the screen, the
+     gutters its padding, each picture with its caption most of the measure so
+     the next shows at the edge, snapping into place, no scrollbar. The first
+     cut's figure holds its picture and caption again rather than lending them
+     to the grid. */
+  .granite-travel-row {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--col-gap);
+    margin: 40px calc(-1 * var(--gutter)) 0;
+    padding: 0 var(--gutter);
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--gutter);
+    scrollbar-width: none;
+  }
+  .granite-travel-row::-webkit-scrollbar { display: none; }
+  .granite-travel-row > figure { flex: 0 0 86%; scroll-snap-align: start; }
+  .granite-travel-go { display: block; }
+  .granite-travel-track > img { margin-top: 0; }
+  .granite-travel .journey-photo-six { margin-top: 0; }
 }
 
 /* Edge to edge, escaping the container's gutters: the stone at sea, the
