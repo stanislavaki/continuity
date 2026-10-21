@@ -6784,6 +6784,10 @@ body.light .jg-btn { color: var(--ink); }
     text-align: left;
     margin-bottom: 32px;
   }
+  /* The workshop's dates stand under its title, as every other sub-chapter's
+     do, rather than riding the top of the screen: flush left on a phone they
+     ride straight over the first lines of the text and the quote. */
+  .journey-sub > .sub-dates { position: static; }
   /* A sub-chapter head that is a section of its own (Deutsche Bank's,
      Stroobant's) already keeps those 32px under its dates, so the section
      after it adds no room of its own: the dates stand 32px over the text, as
