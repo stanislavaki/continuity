@@ -3200,6 +3200,15 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .narr-film { grid-template-columns: minmax(0, 1fr); }
   .narr-film-fold--still, .narr-film-fold--reel { grid-column: 1; }
   .narr-film-cap { width: auto; }
+  /* The film is as wide closed as open here: its caption stands under it
+     either way (taken out of the reel by the films' captions script), 12px
+     under the still or the reel, and there is nothing to collapse to -- the
+     timeline runs on to where the collapse button stood. Its credit goes
+     behind a pill, as the pictures' do. */
+  .narr-film > .narr-film-cap { grid-row: 3; grid-column: 1; margin-top: 12px; }
+  .narr-film-fold--reel .narr-film-pad { padding-bottom: 0; }
+  .narr-film-collapse { display: none; }
+  .narr-film-time { right: 36px; }
 }
 
 /* Stroobant's working drawings of faces C and D, after the projections (a
@@ -6827,6 +6836,7 @@ body.light .jg-btn { color: var(--ink); }
      set as the notes' are, and comes up in the sheet the same way. */
   .photo-credit,
   .journey-credit,
+  .film-credit,
   .journey-cap--credit > p { display: none; }
   .credit-pill.credit-pill {
     appearance: none;

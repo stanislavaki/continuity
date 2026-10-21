@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=503" />
+<link rel="stylesheet" href="styles.css?v=504" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -528,7 +528,7 @@
                     <button class="narr-film-full" type="button" aria-label="Show the film full screen"><span class="narr-film-expand" aria-hidden="true"></span></button>
                     <div class="narr-film-time" role="slider" tabindex="0" aria-label="Film position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="narr-film-time-track"><span class="narr-film-time-fill"></span></span></div>
                   </div>
-                  <p class="narr-film-cap">Excerpt from &ldquo;Bill&mdash;das absolute Augenmass&rdquo;, a film by Erich Schmid (Switzerland, 2008, 94&nbsp;min). Camera: Ueli N&uuml;esch. &copy; 2008 Erich Schmid. Excerpts prepared and shown with the kind permission of the filmmaker.</p>
+                  <p class="narr-film-cap">Excerpt from &ldquo;Bill&mdash;das absolute Augenmass&rdquo;, a film by Erich Schmid (Switzerland, 2008, 94&nbsp;min). <span class="film-credit">Camera: Ueli N&uuml;esch. &copy; 2008 Erich Schmid. Excerpts prepared and shown with the kind permission of the filmmaker.</span></p>
                 </div>
               </div>
             </div>
@@ -833,7 +833,7 @@
                         <button class="narr-film-full" type="button" aria-label="Show the film full screen"><span class="narr-film-expand" aria-hidden="true"></span></button>
                         <div class="narr-film-time" role="slider" tabindex="0" aria-label="Film position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="narr-film-time-track"><span class="narr-film-time-fill"></span></span></div>
                       </div>
-                      <p class="narr-film-cap">Excerpt from Max Bill&mdash;das absolute Augenmass, directed by Erich Schmid (Switzerland, 2008, 94&nbsp;min). Camera: Ueli N&uuml;esch. Shown courtesy of the director. &copy; 2008 Erich Schmid.</p>
+                      <p class="narr-film-cap">Excerpt from Max Bill&mdash;das absolute Augenmass, directed by Erich Schmid (Switzerland, 2008, 94&nbsp;min). <span class="film-credit">Camera: Ueli N&uuml;esch. Shown courtesy of the director. &copy; 2008 Erich Schmid.</span></p>
                     </div>
                   </div>
                 </div>
@@ -3204,6 +3204,25 @@ document.querySelectorAll('.facts').forEach((facts) => {
   later();
 })();
 
+// The films' captions on a phone. There the film is as wide closed as open,
+// so its caption is not kept for the open reel: it is taken out of the reel
+// and set under the film in the figure (a third row of its grid), where it
+// shows whether the film is open or not. Put back where it came from on a
+// wider screen.
+(() => {
+  const phone = window.matchMedia('(max-width: 900px)');
+  const films = [...document.querySelectorAll('[data-narr-film]')].map((fig) => {
+    const cap = fig.querySelector('.narr-film-cap');
+    return cap && { fig, cap, home: cap.parentElement, next: cap.nextSibling };
+  }).filter(Boolean);
+  const place = () => films.forEach((f) => {
+    if (phone.matches) { if (f.cap.parentElement !== f.fig) f.fig.appendChild(f.cap); }
+    else if (f.cap.parentElement !== f.home) f.home.insertBefore(f.cap, f.next);
+  });
+  place();
+  phone.addEventListener('change', place);
+})();
+
 // The notes' sheet. On a phone (where the notes are not set beside the
 // text) every mark becomes a pill: the note's number, as the note sets it,
 // and its author (data-src on the note), easier to read and to press than a
@@ -3267,9 +3286,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
   // first full stop, slash or comma, or the credit's data-label -- and shown
   // in the sheet, headed Credit, when the pill is pressed. The credits are
   // the towers' and the portrait's (.photo-credit), the journey's under its
-  // photographs and drawings (.journey-credit), and the captions that are
-  // only a credit under a place's name (.journey-cap--credit > p).
-  const credits = [...document.querySelectorAll('.photo-credit, .journey-credit, .journey-cap--credit > p')];
+  // photographs and drawings (.journey-credit), the films' (.film-credit),
+  // and the captions that are only a credit under a place's name
+  // (.journey-cap--credit > p).
+  const credits = [...document.querySelectorAll('.photo-credit, .journey-credit, .film-credit, .journey-cap--credit > p')];
   credits.forEach((credit) => {
     const text = credit.textContent.trim();
     const after = text.includes('©') ? text.slice(text.indexOf('©') + 1) : text;
