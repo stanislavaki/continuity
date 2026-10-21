@@ -6511,9 +6511,13 @@ body.light .jg-btn { color: var(--ink); }
     1.019 90.6%, 1.015 93.8%, 1.011 96.9%, 1);
 }
 /* Turned only while the pointer is on the photograph itself, not its caption
-   or the air around it; from the keyboard, while its item has the focus. */
-.jg-frame img:hover,
-.jg-frame video:hover,
+   or the air around it; from the keyboard, while its item has the focus. Only
+   for a mouse: a touch screen keeps a tapped photograph "hovered", so on a
+   phone the prints it had opened stood turned on the sheet. */
+@media (hover: hover) and (pointer: fine) {
+  .jg-frame img:hover,
+  .jg-frame video:hover { transform: rotate(var(--tilt, 2deg)); }
+}
 .jg-item:focus-visible .jg-frame img,
 .jg-item:focus-visible .jg-frame video { transform: rotate(var(--tilt, 2deg)); }
 /* The caption: what is happening, then where and when, standing back in grey,
