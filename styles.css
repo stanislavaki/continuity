@@ -1247,6 +1247,13 @@ section { position: relative; }
 .dark-section { background: var(--black); color: #fff; }
 .light-section { background: #fff; color: #000; }
 .paper-section { background: var(--paper); color: #000; }
+/* The quarry's ground, Quarry Scarraciana and the granite after it (see
+   #granite-trip::before): the page's green (.quote-band--green, #00934C) at
+   the same hue and saturation, taken down from 29% to 20% lightness. White
+   reads on it by 7 to 1, so it keeps the chapter's white ink and white
+   chrome, and the scroll handler themes it as it does a .dark-section. */
+:root { --green-ground: #006635; }
+.green-section { background: var(--green-ground); color: #fff; }
 
 /* Chapter marker */
 .chapter {
@@ -4637,14 +4644,14 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   content: "";
   position: absolute;
   z-index: -1;
-  /* Up over the journey's own top padding, so the black starts where
-     Stroobant's paper stops and nothing of the map shows between them. */
+  /* Up over the journey's own top padding, so the green runs on from the
+     head's and nothing of the map shows between them. */
   top: calc(-1 * var(--journey-pad));
   bottom: 0;
   /* Same scrollbar-aware full-bleed measure as .journey-photo-bleed. */
   left: calc(50% - (100vw - var(--sbw, 0px)) / 2);
   width: calc(100vw - var(--sbw, 0px));
-  background: var(--black);
+  background: var(--green-ground);
 }
 #sculpting {
   position: relative;

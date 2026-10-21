@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=526" />
+<link rel="stylesheet" href="styles.css?v=527" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -760,9 +760,9 @@
     <section class="dark-section making-window" data-making-window="sardinia" aria-hidden="true"></section>
 
     <!-- 4.2 · Quarry Scarraciana, Sardinia, Italy, 1983: the camera is on the
-         island; the head is set on the chapter's black, running straight on into
-         the granite's text below it. -->
-    <section class="dark-section making-head" id="stroobant">
+         island; the head is set on the quarry's green, running straight on into
+         the granite's text below it on the same ground. -->
+    <section class="green-section making-head" id="stroobant">
       <div class="container">
         <div class="journey-sub">
           <header class="sub-head">
@@ -797,7 +797,7 @@
 
         <!-- ============== 4.2, CONTINUED · THE GRANITE ==============
              No head of its own: the granite goes on from 4.2's, on the same
-             black. No map here: the account, then Stroobant's photographs of
+             green. No map here: the account, then Stroobant's photographs of
              the quarry and the road to the port, on the same 4-column article
              grid the chapters above use. -->
         <div class="journey-sub" id="granite-trip">
@@ -1330,7 +1330,7 @@ function onScroll() {
   });
   if (cur) {
     const classes = cur.className;
-    const dark = classes.includes('dark-section') || classes.includes('hero') || classes.includes('quote-block') || classes.includes('math') || classes.includes('topo') || classes.includes('math-body-follow') || classes.includes('intro');
+    const dark = classes.includes('dark-section') || classes.includes('green-section') || classes.includes('hero') || classes.includes('quote-block') || classes.includes('math') || classes.includes('topo') || classes.includes('math-body-follow') || classes.includes('intro');
     document.body.classList.toggle('dark', dark);
     document.body.classList.toggle('light', !dark);
     // The two ends of the page, where the chapter rail has nothing to report:
