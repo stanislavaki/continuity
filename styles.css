@@ -5990,6 +5990,10 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   .quote-credit-col { grid-column: 2 / -1; grid-row: 2; align-self: start; }
   .quote-band .quote-attr { position: static; margin-top: 1.2em; }
   .quote-band .quote-attr-source { position: static; }
+  /* The author and source set as the photographs' captions are on a phone,
+     16px rather than body copy's 20px, so they read as the quote's credit. */
+  .quote-band .quote-attr,
+  .quote-band .quote-attr-source { font-size: 16px; }
 }
 /* A phone's screen is short for 177px of flat colour above and below the
    quote: the band keeps the 64px the text sections around it keep there. */
