@@ -6736,12 +6736,12 @@ body.light .jg-btn { color: var(--ink); }
   .bg-names::-webkit-scrollbar { display: none; }
   .bg-key { font-size: 16px; }
   .bg-all { margin-left: 0; text-align: left; }
-  /* The title, the row of names and the years stand close: 16px from the
+  /* The title, the row of names and the years stand close: 32px from the
      title's foot to the names, 16px from the names to the years. What a key
      says under the row -- the line's sentence, a field's count -- comes only
      while a pointer rests on a key, which a finger never does, so the row
      keeps no room for it here. */
-  .bill-graph-title { margin-bottom: 16px; }
+  .bill-graph-title { margin-bottom: 32px; }
   .bill-graph-keys,
   .bill-graph-keys:has(.bill-graph-line) { padding: 0 0 16px; }
   .bill-graph-line, .bg-count { display: none; }
@@ -6765,7 +6765,19 @@ body.light .jg-btn { color: var(--ink); }
   .bg-years .bg-years-name { left: 0; }
   .bill-graph-foot { margin-top: 8px; min-height: 0; }
   .bill-scrolly { --bill-air: 24px; }
-  .bill-pin { align-items: flex-start; }
+  /* The graph holds the screen from its top, and the encoding under it -- one
+     square = one work, size = its share of its year -- stands at the foot of
+     that screen, its last line on --corner-y, level with the + button's
+     foot across it: the pin, the container and the figure each fill the
+     height, a column, and the foot takes the room that is left above it. */
+  .bill-pin {
+    align-items: stretch;
+    flex-direction: column;
+    padding-bottom: var(--corner-y);
+  }
+  .bill-pin > .container,
+  .bill-pin .bill-graph { flex: 1 0 auto; display: flex; flex-direction: column; }
+  .bill-pin .bill-graph-foot { margin-top: auto; padding-top: 8px; }
   .bill-step { padding-top: 70vh; padding-top: 70svh; }
   /* The first card waits below the screen, so the section opens on the whole
      graph and the card's stage comes with the card. */
