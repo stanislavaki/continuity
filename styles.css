@@ -260,7 +260,27 @@ body.light .cursor { color: #000; }
    centred 160px down, where the other Méridien sites set them --
    measured off charging-bull.beta-mrdn.world at 375px. */
 @media (max-width: 600px) {
-  .coord { top: calc(160px - 11px); }   /* half its 22px line */
+  /* Set as the sister site's are on a phone (wall-street-rodeo.mrdn.world).
+     There the hero is a stage drawn for a 402x874 screen and scaled to fit
+     the one it is on -- by the smaller of the two ratios, width to 402 and
+     height to 874 -- and the coordinates scale with it: at 402x874, Space
+     Mono at 18px, regular, untracked, a 13px dot a space's width from either
+     word, the line's top 159px down. Each length here is that, times the
+     same scale, on the small viewport (svh: Safari's bars showing), so the
+     line keeps its place as they come and go. The logo is outside their
+     stage and does not scale (.logo, above). */
+  .coord {
+    top: min(159px, 159 / 402 * 100vw, 159 / 874 * 100svh);
+    font-size: min(18px, 18 / 402 * 100vw, 18 / 874 * 100svh);
+    font-weight: 400;
+    letter-spacing: normal;
+    gap: 0.6em;
+  }
+  /* Over the base rule, which is set after this block. */
+  body .coord .dot {
+    width: min(13px, 13 / 402 * 100vw, 13 / 874 * 100svh);
+    height: min(13px, 13 / 402 * 100vw, 13 / 874 * 100svh);
+  }
 }
 .coord .dot {
   width: 10px; height: 10px; border-radius: 50%;

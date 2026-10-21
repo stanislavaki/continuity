@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=478" />
+<link rel="stylesheet" href="styles.css?v=479" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -110,8 +110,19 @@
 
   <!-- Sticky sculpture group: hero + intro share a carrier so the sculpture pins across them -->
   <div class="sticky-group">
-    <video class="hero-sculpture sticky-sculpture" src="./assets/sculpture-rotation-alpha.webm"
-           muted playsinline preload="auto" aria-hidden="true"></video>
+    <!-- The stone, turned by the scroll. Two encodings of the same clip, both
+         carrying their transparency: Safari (macOS and iOS) takes the HEVC
+         with alpha, which it alone decodes with its alpha -- it plays the
+         WebM too, but on black; Chrome and Firefox turn the QuickTime type
+         down and take the WebM. The poster is the clip's first frame, with
+         its transparency, so the stone stands even before a frame is
+         decoded -- which iOS may not do at all until the video has played
+         (see the sculpture script). -->
+    <video class="hero-sculpture sticky-sculpture" muted playsinline preload="auto" aria-hidden="true"
+           poster="./assets/sculpture-rotation-poster.png">
+      <source src="./assets/sculpture-rotation-alpha.mov" type="video/quicktime">
+      <source src="./assets/sculpture-rotation-alpha.webm" type="video/webm">
+    </video>
 
     <!-- Stone rules: a comparison drawn beside the stone, at its own scale,
          while a fact goes by. Height: two lines closing on the stone's tip and
@@ -2202,6 +2213,21 @@ window.parent.postMessage({ type: '__edit_mode_available' }, '*');
   // Nothing can be positioned until the duration is known, and the first frame
   // has to be decoded for the hero to show anything at all.
   sculpture.addEventListener('loadedmetadata', update);
+  // iOS Safari loads a video it has not played only as far as its metadata,
+  // whatever preload says, and paints no frame for a seek -- the hero then
+  // shows the poster at best, or nothing. A muted inline video may play by
+  // itself, so it is played and at once paused, once, which makes iOS load
+  // it and draw the frame the scroll asks for. If that is refused (Low Power
+  // Mode), it is tried again on the first touch.
+  let primed = false;
+  const prime = () => {
+    if (primed) return;
+    const p = sculpture.play();
+    if (!p || !p.then) return;
+    p.then(() => { primed = true; sculpture.pause(); update(); }).catch(() => {});
+  };
+  prime();
+  window.addEventListener('touchstart', prime, { passive: true, once: true });
   window.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update);
   window.addEventListener('load', update);
