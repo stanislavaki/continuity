@@ -6687,8 +6687,30 @@ body.light .jg-btn { color: var(--ink); }
     transition: transform .9s cubic-bezier(.22, 1, .36, 1);
   }
   .bg-kw text { display: none; }
-  .bg-names { flex-wrap: wrap; font-size: 16px; row-gap: 4px; }
+  /* The row of names on one line, swiped across, edge to edge of the screen
+     with the gutters as its padding, no scrollbar, and fading out at the
+     right edge so it reads as going on. "show all" follows the others in the
+     line rather than closing the row against the right edge. */
+  .bg-names {
+    flex-wrap: nowrap;
+    font-size: 16px;
+    column-gap: 1em;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-left: calc(-1 * var(--gutter));
+    margin-right: calc(-1 * var(--gutter));
+    /* Past the last name, room as deep as the fade, so swiped to its end
+       the row stands whole. */
+    padding: 2px 48px 2px var(--gutter);
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+  }
+  .bg-names::-webkit-scrollbar { display: none; }
   .bg-key { font-size: 16px; }
+  .bg-all { margin-left: 0; text-align: left; }
   .bill-graph-keys { padding: 12px 0 24px; }
   .bill-graph-keys:has(.bill-graph-line) { padding-bottom: 36px; }
   .bill-graph-line, .bg-count { top: calc(100% - 28px); font-size: 14px; }
