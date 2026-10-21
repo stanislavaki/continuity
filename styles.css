@@ -5110,7 +5110,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 @media (max-width: 900px) {
   #sculpture-trip .journey-stops {
-    grid-template-columns: 1fr;
+    /* minmax(0, ...): a bare 1fr is never narrower than its widest item's
+       least width, and on iOS that came to 1619px, so the accounts ran off
+       the screen and Safari, finding text wider than the phone, set it at
+       28px instead of 20. Held to the measure, the column wraps them. */
+    grid-template-columns: minmax(0, 1fr);
     padding-top: 25vh;
     padding-bottom: 280vh;   /* same closing hold and reveal as on desktop */
   }
@@ -6170,8 +6174,6 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
 @media (prefers-reduced-motion: reduce) {
   .lb-x, .lb-close:hover .lb-x { transition: none; transform: none; }
   .lb-arrow { transition: none; }
-  .lb-prev:hover .lb-arrow { transform: rotate(90deg); }
-  .lb-next:hover .lb-arrow { transform: rotate(-90deg); }
 }
 /* With a mouse the photograph itself wears the close cross as the pointer
    (--cursor-x) and a click on it closes, so the button stands down. On a
@@ -6199,18 +6201,12 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   -webkit-mask: var(--arrow-down) no-repeat center / contain;
   mask: var(--arrow-down) no-repeat center / contain;
 }
-/* Turned before it is moved: the translate is written first so it acts in the
-   page's frame, not in the arrow's rotated one -- written the other way round
-   the prev arrow would slide up the screen instead of leftward. */
+/* The drawing points down; each arrow is it turned on its side. Under a mouse
+   the button lifts on its plate (see the hover plates) and the arrow holds
+   still in it. There is no lean for a touch screen either: one kept a tapped
+   arrow "hovered", so it stood a stroke off its place after every tap. */
 .lb-prev .lb-arrow { transform: rotate(90deg); }
 .lb-next .lb-arrow { transform: rotate(-90deg); }
-/* Leans the way it is about to take you, the same tell the transport's own
-   paragraph jumps give. One stroke's worth of travel -- 2px reads on a 38px
-   icon but vanishes under an arrow this size, so the move is scaled to the
-   mark. Fading was the wrong signal here: it made the way forward fainter the
-   moment you reached for it. */
-.lb-prev:hover .lb-arrow { transform: translateX(calc(var(--tts-bar) * -1)) rotate(90deg); }
-.lb-next:hover .lb-arrow { transform: translateX(var(--tts-bar)) rotate(-90deg); }
 /* Above the picture, on the same centre line as the cross below it, so the two
    pieces of chrome bracket the image instead of sitting in its corners -- and
    so the count is clear of the read-aloud transport, which holds the bottom-left
@@ -6804,8 +6800,6 @@ body.light .jg-btn { color: var(--ink); }
   .narr-film-toggle:hover .narr-film-glyph,
   .jg-btn:hover .jg-ico { transform: none; }
   .menu-btn.is-open:hover svg { transform: rotate(135deg); }
-  .lb-prev:hover .lb-arrow { transform: rotate(90deg); }
-  .lb-next:hover .lb-arrow { transform: rotate(-90deg); }
 }
 /* Asked for less motion, the plate comes up and nothing grows. */
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
