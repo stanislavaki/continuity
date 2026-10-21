@@ -5213,6 +5213,51 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .sg-note { display: none; }
   .sculpt-process li { grid-template-columns: 40px 1fr; gap: 16px; }
 }
+/* A phone: the workshop's photographs, from the first wire cut to the crate
+   leaving, are swiped across rather than stacked, as the road to Santa
+   Teresa is: a row edge to edge of the screen, the gutters its padding,
+   snapping to the gutter, no scrollbar. Landscape and upright prints mixed,
+   so they share a height rather than a width -- 56vw, a landscape about nine
+   tenths of the measure, so the next always shows at the edge -- and none is
+   cropped. The stage, pin and canvas the wide layout's scroll script works in
+   step aside (display: contents), so the tiles stand in the row with the
+   bookends; the two closing captions keep to their pictures' width. */
+@media (max-width: 600px) {
+  .sculpt-gallery {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--col-gap);
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--gutter);
+    scrollbar-width: none;
+    margin-left: calc(-1 * var(--gutter));
+    margin-right: calc(-1 * var(--gutter));
+    padding: 0 var(--gutter);
+  }
+  .sculpt-gallery::-webkit-scrollbar { display: none; }
+  .sculpt-gallery .sg-stage,
+  .sculpt-gallery .sg-pin,
+  .sculpt-gallery .sg-canvas { display: contents; }
+  .sculpt-gallery .sg-bookend,
+  .sculpt-gallery .sg-tile {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    margin: 0;
+  }
+  .sculpt-gallery .sg-bookend { width: min-content; }
+  .sculpt-gallery .sg-bookend img,
+  .sculpt-gallery .sg-tile {
+    width: auto;
+    max-width: none;
+    height: 56vw;
+    margin: 0;
+  }
+  .sculpt-gallery .sg-endnote { margin-top: 12px; padding-right: 0; }
+}
 
 @media (max-width: 600px) {
   .stop { grid-template-columns: repeat(2, 1fr); }
