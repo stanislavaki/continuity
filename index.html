@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=498" />
+<link rel="stylesheet" href="styles.css?v=503" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -111,6 +111,9 @@
   <!-- A note's sheet. On a phone the notes are not set beside the text: each
        mark in it is a pill with the note's number and author (data-src on the
        note), and a press on one brings its note up here, one note to a sheet,
+       headed Source; a picture's credit is a pill too ("© Dominique
+       Stroobant"; data-label where the holder is not the name after the ©),
+       and comes up here headed Credit,
        from the foot of the screen, over a dimmed page. It goes with the cross,
        a press on the page, or Escape (and drawn down, as iOS sheets go,
        though it shows no grip for it). Filled by the notes' sheet script,
@@ -119,7 +122,7 @@
     <div class="fn-sheet-veil"></div>
     <div class="fn-sheet-panel">
       <div class="fn-sheet-head">
-        <p class="fn-sheet-title" id="fnSheetTitle" data-i18n="fn.source">Source</p>
+        <p class="fn-sheet-title" id="fnSheetTitle"><span class="fn-sheet-t-source" data-i18n="fn.source">Source</span><span class="fn-sheet-t-credit" data-i18n="fn.credit">Credit</span></p>
         <button class="fn-sheet-close" type="button" aria-label="Close"></button>
       </div>
       <div class="fn-sheet-body"></div>
@@ -299,7 +302,7 @@
              caption script). -->
         <figure class="bill-portrait">
           <img src="./assets/max-bill-wire-1960-1480.jpg" alt="Max Bill looking through loops of wire held up in both hands, two of his paintings on the wall behind him, 13 March 1960" width="1480" height="1496" decoding="async">
-          <figcaption class="bill-portrait-cap">Max Bill at work, 13&nbsp;March 1960. <span class="photo-credit">Photo: Prisma by Dukas Presseagentur GmbH / Alamy Stock Photo. Works by Max Bill &copy; ProLitteris, Zurich.</span></figcaption>
+          <figcaption class="bill-portrait-cap">Max Bill at work, 13&nbsp;March 1960. <span class="photo-credit" data-label="Alamy, ProLitteris">Photo: Prisma by Dukas Presseagentur GmbH / Alamy Stock Photo. Works by Max Bill &copy; ProLitteris, Zurich.</span></figcaption>
         </figure>
         <div class="article-body">
           <div class="fn-note" data-clear=".bill-portrait-cap">
@@ -1385,6 +1388,7 @@ const I18N = {
     'nav.rotterdam-frankfurt': 'Rotterdam → Frankfurt',
     'nav.frankfurt': 'Frankfurt',
     'fn.source': 'Quelle',
+    'fn.credit': 'Bildnachweis',
   },
   it: {
     'lang.label': 'Lingua',
@@ -1399,6 +1403,7 @@ const I18N = {
     'nav.rotterdam-frankfurt': 'Rotterdam → Francoforte',
     'nav.frankfurt': 'Francoforte',
     'fn.source': 'Fonte',
+    'fn.credit': 'Crediti',
   },
   es: {
     'lang.label': 'Idioma',
@@ -1413,6 +1418,7 @@ const I18N = {
     'nav.rotterdam-frankfurt': 'Róterdam → Fráncfort',
     'nav.frankfurt': 'Fráncfort',
     'fn.source': 'Fuente',
+    'fn.credit': 'Créditos',
   },
 };
 
@@ -3256,17 +3262,51 @@ document.querySelectorAll('.facts').forEach((facts) => {
   });
   roles();
 
+  // A picture's credit, likewise: hidden on a phone behind a pill after it,
+  // "© " and the holder -- the name after the ©, less a year, up to the
+  // first full stop, slash or comma, or the credit's data-label -- and shown
+  // in the sheet, headed Credit, when the pill is pressed. The credits are
+  // the towers' and the portrait's (.photo-credit), the journey's under its
+  // photographs and drawings (.journey-credit), and the captions that are
+  // only a credit under a place's name (.journey-cap--credit > p).
+  const credits = [...document.querySelectorAll('.photo-credit, .journey-credit, .journey-cap--credit > p')];
+  credits.forEach((credit) => {
+    const text = credit.textContent.trim();
+    const after = text.includes('©') ? text.slice(text.indexOf('©') + 1) : text;
+    const holder = credit.dataset.label || after.replace(/^\s*\d{4}\s+/, '').split(/[./,]/)[0].trim();
+    const pill = document.createElement('button');
+    pill.type = 'button';
+    pill.className = 'credit-pill';
+    pill.append(span('fn-ref-n', '©'), span('fn-ref-src', holder));
+    pill.setAttribute('aria-haspopup', 'dialog');
+    pill.setAttribute('aria-label', `Credit: ${holder}`);
+    credit.after(pill);
+    let y = null;
+    pill.addEventListener('touchstart', () => { y = window.scrollY; }, { passive: true });
+    pill.addEventListener('click', (e) => {
+      const scrolled = y !== null && Math.abs(window.scrollY - y) > 10;
+      y = null;
+      if (scrolled) return;
+      e.preventDefault();
+      e.stopPropagation();          // the caption's figure may open the lightbox
+      show('credit', credit.innerHTML, pill);
+    });
+  });
+
   let from = null;
   const isOpen = () => sheet.classList.contains('is-open');
   function open(ref) {
     const note = noteOf(ref.dataset.fn);
-    if (!note) return;
+    if (note) show('source', note.innerHTML, ref);
+  }
+  function show(kind, html, opener) {
+    sheet.classList.toggle('is-credit', kind === 'credit');
     const p = document.createElement('p');
     p.className = 'fn-sheet-note';
-    p.innerHTML = note.innerHTML;
+    p.innerHTML = html;
     body.replaceChildren(p);
     body.scrollTop = 0;
-    from = ref;
+    from = opener;
     panel.style.removeProperty('--drag');
     sheet.classList.add('is-open');
     sheet.setAttribute('aria-hidden', 'false');

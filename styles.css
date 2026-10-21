@@ -366,6 +366,11 @@ body.light .menu-btn { color: #000; }
 /* The chapter's opening text stands under its title as Bill's chapter's
    portrait does under its own (#ch1's 70px), before the fold. */
 #ch2 .math-body--lead { margin-top: 70px; }
+/* On a phone it follows its title closely: a third of the room it had
+   there, about 15px from the title's foot to the text's first line. */
+@media (max-width: 900px) {
+  #ch2 .math-body--lead { margin-top: 39px; }
+}
 /* Each block of the chapter's text holds its notes columns, so a note that
    runs on past the text pushes what follows -- the fold, the red band --
    down rather than running into it. (Below 901px the notes run in the flow.) */
@@ -2041,9 +2046,11 @@ section { position: relative; }
 .article-body p:not(.article-lead) .fn-ref,
 .math-body p .fn-ref { font-size: 0.65em; }
 /* The pill's parts past its number (the notes' sheet script adds them): the
-   wide layout keeps the raised number alone. */
+   wide layout keeps the raised number alone, and the credits as they are,
+   without their pills. */
 .fn-ref-dot,
-.fn-ref-src { display: none; }
+.fn-ref-src,
+.credit-pill { display: none; }
 /* The sentence a note is for, and its mark. While its note is under the
    pointer it turns to --fn-lit, and the note itself, number and all, comes up
    in the same colour: the two always light together, in one colour. The
@@ -6816,7 +6823,25 @@ body.light .jg-btn { color: var(--ink); }
 @media (max-width: 900px) {
   .article-body .fn-note,
   .math-body .fn-note { display: none; }
-  sup.fn-ref.fn-ref.fn-ref {
+  /* A picture's credit goes behind a pill of its own, "© " and the holder,
+     set as the notes' are, and comes up in the sheet the same way. */
+  .photo-credit,
+  .journey-credit,
+  .journey-cap--credit > p { display: none; }
+  .credit-pill.credit-pill {
+    appearance: none;
+    border: 0;
+    margin-top: 8px;
+    text-transform: none;
+    /* A line of its own under the caption, flush left, at its own width,
+       also where its caption lays out as a grid or a row. */
+    width: max-content;
+    justify-self: start;
+    align-self: flex-start;
+  }
+  .credit-pill.credit-pill.credit-pill { display: block; margin-left: 0; }
+  sup.fn-ref.fn-ref.fn-ref,
+  .credit-pill.credit-pill {
     position: relative;
     display: inline-block;
     margin-left: 0.3em;
@@ -6837,14 +6862,21 @@ body.light .jg-btn { color: var(--ink); }
     -webkit-tap-highlight-color: transparent;
     transition: background-color .2s ease;
   }
-  sup.fn-ref::before { content: ''; position: absolute; inset: -10px -3px; }
-  sup.fn-ref:active { background: rgba(255, 255, 255, 0.22); }
-  .light-section sup.fn-ref.fn-ref.fn-ref { color: rgba(0, 0, 0, 0.66); background: rgba(0, 0, 0, 0.07); }
-  .light-section sup.fn-ref:active { background: rgba(0, 0, 0, 0.14); }
-  sup.fn-ref:focus { outline: none; }
-  sup.fn-ref:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+  sup.fn-ref::before,
+  .credit-pill::before { content: ''; position: absolute; inset: -10px -3px; }
+  sup.fn-ref:active,
+  .credit-pill:active { background: rgba(255, 255, 255, 0.22); }
+  .light-section sup.fn-ref.fn-ref.fn-ref,
+  .light-section .credit-pill.credit-pill { color: rgba(0, 0, 0, 0.66); background: rgba(0, 0, 0, 0.07); }
+  .light-section sup.fn-ref:active,
+  .light-section .credit-pill:active { background: rgba(0, 0, 0, 0.14); }
+  sup.fn-ref:focus,
+  .credit-pill:focus { outline: none; }
+  sup.fn-ref:focus-visible,
+  .credit-pill:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
   .fn-ref .fn-ref-n,
-  .fn-ref .fn-ref-dot {
+  .fn-ref .fn-ref-dot,
+  .credit-pill .fn-ref-n {
     display: inline;
     font-family: "Martina Plantijn", Georgia, "Times New Roman", serif;
     font-style: italic;
@@ -6852,8 +6884,10 @@ body.light .jg-btn { color: var(--ink); }
     color: #fff;
   }
   .light-section .fn-ref .fn-ref-n,
-  .light-section .fn-ref .fn-ref-dot { color: #000; }
-  .fn-ref .fn-ref-src { display: inline; margin-left: 0.45em; }
+  .light-section .fn-ref .fn-ref-dot,
+  .light-section .credit-pill .fn-ref-n { color: #000; }
+  .fn-ref .fn-ref-src,
+  .credit-pill .fn-ref-src { display: inline; margin-left: 0.45em; }
 }
 
 /* The note's sheet: a note brought up from the foot of the screen, on a warm
@@ -6908,6 +6942,9 @@ body.light .jg-btn { color: var(--ink); }
   min-height: 44px;
   padding: 12px 64px 0;
 }
+.fn-sheet .fn-sheet-t-credit,
+.fn-sheet.is-credit .fn-sheet-t-source { display: none; }
+.fn-sheet.is-credit .fn-sheet-t-credit { display: inline; }
 .fn-sheet-title {
   margin: 0;
   font-family: var(--sans);
