@@ -4180,6 +4180,27 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   /* A phone: the pair one over the other, unstaggered. */
   .journey-photo-pair,
   .journey-photo-grid { grid-template-columns: minmax(0, 1fr); row-gap: 40px; }
+  /* The route to Santa Teresa and its closing, a pair of a kind, are swiped
+     across rather than stacked: a row edge to edge of the screen, the
+     gutters its padding, each photograph with its caption most of the
+     measure so the next shows at the edge, snapping into place, no
+     scrollbar. */
+  .journey-photo-grid {
+    display: flex;
+    gap: var(--col-gap);
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--gutter);
+    scrollbar-width: none;
+    margin-left: calc(-1 * var(--gutter));
+    margin-right: calc(-1 * var(--gutter));
+    padding: 0 var(--gutter);
+  }
+  .journey-photo-grid::-webkit-scrollbar { display: none; }
+  .journey-photo-grid > figure { flex: 0 0 86%; scroll-snap-align: start; }
   .journey-photo-pair figure:nth-child(2) { margin-top: 0; }
 }
 
