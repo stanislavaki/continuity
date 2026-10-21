@@ -381,6 +381,9 @@ body.light .menu-btn { color: #000; }
    keeps (.math's and .article's 120px), not the paragraph's lead a section
    running into a band is otherwise cut to. */
 #ch2 { padding-bottom: 120px; }
+@media (max-width: 900px) {
+  #ch2 { padding-bottom: 64px; }   /* as the articles' 64px on a phone */
+}
 .scroll-video-sticky {
   width: 100%;
   margin-top: 20px;
@@ -5963,16 +5966,16 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
   .quote-band .quote-attr-source { position: static; }
 }
 /* A phone's screen is short for 177px of flat colour above and below the
-   quote, so the band closes up to 2.5 times less. */
-@media (max-width: 600px) {
-  .quote-band { padding: calc(177px / 2.5) 0; }
+   quote: the band keeps the 64px the text sections around it keep there. */
+@media (max-width: 900px) {
+  .quote-band { padding: 64px 0; }
 }
 /* The intro's large opening paragraph stands as far above the green band as
    the band's quote stands inside it, rather than a body paragraph's distance:
    at its size that closed it up against the colour. */
 section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
-@media (max-width: 600px) {
-  section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: calc(177px / 2.5); }
+@media (max-width: 900px) {
+  section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 64px; }
 }
 /* Below 901px the language menu and the + button stand fixed on the right
    gutter, top and bottom, and running text scrolled under them. So the text
