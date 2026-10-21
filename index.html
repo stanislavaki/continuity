@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=473" />
+<link rel="stylesheet" href="styles.css?v=474" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -8493,6 +8493,13 @@ if (document.readyState === 'loading') {
   // rise stands everything on the line.
   const SHAPE = new URLSearchParams(location.search).get('shape') || 'bands';
   const BANDS = SHAPE === 'bands';
+  // A phone: the plot takes the measure, so the whole of Bill's life stands
+  // on the screen at once, drawn with every square twice as large as the
+  // desktop's (Q) so the swarm still reads at a quarter of the width; the key
+  // works are plain squares, KEY_OF the largest, without their names; the
+  // years run as HTML under the plot; and the cards zoom the field (zoomTo).
+  const PHONE = window.matchMedia('(max-width: 767px)');
+  const Q_PHONE = 2, KEY_OF = 1.6;
   const DOWN = /sculpture|architecture|painting/i;
   // The endless ribbon's works, found by their titles, and their red: the
   // data's sculpture red, while sculpture's other works take it mixed
@@ -8569,11 +8576,18 @@ if (document.readyState === 'loading') {
     // the early years, up to EARLY_TO, and whether it is a key work.
     const EARLY_TO = 1939;
     const stTokens = q => (q.chain ? 'ribbon' : domains[q.w[1]].key) + (q.w[4] <= EARLY_TO ? ' early' : ' late') + (q.w[6] ? ' key' : '');
+    const phone = PHONE.matches, Q = phone ? Q_PHONE : 1;
+    const sMin = S_MIN * Q, sMax = S_MAX * Q, yearArea0 = YEAR_AREA * Q * Q, maxSide = MAX_SIDE * Q;
+    const weighed = w => sMin * (sMax / sMin) ** ((w[5] - 1) / 4);
     const grid = columns();
     const X0 = grid[0].x;                      // the field opens on column one
     const y0 = works[0][0];
     const y1 = works.reduce((m, w) => Math.max(m, w[4]), 0);
-    const step = (W - X0) / (y1 - y0 + 1);     // a year, about 18 units at full width
+    // A year, about 18 units at full width. On a phone the span is a few
+    // years longer than Bill's, so a key work finished in his last years --
+    // Version V, 1995, KEY_SIDE wide from its year -- still ends inside the
+    // plot rather than past its right edge.
+    const step = (W - X0) / (y1 - y0 + 1 + (phone ? 4 : 0));
     const yearX = y => X0 + (y - y0) * step;
     // A screen pixel in the plot's units, and a device pixel, which the
     // squares' edges are snapped to.
@@ -8615,11 +8629,11 @@ if (document.readyState === 'loading') {
       while (s < 240 && !holds(w, s)) s += 4;
       return Math.max(m, s);
     }, 64);
-    const KEY_SIDE = KEY_PX * PX;
+    const KEY_SIDE = phone ? KEY_OF * maxSide : KEY_PX * PX;
     const KONTINUITAT = 1.25;
     const sideOf = w => w[0] === 1983 && w[2] === 'Kontinuität' ? KONTINUITAT * KEY_SIDE
       : w[6] ? KEY_SIDE
-      : Math.min(MAX_SIDE, weighed(w) * Math.sqrt(YEAR_AREA / yearArea.get(w[4])));
+      : Math.min(maxSide, weighed(w) * Math.sqrt(yearArea0 / yearArea.get(w[4])));
     const sq = works.map(w => ({ w, s: sideOf(w), chain: LOOP.test(w[2]) }));
     // Under bands, the band a square lies in: the chain's first, on the line,
     // then each domain's in the keys' order -- and last, outside them all, a
@@ -8835,6 +8849,7 @@ if (document.readyState === 'loading') {
     // A key work's name, wrapped, and its years under it, in white -- or in
     // black on the pale yellow and the orange -- set as a tile sets them.
     const named = (q, x, y, w) => {
+      if (phone) return '';
       const ink = lum(rgb(q.chain ? LOOP_RED : domains[q.w[1]].color)) > 0.25 ? '#050505' : '#fff';
       const tx = (x + KT.padX * PX).toFixed(2);
       const ls = linesOf(q.w[2], w / PX - 2 * KT.padX);
@@ -8871,21 +8886,25 @@ if (document.readyState === 'loading') {
 
     // Each decade with Bill's age beneath it, each row named at its left
     // edge: the decade at full, the age standing back.
-    let rows = '<text class="bg-axis" x="' + X0.toFixed(1) + '" y="' + (FOOT + AXIS_Y).toFixed(1) + '">year</text>' +
+    let rows = phone ? '' : '<text class="bg-axis" x="' + X0.toFixed(1) + '" y="' + (FOOT + AXIS_Y).toFixed(1) + '">year</text>' +
                '<text class="bg-age" x="' + X0.toFixed(1) + '" y="' + (FOOT + AGE_Y).toFixed(1) + '">age</text>';
+    const decades = [];
     for (let y = Math.ceil(y0 / 10) * 10; y <= y1; y += 10) {
+      decades.push(y);
+      if (phone) continue;
       const gx = (yearX(y) + 8).toFixed(1);
       rows += '<text class="bg-axis" x="' + gx + '" y="' + (FOOT + AXIS_Y).toFixed(1) + '">' + y + '</text>' +
               '<text class="bg-age" x="' + gx + '" y="' + (FOOT + AGE_Y).toFixed(1) + '">' + (y - BORN) + '</text>';
     }
 
-    let field = '<g mask="url(#bgWipe4)" aria-hidden="true">' + rows;
+    // The field in a group of its own, which the phone's zoom moves.
+    let field = '<g mask="url(#bgWipe4)" aria-hidden="true"><g class="bg-zoom">' + rows;
     domains.forEach((d, i) => {
       field += '<g class="bg-dots" data-dom="' + i + '" fill="' + d.color + '">' +
         '<g class="bg-st" data-st="' + d.key + ' early">' + dots[i][0].join('') + '</g>' +
         '<g class="bg-st" data-st="' + d.key + ' late">' + dots[i][1].join('') + '</g></g>';
     });
-    field += band + '<g class="bg-kws">' + keyed.join('') + '</g></g>';
+    field += band + '<g class="bg-kws">' + keyed.join('') + '</g></g></g>';
 
     plot.innerHTML =
       '<svg viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="' +
@@ -8897,6 +8916,22 @@ if (document.readyState === 'loading') {
       field + '</svg>';
 
     const svg = plot.querySelector('svg');
+    const zoomG = svg.querySelector('.bg-zoom');
+    // On a phone the decades stand over the plot in HTML, between the keys
+    // and the field, each where its year falls, the row named at its left
+    // (year over age): over rather than under, since the cards' sheet covers
+    // the plot's foot while a stage is read.
+    let yearsEl = plot.parentElement.querySelector('.bg-years');
+    if (phone) {
+      if (!yearsEl) {
+        yearsEl = document.createElement('div');
+        yearsEl.className = 'bg-years';
+        yearsEl.setAttribute('aria-hidden', 'true');
+        plot.parentElement.insertBefore(yearsEl, plot);
+      }
+      yearsEl.innerHTML = '<span class="bg-years-name">year<i>age</i></span>' +
+        decades.map(y => '<span data-y="' + y + '">' + y + '<i>' + (y - BORN) + '</i></span>').join('');
+    } else if (yearsEl) { yearsEl.remove(); yearsEl = null; }
     const keyBtns = keysEl.querySelectorAll('.bg-key');
     const lineEl = keysEl.querySelector('.bill-graph-line');
     const countEl = keysEl.querySelector('.bg-count');
@@ -9301,11 +9336,65 @@ if (document.readyState === 'loading') {
       pinned = d === ALL || pinned === d ? null : d;
       paint();
     };
+    // On a phone a stage of the cards zooms the field onto what its card
+    // speaks of. The card holds as a sheet at the foot of the screen, so only
+    // the part of the plot above it is in view: the field's works (data-field,
+    // the stage tokens) are fitted to the width, up to ZOOM_MAX, and the
+    // works the card names (data-names; the field's where it names none) are
+    // kept whole in the height above the sheet and centred there -- the
+    // early years' tower of print jobs may run off the top, the lithographs
+    // it names never. Before the first card (stage 0) and after the last
+    // (done) the whole field stands as drawn. The decades under the plot move
+    // with it, and the type's size is divided out, so the years keep their
+    // size as the squares grow; a decade that would run into the row's name
+    // at its left, or off its right, is hidden.
+    const ZOOM_MAX = 3.5, ZOOM_PAD = 24;
+    // The sheet's foot stands clear of the + button in the corner under it:
+    // the button's 48px box and its 10px inset, and a little air.
+    const SHEET_FOOT = 64;
+    const host4 = fig.closest('section'), pin4 = document.getElementById('billPin4');
+    function zoomTo(stage) {
+      let z = 1, tx = 0, ty = 0;
+      const card = phone && stage && stage !== '0' && stage !== 'done'
+        ? document.querySelector('#billSteps4 .bill-step[data-stage="' + stage + '"] .bill-card') : null;
+      if (card) {
+        const field = (card.dataset.field || '').split(' ').filter(Boolean);
+        const names = new Set((card.dataset.names || '').split('|'));
+        const bbox = qs => [Math.min(...qs.map(q => q.box[0])), Math.min(...qs.map(q => q.box[1])),
+                            Math.max(...qs.map(q => q.box[0] + q.box[2])), Math.max(...qs.map(q => q.box[1] + q.box[3]))];
+        const all = sq.filter(q => names.has(q.w[2]) || (field.length && field.every(t => stTokens(q).split(' ').includes(t))));
+        const named = sq.filter(q => names.has(q.w[2]));
+        if (all.length) {
+          const fb = bbox(all), nb = bbox(named.length ? named : all);
+          // The plot's height above the sheet, in its units, as the pin holds it.
+          const pr = plot.getBoundingClientRect(), k = W / pr.width;
+          const pinTop = pin4 ? pr.top - pin4.getBoundingClientRect().top + (parseFloat(getComputedStyle(pin4).top) || 0) : pr.top;
+          const sheet = window.innerHeight - card.offsetHeight - SHEET_FOOT;
+          const vis = clamp(sheet - pinTop - 8, 0.25 * pr.height, pr.height) * k;
+          z = clamp(Math.min(W / (fb[2] - fb[0] + 2 * ZOOM_PAD), vis / (nb[3] - nb[1] + 2 * ZOOM_PAD)), 1, ZOOM_MAX);
+          tx = clamp(W / 2 - z * (fb[0] + fb[2]) / 2, W - z * W, 0);
+          ty = clamp(vis / 2 - z * (nb[1] + nb[3]) / 2, vis - z * H, 0);
+        }
+      }
+      zoomG.style.transform = z === 1 && !ty ? '' : 'translate(' + tx.toFixed(1) + 'px, ' + ty.toFixed(1) + 'px) scale(' + z.toFixed(3) + ')';
+      if (!phone) return;
+      plot.style.setProperty('--bg-type', (typeUnits() / z).toFixed(2) + 'px');
+      if (yearsEl) {
+        const nameW = (yearsEl.firstChild.offsetWidth + 8) * PX;
+        yearsEl.querySelectorAll('span[data-y]').forEach(el => {
+          const u = (yearX(+el.dataset.y) + 8) * z + tx;
+          el.style.left = (u / W * 100).toFixed(2) + '%';
+          el.classList.toggle('is-out', u < nameW || u > W - 44 * PX);
+        });
+      }
+    }
     // A new stage of the cards (bill:stage, from billScrolly4()) starts from
     // the whole graph: no key pressed or held, no tile standing.
     fig.addEventListener('bill:stage', () => {
       held = null; pinned = null; pointed = opened = null; loopHeld = false; paint();
+      zoomTo(host4 && host4.dataset.stage);
     }, { signal });
+    zoomTo(host4 && host4.dataset.stage);
     keyBtns.forEach(key => {
       const d = +key.dataset.dom;
       key.addEventListener('pointerenter', () => { held = d; pointed = opened = null; paint(); });
@@ -9379,11 +9468,16 @@ if (document.readyState === 'loading') {
   const cards = [...document.querySelectorAll('#billSteps4 .bill-card')];
   if (!section || !pin || !cards.length) return;
   let stage = section.dataset.stage, queued = false;
+  // On a phone the section opens on the whole graph (stage 0), and the first
+  // card's stage comes with the card, as it rises into the screen; on the
+  // wide layout it opens on the first card's stage, as before.
+  const narrow = matchMedia('(max-width: 767px)');
   // All four read first, then the stage written once, only when it changes.
   const update = () => {
     queued = false;
     const passed = cards.filter(c => { const r = c.getBoundingClientRect(); return r.bottom < r.height * 0.2; }).length;
-    const next = passed >= cards.length ? 'done' : String(passed + 1);
+    let next = passed >= cards.length ? 'done' : String(passed + 1);
+    if (narrow.matches && next === '1' && cards[0].getBoundingClientRect().top >= window.innerHeight) next = '0';
     if (next === stage) return;
     stage = next;
     section.dataset.stage = next;
@@ -9474,6 +9568,11 @@ if (document.readyState === 'loading') {
       }
       card.style.setProperty('--card-col', best.k);
       card.style.setProperty('--hold-top', best.t + 'px');
+      // On a phone every card holds as a sheet at the foot of the screen,
+      // under the graph held at its top, its foot clear of the + button in
+      // the corner (64px: the button's box, its inset and a little air --
+      // SHEET_FOOT in billGraph4(), which fits the zoom above the sheet).
+      if (narrow.matches) card.style.setProperty('--hold-top', Math.max(12, vh - h - 64) + 'px');
     });
   };
   fig.addEventListener('bill:drawn', e => place(e.detail.works));

@@ -69,9 +69,15 @@
      scales down on narrow screens. Held at the root because the works
      graph's heading is set at it too -- see .bill-graph-title. */
   --quote-size: clamp(27px, 3.89vw, 46px);
+  /* The page's columns: eight, and four on a phone. Every grid laid on the
+     page's columns reads this, and so does the G overlay (g-toolset.js). */
+  --cols: 8;
 }
 @media (min-width: 901px) {
   :root { --corner-x: var(--rail-x); --corner-y: var(--rail-x); }
+}
+@media (max-width: 600px) {
+  :root { --cols: 4; }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1260,7 +1266,7 @@ section { position: relative; }
    in the dock's row, over the stone where that crosses it. */
 .facts-rail {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--col-gap);
   /* Far enough apart that a stone rule is down before the next fact comes up
      beside the stone: a rule holds while its value climbs from the stone's
@@ -1445,7 +1451,7 @@ section { position: relative; }
 .stone-rule .container {
   height: 100%;
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--col-gap);
 }
 /* The captions are .captions, set as the page's captions are, a step below
@@ -1703,7 +1709,7 @@ section { position: relative; }
 }
 .fact-row {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   gap: var(--col-gap);
   padding: 12px 0;
   position: relative;
@@ -1772,7 +1778,7 @@ section { position: relative; }
   right: var(--gutter);
   top: 0;
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(var(--cols), 1fr);
   column-gap: var(--col-gap);
   pointer-events: none; /* let clicks fall through the empty cols; text re-enables */
   will-change: transform;
@@ -2730,7 +2736,7 @@ body.tts-reading-active [data-narr]:not(.tts-reading) { opacity: .3; }
    `height: auto` cannot; the clip inside is what gives up its minimum. */
 .narr-film {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--col-gap);
   margin: 0;
   /* Open, the film lies over everything the page keeps fixed on screen -- the
@@ -3107,7 +3113,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .math-body .math-fig {
   clear: left;
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--col-gap);
   align-items: center;
   margin: 48px 0 0 calc(-100% - var(--col-gap) - 2px);
@@ -3238,7 +3244,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   grid-column: 1 / -1;
   margin: 0 0 var(--col-gap);
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--col-gap);
 }
 .granite-study figure {
@@ -3276,7 +3282,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .doc-deck {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--col-gap);
   margin: 1.2em 0 0;
   /* The sheets' stacking stays among themselves, under the page's fixed
@@ -3471,7 +3477,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   margin-left: calc(-100% - var(--col-gap));
   width: calc(200% + var(--col-gap));
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(var(--cols), 1fr);
   column-gap: var(--col-gap);
   align-items: end;
 }
@@ -3881,7 +3887,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   margin: 12px auto 0;
   padding: 0 var(--gutter);
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--col-gap);
 }
 .journey-photo-bleed > .journey-cap > * { grid-column: 3 / 5; }
@@ -3936,7 +3942,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   grid-column: 1 / -1;
   margin: 0 0 var(--col-gap);
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--col-gap);
 }
 .journey-photo-measure img { grid-column: 1 / -1; }
@@ -3988,7 +3994,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   grid-column: 1 / -1;
   margin: 0 0 var(--col-gap);
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--col-gap);
   align-items: end;
 }
@@ -4231,7 +4237,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 
 .journey-facts {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(var(--cols), 1fr);
   column-gap: var(--col-gap);
   margin-bottom: 100px;
 }
@@ -4610,7 +4616,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 }
 .sg-bookend--narrow {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(var(--cols), 1fr);
   column-gap: var(--col-gap);
 }
 .sg-bookend--narrow img {
@@ -4841,7 +4847,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   grid-column: 1;
   grid-row: 1;
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(var(--cols), 1fr);
   column-gap: var(--col-gap);
   row-gap: 0;
   z-index: 1;
@@ -5311,7 +5317,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bill-graph-keys,
 .bill-graph-foot {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--col-gap);
 }
 /* Eight empty cells the plot measures its own columns off. It takes no room and
@@ -5321,27 +5327,8 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bill-graph-plot svg { width: 100%; height: auto; display: block; }
 /* The plot and its card share a box, which the card is placed in. */
 .bill-graph-scroll { position: relative; }
-/* On a phone the graph keeps a desktop's measure, 960px, and is swiped
-   across, edge to edge of the screen; the row of keys keeps to one line and
-   is swiped on its own. Neither shows a scrollbar. */
-@media (max-width: 767px) {
-  .bill-graph-scroll,
-  .bg-names {
-    overflow-x: auto;
-    overflow-y: hidden;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    margin-left: calc(-1 * var(--gutter));
-    margin-right: calc(-1 * var(--gutter));
-    padding-left: var(--gutter);
-    padding-right: var(--gutter);
-  }
-  .bill-graph-scroll::-webkit-scrollbar,
-  .bg-names::-webkit-scrollbar { display: none; }
-  .bill-graph-plot { width: 960px; }
-  .bill-graph-keys .bg-names { flex-wrap: nowrap; }
-}
+/* On a phone the whole of Bill's life fits the measure and the cards zoom
+   into it: see the phone rules at the foot of this sheet. */
 /* The row of names over the field. Sticky: once it reaches the top of the
    screen it stays there, over the field scrolling up under it, until the
    figure is done. Held to the very top with its air carried as padding, as
@@ -5446,7 +5433,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .bill-graph-read {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   gap: 0 var(--col-gap);
   align-items: baseline;
 }
@@ -5478,7 +5465,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
    section's padding further down. */
 .bill-graph-notes {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--col-gap);
   row-gap: 56px;
   margin-bottom: 48px;   /* the article grid's row gap, as under Bill's portrait */
@@ -5815,7 +5802,7 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
    on a real column rather than nudged with a margin. */
 .quote-band > .container {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--col-gap);
 }
 .quote-band .quote-text {
@@ -6288,7 +6275,7 @@ body.light .jg-btn { color: var(--ink); }
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--col-gap);
 }
 .jg-grid > li {
@@ -6315,7 +6302,7 @@ body.light .jg-btn { color: var(--ink); }
   .jg-dock {
     top: calc(45vh - .45 * var(--crail-h) - 10.5px);
     display: grid;
-    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
     column-gap: var(--col-gap);
     max-width: var(--maxw);
     margin-inline: auto;
@@ -6420,6 +6407,7 @@ body.light .jg-btn { color: var(--ink); }
 .jg-where,
 .jg-when { color: var(--grey-60); }
 @media (max-width: 600px) {
+  .jg-grid > li { grid-column: span 2; }    /* still two across, on four columns */
   .jg-cap { margin-top: 12px; padding-bottom: 28px; font-size: 15px; }
   .jg-where { margin-top: 8px; }
 }
@@ -6678,4 +6666,64 @@ body.light .jg-btn { color: var(--ink); }
     text-align: left;
     margin-bottom: 32px;
   }
+}
+
+/* The works graph on a phone. The plot takes the measure, so the whole of
+   Bill's working life, 1925 to 1997, stands on the screen at once, and
+   nothing is swiped. The cards' stages zoom the field instead: billGraph4()
+   moves its group (.bg-zoom) onto the years and the field each card speaks
+   of, and back out after the last. The key works are plain squares here,
+   without their names, since the cards name them; the years and ages run as
+   HTML under the plot (.bg-years), each decade standing where its year falls
+   and moving with the zoom, so they keep their size as the field grows. The
+   graph holds the top of the screen and the cards rise as a sheet at its
+   foot (--hold-top, from billScrolly4()). */
+@media (max-width: 767px) {
+  .bill-graph-plot { width: 100%; }
+  .bill-graph-scroll { overflow: hidden; }
+  .bg-zoom {
+    transform-box: view-box;
+    transform-origin: 0 0;
+    transition: transform .9s cubic-bezier(.22, 1, .36, 1);
+  }
+  .bg-kw text { display: none; }
+  .bg-names { flex-wrap: wrap; font-size: 16px; row-gap: 4px; }
+  .bg-key { font-size: 16px; }
+  .bill-graph-keys { padding: 12px 0 24px; }
+  .bill-graph-keys:has(.bill-graph-line) { padding-bottom: 36px; }
+  .bill-graph-line, .bg-count { top: calc(100% - 28px); font-size: 14px; }
+  .bg-years {
+    position: relative;
+    height: 40px;
+    margin-bottom: 6px;
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.35;
+    letter-spacing: -0.005em;
+  }
+  .bg-years span {
+    position: absolute;
+    top: 0;
+    white-space: nowrap;
+    transition: left .9s cubic-bezier(.22, 1, .36, 1), opacity .4s ease;
+  }
+  .bg-years span i { display: block; font-style: normal; opacity: .22; }
+  .bg-years span.is-out { opacity: 0; }
+  .bg-years .bg-years-name { left: 0; }
+  .bill-graph-foot { margin-top: 8px; min-height: 0; }
+  .bill-scrolly { --bill-air: 24px; }
+  .bill-pin { align-items: flex-start; }
+  .bill-step { padding-top: 70vh; padding-top: 70svh; }
+  /* The first card waits below the screen, so the section opens on the whole
+     graph and the card's stage comes with the card. */
+  .bill-step:first-child { padding-top: 100vh; padding-top: 100svh; }
+  .bill-step::after { height: 40vh; height: 40svh; }
+  .bill-step-tail { height: 120vh; height: 120svh; }
+  .bill-card { padding: 18px 20px 20px; }
+  .bill-card-title { font-size: 22px; margin-bottom: 8px; }
+  .bill-card p { font-size: 16px; }
+}
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .bg-zoom, .bg-years span { transition: none; }
 }

@@ -23,7 +23,7 @@
     }
     .grid-overlay.is-on {
       display: grid;
-      grid-template-columns: repeat(${N}, 1fr);
+      grid-template-columns: repeat(var(--cols, ${N}), 1fr);   /* the page's own count where it sets one */
       gap: var(--col-gap, 24px);
     }
     .grid-overlay .col {
