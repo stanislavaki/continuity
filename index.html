@@ -1839,9 +1839,14 @@ function crailSync(scrollTop, docH) {
 
   // The panel is the whole viewport now, so "outside" is measured against the
   // list of titles: a press anywhere on the blur closes the menu.
+  // The language menu and its blur stand over the list (a phone shows the
+  // menu in the list's corner): a press there is the language menu's -- the
+  // blur closes it, a name chooses -- and leaves the list open under it.
+  // Looked up at the press: the menu is set after this script in the page.
   document.addEventListener('pointerdown', e => {
     if (!panel.classList.contains('is-open')) return;
     if (nav.contains(e.target) || rail.contains(e.target) || menuBtn.contains(e.target)) return;
+    if (e.target.closest && e.target.closest('#lang, #langVeil')) return;
     crailClose();
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') crailClose(); });
