@@ -5075,9 +5075,14 @@ document.querySelectorAll('.facts').forEach((facts) => {
     images = collect();
     current = Math.max(0, Math.min(images.length - 1, idx));
     show();
-    if (!lb.classList.contains('is-open')) overflowWas = document.body.style.overflow;
+    // The page is held still on the root, not on the body: the root clips
+    // across (overflow-x: clip), so a body set to hidden no longer passes it
+    // to the window but becomes a scroll box of its own, and every sticky
+    // box -- the gallery's squares and cross among them -- falls back to
+    // where it sits in the page, off the screen.
+    if (!lb.classList.contains('is-open')) overflowWas = document.documentElement.style.overflow;
     lb.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
     readUnder();
   }
   // Opened over the gallery sheet, the plate on screen shrinks back into its
@@ -5102,7 +5107,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
   }
   function shut() {
     lb.classList.remove('is-open');
-    document.body.style.overflow = overflowWas;
+    document.documentElement.style.overflow = overflowWas;
     readUnder();
     // Same reason as in show(): nothing keeps playing behind a closed deck.
     lbVideo.pause();
@@ -5546,9 +5551,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
     btn.setAttribute('aria-label', 'Close the photographs');
     window.journeyDeck.closeTo = printFor;
     const bar = window.innerWidth - document.documentElement.clientWidth;
-    overflowWas = document.body.style.overflow;
+    // Held on the root, as the lightbox holds it, so the cross stays stuck.
+    overflowWas = document.documentElement.style.overflow;
     paddingWas = document.body.style.paddingRight;
-    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
     if (bar > 0) document.body.style.paddingRight = bar + 'px';
     sheet.querySelectorAll('video').forEach(v => {
       const p = v.play();
@@ -5561,7 +5567,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     btn.setAttribute('aria-expanded', 'false');
     btn.setAttribute('aria-label', 'Show all the photographs of the journey');
     window.journeyDeck.closeTo = null;
-    document.body.style.overflow = overflowWas;
+    document.documentElement.style.overflow = overflowWas;
     document.body.style.paddingRight = paddingWas;
     sheet.querySelectorAll('video').forEach(v => v.pause());
   }
