@@ -3572,6 +3572,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .db-zapp-anchor > .db-zapp-note,
   .db-portrait { grid-column: 1; grid-row: auto; }
   .db-portrait { width: 100%; margin: 0; }
+  /* On a phone, Zapp's portrait on the two left columns of the four: two
+     columns and the gap between them, half the measure less half a gap. */
+  .db-zapp-anchor .db-portrait { width: calc((100% - var(--col-gap)) / 2); }
   .db-zapp-anchor > .db-zapp-note { margin-top: 12px; }
 }
 
@@ -5945,9 +5948,12 @@ section:has(+ .quote-band) { padding-bottom: calc(1.2 * clamp(20px, 1.7vw, 26px)
    assumes: the quote takes the full measure and its author sits simply below
    it, a paragraph's distance under the last line, without travelling. */
 @media (max-width: 900px) {
-  .quote-band > .container { grid-template-columns: minmax(0, 1fr); }
-  .quote-band .quote-text { grid-column: 1; }
-  .quote-credit-col { grid-column: 1; grid-row: 2; align-self: start; }
+  /* The quote across the measure, and its author under it from the second
+     column on: the page's own columns (four on a phone), so the author
+     stands off the quote's edge as a credit rather than as its next line. */
+  .quote-band > .container { grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); }
+  .quote-band .quote-text { grid-column: 1 / -1; }
+  .quote-credit-col { grid-column: 2 / -1; grid-row: 2; align-self: start; }
   .quote-band .quote-attr { position: static; margin-top: 1.2em; }
   .quote-band .quote-attr-source { position: static; }
 }
@@ -6734,6 +6740,12 @@ body.light .jg-btn { color: var(--ink); }
     text-align: left;
     margin-bottom: 32px;
   }
+  /* A sub-chapter head that is a section of its own (Deutsche Bank's,
+     Stroobant's) already keeps those 32px under its dates, so the section
+     after it adds no room of its own: the dates stand 32px over the text, as
+     they do inside the workshop. */
+  .making-head + .article { padding-top: 0; }
+  .making-head + .journey { --journey-pad: 0px; }
 }
 
 /* The works graph on a phone. The plot takes the measure, so the whole of
@@ -6841,6 +6853,7 @@ body.light .jg-btn { color: var(--ink); }
   .photo-credit,
   .journey-credit,
   .film-credit,
+  .db-zapp-anchor > .db-zapp-note .db-zapp-credit,
   .journey-cap--credit > p { display: none; }
   .credit-pill.credit-pill {
     appearance: none;

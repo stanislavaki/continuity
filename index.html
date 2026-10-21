@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=505" />
+<link rel="stylesheet" href="styles.css?v=509" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -3287,9 +3287,10 @@ document.querySelectorAll('.facts').forEach((facts) => {
   // in the sheet, headed Credit, when the pill is pressed. The credits are
   // the towers' and the portrait's (.photo-credit), the journey's under its
   // photographs and drawings (.journey-credit), the films' (.film-credit),
+  // Zapp's portrait's (.db-zapp-credit),
   // and the captions that are only a credit under a place's name
   // (.journey-cap--credit > p).
-  const credits = [...document.querySelectorAll('.photo-credit, .journey-credit, .film-credit, .journey-cap--credit > p')];
+  const credits = [...document.querySelectorAll('.photo-credit, .journey-credit, .film-credit, .db-zapp-credit, .journey-cap--credit > p')];
   credits.forEach((credit) => {
     const text = credit.textContent.trim();
     const after = text.includes('©') ? text.slice(text.indexOf('©') + 1) : text;
