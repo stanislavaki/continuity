@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=477" />
+<link rel="stylesheet" href="styles.css?v=478" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -8497,10 +8497,8 @@ if (document.readyState === 'loading') {
   // on the screen at once, drawn with every square twice as large as the
   // desktop's (Q) so the swarm still reads at a quarter of the width; the key
   // works are plain squares, KEY_OF the largest, without their names; the
-  // years run over the plot in HTML; and the field is not zoomed or staged
-  // by the scroll: the reader taps a field's name to light its works, and the
-  // card written for that field, if there is one, stands under the graph
-  // (story()).
+  // years run over the plot in HTML. The cards still pass over the graph and
+  // light their fields; the field is never zoomed.
   const PHONE = window.matchMedia('(max-width: 767px)');
   const Q_PHONE = 2, KEY_OF = 1.6;
   const DOWN = /sculpture|architecture|painting/i;
@@ -8938,29 +8936,6 @@ if (document.readyState === 'loading') {
       yearsEl.innerHTML = '<span class="bg-years-name">year<i>age</i></span>' +
         decades.map(y => '<span data-y="' + y + '">' + y + '<i>' + (y - BORN) + '</i></span>').join('');
     } else if (yearsEl) { yearsEl.remove(); yearsEl = null; }
-    // And under the graph, the card written for the field that is lit -- the
-    // early years for graphic design, architecture, painting, the ribbon --
-    // copied from the cards that scroll over the graph on a wide screen; for
-    // a field with no card, or none lit, a line asking for a tap.
-    let storyEl = fig.querySelector('.bg-story');
-    if (phone) {
-      if (!storyEl) {
-        storyEl = document.createElement('div');
-        storyEl.className = 'bg-story';
-        storyEl.setAttribute('aria-live', 'polite');
-        fig.appendChild(storyEl);
-      }
-    } else if (storyEl) { storyEl.remove(); storyEl = null; }
-    let storyOf;
-    const story = lit => {
-      if (!storyEl || storyOf === lit) return;
-      storyOf = lit;
-      const key = lit === null ? null : lit === CONT ? 'ribbon' : domains[lit].key;
-      const card = key && [...document.querySelectorAll('#billSteps4 .bill-card')]
-        .find(c => (c.dataset.field || '').split(' ')[0] === key);
-      storyEl.innerHTML = card ? card.outerHTML
-        : '<p class="bg-story-hint">' + (key ? '' : 'Tap a field to light its works.') + '</p>';
-    };
     const keyBtns = keysEl.querySelectorAll('.bg-key');
     const lineEl = keysEl.querySelector('.bill-graph-line');
     const countEl = keysEl.querySelector('.bg-count');
@@ -9031,7 +9006,6 @@ if (document.readyState === 'loading') {
         countEl.style.left = (key.offsetLeft - key.closest('.bg-names').scrollLeft) + 'px';
         countEl.style.color = key.style.getPropertyValue('--tc');
       }
-      story(pinned);
     }
 
     // The tile: a work's square grown in place into a panel of its own
@@ -9377,11 +9351,38 @@ if (document.readyState === 'loading') {
       });
     }
     // A new stage of the cards (bill:stage, from billScrolly4()) starts from
-    // the whole graph: no key pressed or held, no tile standing. (A phone
-    // has no stages: the section stands at done.)
+    // the whole graph: no key pressed or held, no tile standing.
+    // On a phone the row of names is swiped, so the name of the field a card
+    // lights is slid into view, at the row's start; past the last card the
+    // row goes back to its own start. Slid by script, a frame at a time over
+    // SLIDE_MS: iOS Safari drops a smooth scrollTo on the row while the page
+    // is still gliding from the swipe that brought the card in.
+    const slideRow = animate => {
+      if (!phone) return;
+      const row = keysEl.querySelector('.bg-names'), host = fig.closest('section');
+      if (!row || !host) return;
+      const card = document.querySelector('#billSteps4 .bill-step[data-stage="' + host.dataset.stage + '"] .bill-card');
+      const field = card ? (card.dataset.field || '').split(' ')[0] : null;
+      const key = field && keysEl.querySelector('.bg-key[data-key="' + field + '"]');
+      const to = Math.max(0, Math.min(row.scrollWidth - row.clientWidth,
+        key ? key.offsetLeft - parseFloat(getComputedStyle(row).paddingLeft) : 0));
+      const from = row.scrollLeft, t0 = performance.now();
+      const SLIDE_MS = animate && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 450 : 0;
+      cancelAnimationFrame(row._slide || 0);
+      const step = now => {
+        const p = SLIDE_MS ? Math.min(1, (now - t0) / SLIDE_MS) : 1;
+        row.scrollLeft = from + (to - from) * (1 - (1 - p) ** 3);
+        if (p < 1) row._slide = requestAnimationFrame(step);
+      };
+      row._slide = requestAnimationFrame(step);
+    };
     fig.addEventListener('bill:stage', () => {
       held = null; pinned = null; pointed = opened = null; loopHeld = false; paint();
+      slideRow(true);
     }, { signal });
+    // The stage may have been set before the graph was drawn -- a page opened
+    // with the first card already rising -- so the row is set to it now too.
+    slideRow(false);
     // A key lights its field while a mouse rests on it, and holds it lit when
     // pressed. A finger only presses: lighting the field as a touch comes
     // down makes iOS Safari take that touch for a hover and swallow the
@@ -9459,16 +9460,16 @@ if (document.readyState === 'loading') {
   const cards = [...document.querySelectorAll('#billSteps4 .bill-card')];
   if (!section || !pin || !cards.length) return;
   let stage = section.dataset.stage, queued = false;
-  // On a phone there are no stages: the cards do not scroll over the graph
-  // (CSS hides them; billGraph4() shows the one for the field tapped), and
-  // the section stands at done, the whole graph lit and answering the keys.
+  // On a phone the section opens on the whole graph (stage 0), and the first
+  // card's stage comes with the card, as it rises into the screen; on the
+  // wide layout it opens on the first card's stage, as before.
   const narrow = matchMedia('(max-width: 767px)');
   // All four read first, then the stage written once, only when it changes.
   const update = () => {
     queued = false;
     const passed = cards.filter(c => { const r = c.getBoundingClientRect(); return r.bottom < r.height * 0.2; }).length;
     let next = passed >= cards.length ? 'done' : String(passed + 1);
-    if (narrow.matches) next = 'done';
+    if (narrow.matches && next === '1' && cards[0].getBoundingClientRect().top >= window.innerHeight) next = '0';
     if (next === stage) return;
     stage = next;
     section.dataset.stage = next;
@@ -9559,9 +9560,13 @@ if (document.readyState === 'loading') {
       }
       card.style.setProperty('--card-col', best.k);
       card.style.setProperty('--hold-top', best.t + 'px');
+      // On a phone every card holds as a sheet at the foot of the screen,
+      // under the graph held at its top, its foot clear of the + button in
+      // the corner (64px: the button's box, its inset and a little air).
+      if (narrow.matches) card.style.setProperty('--hold-top', Math.max(12, vh - h - 64) + 'px');
     });
   };
-  fig.addEventListener('bill:drawn', e => { if (!narrow.matches) place(e.detail.works); });
+  fig.addEventListener('bill:drawn', e => place(e.detail.works));
 })();
 </script>
 <script src="./g-toolset.js" defer></script>

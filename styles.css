@@ -81,6 +81,12 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+/* The page is never wider than the screen. On a phone anything past the right
+   edge widens the layout and Safari zooms the whole page out to show it, a
+   band of empty ground down the right; clipped on x here, whatever does it.
+   clip rather than hidden: it makes no scroll container, so every sticky box
+   still sticks to the viewport. */
+html, body { overflow-x: clip; }
 /* One plate pixel on screen. The hero photograph is a 2560x1440 plate drawn
    with background-size: cover, so this is the larger of the two cover ratios,
    times the 1.02 idle scale .hero-bg carries. The sculpture is sized and
@@ -157,7 +163,6 @@ body {
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
   cursor: var(--cursor-dot);   /* none while the drawn cursor is on (the tweaks) */
-  overflow-x: hidden;
   letter-spacing: -0.005em;
 }
 a { color: inherit; text-decoration: none; }
@@ -3545,6 +3550,12 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .journey-map-wrap.making-map {
   position: sticky;
   top: 0;
+  /* The screen's width, whatever the narrow layout's 4:5 for .journey-map-wrap
+     says: with the height set to a screen, that ratio would make it four
+     fifths of the screen's height wide -- 699px on a 402px phone -- and
+     Safari then lays the whole page out that wide and zooms it out. */
+  width: 100%;
+  aspect-ratio: auto;
   height: 100vh;
   margin-bottom: -100vh;
   display: block;
@@ -6670,12 +6681,13 @@ body.light .jg-btn { color: var(--ink); }
 
 /* The works graph on a phone. The plot takes the measure, so the whole of
    Bill's working life, 1925 to 1997, stands on the screen at once, and
-   nothing is swiped but the row of names. It is a plain figure here: not
-   pinned, no cards scrolling over it, no stages. A tap on a field's name
-   lights its works and shades the rest, and the card written for that field
-   stands under the graph (.bg-story, filled by billGraph4()). The key works
-   are plain squares, without their names; the years and ages run as HTML
-   over the plot (.bg-years), each decade standing where its year falls. */
+   nothing is swiped but the row of names. The graph holds the top of the
+   screen and the cards rise as a sheet at its foot (--hold-top, from
+   billScrolly4()), each lighting its field as on the wide layout; the field
+   is never zoomed. Before the first card and after the last the whole graph
+   is lit, and a tap on a field's name lights that field. The key works are
+   plain squares, without their names; the years and ages run as HTML over
+   the plot (.bg-years), each decade standing where its year falls. */
 @media (max-width: 767px) {
   .bill-graph-plot { width: 100%; }
   .bill-graph-scroll { overflow: hidden; }
@@ -6732,35 +6744,15 @@ body.light .jg-btn { color: var(--ink); }
   .bg-years span.is-out { opacity: 0; }
   .bg-years .bg-years-name { left: 0; }
   .bill-graph-foot { margin-top: 8px; min-height: 0; }
-  .bill-scrolly { --bill-air: 40px; display: block; }
-  .bill-pin { position: static; min-height: 0; display: block; }
-  .bill-steps { display: none; }
-  /* The card for the field tapped, under the readout: set as the cards are,
-     in the flow, without their glass. The hint before a tap is set as the
-     readout's quiet half is. */
-  .bg-story { margin-top: 20px; min-height: 2.7em; }
-  .bg-story .bill-card {
-    position: static;
-    width: 100%;
-    margin: 0;
-    padding: 18px 20px 20px;
-    box-shadow: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    animation: bg-story-in .35s ease;
-  }
-  .bg-story .bill-card-title { font-size: 22px; margin-bottom: 8px; }
-  .bg-story .bill-card p { font-size: 16px; }
-  .bg-story-hint {
-    margin: 0;
-    font-family: var(--sans);
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 1.35;
-    color: rgba(255, 255, 255, .5);
-  }
-}
-@keyframes bg-story-in { from { opacity: 0; transform: translateY(6px); } }
-@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
-  .bg-story .bill-card { animation: none; }
+  .bill-scrolly { --bill-air: 24px; }
+  .bill-pin { align-items: flex-start; }
+  .bill-step { padding-top: 70vh; padding-top: 70svh; }
+  /* The first card waits below the screen, so the section opens on the whole
+     graph and the card's stage comes with the card. */
+  .bill-step:first-child { padding-top: 100vh; padding-top: 100svh; }
+  .bill-step::after { height: 40vh; height: 40svh; }
+  .bill-step-tail { height: 120vh; height: 120svh; }
+  .bill-card { padding: 18px 20px 20px; }
+  .bill-card-title { font-size: 22px; margin-bottom: 8px; }
+  .bill-card p { font-size: 16px; }
 }
