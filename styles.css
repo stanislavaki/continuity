@@ -6670,22 +6670,15 @@ body.light .jg-btn { color: var(--ink); }
 
 /* The works graph on a phone. The plot takes the measure, so the whole of
    Bill's working life, 1925 to 1997, stands on the screen at once, and
-   nothing is swiped. The cards' stages zoom the field instead: billGraph4()
-   moves its group (.bg-zoom) onto the years and the field each card speaks
-   of, and back out after the last. The key works are plain squares here,
-   without their names, since the cards name them; the years and ages run as
-   HTML under the plot (.bg-years), each decade standing where its year falls
-   and moving with the zoom, so they keep their size as the field grows. The
-   graph holds the top of the screen and the cards rise as a sheet at its
-   foot (--hold-top, from billScrolly4()). */
+   nothing is swiped but the row of names. It is a plain figure here: not
+   pinned, no cards scrolling over it, no stages. A tap on a field's name
+   lights its works and shades the rest, and the card written for that field
+   stands under the graph (.bg-story, filled by billGraph4()). The key works
+   are plain squares, without their names; the years and ages run as HTML
+   over the plot (.bg-years), each decade standing where its year falls. */
 @media (max-width: 767px) {
   .bill-graph-plot { width: 100%; }
   .bill-graph-scroll { overflow: hidden; }
-  .bg-zoom {
-    transform-box: view-box;
-    transform-origin: 0 0;
-    transition: transform .9s cubic-bezier(.22, 1, .36, 1);
-  }
   .bg-kw text { display: none; }
   /* The row of names on one line, swiped across, edge to edge of the screen
      with the gutters as its padding, no scrollbar, and fading out at the
@@ -6711,9 +6704,15 @@ body.light .jg-btn { color: var(--ink); }
   .bg-names::-webkit-scrollbar { display: none; }
   .bg-key { font-size: 16px; }
   .bg-all { margin-left: 0; text-align: left; }
-  .bill-graph-keys { padding: 12px 0 24px; }
-  .bill-graph-keys:has(.bill-graph-line) { padding-bottom: 36px; }
-  .bill-graph-line, .bg-count { top: calc(100% - 28px); font-size: 14px; }
+  /* The title, the row of names and the years stand close: 16px from the
+     title's foot to the names, 16px from the names to the years. What a key
+     says under the row -- the line's sentence, a field's count -- comes only
+     while a pointer rests on a key, which a finger never does, so the row
+     keeps no room for it here. */
+  .bill-graph-title { margin-bottom: 16px; }
+  .bill-graph-keys,
+  .bill-graph-keys:has(.bill-graph-line) { padding: 0 0 16px; }
+  .bill-graph-line, .bg-count { display: none; }
   .bg-years {
     position: relative;
     height: 40px;
@@ -6728,24 +6727,40 @@ body.light .jg-btn { color: var(--ink); }
     position: absolute;
     top: 0;
     white-space: nowrap;
-    transition: left .9s cubic-bezier(.22, 1, .36, 1), opacity .4s ease;
   }
   .bg-years span i { display: block; font-style: normal; opacity: .22; }
   .bg-years span.is-out { opacity: 0; }
   .bg-years .bg-years-name { left: 0; }
   .bill-graph-foot { margin-top: 8px; min-height: 0; }
-  .bill-scrolly { --bill-air: 24px; }
-  .bill-pin { align-items: flex-start; }
-  .bill-step { padding-top: 70vh; padding-top: 70svh; }
-  /* The first card waits below the screen, so the section opens on the whole
-     graph and the card's stage comes with the card. */
-  .bill-step:first-child { padding-top: 100vh; padding-top: 100svh; }
-  .bill-step::after { height: 40vh; height: 40svh; }
-  .bill-step-tail { height: 120vh; height: 120svh; }
-  .bill-card { padding: 18px 20px 20px; }
-  .bill-card-title { font-size: 22px; margin-bottom: 8px; }
-  .bill-card p { font-size: 16px; }
+  .bill-scrolly { --bill-air: 40px; display: block; }
+  .bill-pin { position: static; min-height: 0; display: block; }
+  .bill-steps { display: none; }
+  /* The card for the field tapped, under the readout: set as the cards are,
+     in the flow, without their glass. The hint before a tap is set as the
+     readout's quiet half is. */
+  .bg-story { margin-top: 20px; min-height: 2.7em; }
+  .bg-story .bill-card {
+    position: static;
+    width: 100%;
+    margin: 0;
+    padding: 18px 20px 20px;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    animation: bg-story-in .35s ease;
+  }
+  .bg-story .bill-card-title { font-size: 22px; margin-bottom: 8px; }
+  .bg-story .bill-card p { font-size: 16px; }
+  .bg-story-hint {
+    margin: 0;
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, .5);
+  }
 }
+@keyframes bg-story-in { from { opacity: 0; transform: translateY(6px); } }
 @media (max-width: 767px) and (prefers-reduced-motion: reduce) {
-  .bg-zoom, .bg-years span { transition: none; }
+  .bg-story .bill-card { animation: none; }
 }

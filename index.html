@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=475" />
+<link rel="stylesheet" href="styles.css?v=477" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -8497,7 +8497,10 @@ if (document.readyState === 'loading') {
   // on the screen at once, drawn with every square twice as large as the
   // desktop's (Q) so the swarm still reads at a quarter of the width; the key
   // works are plain squares, KEY_OF the largest, without their names; the
-  // years run as HTML under the plot; and the cards zoom the field (zoomTo).
+  // years run over the plot in HTML; and the field is not zoomed or staged
+  // by the scroll: the reader taps a field's name to light its works, and the
+  // card written for that field, if there is one, stands under the graph
+  // (story()).
   const PHONE = window.matchMedia('(max-width: 767px)');
   const Q_PHONE = 2, KEY_OF = 1.6;
   const DOWN = /sculpture|architecture|painting/i;
@@ -8828,11 +8831,14 @@ if (document.readyState === 'loading') {
     // over it).
     const keysPad = parseFloat(getComputedStyle(keysEl).paddingBottom) * PX;
     const ascent = 0.95 * typeUnits();
-    const roomOver = Math.max(MIN_ROOM, (ROOM - ascent - keysPad - FIELD_TOP) / 2);
-    const LINE = snap(FIELD_TOP + roomOver - top);
+    // On a phone the years stand over the plot in HTML and nothing grows out
+    // of a square under a finger, so the plot keeps only a little air over
+    // the swarm and under it.
+    const roomOver = phone ? MIN_ROOM : Math.max(MIN_ROOM, (ROOM - ascent - keysPad - FIELD_TOP) / 2);
+    const LINE = snap((phone ? 0 : FIELD_TOP) + roomOver - top);
     const FOOT = LINE + bot;
     const AXIS_Y = ROOM - roomOver, AGE_Y = AXIS_Y + 34;
-    const H = FOOT + AGE_Y + 16;
+    const H = phone ? FOOT + MIN_ROOM : FOOT + AGE_Y + 16;
 
     // Every square snapped to device pixels and never under one across, in
     // its domain's group, or on the chain in the ribbon's red. A key work's
@@ -8932,6 +8938,29 @@ if (document.readyState === 'loading') {
       yearsEl.innerHTML = '<span class="bg-years-name">year<i>age</i></span>' +
         decades.map(y => '<span data-y="' + y + '">' + y + '<i>' + (y - BORN) + '</i></span>').join('');
     } else if (yearsEl) { yearsEl.remove(); yearsEl = null; }
+    // And under the graph, the card written for the field that is lit -- the
+    // early years for graphic design, architecture, painting, the ribbon --
+    // copied from the cards that scroll over the graph on a wide screen; for
+    // a field with no card, or none lit, a line asking for a tap.
+    let storyEl = fig.querySelector('.bg-story');
+    if (phone) {
+      if (!storyEl) {
+        storyEl = document.createElement('div');
+        storyEl.className = 'bg-story';
+        storyEl.setAttribute('aria-live', 'polite');
+        fig.appendChild(storyEl);
+      }
+    } else if (storyEl) { storyEl.remove(); storyEl = null; }
+    let storyOf;
+    const story = lit => {
+      if (!storyEl || storyOf === lit) return;
+      storyOf = lit;
+      const key = lit === null ? null : lit === CONT ? 'ribbon' : domains[lit].key;
+      const card = key && [...document.querySelectorAll('#billSteps4 .bill-card')]
+        .find(c => (c.dataset.field || '').split(' ')[0] === key);
+      storyEl.innerHTML = card ? card.outerHTML
+        : '<p class="bg-story-hint">' + (key ? '' : 'Tap a field to light its works.') + '</p>';
+    };
     const keyBtns = keysEl.querySelectorAll('.bg-key');
     const lineEl = keysEl.querySelector('.bill-graph-line');
     const countEl = keysEl.querySelector('.bg-count');
@@ -9002,6 +9031,7 @@ if (document.readyState === 'loading') {
         countEl.style.left = (key.offsetLeft - key.closest('.bg-names').scrollLeft) + 'px';
         countEl.style.color = key.style.getPropertyValue('--tc');
       }
+      story(pinned);
     }
 
     // The tile: a work's square grown in place into a panel of its own
@@ -9336,70 +9366,31 @@ if (document.readyState === 'loading') {
       pinned = d === ALL || pinned === d ? null : d;
       paint();
     };
-    // On a phone a stage of the cards zooms the field onto what its card
-    // speaks of. The card holds as a sheet at the foot of the screen, so only
-    // the part of the plot above it is in view: the field's works (data-field,
-    // the stage tokens) are fitted to the width, up to ZOOM_MAX, and the
-    // works the card names (data-names; the field's where it names none) are
-    // kept whole in the height above the sheet and centred there -- the
-    // early years' tower of print jobs may run off the top, the lithographs
-    // it names never. Before the first card (stage 0) and after the last
-    // (done) the whole field stands as drawn. The decades under the plot move
-    // with it, and the type's size is divided out, so the years keep their
-    // size as the squares grow; a decade that would run into the row's name
-    // at its left, or off its right, is hidden.
-    const ZOOM_MAX = 3.5, ZOOM_PAD = 24;
-    // The sheet's foot stands clear of the + button in the corner under it:
-    // the button's 48px box and its 10px inset, and a little air.
-    const SHEET_FOOT = 64;
-    const host4 = fig.closest('section'), pin4 = document.getElementById('billPin4');
-    function zoomTo(stage) {
-      let z = 1, tx = 0, ty = 0;
-      const card = phone && stage && stage !== '0' && stage !== 'done'
-        ? document.querySelector('#billSteps4 .bill-step[data-stage="' + stage + '"] .bill-card') : null;
-      if (card) {
-        const field = (card.dataset.field || '').split(' ').filter(Boolean);
-        const names = new Set((card.dataset.names || '').split('|'));
-        const bbox = qs => [Math.min(...qs.map(q => q.box[0])), Math.min(...qs.map(q => q.box[1])),
-                            Math.max(...qs.map(q => q.box[0] + q.box[2])), Math.max(...qs.map(q => q.box[1] + q.box[3]))];
-        const all = sq.filter(q => names.has(q.w[2]) || (field.length && field.every(t => stTokens(q).split(' ').includes(t))));
-        const named = sq.filter(q => names.has(q.w[2]));
-        if (all.length) {
-          const fb = bbox(all), nb = bbox(named.length ? named : all);
-          // The plot's height above the sheet, in its units, as the pin holds it.
-          const pr = plot.getBoundingClientRect(), k = W / pr.width;
-          const pinTop = pin4 ? pr.top - pin4.getBoundingClientRect().top + (parseFloat(getComputedStyle(pin4).top) || 0) : pr.top;
-          const sheet = window.innerHeight - card.offsetHeight - SHEET_FOOT;
-          const vis = clamp(sheet - pinTop - 8, 0.25 * pr.height, pr.height) * k;
-          z = clamp(Math.min(W / (fb[2] - fb[0] + 2 * ZOOM_PAD), vis / (nb[3] - nb[1] + 2 * ZOOM_PAD)), 1, ZOOM_MAX);
-          tx = clamp(W / 2 - z * (fb[0] + fb[2]) / 2, W - z * W, 0);
-          ty = clamp(vis / 2 - z * (nb[1] + nb[3]) / 2, vis - z * H, 0);
-        }
-      }
-      zoomG.style.transform = z === 1 && !ty ? '' : 'translate(' + tx.toFixed(1) + 'px, ' + ty.toFixed(1) + 'px) scale(' + z.toFixed(3) + ')';
-      if (!phone) return;
-      plot.style.setProperty('--bg-type', (typeUnits() / z).toFixed(2) + 'px');
-      if (yearsEl) {
-        const nameW = (yearsEl.firstChild.offsetWidth + 8) * PX;
-        yearsEl.querySelectorAll('span[data-y]').forEach(el => {
-          const u = (yearX(+el.dataset.y) + 8) * z + tx;
-          el.style.left = (u / W * 100).toFixed(2) + '%';
-          el.classList.toggle('is-out', u < nameW || u > W - 44 * PX);
-        });
-      }
+    // On a phone the decades stand where their years fall, and one that would
+    // run into the row's name at its left, or off its right, is hidden.
+    if (phone && yearsEl) {
+      const nameW = (yearsEl.firstChild.offsetWidth + 8) * PX;
+      yearsEl.querySelectorAll('span[data-y]').forEach(el => {
+        const u = yearX(+el.dataset.y) + 8;
+        el.style.left = (u / W * 100).toFixed(2) + '%';
+        el.classList.toggle('is-out', u < nameW || u > W - 44 * PX);
+      });
     }
     // A new stage of the cards (bill:stage, from billScrolly4()) starts from
-    // the whole graph: no key pressed or held, no tile standing.
+    // the whole graph: no key pressed or held, no tile standing. (A phone
+    // has no stages: the section stands at done.)
     fig.addEventListener('bill:stage', () => {
       held = null; pinned = null; pointed = opened = null; loopHeld = false; paint();
-      zoomTo(host4 && host4.dataset.stage);
     }, { signal });
-    zoomTo(host4 && host4.dataset.stage);
+    // A key lights its field while a mouse rests on it, and holds it lit when
+    // pressed. A finger only presses: lighting the field as a touch comes
+    // down makes iOS Safari take that touch for a hover and swallow the
+    // click, so the key needed a second tap.
     keyBtns.forEach(key => {
       const d = +key.dataset.dom;
-      key.addEventListener('pointerenter', () => { held = d; pointed = opened = null; paint(); });
-      key.addEventListener('pointerleave', () => { held = null; paint(); });
-      key.addEventListener('click', () => press(d));
+      key.addEventListener('pointerenter', ev => { if (!byMouse(ev)) return; held = d; pointed = opened = null; paint(); });
+      key.addEventListener('pointerleave', () => { if (held === null) return; held = null; paint(); });
+      key.addEventListener('click', () => { held = null; press(d); });
     });
     paint();
 
@@ -9468,16 +9459,16 @@ if (document.readyState === 'loading') {
   const cards = [...document.querySelectorAll('#billSteps4 .bill-card')];
   if (!section || !pin || !cards.length) return;
   let stage = section.dataset.stage, queued = false;
-  // On a phone the section opens on the whole graph (stage 0), and the first
-  // card's stage comes with the card, as it rises into the screen; on the
-  // wide layout it opens on the first card's stage, as before.
+  // On a phone there are no stages: the cards do not scroll over the graph
+  // (CSS hides them; billGraph4() shows the one for the field tapped), and
+  // the section stands at done, the whole graph lit and answering the keys.
   const narrow = matchMedia('(max-width: 767px)');
   // All four read first, then the stage written once, only when it changes.
   const update = () => {
     queued = false;
     const passed = cards.filter(c => { const r = c.getBoundingClientRect(); return r.bottom < r.height * 0.2; }).length;
     let next = passed >= cards.length ? 'done' : String(passed + 1);
-    if (narrow.matches && next === '1' && cards[0].getBoundingClientRect().top >= window.innerHeight) next = '0';
+    if (narrow.matches) next = 'done';
     if (next === stage) return;
     stage = next;
     section.dataset.stage = next;
@@ -9568,14 +9559,9 @@ if (document.readyState === 'loading') {
       }
       card.style.setProperty('--card-col', best.k);
       card.style.setProperty('--hold-top', best.t + 'px');
-      // On a phone every card holds as a sheet at the foot of the screen,
-      // under the graph held at its top, its foot clear of the + button in
-      // the corner (64px: the button's box, its inset and a little air --
-      // SHEET_FOOT in billGraph4(), which fits the zoom above the sheet).
-      if (narrow.matches) card.style.setProperty('--hold-top', Math.max(12, vh - h - 64) + 'px');
     });
   };
-  fig.addEventListener('bill:drawn', e => place(e.detail.works));
+  fig.addEventListener('bill:drawn', e => { if (!narrow.matches) place(e.detail.works); });
 })();
 </script>
 <script src="./g-toolset.js" defer></script>
