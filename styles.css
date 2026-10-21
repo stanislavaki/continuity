@@ -2017,8 +2017,12 @@ section { position: relative; }
   column-count: 2;
   column-gap: var(--col-gap);
 }
-@media (max-width: 760px) {
-  .article-body p.article-aside { column-count: 1; }
+/* On a phone too it runs in two columns, each two of the page's four, and
+   across the whole measure: it keeps none of the room the running text keeps
+   on its right for the + button, so its columns stand on the grid with the
+   dataset's notes (.bill-graph-note). */
+@media (max-width: 900px) {
+  .article-body p.article-aside { column-count: 2; padding-right: 0; }
 }
 /* The intro's opening paragraph, set as the pull-quote bands set their quotes
    (--quote-size, its weight, leading and tracking, though not their lowercase)
@@ -5556,8 +5560,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 @media (max-width: 760px) {
   .bill-graph-note.is-sources,
   .bill-graph-note.is-progress { grid-column: 1 / -1; }
+  /* Each note in two columns of the page's four, as the aside after them. */
   .bill-graph-note.is-sources p,
-  .bill-graph-note.is-progress p { column-count: 1; }
+  .bill-graph-note.is-progress p { column-count: 2; }
 }
 
 /* ---- the plot's own parts, all inside the one SVG ---- */
