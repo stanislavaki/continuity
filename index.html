@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=525" />
+<link rel="stylesheet" href="styles.css?v=526" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -5098,11 +5098,21 @@ document.querySelectorAll('.facts').forEach((facts) => {
   // carries the one into the other. Footage closes plainly -- its print is
   // moving and would not hold still to be flown back into -- as does
   // everything where view transitions are missing or motion is reduced.
+  // Opened from the page, the plate shrinks back the same way into the
+  // photograph it was opened from -- or into the one it was paged to, if that
+  // one is on screen too; one paged to off the screen closes plainly, since
+  // the page is not scrolled under the reader to meet it.
   const stillMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function onScreen(el) {
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height || r.bottom <= 0 || r.top >= innerHeight
+        || r.right <= 0 || r.left >= innerWidth) return false;
+    return !el.checkVisibility || el.checkVisibility({ opacityProperty: true, visibilityProperty: true });
+  }
   function close() {
     const it = images[current];
-    const print = window.journeyDeck.closeTo && it && lbImg.style.display !== 'none'
-      && window.journeyDeck.closeTo(it.el);
+    const print = it && lbImg.style.display !== 'none'
+      && (window.journeyDeck.closeTo ? window.journeyDeck.closeTo(it.el) : onScreen(it.el) && it.el);
     if (!print || !document.startViewTransition || stillMotion.matches) { shut(); return; }
     lbImg.style.viewTransitionName = 'jg-photo';
     document.startViewTransition(() => {
@@ -5119,6 +5129,33 @@ document.querySelectorAll('.facts').forEach((facts) => {
     lbVideo.pause();
     lbVideo.removeAttribute('src');
     lbVideo.load();
+  }
+  // A photograph pressed -- on the page, or its print on the gallery sheet --
+  // grows into the lightbox rather than the lightbox simply appearing over
+  // it: the photograph and the lightbox's picture are named alike for one
+  // view transition, so the browser carries the one into the other -- its
+  // size, its place, its crop, and whatever tilt the pointer had given a
+  // print, which it straightens out of -- while the lightbox's black and
+  // controls fade in around it. Footage opens plainly (its first frame is not
+  // there in time to fly), as does everything where view transitions are
+  // missing or motion is reduced. from is what is seen growing, plate the
+  // deck's own element for it; on the page the two are one.
+  function grow(from, plate) {
+    const idx = collect().findIndex(it => it.el === plate);
+    if (idx < 0) return;
+    if (!document.startViewTransition || stillMotion.matches || from.tagName === 'VIDEO' || plate.tagName === 'VIDEO') {
+      open(idx);
+      return;
+    }
+    from.style.viewTransitionName = 'jg-photo';
+    document.startViewTransition(async () => {
+      from.style.viewTransitionName = '';
+      open(idx);
+      lbImg.style.viewTransitionName = 'jg-photo';
+      // Held until the lightbox's picture is decoded, so what the photograph
+      // grows into is the picture and not an empty box -- but never for long.
+      await Promise.race([lbImg.decode().catch(() => {}), new Promise(r => setTimeout(r, 400))]);
+    }).finished.finally(() => { lbImg.style.viewTransitionName = ''; });
   }
   function next() { if (!images.length) return; current = (current + 1) % images.length; show(); }
   function prev() { if (!images.length) return; current = (current - 1 + images.length) % images.length; show(); }
@@ -5337,9 +5374,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
     wired.push(el);
     el.addEventListener('click', e => {
       if (!worthOpening(el) || !inPicture(pictureOf(el), e.clientX, e.clientY)) return;
-      const all = collect();
-      const idx = all.findIndex(it => it.el === el);
-      if (idx >= 0) open(idx);
+      grow(el, el);
     });
     el.addEventListener('pointerenter', () => refresh(el));
     if (el.tagName === 'IMG' && !el.complete) el.addEventListener('load', () => refresh(el), { once: true });
@@ -5355,14 +5390,16 @@ document.querySelectorAll('.facts').forEach((facts) => {
   // not there to be wired when this runs. They do not need to be: the deck
   // collects and indexes itself at open time, so all they need is a way in.
   // The gallery sheet draws itself from list(), so it holds what the deck
-  // holds, in the deck's order, and opens a photograph with openFor(). While
-  // it is open it sets closeTo (see close()).
+  // holds, in the deck's order, and opens a photograph with growFrom(), its
+  // print growing into the plate. While it is open it sets closeTo (see
+  // close()).
   window.journeyDeck = {
     openFor(el) {
       const all = collect();
       const idx = all.findIndex(it => it.el === el);
       if (idx >= 0) open(idx);
     },
+    growFrom: grow,
     list: collect,
     closeTo: null,
   };
@@ -5431,33 +5468,7 @@ document.querySelectorAll('.facts').forEach((facts) => {
   };
   const nameOf = url => decodeURIComponent(url.split(/[?#]/)[0].split('/').pop());
   const cursorEl = document.getElementById('cursor');
-  const lbImg = document.getElementById('lbImg');
-  const stillMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const printOf = new Map();   // a plate of the deck -> its print on the sheet
-
-  // A print pressed on the sheet grows into the lightbox rather than the
-  // lightbox simply appearing over it: the print and the lightbox's picture
-  // are named alike for one view transition, so the browser carries the one
-  // into the other -- its size, its place, and whatever tilt the pointer had
-  // given it, which it straightens out of -- while the lightbox's black and
-  // controls fade in around it. Footage opens plainly (its first frame is not
-  // there in time to fly), as does everything where view transitions are
-  // missing or motion is reduced.
-  function grow(print, plate) {
-    if (!document.startViewTransition || stillMotion.matches || print.tagName === 'VIDEO' || !lbImg) {
-      window.journeyDeck.openFor(plate);
-      return;
-    }
-    print.style.viewTransitionName = 'jg-photo';
-    document.startViewTransition(async () => {
-      print.style.viewTransitionName = '';
-      window.journeyDeck.openFor(plate);
-      lbImg.style.viewTransitionName = 'jg-photo';
-      // Held until the lightbox's picture is decoded, so what the print grows
-      // into is the picture and not an empty box -- but never for long.
-      await Promise.race([lbImg.decode().catch(() => {}), new Promise(r => setTimeout(r, 400))]);
-    }).finished.finally(() => { lbImg.style.viewTransitionName = ''; });
-  }
 
   // Asked by the lightbox as it closes over the sheet: the print of the plate
   // on screen, brought into view on the sheet first if the lightbox was paged
@@ -5513,7 +5524,9 @@ document.querySelectorAll('.facts').forEach((facts) => {
       });
       item.append(frame, cap);
       printOf.set(p.el, media);
-      item.addEventListener('click', () => grow(media, p.el));
+      // Grows into the lightbox, as a photograph on the page does (see grow()
+      // in the lightbox script).
+      item.addEventListener('click', () => window.journeyDeck.growFrom(media, p.el));
       // Pointed at -- the photograph itself, not its caption -- a photograph
       // turns a little one way or the other, chosen
       // afresh each time, and settles back when the pointer leaves: run the

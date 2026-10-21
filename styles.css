@@ -6612,17 +6612,27 @@ body.light .jg-btn { color: var(--ink); }
   .jg-cap { margin-top: 12px; padding-bottom: 28px; font-size: 15px; }
   .jg-where { margin-top: 8px; }
 }
-/* A print growing from the sheet into the lightbox, and shrinking back into
-   its place when the lightbox closes (the journey gallery and lightbox
-   scripts name the two pictures alike for a view transition). Half a second,
-   quick off the start and settling long, like a print picked up off the pile
-   and brought up to the eye; the lightbox's black and controls fade in over
-   the first part of it. */
+/* A photograph growing into the lightbox -- a print on the gallery sheet, or
+   a photograph on the page -- and shrinking back into its place when the
+   lightbox closes (the lightbox script names the two pictures alike for a
+   view transition). Half a second, quick off the start and settling long,
+   like a print picked up off the pile and brought up to the eye; the
+   lightbox's black and controls fade in over the first part of it.
+   Many photographs on the page are cropped to their frame, and the lightbox
+   shows them whole: both pictures cover the moving box and are clipped to
+   it, so a cropped one opens out to the whole picture as it grows, and is
+   cropped again as it lands, rather than stretching between the two. */
 ::view-transition-group(jg-photo),
 ::view-transition-old(jg-photo),
 ::view-transition-new(jg-photo) {
   animation-duration: .5s;
   animation-timing-function: cubic-bezier(.2, .8, .2, 1);
+}
+::view-transition-group(jg-photo) { overflow: clip; }
+::view-transition-old(jg-photo),
+::view-transition-new(jg-photo) {
+  height: 100%;
+  object-fit: cover;
 }
 ::view-transition-old(root),
 ::view-transition-new(root) { animation-duration: .3s; }
