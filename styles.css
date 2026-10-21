@@ -6226,6 +6226,17 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   .lb-next { right: auto; left: calc(50% + 16px); }
   .lb-counter { top: 24px; }
 }
+/* Below 901px the lightbox's cross comes down to the journey gallery's
+   squares (see .journey .jg-dock), so the two stay one mark in one place
+   here too: at the foot of the right gutter, by the arrows, under the thumb,
+   rather than up in the corner. Its 48px box on the squares' (the 64px width
+   already centres it on theirs). */
+@media (max-width: 900px) {
+  .lb-close {
+    top: calc(100vh - 2 * var(--corner-y) - 28px - 10.5px - 27px);
+    top: calc(100dvh - 2 * var(--corner-y) - 28px - 10.5px - 27px);
+  }
+}
 .lb-clickable { cursor: var(--cursor-plus); }
 /* White over a dark part of the picture, black over a light one, read off
    the photograph under the pointer; none where the picture is not drawn --
