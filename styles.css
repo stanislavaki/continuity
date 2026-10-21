@@ -2627,18 +2627,31 @@ body.light .tts-controls { color: #000; }
      baseline on --corner-y, opening across to the right, and the play button
      after them; the + button holds the bottom-right (.menu-btn). The second
      row is the play button's 64px whether or not it is there, as on desktop,
-     so the letters stand on --corner-y. */
-  .tts-controls { grid-template-rows: auto 64px; }
+     so the letters stand on --corner-y -- or rather, the row's middle (the
+     letters' capitals, the play button's triangle) on the + button's: its
+     28px mark stands 10px inside its 48px box, whose foot is 10px under
+     --corner-y, so the mark's middle is --corner-y and 14px up. The 64px row
+     puts its middle 32px over the cluster's foot. */
+  .tts-controls {
+    grid-template-rows: auto 64px;
+    bottom: calc(var(--corner-y) + 14px - 32px);
+  }
+  /* With the contents list open, the letters stand on the list's titles'
+     edge rather than the numbers': a number's 0.65em at the list's 22px and
+     the 11px lead after it (.crail-num, .crail-link, --crail-lead). */
+  body:has(.crail-panel.is-open) .lang {
+    translate: calc(0.65 * clamp(22px, 2.2vw, 36px) + clamp(11px, 1.1vw, 18px)) 0;
+  }
   /* On the page the menu shows only at its top: once the page is scrolled
      (body.is-scrolled, set by the scroll script) it stands down, so nothing
      but the + button rides over the reading; it comes back at the top, and
      always with the contents list, which leaves the corner free for it. */
-  .lang { transition: opacity .3s ease, visibility 0s linear 0s; }
+  .lang { transition: opacity .3s ease, visibility 0s linear 0s, translate .35s cubic-bezier(.22, 1, .36, 1); }
   body.is-scrolled:not(:has(.crail-panel.is-open)) .lang:not(.is-open) {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity .3s ease, visibility 0s linear .3s;
+    transition: opacity .3s ease, visibility 0s linear .3s, translate .35s cubic-bezier(.22, 1, .36, 1);
   }
 
   /* The journey gallery's squares stand at the foot of the right gutter,
