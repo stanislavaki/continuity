@@ -4172,7 +4172,7 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   .journey-photo--noted > .journey-cap { position: static; margin-top: 12px; }
   /* The picture is too short here to carry its caption: it goes back to the
      black, over the picture. */
-  .journey-photo--cap-on > .journey-cap { position: static; margin: 0 auto 12px; color: inherit; }
+  .journey-photo--cap-on > .journey-cap { position: static; margin: 0 auto 24px; color: inherit; }
   .journey-photo--cap-on > .journey-cap > * { grid-column: 1 / -1; }
   .article-grid > .article-body.granite-note { margin: 0; }
   .journey-photo-six img,
