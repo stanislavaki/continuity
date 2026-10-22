@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Toward Kontinuität — Méridien Editorial</title>
-<link rel="stylesheet" href="styles.css?v=527" />
+<link rel="stylesheet" href="styles.css?v=529" />
 <!-- <script type="module" src="./assets/cursor-flow.js" defer></script> -->
 <!-- MapLibre GL — Journey satellite globes (Esri World Imagery, globe projection) -->
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
@@ -5626,6 +5626,30 @@ document.querySelectorAll('.facts').forEach((facts) => {
     };
     seat();
     new ResizeObserver(seat).observe(journey);
+
+    // The squares' ride. On a phone the button is fixed on the screen's foot
+    // (.jg-btn), so the sticky dock no longer brings it in and takes it away:
+    // here it is carried down with the quarry's first photographs' top edge
+    // until that edge reaches its place, and up with the workshop's end once
+    // that has passed it. Left in place while the sheet is open, where it is
+    // the sheet's close button.
+    const phone = window.matchMedia('(max-width: 900px)');
+    let rideFrame = 0;
+    const ride = () => {
+      rideFrame = 0;
+      btn.style.transform = '';
+      if (!phone.matches || isOpen()) return;
+      const rest = btn.getBoundingClientRect();
+      const from = quarry.getBoundingClientRect().top - 10.5;
+      const to = workshop ? workshop.getBoundingClientRect().bottom - rest.height : Infinity;
+      const y = Math.min(Math.max(rest.top, from), to) - rest.top;
+      if (Math.abs(y) > 0.5) btn.style.transform = 'translateY(' + y.toFixed(1) + 'px)';
+    };
+    const rideSoon = () => { if (!rideFrame) rideFrame = requestAnimationFrame(ride); };
+    window.addEventListener('scroll', rideSoon, { passive: true });
+    window.addEventListener('resize', rideSoon, { passive: true });
+    btn.addEventListener('click', rideSoon);
+    ride();
   }
 
   // Caught on the way down, before the lightbox's own handler: with the

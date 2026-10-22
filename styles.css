@@ -2713,15 +2713,22 @@ body.light .tts-controls { color: #000; }
   }
 
   /* The journey gallery's squares stand at the foot of the right gutter,
-     over the + button: their dock sticks near the bottom of the screen rather
-     than at the top, so they still ride up with the quarry's first photographs
-     and leave with the workshop's end, which crosses them on its way up. The
-     + button's mark tops out 28px over --corner-y; the squares' 27px mark
-     stands --corner-y above that, 10.5px inside its 48px box. Measured on the
-     dynamic viewport, as the fixed + button's foot is. */
-  .journey .jg-dock {
-    top: calc(100vh - 2 * var(--corner-y) - 28px - 10.5px - 27px);
-    top: calc(100dvh - 2 * var(--corner-y) - 28px - 10.5px - 27px);
+     over the + button. The + button's mark tops out 28px over --corner-y; the
+     squares' 27px mark stands --corner-y above that, and --jg-lift higher
+     again, so the two 48px boxes have room between them for a thumb. The
+     button is fixed on the screen's foot, as the + button is, rather than
+     held in its sticky dock: Safari moves a fixed box's foot with its toolbar
+     as the toolbar slides away, but measured a sticky box's top off the
+     screen as it was, so the squares stood off the + button by the toolbar's
+     height until the scroll stopped. They still ride up with the quarry's
+     first photographs and leave with the workshop's end: the gallery script
+     carries them there (see the squares' ride). The lightbox's cross and
+     arrows stand on the same line (.lb-close, .lb-prev). */
+  :root { --jg-lift: 16px; }
+  .jg-dock .jg-btn {
+    position: fixed;
+    top: auto;
+    bottom: calc(2 * var(--corner-y) + 28px - 10.5px + var(--jg-lift));
   }
 }
 @media (max-width: 600px) {
@@ -3496,8 +3503,12 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 
 /* Responsive */
 @media (max-width: 900px) {
+  /* minmax(0, 1fr), not 1fr: a plain 1fr track never shrinks below its
+     widest child's min-content, and Safari let the granite's carousel stretch
+     the track to the screen's whole width, so the body ran 20px off the right
+     edge and its 48px clearing for the + button with it. */
   .intro-grid, .article-grid, .math-head, .math-body, .topo-wrap {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 40px;
   }
   .intro-text, .article-body, .math-body {
@@ -6293,13 +6304,13 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
 @media (max-width: 600px) {
   /* The picture keeps the 29px it had over the arrows' heads, now they stand
      higher: the row's centre-line, then half the turned arrow's 11 strokes. */
-  .lightbox { padding: 72px var(--gutter) calc(2 * var(--corner-y) + 41.5px + var(--tts-bar) * 5.5 + 29px); }
+  .lightbox { padding: 72px var(--gutter) calc(2 * var(--corner-y) + 41.5px + var(--jg-lift) + var(--tts-bar) * 5.5 + 29px); }
   .lb-prev, .lb-next {
     top: auto;
     /* The row's centre-line on the cross's, which stands on the journey
-       gallery's squares (2 * --corner-y + 41.5px up, see .journey .jg-dock):
+       gallery's squares (2 * --corner-y + 41.5px + --jg-lift up, see .jg-btn):
        drop the arrow half its own box below that. */
-    bottom: calc(2 * var(--corner-y) + 41.5px - var(--lb-arrow-box) / 2);
+    bottom: calc(2 * var(--corner-y) + 41.5px + var(--jg-lift) - var(--lb-arrow-box) / 2);
     transform: none;
   }
   /* Side by side about the middle, 32px between them, as on desktop. */
@@ -6308,14 +6319,14 @@ section.article:has(.article-lead):has(+ .quote-band) { padding-bottom: 177px; }
   .lb-counter { top: 24px; }
 }
 /* Below 901px the lightbox's cross comes down to the journey gallery's
-   squares (see .journey .jg-dock), so the two stay one mark in one place
+   squares (see .jg-btn), so the two stay one mark in one place
    here too: at the foot of the right gutter, by the arrows, under the thumb,
    rather than up in the corner. Its 48px box on the squares' (the 64px width
-   already centres it on theirs). */
+   already centres it on theirs), set from the screen's foot as theirs is. */
 @media (max-width: 900px) {
   .lb-close {
-    top: calc(100vh - 2 * var(--corner-y) - 28px - 10.5px - 27px);
-    top: calc(100dvh - 2 * var(--corner-y) - 28px - 10.5px - 27px);
+    top: auto;
+    bottom: calc(2 * var(--corner-y) + 28px - 10.5px + var(--jg-lift));
   }
 }
 .lb-clickable { cursor: var(--cursor-plus); }
@@ -6491,7 +6502,7 @@ body.light .jg-btn { color: var(--ink); }
 @media (max-width: 900px) {
   /* The sheet's cross stands at the foot of the screen here, over the +
      button's place: the last captions scroll up clear of it. */
-  .jg-sheet { padding-bottom: 136px; }
+  .jg-sheet { padding-bottom: calc(136px + var(--jg-lift)); }
   .jg-grid > li { grid-column: span 4; }
 }
 /* With the rail beside the page, the button leaves the corner for the page's
