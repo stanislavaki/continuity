@@ -4181,15 +4181,18 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   }
   .granite-travel-row::-webkit-scrollbar { display: none; }
   /* The block on the quarry floor, swiped across too: the picture three
-     quarters as wide again as the measure, from the left gutter out past the screen's
-     right edge, panned to its own right edge and the gutter after it. One
+     quarters as wide again as the measure, opening on the left gutter and
+     running off the screen's right edge, and panned until its own right edge
+     stands on the right gutter. The row is edge to edge of the screen, the
+     gutters its padding, as the first cut's is, so the picture slides off the
+     screen's edge on either side rather than being cut at a gutter. One
      picture, so nothing to snap between: it stays wherever it is left. */
   .journey-photo-swipe {
     grid-column: 1 / -1;
     min-width: 0;
     display: flex;
-    margin-right: calc(-1 * var(--gutter));
-    padding-right: var(--gutter);
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 0 var(--gutter);
     overflow-x: auto;
     overflow-y: hidden;
     overscroll-behavior-x: contain;
@@ -4202,13 +4205,11 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
      standing on the right gutter and running off the screen's left edge, and
      is swiped from left to right until its own left edge stands on the left
      gutter. A right-to-left row starts scrolled to that end by itself. Its
-     figure runs edge to edge, so the row only steps in from the right edge
-     rather than reaching out to it; the picture is the same size as the
-     block's. */
+     figure already runs edge to edge, so the row needs no margin to get
+     there; the picture is the same size as the block's. */
   .journey-photo-bleed > .journey-photo-swipe {
     direction: rtl;
-    margin: 0 var(--gutter) 0 0;
-    padding: 0 0 0 var(--gutter);
+    margin: 0;
   }
   .granite-travel-row > figure { flex: 0 0 86%; scroll-snap-align: start; }
   .granite-travel-go { display: block; }
