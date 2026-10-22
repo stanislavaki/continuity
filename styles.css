@@ -4508,6 +4508,15 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   color: #fff;
   margin: 0;
 }
+/* A leg's two ends, Gibraltar → Rotterdam: across on one line, and on a phone
+   one under the other with the arrow turned down between them, on a line of
+   its own. Both arrows are in the title, one shown at a time, so whichever is
+   read is the one on screen. */
+.sub-arrow--down { display: none; }
+@media (max-width: 600px) {
+  .sub-arrow { display: none; }
+  .sub-arrow--down { display: block; }
+}
 /* The air under the title is carried here as padding rather than as a margin
    on the first line, so it cannot collapse against it. Nothing is carried
    below: the whole distance from the last place down to the dates is
@@ -5217,6 +5226,16 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
     margin-top: 30vh;
   }
   #sculpture-trip .stop[data-stop="1"] { margin-top: 0; }
+  /* 4.4's account comes straight under its head and dates, as a section's
+     text does, rather than half way into the voyage: first in the column,
+     while the camera still holds on Carrara, then the first stop's box,
+     which lets the camera go. The second stop's box waits the screens the
+     account used to take, so the voyage to Rotterdam is played over as much
+     scroll as before. */
+  #sculpture-trip .journey-stops { padding-top: 64px; }
+  #sculpture-trip .stop-caps { grid-row: 1; margin: 0 0 30vh; }
+  #sculpture-trip .stop[data-stop="1"] { grid-row: 2; }
+  #sculpture-trip .stop[data-stop="2"] { margin-top: 160vh; }
   /* The single column has one track, so every span written for the eight-column
      desktop grid has to come back to it. Left as they were, the leads and the
      caption block start at lines 2 and 5 and run four to six tracks wide, which
