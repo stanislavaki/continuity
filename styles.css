@@ -4198,10 +4198,18 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   }
   .journey-photo-swipe::-webkit-scrollbar { display: none; }
   .journey-photo-swipe > img { flex: 0 0 175%; width: 175%; max-width: none; }
-  /* The stone at sea the same way: its figure runs edge to edge, so the
-     row starts on the left gutter rather than reaching out to the right one,
-     and the picture is the same size as the block's. */
-  .journey-photo-bleed > .journey-photo-swipe { margin: 0 0 0 var(--gutter); }
+  /* The stone at sea the same way, mirrored: it opens on its right part,
+     standing on the right gutter and running off the screen's left edge, and
+     is swiped from left to right until its own left edge stands on the left
+     gutter. A right-to-left row starts scrolled to that end by itself. Its
+     figure runs edge to edge, so the row only steps in from the right edge
+     rather than reaching out to it; the picture is the same size as the
+     block's. */
+  .journey-photo-bleed > .journey-photo-swipe {
+    direction: rtl;
+    margin: 0 var(--gutter) 0 0;
+    padding: 0 0 0 var(--gutter);
+  }
   .granite-travel-row > figure { flex: 0 0 86%; scroll-snap-align: start; }
   .granite-travel-go { display: block; }
   .granite-travel-track > img { margin-top: 0; }
