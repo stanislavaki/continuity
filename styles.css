@@ -4201,6 +4201,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
   }
   .journey-photo-swipe::-webkit-scrollbar { display: none; }
   .journey-photo-swipe > img { flex: 0 0 175%; width: 175%; max-width: none; }
+  /* The low-loader in Frankfurt the same way, at twice the measure: a
+     drawing, wide and shallow, its figures want the size. */
+  #sculpture-trip .stop-cap-figure .journey-photo-swipe > img { flex: 0 0 200%; width: 200%; }
   /* The stone at sea the same way, mirrored: it opens on its right part,
      standing on the right gutter and running off the screen's left edge, and
      is swiped from left to right until its own left edge stands on the left
@@ -4515,7 +4518,9 @@ body:has(.narr-film.is-flying) .crail-panel { z-index: 975; }
 .sub-arrow--down { display: none; }
 @media (max-width: 600px) {
   .sub-arrow { display: none; }
-  .sub-arrow--down { display: block; }
+  /* The arrowhead sits on the baseline, right on the next place's capitals:
+     a quarter of the title's size under it keeps them apart. */
+  .sub-arrow--down { display: block; margin-bottom: .25em; }
 }
 /* The air under the title is carried here as padding rather than as a margin
    on the first line, so it cannot collapse against it. Nothing is carried
